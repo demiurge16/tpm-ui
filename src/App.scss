@@ -1,0 +1,13 @@
+
+@import "~bootstrap/scss/bootstrap";
+@import 'ag-grid-community/styles/ag-grid';
+@import 'ag-grid-community/styles/ag-theme-alpine';
+
+.breadcrumb-item > a {
+  color: #fff;
+}
+
+.breadcrumb-item.active, .breadcrumb-item.active::before {
+  color: rgba(255, 255, 255, 0.55);
+}
+
