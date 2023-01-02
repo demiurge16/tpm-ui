@@ -84,14 +84,19 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
                   ))
                 }
               </select>
+
+              {
+                filter.operator !== Operation.IS_NULL.symbol && filter.operator !== Operation.IS_EMPTY.symbol && (
+                  <input type="text" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
+                )
+              }
             
-              <input type="text" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
               <button type="button" className="btn btn-outline-secondary" onClick={() => setState({ ...state, filters: state.filters.filter((f, i) => i !== index) })}>Remove</button>
             </div>
           ))
         }
         <div>
-          <button className="btn btn-outline-secondary" type="button" onClick={() => setState({ ...state, filters: [...state.filters, { field: 'code', value: '', operator: Operation.EQUALS.symbol }] })}>Add Filter</button>
+          <button className="btn btn-outline-secondary" type="button" onClick={() => setState({ ...state, filters: [...state.filters, { field: props.queryDefinitions[0].id, value: '', operator: Operation.EQUALS.symbol }] })}>Add Filter</button>
         </div>
       </div>
       <div className="row col-4 mb-3">

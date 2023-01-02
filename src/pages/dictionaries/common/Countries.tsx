@@ -19,12 +19,12 @@ export const Countries = () => {
 
   const [queryDefinitions, setQueryDefinitions] = useState([
     {
-      id: 'code',
+      id: 'code.value',
       name: 'Code',
       filter: true,
       sortable: true,
       operations: [
-        Operation.EQUALS, Operation.CONTAINS, Operation.ANY
+        Operation.EQUALS, Operation.CONTAINS, Operation.ANY, Operation.IS_EMPTY
       ]
     },
     {
