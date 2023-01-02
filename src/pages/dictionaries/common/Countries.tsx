@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Grid } from '../../../components/grid/Grid';
+import { Operation } from '../../../components/grid/Operation';
 import { Country } from '../../../types/Country';
 
 export const Countries = () => {
@@ -17,8 +18,24 @@ export const Countries = () => {
   ]);
 
   const [queryDefinitions, setQueryDefinitions] = useState([
-    { id: 'code', name: 'Code', filter: true, sortable: true },
-    { id: 'name', name: 'Name', filter: true, sortable: true },
+    {
+      id: 'code',
+      name: 'Code',
+      filter: true,
+      sortable: true,
+      operations: [
+        Operation.EQUALS, Operation.CONTAINS, Operation.ANY
+      ]
+    },
+    {
+      id: 'name',
+      name: 'Name',
+      filter: true,
+      sortable: true,
+      operations: [
+        Operation.EQUALS, Operation.CONTAINS, Operation.ANY
+      ]
+    },
   ]);
 
   return (
@@ -28,7 +45,7 @@ export const Countries = () => {
         startPage={startPage}
         pageSize={pageSize}
         url='http://localhost:8080/api/v1/country'
-        queriesUrl='http://localhost:8080/api/v1/country/filters'
+        queriesUrl='http://localhost:8080/api/v1/country/query'
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />

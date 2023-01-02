@@ -1,4 +1,5 @@
 import { ColDef, ColGroupDef } from "ag-grid-community";
+import { QueryableColumnDefinition } from "./QueryableColumnDefinition";
 
 export interface GridProps<Type> {
   startPage: number;
@@ -6,5 +7,5 @@ export interface GridProps<Type> {
   columnDefinitions: (ColDef<Type> | ColGroupDef<Type>)[];
   url: string;
   queriesUrl: string;
-  queryDefinitions: { id: string, name: string, filter: boolean, sortable: boolean }[];
+  queryDefinitions: QueryableColumnDefinition[];
 }

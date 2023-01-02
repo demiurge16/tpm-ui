@@ -1,8 +1,9 @@
 import { Query } from "./Query";
+import { QueryableColumnDefinition } from "./QueryableColumnDefinition";
 
 export interface QueryBuilderProps<Type> {
   url: string;
   queriesUrl: string;
-  queryDefinitions: { id: string, name: string, filter: boolean, sortable: boolean }[];
+  queryDefinitions: QueryableColumnDefinition[];
   onQueryChange: (query: Query) => void;
 }

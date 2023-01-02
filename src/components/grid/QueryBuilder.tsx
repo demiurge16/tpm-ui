@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Operator } from './Operator';
+import { useState, useEffect } from 'react';
+import { Operation } from './Operation';
 import { PageSizeOptions } from './PageSizeOptions';
 import { Query } from './Query';
 import { QueryBuilderProps } from './QueryBuilderProps';
@@ -15,15 +15,18 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
     filters: []
   });
 
+  useEffect(() => {
+    props.onQueryChange(state);
+  }, [state.page, state.pageSize, state.sort, state.direction]);
+
   return (
     <div>
       <div className="row col-4 mb-3">
-
         <div className="col-4">
           <span>Page: </span>
           <div className="input-group">
             <button type="button" className="btn btn-outline-secondary" onClick={() => setState({ ...state, page: state.page - 1 })}>Previous</button>
-            <input className="form-control" type="number" value={state.page} onChange={(e) => setState({ ...state, page: parseInt(e.target.value) })} />
+            <input className="form-control" type="number" value={state.page + 1} onChange={(e) => setState({ ...state, page: parseInt(e.target.value) })} />
             <button type="button" className="btn btn-outline-secondary" onClick={() => setState({ ...state, page: state.page + 1 })}>Next</button>
           </div>
         </div>
@@ -74,19 +77,12 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
                   ))
                 }
               </select>
-              <select className="form-control" value={filter.operator} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, operator: e.target.value as Operator } : f) })}>
-                <option value={Operator.EQUALS}>Equals</option>
-                <option value={Operator.CONTAINS}>Contains</option>
-                <option value={Operator.GREATER_THAN}>Greater Than</option>
-                <option value={Operator.LESS_THAN}>Less Than</option>
-                <option value={Operator.GREATER_THAN_OR_EQUAL}>Greater Than Or Equal</option>
-                <option value={Operator.LESS_THAN_OR_EQUAL}>Less Than Or Equal</option>
-                <option value={Operator.IN}>In</option>
-                <option value={Operator.NOT_IN}>Not In</option>
-                <option value={Operator.IS_NULL}>Is Null</option>
-                <option value={Operator.IS_NOT_NULL}>Is Not Null</option>
-                <option value={Operator.IS_EMPTY}>Is Empty</option>
-                <option value={Operator.IS_NOT_EMPTY}>Is Not Empty</option>
+              <select className="form-control" value={filter.operator} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, operator: e.target.value } : f) })}>
+                {
+                  props.queryDefinitions.find(e => e.id === filter.field)?.operations?.map(operation => (
+                    <option key={operation.symbol} value={operation.symbol}>{operation.name}</option>
+                  ))
+                }
               </select>
             
               <input type="text" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
@@ -95,7 +91,7 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
           ))
         }
         <div>
-          <button className="btn btn-outline-secondary" type="button" onClick={() => setState({ ...state, filters: [...state.filters, { field: 'code', value: '', operator: Operator.EQUALS }] })}>Add Filter</button>
+          <button className="btn btn-outline-secondary" type="button" onClick={() => setState({ ...state, filters: [...state.filters, { field: 'code', value: '', operator: Operation.EQUALS.symbol }] })}>Add Filter</button>
         </div>
       </div>
       <div className="row col-4 mb-3">
