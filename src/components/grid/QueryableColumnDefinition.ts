@@ -1,9 +1,10 @@
-import { Operation } from "./Operation";
+import { Field } from "./Field";
 
 export interface QueryableColumnDefinition {
   id: string;
   name: string;
   sortable: boolean;
   filter: boolean;
-  operations?: Operation[];
+  type: Field;
+  options?: { value: string, label: string }[];
 }

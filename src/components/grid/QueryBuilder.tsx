@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FieldType } from './FieldType';
 import { Operation } from './Operation';
 import { PageSizeOptions } from './PageSizeOptions';
 import { Query } from './Query';
@@ -79,7 +80,7 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
               </select>
               <select className="form-control" value={filter.operator} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, operator: e.target.value } : f) })}>
                 {
-                  props.queryDefinitions.find(e => e.id === filter.field)?.operations?.map(operation => (
+                  props.queryDefinitions.find(e => e.id === filter.field)?.type?.operations.map(operation => (
                     <option key={operation.symbol} value={operation.symbol}>{operation.name}</option>
                   ))
                 }
@@ -87,7 +88,43 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
 
               {
                 filter.operator !== Operation.IS_NULL.symbol && filter.operator !== Operation.IS_EMPTY.symbol && (
-                  <input type="text" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
+
+                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.STRING && (
+                    <input type="text" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
+                  )
+
+                  ||
+                  
+                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.NUMBER && (
+                    <input type="number" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
+                  )
+
+                  ||
+
+                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.DATE && (
+                    <input type="date" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
+                  )
+
+                  ||
+
+                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.BOOLEAN && (
+                    <select className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })}>
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                  )
+
+                  || 
+
+                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.SELECT && (
+                    <select className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })}>
+                      {
+                        props.queryDefinitions.find(e => e.id === filter.field)?.options?.map(option => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))
+                      }
+                    </select>
+                  )
                 )
               }
             
@@ -101,7 +138,7 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
       </div>
       <div className="row col-4 mb-3">
         <div className="col-6">
-          <button className="btn btn-outline-secondary w-100" type="button" onClick={() => props.onQueryChange(state)}>Save and apply</button>
+          <button className="btn btn-outline-secondary w-100" type="button" onClick={() => props.onQueryChange(state)}>Apply</button>
         </div>
         <div className="col-6">
           <button className="btn btn-outline-secondary w-100" type="button" onClick={() => setState({ page: 0, pageSize: 25, sort: '', direction: SortDirection.ASC, filters: [] })}>Reset</button>

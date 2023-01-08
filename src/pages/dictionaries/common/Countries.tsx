@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
-import { Operation } from '../../../components/grid/Operation';
 import { Country } from '../../../types/Country';
 
 export const Countries = () => {
@@ -23,19 +23,27 @@ export const Countries = () => {
       name: 'Code',
       filter: true,
       sortable: true,
-      operations: [
-        Operation.EQUALS, Operation.CONTAINS, Operation.ANY, Operation.IS_EMPTY
-      ]
+      type: Field.STRING
     },
     {
       id: 'name',
       name: 'Name',
       filter: true,
       sortable: true,
-      operations: [
-        Operation.EQUALS, Operation.CONTAINS, Operation.ANY
-      ]
+      type: Field.STRING
     },
+    {
+      id: 'selectTest',
+      name: 'Select test',
+      filter: true,
+      sortable: true,
+      type: Field.SELECT,
+      options: [
+        { value: '1', label: 'One' },
+        { value: '2', label: 'Two' },
+        { value: '3', label: 'Three' }
+      ]
+    }
   ]);
 
   return (
@@ -44,8 +52,8 @@ export const Countries = () => {
       <Grid<Country>
         startPage={startPage}
         pageSize={pageSize}
-        url='http://localhost:8080/api/v1/country'
-        queriesUrl='http://localhost:8080/api/v1/country/query'
+        url='http://localhost:8081/api/v1/country'
+        queriesUrl='http://localhost:8081/api/v1/country/query'
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />

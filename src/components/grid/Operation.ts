@@ -14,7 +14,7 @@ enum OperationSymbol {
 export class Operation {
   constructor(public symbol: OperationSymbol, public name: string) { }
 
-  static EQUALS = new Operation(OperationSymbol.EQUALS, "Equals");
+  static EQUALS = new Operation(OperationSymbol.EQUALS, "Is equal to");
   static CONTAINS = new Operation(OperationSymbol.CONTAINS, "Contains");
   static GREATER_THAN = new Operation(OperationSymbol.GREATER_THAN, "Greater than");
   static LESS_THAN = new Operation(OperationSymbol.LESS_THAN, "Less than");
