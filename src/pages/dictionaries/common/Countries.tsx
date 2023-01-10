@@ -52,8 +52,8 @@ export const Countries = () => {
       <Grid<Country>
         startPage={startPage}
         pageSize={pageSize}
-        url='http://localhost:8081/api/v1/country'
-        queriesUrl='http://localhost:8081/api/v1/country/query'
+        url='http://localhost:8080/api/v1/country'
+        queriesUrl='http://localhost:8080/api/v1/country/query'
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />
