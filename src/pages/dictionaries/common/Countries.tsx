@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
+import { environment } from '../../../Environment';
 import { Country } from '../../../types/Country';
 
 export const Countries = () => {
@@ -52,8 +53,7 @@ export const Countries = () => {
       <Grid<Country>
         startPage={startPage}
         pageSize={pageSize}
-        url='http://localhost:8080/api/v1/country'
-        queriesUrl='http://localhost:8080/api/v1/country/query'
+        url={`${environment.apiUrl}/country`}
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />

@@ -6,6 +6,5 @@ export interface GridProps<Type> {
   pageSize: number;
   columnDefinitions: (ColDef<Type> | ColGroupDef<Type>)[];
   url: string;
-  queriesUrl: string;
   queryDefinitions: QueryableColumnDefinition[];
 }

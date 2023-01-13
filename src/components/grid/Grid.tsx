@@ -43,7 +43,6 @@ export function Grid<Type>(props: GridProps<Type>) {
     <div>
       <QueryBuilder<Type> 
         url={props.url}
-        queriesUrl={props.queriesUrl}
         queryDefinitions={props.queryDefinitions}
         onQueryChange={(query) => {
           const result = fetch(query);
