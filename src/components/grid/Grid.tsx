@@ -65,7 +65,7 @@ export function Grid<Type>(props: GridProps<Type>) {
         }}
       />
 
-      <div className="ag-theme-alpine">
+      <div className="ag-theme-material">
        <AgGridReact<Type> domLayout='autoHeight'
           ref={gridRef}
           rowData={elements}
