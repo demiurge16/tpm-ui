@@ -38,7 +38,7 @@ function App() {
       {
         label: "Dictionaries",
         groups: {
-          common: [   
+          common: [
             { label: "Languages", route: "/languages", component: Pages.Languages },
             { label: "Countries", route: "/countries", component: Pages.Countries },
             { label: "Currencies", route: "/currencies", component: Pages.Currencies },
@@ -66,32 +66,30 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
-          <header>
-            <AppBar>
-              <Container maxWidth={false}>
-                <Toolbar>
-                  <Logo title={title}></Logo>
-                  <Navbar elements={menu.elements}></Navbar>
-                  <Box sx={{ flexGrow: 1 }} />
-                  <SettingsMenu></SettingsMenu>
-                </Toolbar>
-              </Container>
-              <Divider />
-              <Container maxWidth={false}>
-                { currentBreadcrumb && (
-                    <Container maxWidth={false}>
-                      <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard">
-                          Home
-                        </Link>
-                        <Typography color="text.primary">{currentBreadcrumb.name}</Typography>
-                      </Breadcrumbs>
-                    </Container>
-                  )
-                }
-              </Container>
-            </AppBar>
-          </header>
+          <AppBar position="sticky">
+            <Container maxWidth={false}>
+              <Toolbar>
+                <Logo title={title}></Logo>
+                <Navbar elements={menu.elements}></Navbar>
+                <Box sx={{ flexGrow: 1 }} />
+                <SettingsMenu></SettingsMenu>
+              </Toolbar>
+            </Container>
+            <Divider />
+            <Container maxWidth={false}>
+              {currentBreadcrumb && (
+                <Container maxWidth={false}>
+                  <Breadcrumbs aria-label="breadcrumb">
+                    <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard">
+                      Home
+                    </Link>
+                    <Typography color="text.primary">{currentBreadcrumb.name}</Typography>
+                  </Breadcrumbs>
+                </Container>
+              )
+              }
+            </Container>
+          </AppBar>
           <main role='main'>
             <Container maxWidth={false}>
               <Box sx={{ pt: 4 }}>

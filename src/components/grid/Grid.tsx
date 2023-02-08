@@ -14,7 +14,6 @@ export function Grid<Type>(props: GridProps<Type>) {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
 
-
   useEffect(() => {
     fetch({
       page: props.startPage,
@@ -23,7 +22,6 @@ export function Grid<Type>(props: GridProps<Type>) {
       direction: SortDirection.ASC,
       filters: []
     }).then((data) => {
-      console.log(data);
       setElements(data.items);
       setTotalPages(data.totalPages);
       setTotalElements(data.totalElements);

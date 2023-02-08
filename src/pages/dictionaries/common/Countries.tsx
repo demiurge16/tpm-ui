@@ -1,3 +1,4 @@
+import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
@@ -32,31 +33,13 @@ export const Countries = () => {
       filter: true,
       sortable: true,
       type: Field.STRING
-    },
-    {
-      id: 'selectTest',
-      name: 'Select test',
-      filter: true,
-      sortable: false,
-      type: Field.SELECT,
-      options: [
-        { value: '1', label: 'One' },
-        { value: '2', label: 'Two' },
-        { value: '3', label: 'Three' }
-      ]
-    },
-    {
-      id: 'dateTest',
-      name: 'Date test',
-      filter: true,
-      sortable: false,
-      type: Field.DATE
     }
   ]);
 
   return (
-    <div>
-      <h1>Countries</h1>
+    <Box>
+      <Typography variant="h4">Countries</Typography>
+      <Box pb={2} />
       <Grid<Country>
         startPage={startPage}
         pageSize={pageSize}
@@ -64,7 +47,7 @@ export const Countries = () => {
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />
-    </div>
+    </Box>
   );
 }
 
