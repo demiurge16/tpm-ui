@@ -10,6 +10,9 @@ export const Countries = () => {
   const startPage = 0;
   const pageSize = 25;
 
+  const currenciesCellRenderer = (params: any) => Object.values(params.value).join(', ');
+  const languagesCellRenderer = (params: any) => Object.values(params.value).join(', ');
+
   const [columnDefs, setColumnDefs] = useState([
     { headerName: 'Code', field: 'code', resizable: true },
     { headerName: 'Name', field: 'name', resizable: true },
@@ -51,10 +54,4 @@ export const Countries = () => {
   );
 }
 
-function currenciesCellRenderer(params: any) {
-  return Object.values(params.value).join(', ');
-}
 
-function languagesCellRenderer(params: any) {
-  return Object.values(params.value).join(', ');
-}

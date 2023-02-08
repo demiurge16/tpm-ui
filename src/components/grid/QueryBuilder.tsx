@@ -33,10 +33,6 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
     props.onQueryChange(state);
   }, [state.page, state.pageSize, state.sort, state.direction]);
 
-  useEffect(() => {
-    console.log('state', state);
-  }, [state]);
-
   const previousPage = () => setState({ ...state, page: state.page - 1 });
 
   const nextPage = () => setState({ ...state, page: state.page + 1 });
