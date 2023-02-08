@@ -1,4 +1,5 @@
 export interface Page<T> {
-  content: T[];
+  items: T[];
+  totalPages: number;
   totalElements: number;
 }

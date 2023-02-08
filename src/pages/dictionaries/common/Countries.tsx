@@ -37,13 +37,20 @@ export const Countries = () => {
       id: 'selectTest',
       name: 'Select test',
       filter: true,
-      sortable: true,
+      sortable: false,
       type: Field.SELECT,
       options: [
         { value: '1', label: 'One' },
         { value: '2', label: 'Two' },
         { value: '3', label: 'Three' }
       ]
+    },
+    {
+      id: 'dateTest',
+      name: 'Date test',
+      filter: true,
+      sortable: false,
+      type: Field.DATE
     }
   ]);
 

@@ -29,6 +29,15 @@ export class Field {
     Operation.IS_NULL
   ]);
 
+  static DATETIME = new Field(FieldType.DATETIME, "Datetime", [
+    Operation.EQUALS,
+    Operation.GREATER_THAN,
+    Operation.LESS_THAN,
+    Operation.GREATER_THAN_OR_EQUAL,
+    Operation.LESS_THAN_OR_EQUAL,
+    Operation.IS_NULL
+  ]);
+
   static BOOLEAN = new Field(FieldType.BOOLEAN, "Boolean", [
     Operation.EQUALS,
     Operation.IS_NULL
@@ -36,12 +45,6 @@ export class Field {
 
   static SELECT = new Field(FieldType.SELECT, "Select", [
     Operation.EQUALS,
-    Operation.ANY,
-    Operation.ALL,
-    Operation.IS_NULL
-  ]);
-
-  static MULTI_SELECT = new Field(FieldType.MULTI_SELECT, "Multi Select", [
     Operation.ANY,
     Operation.ALL,
     Operation.IS_NULL

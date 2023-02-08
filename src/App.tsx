@@ -1,15 +1,14 @@
 import './App.scss';
-import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Nav from 'react-bootstrap/Nav';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import Navbar from 'react-bootstrap/Navbar';
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link as RouterLink, useLocation, Navigate } from 'react-router-dom';
 import * as Pages from './pages/Pages';
-import { Menu, MenuItem, MenuDropdown } from './menu/Menu';
+import { MenuConfig } from './menu/MenuConfig';
+import { AppBar, Container, CssBaseline, Toolbar, Typography, Box, Link, Breadcrumbs, Divider } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Navbar } from './menu/Navbar';
+import { SettingsMenu } from './menu/SettingsMenu';
+import { Logo } from './menu/Logo';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 
 function App() {
   const title = "Translation Project Manager";
@@ -21,17 +20,14 @@ function App() {
     { name: "Invites", path: "/invites" },
     { name: "Additional Costs", path: "/additional-costs" },
     { name: "Clients", path: "/clients" },
-    { name: "Users", path: "/users" },
     { name: "Languages", path: "/languages" },
     { name: "Countries", path: "/countries" },
     { name: "Currencies", path: "/currencies" },
     { name: "Client types", path: "/client-types" },
-    { name: "Roles", path: "/roles" },
-    { name: "Claims", path: "/claims" },
     { name: "Account", path: "/account" },
   ];
 
-  const menu = new Menu(
+  const menu = new MenuConfig(
     [
       { label: "Projects", route: "/projects", component: Pages.Projects },
       { label: "Tasks", route: "/tasks", component: Pages.Tasks },
@@ -51,104 +47,82 @@ function App() {
             { label: "Client types", route: "/client-types", component: Pages.ClientTypes },
           ]
         }
-      },
-      { label: "Roles", route: "/roles", component: Pages.Roles },
-      { label: "Claims", route: "/claims", component: Pages.Claims },
+      }
     ]
   );
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   const currentBreadcrumb = breadcrumb.find(x => x.path === location.pathname);
 
-  const menuRender = menu.elements.map((item) => {
-    if ('groups' in item) {
-      const { groups, label } = item as MenuDropdown;
-      return (
-        <NavDropdown title={label} id="menu-dropdown">
-          {
-            Object.keys(groups).map((key, index) => {
-              const group = groups[key];
-              return (
-                <>
-                  {
-                    group.map((item) => ( <NavDropdown.Item as={Link} to={item.route}>{item.label}</NavDropdown.Item> ))
-                  }
-                  {
-                    index < Object.keys(groups).length - 1 && <NavDropdown.Divider />
-                  }
-                </>
-              );
-            })
-          }
-        </NavDropdown>
-      );
-    } else {
-      const { route, label } = item as MenuItem;
-      return (
-        <Nav.Link as={Link} to={route}>{label}</Nav.Link>
-      );
-    }
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+    },
   });
 
   return (
     <>
-      <header>
-        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-          <Container fluid>
-            <Navbar.Brand as={Link} to="/">{title}</Navbar.Brand>
-            <Navbar.Toggle aria-controls="navbar" />
-            <Navbar.Collapse id="navbar">
-              <Nav className="me-auto">
-                { menuRender }
-              </Nav>
-              <Nav className="ms-auto">
-                <Form className="d-flex">
-                  <InputGroup>
-                    <Form.Control type="search" aria-label="Search"/>
-                    <Button variant="outline-success">Search</Button>
-                  </InputGroup>
-                </Form>
-                <NavDropdown title="Welcome, User!" id="account-dropdown">
-                  <NavDropdown.Item as={Link} to="/account">Account settings</NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/logout">Logout</NavDropdown.Item>
-                </NavDropdown>
-              </Nav>
-            </Navbar.Collapse>
-          </Container>
-        </Navbar>
-        <Container fluid className="bg-secondary">
-          <Breadcrumb>
-            <Breadcrumb.Item linkAs={Link} linkProps={{ to: "/" }}>Home</Breadcrumb.Item>
-            {
-              currentBreadcrumb && (
-                <Breadcrumb.Item active>{currentBreadcrumb.name}</Breadcrumb.Item>
-              )
-            }
-          </Breadcrumb>
-        </Container>
-        
-      </header>
-      <main role='main' className='flex-shrink-0'>
-        <Container fluid>
-          <Routes>
-            <Route path="/" element={<Pages.Dashboard />} />
-            {
-              menu.flatten().map((item) => (
-                <Route path={item.route} element={<item.component />} />
-              ))
-            }
-            <Route path="/account" element={<Pages.Account />} />
-          </Routes>
-        </Container>
-      </main>
-      <footer className="footer bg-secondary text-white text-center mt-auto">
-        <div className="text-center p-3" style={{backgroundColor: "rgba(0, 0, 0, 0.2)"}}>
-          <span>© 2022 Copyright:&nbsp;</span>
-          <a className="text-white" href="https://nuclear-prometheus.net/">nuclear-prometheus.net</a>
-        </div>
-      </footer>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={darkTheme}>
+          <CssBaseline />
+          <header>
+            <AppBar>
+              <Container maxWidth={false}>
+                <Toolbar>
+                  <Logo title={title}></Logo>
+                  <Navbar elements={menu.elements}></Navbar>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <SettingsMenu></SettingsMenu>
+                </Toolbar>
+              </Container>
+              <Divider />
+              <Container maxWidth={false}>
+                { currentBreadcrumb && (
+                    <Container maxWidth={false}>
+                      <Breadcrumbs aria-label="breadcrumb">
+                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard">
+                          Home
+                        </Link>
+                        <Typography color="text.primary">{currentBreadcrumb.name}</Typography>
+                      </Breadcrumbs>
+                    </Container>
+                  )
+                }
+              </Container>
+            </AppBar>
+          </header>
+          <main role='main'>
+            <Container maxWidth={false}>
+              <Box sx={{ pt: 4 }}>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" />} />
+                  <Route path="/dashboard" element={<Pages.Dashboard />}>
+                  </Route>
+                  {
+                    menu.flatten().map((item) => (
+                      <Route path={item.route} element={<item.component />} />
+                    ))
+                  }
+                  <Route path="/account" element={<Pages.Account />} />
+                </Routes>
+              </Box>
+            </Container>
+          </main>
+          <footer>
+            <Container maxWidth={false}>
+              <Toolbar>
+                <Typography variant="body1" color="inherit">
+                  © 2022 Translation Project Manager by&nbsp;
+                  <Link href="https://nuclear-prometheus.net/" color="inherit" underline="hover">
+                    nuclear-prometheus.net
+                  </Link>
+                </Typography>
+              </Toolbar>
+            </Container>
+          </footer>
+        </ThemeProvider>
+      </LocalizationProvider>
     </>
   );
 }

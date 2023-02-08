@@ -1,5 +1,16 @@
+import { ArrowBackIos, ArrowForwardIos, RemoveCircle, AddCircle, Search, Clear } from '@mui/icons-material';
+import { Box, Button, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { FieldType } from './FieldType';
+import { BooleanFilter } from './filters/BooleanFilter';
+import { DateFilter } from './filters/DateFilter';
+import { DateTimeFilter } from './filters/DateTimeFilter';
+import { FieldPicker } from './filters/FieldPicker';
+import { MultiselectFilter } from './filters/MultiselectFilter';
+import { NumberFilter } from './filters/NumberFilter';
+import { OperatorPicker } from './filters/OperationPicker';
+import { SortPicker } from './filters/SortPicker';
+import { StringFilter } from './filters/StringFilter';
 import { Operation } from './Operation';
 import { PageSizeOptions } from './PageSizeOptions';
 import { Query } from './Query';
@@ -8,142 +19,309 @@ import { SortDirection } from './SortDirection';
 
 export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
 
-  const [state, setState] = useState<Query>({
+  const initialQuery: Query = {
     page: 0,
     pageSize: 25,
     sort: '',
     direction: SortDirection.ASC,
     filters: []
-  });
+  };
+
+  const [state, setState] = useState<Query>(initialQuery);
 
   useEffect(() => {
     props.onQueryChange(state);
   }, [state.page, state.pageSize, state.sort, state.direction]);
 
+  useEffect(() => {
+    console.log('state', state);
+  }, [state]);
+
+  const previousPage = () => setState({ ...state, page: state.page - 1 });
+
+  const nextPage = () => setState({ ...state, page: state.page + 1 });
+
+  const setPage = (page: number) => setState({ ...state, page });
+
+
+  const getColumnDefinition = (id: string | null) => props.queryDefinitions.find(qd => qd.id === id);
+
+  const getColumnDefinitionType = (id: string | null) => getColumnDefinition(id)?.type.type;
+
+  const isStringColumn = (id: string | null) => getColumnDefinitionType(id) === FieldType.STRING;
+
+  const isNumberColumn = (id: string | null) => getColumnDefinitionType(id) === FieldType.NUMBER;
+
+  const isDateColumn = (id: string | null) => getColumnDefinitionType(id) === FieldType.DATE;
+
+  const isDateTimeColumn = (id: string | null) => getColumnDefinitionType(id) === FieldType.DATETIME;
+
+  const isBooleanColumn = (id: string | null) => getColumnDefinitionType(id) === FieldType.BOOLEAN;
+
+  const isSelectColumn = (id: string | null) => getColumnDefinitionType(id) === FieldType.SELECT;
+
+  const getColumnDefinitionOptions = (id: string | null) => getColumnDefinition(id)?.options ?? [];
+
+  const getColumnDefinitionOperators = (id: string | null) => getColumnDefinition(id)?.type.operations ?? [];
+
+  const getDefaultFilterOperator = (id: string | null) => getColumnDefinitionOperators(id)[0];
+
+  const getDefaultFilterValue = (id: string | null) => isSelectColumn(id) ? [] : '';
+
+  const updateFilterField = (index: number, field: string) => {
+    const filters = [...state.filters];
+    filters[index].field = field;
+    filters[index].operator = getDefaultFilterOperator(field).symbol;
+    filters[index].value = getDefaultFilterValue(field);
+    setState({ ...state, filters });
+  };
+
+  const updateFilterOperator = (index: number, operator: string) => {
+    const filters = [...state.filters];
+    filters[index].operator = operator;
+    setState({ ...state, filters });
+  };
+
+  const updateFilterValue = (index: number, value: string | string[] | null) => {
+    const filters = [...state.filters];
+    filters[index].value = value;
+    setState({ ...state, filters });
+  }
+
+  const addFilter = () => {
+    const filters = [...state.filters];
+    const newFilterDefinition = props.queryDefinitions[0];
+
+    newFilterDefinition && filters.push({
+      field: newFilterDefinition.id,
+      operator: getDefaultFilterOperator(newFilterDefinition.id).symbol,
+      value: getDefaultFilterValue(newFilterDefinition.id)
+    });
+
+    setState({ ...state, filters });
+  };
+
   return (
-    <div>
-      <div className="row col-4 mb-3">
-        <div className="col-4">
-          <span>Page: </span>
-          <div className="input-group">
-            <button type="button" className="btn btn-outline-secondary" onClick={() => setState({ ...state, page: state.page - 1 })}>Previous</button>
-            <input className="form-control" type="number" value={state.page + 1} onChange={(e) => setState({ ...state, page: parseInt(e.target.value) })} />
-            <button type="button" className="btn btn-outline-secondary" onClick={() => setState({ ...state, page: state.page + 1 })}>Next</button>
-          </div>
-        </div>
-        <div className="col-4">
-          <span>Page Size: </span>
-          <div className="input-group">
-            <select className="form-control" value={state.pageSize} onChange={(e) => setState({ ...state, pageSize: parseInt(e.target.value) })}>
-              <option value={PageSizeOptions.UNPAGED}>Unpaged</option>
-              <option value={PageSizeOptions.TEN}>10</option>
-              <option value={PageSizeOptions.TWENTY_FIVE}>25</option>
-              <option value={PageSizeOptions.FIFTY}>50</option>
-              <option value={PageSizeOptions.HUNDRED}>100</option>
-              <option value={PageSizeOptions.TWO_HUNDRED_FIFTY}>250</option>
-            </select>
-          </div>
-          </div>
-        <div className="col-4">
-          <span>Sort: </span>
-          <div className="input-group">
-            <select className="form-control" value={state.sort} onChange={(e) => setState({ ...state, sort: e.target.value })}>
-              <option value="">None</option>
+    <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3}>
+      <Grid item xs={6}>
+        <Box>
+          <FormControl variant="outlined" size='small' fullWidth>
+            <InputLabel htmlFor="page-selector">Page</InputLabel>
+            <OutlinedInput id="page-selector"
+              type="number"
+              value={state.page + 1}
+              label="Page"
+              disabled
+              startAdornment={
+                <InputAdornment position="start">
+                  <IconButton
+                    aria-label="previous page"
+                    disabled={state.page === 0}
+                    onClick={() => previousPage()}
+                    edge="start"
+                  >
+                    <ArrowBackIos />
+                  </IconButton>
+                </InputAdornment>
+              }
+
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="next page"
+                    onClick={() => nextPage()}
+                    edge="end"
+                  >
+                    <ArrowForwardIos />
+                  </IconButton>
+                </InputAdornment>
+              }
+
+              onChange={(e) => setPage(parseInt(e.target.value as string) - 1)}
+            />
+          </FormControl>
+        </Box>
+      </Grid>
+      <Grid item xs={6}>
+        <Box pl={2} pr={2}>
+          <FormControl variant="outlined" size='small' fullWidth>
+            <InputLabel htmlFor="page-size-selector">Page Size</InputLabel>
+            <Select
+              labelId="page-size-selector"
+              id="page-size-selector"
+              value={state.pageSize}
+              onChange={(e) => setState({ ...state, page: 0, pageSize: parseInt(e.target.value as string) })}
+              label="Page Size"
+            >
               {
-                props.queryDefinitions.filter(e => e.sortable).map(field => (
-                  <option key={field.id} value={field.id}>{field.name}</option>
+                Object.keys(PageSizeOptions).map(key => (
+                  <MenuItem key={key} value={PageSizeOptions[key].value}>{PageSizeOptions[key].label}</MenuItem>
                 ))
               }
-            </select>
-            {
-              state.sort && (
-                <select className="form-control" value={state.direction} onChange={(e) => setState({ ...state, direction: e.target.value as SortDirection })}>
-                  <option value={SortDirection.ASC}>Ascending</option>
-                  <option value={SortDirection.DESC}>Descending</option>
-                </select>
-              )
-            }
-          </div>
-        </div>
-      </div>
-      <div className="row col-4 mb-3">
-        <span>Filters: </span>
+            </Select>
+          </FormControl>
+        </Box>
+      </Grid>
+
+      <Grid item xs={6}>
+        <Box>
+          <SortPicker
+            sort={state.sort}
+            direction={state.direction}
+            columns={props.queryDefinitions.map(e => ({ id: e.id, name: e.name }))}
+            onChange={(sort, direction) => setState({ ...state, sort, direction })}
+          />
+        </Box>
+      </Grid>
+
+      <Grid item xs={6} />
+
+      <Grid item xs={6}>
+        <Box mb={2}>
+          <Typography variant="h6">Filters</Typography>
+        </Box>
         {
           state.filters.map((filter, index) => (
-            <div className="input-group mb-3" key={index}> 
-              <select className="form-control" value={filter.field} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, field: e.target.value } : f) })}>
+            <Box mb={2}>
+              <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3} key={index}>
+                <Grid item xs={3}>
+                  <FieldPicker
+                    fields={props.queryDefinitions.map(e => ({ id: e.id, name: e.name }))}
+                    onChange={(e) => updateFilterField(index, e)}
+                  />
+                </Grid>
                 {
-                  props.queryDefinitions.filter(e => e.filter).map(field => (
-                    <option key={field.id} value={field.id}>{field.name}</option>
-                  ))
+                  filter.field && (
+                    <Grid item xs={3}>
+                      <OperatorPicker
+                        value={filter.operator}
+                        operations={getColumnDefinitionOperators(filter.field)}
+                        onChange={(e) => updateFilterOperator(index, e.symbol)}
+                      />
+                    </Grid>
+                  )
                 }
-              </select>
-              <select className="form-control" value={filter.operator} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, operator: e.target.value } : f) })}>
                 {
-                  props.queryDefinitions.find(e => e.id === filter.field)?.type?.operations.map(operation => (
-                    <option key={operation.symbol} value={operation.symbol}>{operation.name}</option>
-                  ))
-                }
-              </select>
+                  filter.operator !== Operation.IS_NULL.symbol && filter.operator !== Operation.IS_EMPTY.symbol && (
 
-              {
-                filter.operator !== Operation.IS_NULL.symbol && filter.operator !== Operation.IS_EMPTY.symbol && (
-
-                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.STRING && (
-                    <input type="text" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
-                  )
-
-                  ||
-                  
-                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.NUMBER && (
-                    <input type="number" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
-                  )
-
-                  ||
-
-                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.DATE && (
-                    <input type="date" className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })} />
-                  )
-
-                  ||
-
-                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.BOOLEAN && (
-                    <select className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })}>
-                      <option value="true">True</option>
-                      <option value="false">False</option>
-                    </select>
-                  )
-
-                  || 
-
-                  props.queryDefinitions.find(e => e.id === filter.field)?.type.type == FieldType.SELECT && (
-                    <select className="form-control" value={filter.value} onChange={(e) => setState({ ...state, filters: state.filters.map((f, i) => i === index ? { ...f, value: e.target.value } : f) })}>
+                    <Grid item xs={5}>
                       {
-                        props.queryDefinitions.find(e => e.id === filter.field)?.options?.map(option => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))
+                        isStringColumn(filter.field) && (
+                          <StringFilter id="value-selector"
+                            label="Value"
+                            value={filter.value as string}
+                            onChange={(e) => updateFilterValue(index, e?.toString() ?? "")}
+                          />
+                        )
+
+                        ||
+
+                        isNumberColumn(filter.field) && (
+                          <NumberFilter id="value-selector"
+                            label="Value"
+                            value={filter.value as string}
+                            onChange={(e) => updateFilterValue(index, e?.toString() ?? "")}
+                          />
+                        )
+
+                        ||
+
+                        isDateColumn(filter.field) && (
+                          <DateFilter id="value-selector"
+                            label="Value"
+                            value={filter.value as string}
+                            onChange={(e) => updateFilterValue(index, e?.toString() ?? "")}
+                          />
+                        )
+
+                        ||
+
+                        isDateTimeColumn(filter.field) && (
+                          <DateTimeFilter id="value-selector"
+                            label="Value"
+                            value={filter.value as string}
+                            onChange={(e) => updateFilterValue(index, e?.toString() ?? "")}
+                          />
+                        )
+
+                        ||
+
+                        isBooleanColumn(filter.field) && (
+                          <BooleanFilter id="value-selector"
+                            label="Value"
+                            value={filter.value as string}
+                            onChange={(e) => updateFilterValue(index, e.toString())}
+                          />
+                        )
+
+                        ||
+
+                        isSelectColumn(filter.field) && (
+                          <MultiselectFilter id="value-selector"
+                            label="Value"
+                            value={filter.value as string[]}
+                            onChange={(e) => updateFilterValue(index, e)}
+                            options={getColumnDefinitionOptions(filter.field)}
+                          />
+                        )
                       }
-                    </select>
+                    </Grid>
                   )
-                )
-              }
-            
-              <button type="button" className="btn btn-outline-secondary" onClick={() => setState({ ...state, filters: state.filters.filter((f, i) => i !== index) })}>Remove</button>
-            </div>
+                }
+                <Grid item xs={1}>
+                  <IconButton
+                    aria-label="remove filter"
+                    onClick={() => setState({ ...state, filters: state.filters.filter((f, i) => i !== index) })}
+                    edge="end"
+                  >
+                    <RemoveCircle />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            </Box>
           ))
         }
-        <div>
-          <button className="btn btn-outline-secondary" type="button" onClick={() => setState({ ...state, filters: [...state.filters, { field: props.queryDefinitions[0].id, value: '', operator: Operation.EQUALS.symbol }] })}>Add Filter</button>
-        </div>
-      </div>
-      <div className="row col-4 mb-3">
-        <div className="col-6">
-          <button className="btn btn-outline-secondary w-100" type="button" onClick={() => props.onQueryChange(state)}>Apply</button>
-        </div>
-        <div className="col-6">
-          <button className="btn btn-outline-secondary w-100" type="button" onClick={() => setState({ page: 0, pageSize: 25, sort: '', direction: SortDirection.ASC, filters: [] })}>Reset</button>
-        </div>
-      </div>
-    </div>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          startIcon={<AddCircle />}
+          onClick={() => addFilter()}
+        >
+          Add Filter
+        </Button>
+      </Grid>
+      <Grid item xs={6} />
+      <Grid item xs={6}>
+        <Box mb={2}>
+          <Grid container direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={3}>
+            <Grid item xs={6}>
+              <Button fullWidth
+                variant="contained"
+                color="primary"
+                size="small"
+                startIcon={<Search />}
+                onClick={() => props.onQueryChange(state)}
+              >
+                Search
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button fullWidth
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<Clear />}
+                onClick={() => setState({ ...initialQuery })}
+              >
+                Clear
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Grid>
+    </Grid>
   );
 }
+
+

@@ -1,5 +1,5 @@
 export interface Filter {
-  field: string;
-  value: string;
-  operator: string;
+  field: string | null;
+  value: string | string[] | null;
+  operator: string | null;
 }
