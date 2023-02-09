@@ -8,17 +8,13 @@ import { SettingsMenu } from './menu/SettingsMenu';
 import { Logo } from './menu/Logo';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { Projects, Clients, Languages, Countries, Currencies, ClientTypes, Dashboard, Account, CreateClientType, EditClientType, CreateClient, EditClient, Tasks, Invites, AdditionalCosts } from './pages/Pages';
+import { Clients, Languages, Countries, Currencies, ClientTypes, Dashboard, Account, CreateClientType, EditClientType, CreateClient, EditClient } from './pages/Pages';
 
 function App() {
-  const title = "Translation Project Manager";
+  const title = "Client Management";
 
   const breadcrumb = [
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Projects", path: "/projects" },
-    { name: "Tasks", path: "/tasks" },
-    { name: "Invites", path: "/invites" },
-    { name: "Additional Costs", path: "/additional-costs" },
     { name: "Clients", path: "/clients" },
     { name: "Languages", path: "/languages" },
     { name: "Countries", path: "/countries" },
@@ -29,26 +25,6 @@ function App() {
 
   const menu = new MenuConfig(
     [
-      {
-        label: "Projects",
-        path: "/projects",
-        element: <Projects />
-      },
-      {
-        label: "Tasks",
-        path: "/tasks",
-        element: <Tasks />
-      },
-      {
-        label: "Invites",
-        path: "/invites",
-        element: <Invites /> ,
-      },
-      {
-        label: "Additional Costs",
-        path: "/additional-costs",
-        element: <AdditionalCosts />
-      },
       {
         label: "Clients",
         path: "/clients",
@@ -90,13 +66,9 @@ function App() {
   const routerConfig: RouteConfig[] = [
     { path: "/", element: <Navigate to="/dashboard" /> },
     { path: "/dashboard", element: <Dashboard /> },
-    { path: "/projects", element: <Projects /> },
     { path: "/clients", element: <Clients /> },
     { path: "/clients/create", element: <CreateClient /> },
     { path: "/clients/edit/:id", element: <EditClient />},
-    { path: "/tasks", element: <Tasks /> },
-    { path: "/invites", element: <Invites /> },
-    { path: "/additional-costs", element: <AdditionalCosts /> },
     { path: "/languages", element: <Languages /> },
     { path: "/countries", element: <Countries /> },
     { path: "/currencies", element: <Currencies /> },
@@ -172,9 +144,15 @@ function App() {
             <Container maxWidth={false}>
               <Toolbar>
                 <Typography variant="body1" color="inherit">
-                  © 2022 Translation Project Manager by&nbsp;
-                  <Link href="https://nuclear-prometheus.net/" color="inherit" underline="hover">
-                    nuclear-prometheus.net
+                  © 2022 Client Management by&nbsp;
+                  <Link href="mailto:zhukova.zahurska@gmail.com" color="inherit" underline="hover">
+                    zhukova.zahurska@gmail.com,&nbsp;
+                  </Link>
+                  <Link href="mailto:j.sapko123@gmail.com" color="inherit" underline="hover">
+                    j.sapko123@gmail.com,&nbsp;
+                  </Link>
+                  <Link href="mailto:carolineherondale22@gmail.com" color="inherit" underline="hover">
+                    carolineherondale22@gmail.com
                   </Link>
                 </Typography>
               </Toolbar>
