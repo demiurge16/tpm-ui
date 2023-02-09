@@ -164,7 +164,7 @@ export function QueryBuilder<Type>(props: QueryBuilderProps<Type>) {
           <SortPicker
             sort={state.sort}
             direction={state.direction}
-            columns={props.queryDefinitions.map(e => ({ id: e.id, name: e.name }))}
+            columns={props.queryDefinitions.filter(e => e.sortable).map(e => ({ id: e.id, name: e.name }))}
             onChange={(sort, direction) => setState({ ...state, sort, direction })}
           />
         </Box>
