@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
 import { environment } from '../../../Environment';
-import { Currency } from '../../../types/Currency';
+import { Currency } from './types/Currency';
 
 export const Currencies = () => {
 

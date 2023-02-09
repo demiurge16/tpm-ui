@@ -1,31 +1,33 @@
-import { Dashboard } from './dashboard/Dashboard';
-import { Projects } from './projects/Projects';
-import { Tasks } from './tasks/Tasks';
-import { Invites } from './invites/Invites';
-import { AdditionalCosts } from './additional-costs/AdditionalCosts';
-import { Clients } from './clients/Clients';
-import { Users } from './users/Users';
-import { Languages } from './dictionaries/common/Languages';
-import { Countries } from './dictionaries/common/Countries';
-import { Currencies } from './dictionaries/common/Currencies';
-import { ClientTypes } from './dictionaries/client/ClientTypes';
-import { Roles } from './roles/Roles';
-import { Claims } from './claims/Claims';
-import { Account } from './account/Account';
+import { Dashboard as DashboardPage } from './dashboard/Dashboard';
+import { Projects as ProjectsPage } from './projects/Projects';
+import { Tasks as TasksPage } from './tasks/Tasks';
+import { Invites as InvitesPage } from './invites/Invites';
+import { AdditionalCosts as AdditionalCostsPage } from './additional-costs/AdditionalCosts';
+import { Clients as ClientsPage } from './clients/Clients';
+import { Users as UsersPage } from './users/Users';
+import { Languages as LanguagesPage } from './dictionaries/common/Languages';
+import { Countries as CountriesPage } from './dictionaries/common/Countries';
+import { Currencies as CurrenciesPage } from './dictionaries/common/Currencies';
+import { ClientTypes as ClientTypesPage } from './dictionaries/client/ClientTypes';
+import { Roles as RolesPage } from './roles/Roles';
+import { Claims as ClaimsPage } from './claims/Claims';
+import { Account as AccountPage } from './account/Account';
+import { Create as CreateClientTypePage } from './dictionaries/client/Create';
+import { Edit as EditClientTypePage } from './dictionaries/client/Edit';
 
-export {
-  Dashboard,
-  Projects,
-  Tasks,
-  Invites,
-  AdditionalCosts,
-  Clients,
-  Users,
-  Languages,
-  Countries,
-  Currencies,
-  ClientTypes,
-  Roles,
-  Claims,
-  Account
-}
+export const Dashboard = DashboardPage;
+export const Projects = ProjectsPage;
+export const Tasks = TasksPage;
+export const Invites = InvitesPage;
+export const AdditionalCosts = AdditionalCostsPage;
+export const Clients = ClientsPage; 
+export const Users = UsersPage;
+export const Languages = LanguagesPage;
+export const Countries = CountriesPage;
+export const Currencies = CurrenciesPage;
+export const ClientTypes = ClientTypesPage;
+export const CreateClientType = CreateClientTypePage;
+export const EditClientType = EditClientTypePage;
+export const Roles = RolesPage;
+export const Claims = ClaimsPage;
+export const Account = AccountPage;

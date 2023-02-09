@@ -7,9 +7,9 @@ import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
 import { QueryableColumnDefinition } from '../../../components/grid/QueryableColumnDefinition';
 import { environment } from '../../../Environment';
-import { Language } from '../../../types/Language';
-import { LanguageScope } from '../../../types/LanguageScope';
-import { LanguageType } from '../../../types/LanguageType';
+import { Language } from './types/Language';
+import { LanguageScope } from './types/LanguageScope';
+import { LanguageType } from './types/LanguageType';
 
 export const Languages = () => {
 

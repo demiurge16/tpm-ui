@@ -1,12 +1,12 @@
-
 export interface MenuProps {
   elements: Array<MenuItemProps | MenuDropdownProps>;
 }
 
 export interface MenuItemProps {
   label: string;
-  route: string;
-  component: React.FunctionComponent;
+  path: string;
+  element: JSX.Element;
+  subroutes?: Array<MenuItemProps>;
   onClick?: () => void;
 }
 
@@ -23,7 +23,7 @@ export class MenuConfig implements MenuProps {
 
   flatten(): Array<MenuItemProps> {
     return this.elements.reduce((acc, item) => {
-      if ('route' in item) {
+      if ('path' in item) {
         acc.push(item);
       } else {
         Object.keys(item.groups).forEach((group) => {
@@ -34,3 +34,4 @@ export class MenuConfig implements MenuProps {
     }, [] as Array<MenuItemProps>);
   }
 }
+

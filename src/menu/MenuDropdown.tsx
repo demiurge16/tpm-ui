@@ -47,7 +47,7 @@ export const MenuDropdown = (props: MenuDropdownProps) => {
             const group = groups[key];
             return [
               group.map((item) => (
-                <MenuLink onClick={handleCloseMenu} label={item.label} route={item.route} component={item.component} />
+                <MenuLink onClick={handleCloseMenu} label={item.label} path={item.path} element={item.element} />
               )),
               index < Object.keys(groups).length - 1 && <MuiDivider />
             ];

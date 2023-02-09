@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
 import { environment } from '../../../Environment';
-import { Country } from '../../../types/Country';
+import { Country } from './types/Country';
 
 export const Countries = () => {
 

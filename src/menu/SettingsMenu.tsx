@@ -5,7 +5,7 @@ import {
   Menu as MuiMenu
 } from '@mui/material';
 import React from 'react';
-import * as Pages from '../pages/Pages';
+import { Account } from '../pages/Pages';
 import { MenuItem } from './MenuItem';
 import { MenuLink } from './MenuLink';
 
@@ -44,7 +44,7 @@ export const SettingsMenu = () => {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuLink onClick={handleCloseMenu} route="/account" label="Account" component={Pages.Account}/>
+        <MenuLink onClick={handleCloseMenu} path="/account" label="Account" element={<Account />}/>
         <MenuItem onClick={handleCloseMenu} label="Logout"/>
       </MuiMenu>
     </>
