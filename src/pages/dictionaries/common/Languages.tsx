@@ -112,7 +112,7 @@ export const Languages = () => {
 
   return (
     <Box>
-      <Typography variant="h4">Language</Typography>
+      <Typography variant="h4">Languages</Typography>
       <Box pb={2} />
       <Grid<Language>
         startPage={startPage}
