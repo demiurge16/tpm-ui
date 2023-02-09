@@ -26,7 +26,7 @@ export const MultiselectFilter = (props: MultiselectFilterProps) => {
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((value) => (
-              <Chip key={value} label={value} />
+              <Chip key={value} label={options.find(e => e.value == value)?.label} />
             ))}
           </Box>
         )}

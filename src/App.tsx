@@ -8,7 +8,7 @@ import { SettingsMenu } from './menu/SettingsMenu';
 import { Logo } from './menu/Logo';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { Projects, Clients, Languages, Countries, Currencies, ClientTypes, Dashboard, Account, CreateClientType, EditClientType } from './pages/Pages';
+import { Projects, Clients, Languages, Countries, Currencies, ClientTypes, Dashboard, Account, CreateClientType, EditClientType, CreateClient, EditClient, Tasks, Invites, AdditionalCosts } from './pages/Pages';
 
 function App() {
   const title = "Translation Project Manager";
@@ -33,6 +33,21 @@ function App() {
         label: "Projects",
         path: "/projects",
         element: <Projects />
+      },
+      {
+        label: "Tasks",
+        path: "/tasks",
+        element: <Tasks />
+      },
+      {
+        label: "Invites",
+        path: "/invites",
+        element: <Invites /> ,
+      },
+      {
+        label: "Additional Costs",
+        path: "/additional-costs",
+        element: <AdditionalCosts />
       },
       {
         label: "Clients",
@@ -77,6 +92,11 @@ function App() {
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/projects", element: <Projects /> },
     { path: "/clients", element: <Clients /> },
+    { path: "/clients/create", element: <CreateClient /> },
+    { path: "/clients/edit/:id", element: <EditClient />},
+    { path: "/tasks", element: <Tasks /> },
+    { path: "/invites", element: <Invites /> },
+    { path: "/additional-costs", element: <AdditionalCosts /> },
     { path: "/languages", element: <Languages /> },
     { path: "/countries", element: <Countries /> },
     { path: "/currencies", element: <Currencies /> },

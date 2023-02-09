@@ -1,0 +1,14 @@
+
+export interface ClientUpdateRequest {
+  name: string,
+  email: string,
+  phone: string,
+  address: string,
+  city: string,
+  state: string,
+  zip: string,
+  countryCode: string,
+  vat: string,
+  notes: string,
+  clientTypeId: string
+}
