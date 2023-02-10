@@ -146,13 +146,7 @@ function App() {
                 <Typography variant="body1" color="inherit">
                   © 2022 Client Management by&nbsp;
                   <Link href="mailto:zhukova.zahurska@gmail.com" color="inherit" underline="hover">
-                    zhukova.zahurska@gmail.com,&nbsp;
-                  </Link>
-                  <Link href="mailto:j.sapko123@gmail.com" color="inherit" underline="hover">
-                    j.sapko123@gmail.com,&nbsp;
-                  </Link>
-                  <Link href="mailto:carolineherondale22@gmail.com" color="inherit" underline="hover">
-                    carolineherondale22@gmail.com
+                    zhukova.zahurska@gmail.com
                   </Link>
                 </Typography>
               </Toolbar>
