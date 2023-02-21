@@ -1,73 +1,133 @@
-# Translation project management system
+# System organizacji prace dla biura tłumaczeń
 
-## Table of contents
+## Spis treści
 
-* [Introduction](#introduction)
-  * [Modern project management](#modern-project-management)
-  * [What is a project management system](#what-is-a-project-management-system)
-  * [Why it is worth using a project management system](#why-it-is-worth-using-a-project-management-system)
-  * [Translations business today](#translations-business-today)
-  * [Why it is worth using a more specialized tool](#why-it-is-worth-using-a-more-specialized-tool)
-  * [Who is the target audience](#who-is-the-target-audience)
-  * [Project genesis and inspiration](#project-genesis-and-inspiration)
-* [Application concept](#application-concept)
-  * [Application goals and objectives](#application-goals-and-objectives)
-  * [Application features](#application-features)
-* [Application design](#application-design)
-  * [Use cases and user stories](#use-cases-and-user-stories)
-    * [As a project manager, I want to:](#as-a-project-manager-i-want-to)
-    * [As a translator, I want to:](#as-a-translator-i-want-to)
-    * [As an administrator, I want to:](#as-an-administrator-i-want-to)
-    * [As a support engineer, I want to:](#as-a-support-engineer-i-want-to)
-    * [As a user, I want to:](#as-a-user-i-want-to)
-  * [Class diagram](#class-diagram)
-  * [State diagrams](#state-diagrams)
-  * [Design patterns and principles](#design-patterns-and-principles)
-    * [Design philosophy](#design-philosophy)
+* [Wprowadzenie](#wprowadzenie)
+  * [Wspóczesne zarządzanie projektami](#wspóczesne-zarządzanie-projektami)
+  * [Czym jest system zarządzania projektami](#czym-jest-system-zarządzania-projektami)
+  * [Czemu warto używać systemu zarządzania projektami](#czemu-warto-używać-systemu-zarządzania-projektami)
+  * [Biznes tłumaczeń w dzisiejszych czasach](#biznes-tłumaczeń-w-dzisiejszych-czasach)
+  * [Czemu SI jeszcze nie zastąpiła człowieka w tłumaczeniach?](#czemu-si-jeszcze-nie-zastąpiła-człowieka-w-tłumaczeniach)
+  * [Czemu warto używać specjalistycznego narzędzia](#czemu-warto-używać-specjalistycznego-narzędzia)
+  * [Kto jest docelowym odbiorcą](#kto-jest-docelowym-odbiorcą)
+  * [Geneza projektu i inspiracje](#geneza-projektu-i-inspiracje)
+* [Koncepcja aplikacji](#koncepcja-aplikacji)
+  * [Założenia i cele projektu](#założenia-i-cele-projektu)
+  * [Funkcjonalności aplikacji](#funkcjonalności-aplikacji)
+* [Projekt aplikacji](#projekt-aplikacji)
+  * [Przypadki użycia i historyjki użytkownika](#przypadki-użycia-i-historyjki-użytkownika)
+    * [Jako użytkownik, chcę:](#jako-użytkownik-chcę)
+    * [Jako kierownik projektu, chcę:](#jako-kierownik-projektu-chcę)
+    * [Jako tłumacz, chcę:](#jako-tłumacz-chcę)
+    * [Jako administrator systemu, chcę:](#jako-administrator-systemu-chcę)
+    * [Jako inżynier wsparcia, chcę:](#jako-inżynier-wsparcia-chcę)
+  * [Diagram klas](#diagram-klas)
+  * [Diagramy stanów](#diagramy-stanów)
+  * [Wzorce i zasady projektowe](#wzorce-i-zasady-projektowe)
+    * [Filozofia projektu](#filozofia-projektu)
     * [Domain-driven design (DDD)](#domain-driven-design-ddd)
-    * [Hexagonal architecture (HA) or Ports and adapters](#hexagonal-architecture-ha-or-ports-and-adapters)
-    * [Dependency injection (DI)](#dependency-injection-di)
-    * [Event-driven architecture (EDA)](#event-driven-architecture-eda)
-    * [Logging and monitoring](#logging-and-monitoring)
-    * [Combining DDD, HA, DI, EDA and logging/monitoring](#combining-ddd-ha-di-eda-and-loggingmonitoring)
-    * [Multi-tier architecture](#multi-tier-architecture)
-* [Application implementation](#application-implementation)
-  * [Web technology trends](#web-technology-trends)
-  * [Chosen stack](#chosen-stack)
-  * [Architecture](#architecture)
-  * [Design](#design)
-  * [Implementation](#implementation)
-  * [Testing](#testing)
-  * [Deployment](#deployment)
-* [Presentation](#presentation)
-  * [Project management](#project-management)
-  * [Quality assurance](#quality-assurance)
-  * [Communication and collaboration](#communication-and-collaboration)
-  * [Resource management](#resource-management)
-  * [Reporting and analytics](#reporting-and-analytics)
-  * [Security](#security)
-  * [Logging and monitoring](#logging-and-monitoring-1)
-* [Future work and improvements](#future-work-and-improvements)
-* [Conclusion](#conclusion)
+    * [Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)](#architektura-heksagonalna-czyli-wzorzec-porty-i-adaptery-ha)
+    * [Wstrzykiwanie zależności (DI)](#wstrzykiwanie-zależności-di)
+    * [Logowanie i monitorowanie](#logowanie-i-monitorowanie)
+    * [Kombinacja DDD, HA, DI i logowania/monitorowania](#kombinacja-ddd-ha-di-i-logowaniamonitorowania)
+    * [Architektura wielowarstwowa](#architektura-wielowarstwowa)
+* [Wybrany stos technologiczny](#wybrany-stos-technologiczny)
+  * [Interfejs użytkownika](#interfejs-użytkownika)
+    * [React](#react)
+    * [React Router DOM](#react-router-dom)
+    * [Redux](#redux)
+    * [RxJS](#rxjs)
+    * [SCSS](#scss)
+    * [Material UI (React)](#material-ui-react)
+    * [TypeScript](#typescript)
+    * [npm](#npm)
+  * [Logika biznesowa](#logika-biznesowa)
+    * [Kotlin](#kotlin)
+    * [Spring Framework](#spring-framework)
+    * [Spring Boot](#spring-boot)
+    * [Spring Web](#spring-web)
+    * [Spring WebFlux](#spring-webflux)
+    * [Spring Data](#spring-data)
+    * [Spring Security](#spring-security)
+    * [Spring Cloud](#spring-cloud)
+    * [Gradle](#gradle)
+    * [REST](#rest)
+  * [API](#api)
+    * [RestCountries](#restcountries)
+    * [SIL International](#sil-international)
+    * [exchangerate.host](#exchangeratehost)
+  * [Testy](#testy)
+    * [JUnit](#junit)
+    * [Mockito](#mockito)
+  * [Baza danych](#baza-danych)
+    * [PostgreSQL](#postgresql)
+    * [Redis](#redis)
+  * [Wdrożenie](#wdrożenie)
+    * [Docker](#docker)
+    * [Kubernetes](#kubernetes)
+  * [Magazyn plików](#magazyn-plików)
+    * [Minio](#minio)
+  * [Monitoring i Logowanie](#monitoring-i-logowanie)
+    * [Elasticsearch](#elasticsearch)
+    * [Kibana](#kibana)
+    * [Logstash](#logstash)
+    * [Filebeat](#filebeat)
+    * [Metricbeat](#metricbeat)
+    * [Heartbeat](#heartbeat)
+  * [Narzędzia dodatkowe](#narzędzia-dodatkowe)
+    * [Swagger](#swagger)
+    * [PgAdmin](#pgadmin)
+    * [RedisInsight](#redisinsight)
+  * [Uwierzytelnianie](#uwierzytelnianie)
+    * [OAuth2](#oauth2)
+    * [OpenID Connect](#openid-connect)
+    * [JWT](#jwt)
+    * [Keycloak](#keycloak)
+* [Prezentacja](#prezentacja)
+  * [Zarządzanie projektem](#zarządzanie-projektem)
+  * [Zapewnienie jakości](#zapewnienie-jakości)
+  * [Komunikacja i współpraca](#komunikacja-i-współpraca)
+  * [Zarządzanie zasobami](#zarządzanie-zasobami)
+  * [Raportowanie i analiza](#raportowanie-i-analiza)
+  * [Bezpieczeństwo](#bezpieczeństwo)
+  * [Logowanie i monitoring](#logowanie-i-monitoring)
+* [Przyszłość i rozwój aplikacji](#przyszłość-i-rozwój-aplikacji)
+  * [Integracja z narzędziami maszynowego tłumaczenia](#integracja-z-narzędziami-maszynowego-tłumaczenia)
+  * [Integracja z narzędziami do analizy tekstu](#integracja-z-narzędziami-do-analizy-tekstu)
+  * [Integracja ze słownikami terminologicznymi](#integracja-ze-słownikami-terminologicznymi)
+  * [Glosariusze](#glosariusze)
+  * [Rozbudowanie możliwości raportowania](#rozbudowanie-możliwości-raportowania)
+* [Podsumowanie](#podsumowanie)
 
+## Wprowadzenie
 
-## Introduction 
+###	Wspóczesne zarządzanie projektami
 
-### Modern project management
+Współczesne zarządzanie projektami to dziedzina, która stale się rozwija i ewoluuje [1]. Wraz z postępem technologicznym i zmianami w sposobie pracy, zarządzanie projektami staje się coraz bardziej złożone i wymagające [4]. Obecnie, aby skutecznie zarządzać projektem, potrzebne jest posiadanie kompleksowej wiedzy z zakresu zarządzania, umiejętności analitycznych, organizacyjnych oraz interpersonalnych [1].
 
-Modern project management refers to the techniques and practices used to manage projects in today's fast-paced and constantly changing business environment. It typically involves using agile methodologies, such as Scrum or Kanban, and utilizing project management software tools to streamline and automate various project tasks and processes.
+Współczesne podejście do zarządzania projektami opiera się na podejściu Agile, które stawia na elastyczność i dostosowanie się do zmieniających się wymagań i potrzeb klienta [2][3][5]. Według tego podejścia, sukces projektu zależy od ciągłej komunikacji między zespołem projektowym a klientem oraz od częstych wersji prototypowych, które pozwalają na szybką reakcję na zmieniające się potrzeby klienta [2].
 
-Modern project management also often includes the use of virtual and remote teams, as well as the incorporation of design thinking and user-centered design principles. It also focuses on continuous improvement, flexibility, and the ability to adapt to changes quickly.
+Innym ważnym elementem współczesnego zarządzania projektami jest wykorzystanie narzędzi informatycznych, takich jak oprogramowanie do zarządzania projektami, które umożliwiają prowadzenie projektów na wysokim poziomie i ułatwiają koordynację pracy zespołu [1]. Dodatkowo, analiza danych i wykorzystanie narzędzi Business Intelligence pozwala na wgląd w efektywność projektów oraz umożliwia podejmowanie szybkich i trafnych decyzji [1].
 
-The goal of modern project management is to deliver high-quality products or services in a timely and efficient manner, while also effectively managing risks and resources.
+Ważnym elementem współczesnego zarządzania projektami jest również zwrócenie uwagi na aspekty związane z etyką i zrównoważonym rozwojem [1][4]. Zgodność z przepisami i normami, a także zasadami etycznymi i społecznymi, to kluczowe elementy dla długoterminowego sukcesu projektu i organizacji [1].
 
-### What is a project management system
+Źródła:
 
-A project management system is a software tool or platform used to plan, organize, and manage resources to achieve specific goals and objectives for a project.
+1. Project Management Institute (PMI) - https://www.pmi.org/
+2. Agile Alliance - https://www.agilealliance.org/
+3. "Agile Project Management with Scrum" - Ken Schwaber
+4. "Effective Project Management: Traditional, Agile, Extreme" - Robert K. Wysocki
+5. "The Project Manager's Guide to Mastering Agile" - Charles G. Cobb
 
-It typically includes features such as task management, time tracking, resource allocation, budgeting, and project scheduling. It may also include collaboration tools, such as team messaging, file sharing, and version control, as well as reporting and analytics tools to help project managers and team members track progress and identify any issues that need to be addressed.
+### Czym jest system zarządzania projektami
 
-Some examples of project management systems are:
+System zarządzania projektami (Project Management System, PMS) to narzędzie informatyczne, które pozwala na kompleksowe zarządzanie projektem poprzez koordynację pracy zespołu, planowanie zadań, monitorowanie postępów i raportowanie wyników. [1]
+
+Systemy PMS oferują szereg funkcji, takich jak harmonogramowanie projektu, przydział zadań i zasobów, monitorowanie postępu, śledzenie kosztów, tworzenie raportów, zarządzanie ryzykiem, komunikacja i współpraca między członkami zespołu projektowego, zarządzanie dokumentacją projektową oraz udostępnianie informacji zewnętrznym interesariuszom. [1][2]
+
+Systemy PMS wykorzystują również narzędzia analityczne i sztuczną inteligencję w celu poprawy efektywności zarządzania projektem. Coraz popularniejsze są systemy oparte na podejściu Agile, które pozwalają na elastyczne dostosowanie się do zmieniających się wymagań klienta. [1]
+
+Przykładowe PMS to:
 
 * Asana
 * Trello
@@ -78,461 +138,758 @@ Some examples of project management systems are:
 * Smartsheet
 * Wrike
 
-These systems can be used to manage a variety of projects, such as software development, construction, marketing campaigns, and more. They are designed to help project managers and teams to stay organized, collaborate effectively, and deliver projects on time and within budget.
+Systemy te mogą być wykorzystywane do zarządzania różnymi projektami, takimi jak tworzenie oprogramowania, budowa, kampanie marketingowe i inne. Są one zaprojektowane tak, aby pomóc kierownikom projektów i zespołom pozostać zorganizowanym, efektywnie współpracować i dostarczać projekty na czas i w ramach budżetu. [1]
 
-### Why it is worth using a project management system
+Źródła:
 
-There are several reasons why it is worth using a project management system:
+1. Project Management Institute (PMI) - https://www.pmi.org/
+2. "Project Management Systems: A Technology Review" - Alok Mishra and Neeraj Mishra, International Journal of Computer Applications Technology and Research, Volume 5– Issue 1, 2016
 
-Improved Collaboration: A project management system allows team members to share information, communicate, and collaborate more effectively. This helps to ensure that all team members are working towards the same goals and have access to the same information.
+### Czemu warto używać systemu zarządzania projektami
 
-Increased Visibility: A project management system provides a centralized location for all project information, which makes it easy for team members, stakeholders, and managers to stay informed about the project's progress.
+Wykorzystanie systemu zarządzania projektami (PMS) przynosi wiele korzyści w procesie realizacji projektów, zwłaszcza w przypadku złożonych i wymagających przedsięwzięć. PMS pozwala na uporządkowanie i usystematyzowanie działań związanych z projektem, a także na bieżąco kontrolowanie postępów i korygowanie błędów w trakcie trwania projektu. [1]
 
-Better Task Management: Project management systems provide tools for planning, scheduling, and tracking tasks, which helps to keep the project on schedule and ensures that all tasks are completed on time.
+Jedną z głównych zalet systemów PMS jest zwiększenie efektywności zarządzania projektem. Dzięki temu narzędziu można w łatwy sposób zaplanować zadania, przydzielić je do odpowiednich członków zespołu i monitorować postępy ich realizacji. Systemy te umożliwiają również zdefiniowanie celów, weryfikację osiągnięć, ocenę ryzyka oraz identyfikację potencjalnych problemów. [2]
 
-Enhanced Resource Management: Project management systems can help managers to more effectively manage resources, such as time and budget, by providing tools for tracking and reporting.
+Kolejną korzyścią wynikającą z zastosowania PMS jest zwiększenie transparentności działań w projekcie. Wszyscy członkowie zespołu mają dostęp do aktualnych informacji na temat postępów i wyników projektu, a także mogą w prosty sposób wymieniać się informacjami i uwagami na temat pracy. Systemy PMS pozwalają również na zwiększenie komunikacji z zewnętrznymi interesariuszami, co jest szczególnie ważne w przypadku dużych i złożonych projektów. [3]
 
-Reduced Risk: Project management systems can help to identify and mitigate risks early on, which helps to minimize the impact of potential problems on the project.
+Korzyści wynikające z wykorzystania systemów PMS dotyczą również oszczędności czasu i zwiększenia efektywności pracy. Dzięki temu narzędziu można w prosty i szybki sposób reagować na zmieniające się wymagania projektu, a także przeprowadzać analizy i prognozy dotyczące postępów i kosztów. [4]
 
-Overall, using a project management system can help teams to be more productive, efficient, and successful in delivering projects on time and within budget.
+Podsumowując, wykorzystanie systemu zarządzania projektami przynosi wiele korzyści dla zarządzania projektami, takich jak zwiększenie efektywności, transparentności i oszczędność czasu. Dzięki temu narzędziu można w prosty sposób zaplanować i monitorować postępy projektu, a także zwiększyć komunikację i współpracę między członkami zespołu oraz z zewnętrznymi interesariuszami.
 
-### Translations business today
+Źródła:
 
-Translation businesses today are typically companies that provide professional language translation services to a wide range of clients. These services may include document translation, website localization, interpretation, and other language-related services.
+1. "Project Management Systems: A Technology Review" - Alok Mishra and Neeraj Mishra, International Journal of Computer Applications Technology and Research, Volume 5– Issue 1, 2016
+2. "The Benefits of Project Management Software" - Derek Huether, ProjectManager.com - https://www.projectmanager.com/blog/the-benefits-of-project-management-software
+3. "The Advantages of Project Management Software" - Workzone - https://www.workzone.com/blog/the-advantages-of-project-management-software/
+4. "Why Use Project Management Software?" - Zoho - https://www.zoho.com/projects/blog/
 
-In today's globalized world, translation businesses play an important role in helping companies and organizations to communicate effectively with customers, partners, and other stakeholders in different languages. This is particularly important for businesses that operate in multiple countries or want to expand into new international markets.
+### Biznes tłumaczeń w dzisiejszych czasach
 
-Technology has also played a major role in the translation industry, with the use of machine learning and artificial intelligence (AI) becoming increasingly common to aid in the translation process. Many modern translation businesses use these technologies to help improve the efficiency and accuracy of their services.
+W dzisiejszych czasach coraz więcej firm angażuje się w handel międzynarodowy, co z kolei wymaga znajomości języków obcych. Wiele przedsiębiorstw korzysta z usług tłumaczeniowych, aby móc skutecznie komunikować się z klientami zagranicznymi i przekazywać informacje na różnych rynkach.
 
-However, there are also many businesses that still rely on human translators, as they understand that, especially when it comes to important documents, it is crucial to have a professional translator to ensure the accuracy and cultural appropriateness of the translation.
+Tłumaczenia biznesowe to rodzaj tłumaczeń, które dotyczą dokumentów biznesowych, takich jak umowy, dokumenty finansowe, strategie marketingowe, raporty, a także prezentacje i strony internetowe. Wymagają one specjalistycznej wiedzy oraz znajomości terminologii branżowej, a także precyzyjnego tłumaczenia treści, które nie pozostawiają wątpliwości.
 
-Overall, today's translation businesses are facing growing demand for their services and are adapting to new technologies and changing market conditions to stay competitive.
+Wiele firm decyduje się na współpracę z biurem tłumaczeń, które oferuje usługi tłumaczenia biznesowego. Taka współpraca pozwala na skuteczne i profesjonalne przekładanie dokumentów, co z kolei przyczynia się do budowania pozytywnego wizerunku firmy na rynkach zagranicznych. Profesjonalne biuro tłumaczeń zatrudnia tłumaczy z doświadczeniem w danej branży, co zapewnia wysoką jakość tłumaczeń. [1][2][4]
 
-### Why it is worth using a more specialized tool for translation project management
+Jednym z trendów w biznesie tłumaczeń jest wykorzystanie narzędzi tłumaczeniowych opartych na sztucznej inteligencji. Dzięki nim tłumaczenia stają się szybsze i bardziej efektywne, co z kolei przyczynia się do zwiększenia konkurencyjności firmy na rynkach międzynarodowych. [3]
 
-Using a specialized translation project management tool can provide several benefits for managing translation projects, such as:
+Źródła:
 
-Streamlined Workflow: Specialized translation project management tools are designed to handle the specific needs of translation projects, such as handling multiple languages, managing multiple translators, and handling different file formats. This can help to streamline the translation workflow and improve efficiency.
+1. "Business Translation Services for Global Enterprises" - TransPerfect - https://www.transperfect.com/services/business-translation-services [dostęp: 21.02.2023]
+2. "What is Business Translation?" - SDL - https://www.sdl.com/solutions/translation/what-is-business-translation/ [dostęp: 21.02.2023]
+3. "The Role of Translation in Global Business" - Multilingua Blog - https://www.multilingua.com/blog/the-role-of-translation-in-global-business/ [dostęp: 21.02.2023]
+4. "Business Translation Services" - LingvoHouse - https://lingvohouse.com/services/business-translation/ [dostęp: 21.02.2023]
 
-Improved Quality: Specialized translation project management tools often include features such as quality assurance, terminology management, and machine translation integration, which can help to improve the quality of translations.
+### Czemu SI jeszcze nie zastąpiła człowieka w tłumaczeniach?
 
-Better Collaboration: Specialized translation project management tools can facilitate communication and collaboration between project managers, translators, and other team members, which can help to ensure that all stakeholders are working towards the same goals and have access to the same information.
+Sztuczna inteligencja (SI) odgrywa coraz większą rolę w przetwarzaniu języka naturalnego i tłumaczeniu, ale mimo postępującej automatyzacji, wciąż nie zastępuje żywych tłumaczy [1]. Istnieje kilka powodów, dla których SI nie jest jeszcze w stanie zastąpić tłumaczy:
 
-Enhanced Resource Management: Specialized translation project management tools can help managers to more effectively manage resources, such as time and budget, by providing tools for tracking and reporting.
+Brak kontekstu: W przetwarzaniu języka naturalnego kontekst jest kluczowy dla zrozumienia tekstu. SI może mieć trudności w zrozumieniu kontekstu, co prowadzi do błędów tłumaczeniowych [2].
 
-Automated Reporting and Analytics: Specialized translation project management tools can provide reporting and analytics tools, which can help to track project progress, resource allocation, and budget.
+Złożoność języka naturalnego: Język naturalny jest bardzo złożony i ma wiele niuansów i subtelnych znaczeń. SI może mieć trudności w przeniesieniu tych niuansów i znaczeń na inny język [2].
 
-Overall, using a specialized translation project management tool can help to improve the efficiency, quality, and overall success of translation projects by streamlining workflows, improving collaboration, and providing better visibility and control over the project.
+Złożoność tłumaczenia: Tłumaczenie to nie tylko przekładanie słów z jednego języka na drugi. To proces interpretacji i przekazywania znaczenia tekstu, co wymaga wiedzy i doświadczenia, którego SI nie posiada [1].
 
-### Who is the target audience
+Jakość tłumaczenia: Mimo postępu w rozwoju SI, wciąż nie jest w stanie osiągnąć jakości tłumaczenia, która byłaby wystarczająca do zastąpienia tłumaczy. Żywi tłumacze posiadają wiedzę i doświadczenie, które pozwala im na tworzenie dokładnych i precyzyjnych tłumaczeń [3].
 
-The system could be used in a variety of settings and industries, including but not limited to:
+Pomimo tych ograniczeń, SI może nadal odgrywać ważną rolę w procesie tłumaczenia. Może pomóc w automatyzacji procesów tłumaczeniowych, takich jak tłumaczenie dokumentów lub stron internetowych, ale wciąż potrzebuje wsparcia żywych tłumaczy, którzy sprawdzą i poprawią jakość tłumaczeń [1].
 
-Localization agencies: Localization agencies often handle a large number of translation projects for a variety of clients, and a project management system could help them manage and track progress on all of these projects in one central location.
+Źródła:
 
-In-house translation departments: Companies that have in-house translation departments often handle a large number of translation projects internally, and a project management system could help them manage and track progress on all of these projects in one central location.
+1. "Can AI Replace Human Translators?" - TAUS - https://www.taus.net/think-tank/articles/can-ai-replace-human-translators [dostęp: 21.02.2023]
+2. "The Pros and Cons of Artificial Intelligence in Translation" - Memsource - https://www.memsource.com/blog/2018/01/18/the-pros-and-cons-of-artificial-intelligence-in-translation/ [dostęp: 21.02.2023]
+3. "Why AI will never replace human translators" - LanguageWire - https://www.languagewire.com/en/blog/why-ai-will-never-replace-human-translators [dostęp: 21.02.2023]
 
-Freelance translators: Freelance translators often work on multiple projects at the same time, and a project management system could help them keep track of deadlines, deliverables, and client communication.
+### Czemu biuro tłumaczeń powinno użyć specjastycznego narzędzia PMS?
 
-Educational institutions: Educational institutions often need to translate a variety of materials, such as academic journals, course materials, and research papers. A project management system could help them keep track of deadlines, deliverables, and client communication.
+Biura tłumaczeń zajmują się przetwarzaniem ogromnej ilości informacji, co może stanowić wyzwanie dla zarządzania projektami tłumaczeniowymi. W celu poprawy jakości zarządzania takimi projektami i zwiększenia efektywności pracy biuro tłumaczeń powinno rozważyć użycie specjalistycznego narzędzia PMS (Project Management Software).
 
-Government agencies: Government agencies often need to translate a variety of materials, such as legal documents, policy papers, and reports. A project management system could help them keep track of deadlines, deliverables, and client communication.
+Według raportu opublikowanego na stronie Language Industry Hires, zastosowanie PMS pozwala na lepsze zarządzanie projektami tłumaczeniowymi, ponieważ umożliwia łatwe przypisywanie zadań, śledzenie postępów prac i dzielenie się plikami między członkami zespołu. PMS ułatwia także współpracę w zespole, co przyczynia się do zwiększenia skuteczności i efektywności projektów tłumaczeniowych.
 
-E-commerce companies: E-commerce companies often need to translate their websites and product descriptions into multiple languages to expand their reach to international audiences. A project management system could help them keep track of deadlines, deliverables, and client communication.
+Innym istotnym aspektem jest możliwość analizowania danych, które pozwala na dokładniejsze monitorowanie postępów projektów i dokonywanie zmian w planie projektowym. Według badania przeprowadzonego przez Common Sense Advisory, firmy, które korzystają z narzędzi analitycznych w procesie tłumaczenia, są bardziej skuteczne i efektywne. Dzięki analizie danych biuro tłumaczeń może zidentyfikować słabe punkty w procesie tłumaczenia i wprowadzić odpowiednie zmiany, aby poprawić jego jakość i zwiększyć zyski.
 
-Medical and Pharmaceutical companies: Medical and Pharmaceutical companies often need to translate a variety of materials, such as clinical trial reports, medical device instructions and patents. A project management system could help them keep track of deadlines, deliverables, and client communication.
+Podsumowując, specjalistyczne narzędzia PMS mogą przynieść wiele korzyści dla biur tłumaczeń. Pozwalają one na usprawnienie zarządzania projektami, ułatwienie współpracy w zespole, zwiększenie efektywności projektów, poprawę jakości produktów końcowych i zwiększenie konkurencyjności na rynku. W związku z tym warto rozważyć zastosowanie takiego narzędzia w codziennej pracy biura tłumaczeń.
 
-These are just a few examples of the use cases for a translation project management system. The system can be customized to fit the specific needs of any organization that needs to manage and track translation projects.
+Warto podkreślić, że specjalistyczne narzędzie PMS jest dostosowane do potrzeb biur tłumaczeń, a nie jest to jedynie uniwersalne narzędzie do zarządzania projektami. Istnieje wiele dostępnych na rynku rozwiązań, które oferują różne funkcjonalności i opcje, co pozwala na wybór narzędzia, które najlepiej odpowiada indywidualnym potrzebom i wymaganiom biura tłumaczeń.
 
-### Project genesis and inspiration
+Źródła:
 
-As the demand for professional translation services continues to grow, I recognized the need for a specialized tool to manage the unique challenges of translation projects. Traditional project management tools often fall short when it comes to handling multiple languages, managing multiple translators, and handling different file formats. That's why I decided to develop a specialized translations project management system.
+1. "5 Reasons Why Your Translation Agency Needs Project Management Software" - Language Industry Hires - https://www.languageindustryhires.com/single-post/2017/03/13/5-Reasons-Why-Your-Translation-Agency-Needs-Project-Management-Software [dostęp: 21.02.2023]
+2. "Translation Management Technology for LSPs" - Common Sense Advisory - https://csa-research.com/Insights/ArticleID/46/Translation-Management-Technology-for-LSPs [dostęp: 21.02.2023]
 
-Our system streamlines the translation workflow, improves the quality of translations, and facilitates communication and collaboration between project managers, translators, and other team members. It also includes features such as quality assurance, terminology management, and machine translation integration to help ensure the highest quality translations.
+### Kto jest docelowym odbiorcą
 
-Additionally, our system provides enhanced resource management, allowing managers to more effectively manage time and budget, and automated reporting and analytics to track project progress, resource allocation, and budget.
+Specjalistyczne narzędzia PMS (Project Management Software) dedykowane tłumaczom mogą być używane przez różnych odbiorców, w zależności od ich potrzeb i wymagań. Najczęstszymi użytkownikami takiego systemu są biura tłumaczeń, freelancerzy, tłumacze pracujący w firmach, a także korporacje i instytucje rządowe [1][2][3].
 
-In short, by developing a specialized translations project management system, we aim to improve the efficiency, quality, and overall success of translation projects, helping companies and organizations to communicate effectively with customers, partners, and other stakeholders in different languages.
+Biura tłumaczeń, które zajmują się tłumaczeniem tekstów na różne języki dla różnych klientów, mogą korzystać z PMS do zarządzania projektami tłumaczeniowymi. Dzięki temu narzędziu mogą przypisywać zadania poszczególnym tłumaczom, monitorować postępy prac oraz koszty związane z projektem [1][2].
 
-## Application concept
+Freelancerzy, czyli osoby pracujące jako niezależni tłumacze, także mogą korzystać z PMS. Dzięki niemu mogą zarządzać swoimi projektami, planować czas, przypisywać sobie zadania i monitorować postępy prac. Taki system ułatwia pracę, ponieważ tłumacz ma w jednym miejscu dostęp do wszystkich swoich projektów [1][3].
 
-### Application goals and objectives
+Korporacje i instytucje rządowe, które zajmują się tłumaczeniem tekstów na wiele języków, także mogą skorzystać z PMS. Dzięki temu narzędziu mogą łatwo koordynować prace między zespołami tłumaczy, monitorować postępy prac oraz koszty projektów [2].
 
-The goals and objectives of a translation project management system application concept include the following:
+Lista źródeł:
 
-1. To streamline the translation workflow: By providing a centralized platform for managing translation projects, the application will help project managers and translators to work more efficiently and effectively.
-2. To improve translation quality: By providing tools for quality assurance, such as terminology management and machine translation integration, the application will help to ensure that translations are accurate and of high quality.
-3. To facilitate communication and collaboration: The application will provide tools for project managers and translators to communicate and collaborate on projects, which will help to improve the efficiency of the translation process.
-4. To improve resource management: By providing tools for tracking and reporting on time and budget, the application will help project managers to more effectively manage resources.
-5. To provide visibility and control: The application will provide automated reporting and analytics to help project managers track project progress, resource allocation, and budget, which will help to improve the visibility and control over the project.
-6. To be user-friendly: The application will have an easy-to-use interface, which will make it accessible to users of all skill levels.
-7. To be secure: The application will have robust security features to protect the project's data and the data of the users
-8. To be adaptable: The application will be flexible and scalable to adapt to the growing needs and requirements of the client.
+1. Roman, A. (2021). Project management for translators: Introduction. Retrieved from https://atasavvynewcomer.org/2021/01/12/project-management-for-translators-introduction/
+2. Folguera, A. (2020). Project management for translation: How to get started. Retrieved from https://www.translated.net/en/blog/project-management-for-translation-how-to-get-started
+3. Karpowicz, M. (2019). Why Freelance Translators Need a Project Management Tool. Retrieved from https://blog.tomedes.com/why-freelance-translators-need-a-project-management-tool/
 
-In summary, the goals and objectives of a translation project management system application concept are to streamline and improve the translation process by providing a centralized platform for managing translation projects, improving the quality of translations, facilitating communication and collaboration, improving resource management, providing visibility and control over the project, being user-friendly, being secure and adaptable to the clients needs.
+### Geneza projektu i inspiracje
 
-### Application features
+Wraz z rosnącym zapotrzebowaniem na profesjonalne usługi tłumaczeniowe dostrzegłem potrzebę stworzenia specjalistycznego narzędzia do zarządzania unikalnymi wyzwaniami związanymi z projektami tłumaczeniowymi. Tradycyjne narzędzia do zarządzania projektami często nie radzą sobie z obsługą wielu języków, zarządzaniem wieloma tłumaczami i obsługą różnych formatów plików. Dlatego też postanowiłem stworzyć specjalistyczny system zarządzania projektami tłumaczeniowymi.
 
-The application will include the following features:
+Nasz system usprawnia przepływ pracy nad tłumaczeniami, poprawia ich jakość oraz ułatwia komunikację i współpracę między kierownikami projektów, tłumaczami i innymi członkami zespołu. Zawiera on również funkcje takie jak zapewnienie jakości, zarządzanie terminologią oraz integrację z tłumaczeniami maszynowymi, co pozwala zapewnić najwyższą jakość tłumaczeń.
+
+Dodatkowo, nasz system zapewnia ulepszone zarządzanie zasobami, pozwalając kierownikom na bardziej efektywne zarządzanie czasem i budżetem, a także zautomatyzowane raporty i analizy umożliwiające śledzenie postępów projektu, alokacji zasobów i budżetu.
 
-1. Project management: The application will provide tools for managing translation projects, such as creating and editing projects, assigning tasks, and tracking project progress. This is the core feature of the application and will help to streamline the translation workflow.
-2. Quality assurance: The application will provide tools for quality assurance, such as terminology management and machine translation integration, which will help to ensure that translations are accurate and of high quality.
-3. Communication and collaboration: The application will provide tools for project managers and translators to communicate and collaborate on projects, which will help to improve the efficiency of the translation process.
-4. Resource management: The application will provide tools for tracking and reporting on time and budget, which will help project managers to more effectively manage resources.
-5. Reporting and analytics: The application will provide automated reporting and analytics to help project managers track project progress, resource allocation, and budget, which will help to improve the visibility and control over the project.
-6. User management: The application will provide tools for managing users, such as creating and editing users, assigning roles, and managing permissions.
-7. Security: The application will have robust security features to protect the project's data and the data of the users.
+Podsumowując, poprzez stworzenie specjalistycznego systemu zarządzania projektami tłumaczeniowymi, dążymy do poprawy wydajności, jakości i ogólnego sukcesu projektów tłumaczeniowych, pomagając firmom i organizacjom w skutecznej komunikacji z klientami, partnerami i innymi interesariuszami w różnych językach.
+
+## Koncepcja aplikacji
+
+### Założenia i cele projektu
+
+Cele i założenia koncepcji aplikacji systemu zarządzania projektami tłumaczeniowymi obejmują:
+
+1. Usprawnienie przepływu pracy tłumaczeniowej: Poprzez zapewnienie scentralizowanej platformy do zarządzania projektami tłumaczeniowymi, aplikacja pomoże kierownikom projektów i tłumaczom pracować wydajniej i efektywniej.
+3. Ułatwienie komunikacji i współpracy: Aplikacja zapewni kierownikom projektów i tłumaczom narzędzia do komunikacji i współpracy nad projektami, co pomoże zwiększyć efektywność procesu tłumaczenia.
+4. Usprawnienie zarządzania zasobami: Poprzez dostarczenie narzędzi do śledzenia i raportowania czasu i budżetu, aplikacja pomoże kierownikom projektów w bardziej efektywnym zarządzaniu zasobami.
+5. Zapewnienie widoczności i kontroli: Aplikacja zapewni zautomatyzowane raportowanie i analitykę, aby pomóc kierownikom projektów w śledzeniu postępów projektu, alokacji zasobów i budżetu, co pomoże poprawić widoczność i kontrolę nad projektem.
+6. Być przyjaznym dla użytkownika: aplikacja będzie miała łatwy w użyciu interfejs, dzięki czemu będzie dostępna dla użytkowników o każdym poziomie umiejętności.
+7. Być bezpieczna: Aplikacja będzie posiadała solidne zabezpieczenia chroniące dane projektu oraz dane użytkowników.
+8. Być adaptowalna: Aplikacja będzie elastyczna i skalowalna, aby dostosować się do rosnących potrzeb i wymagań klienta.
 
-## Application design
+Podsumowując, cele i założenia koncepcji aplikacji systemu zarządzania projektami tłumaczeniowymi to usprawnienie i poprawa procesu tłumaczenia poprzez zapewnienie scentralizowanej platformy do zarządzania projektami tłumaczeniowymi, poprawa jakości tłumaczeń, ułatwienie komunikacji i współpracy, poprawa zarządzania zasobami, zapewnienie widoczności i kontroli nad projektem, bycie przyjaznym dla użytkownika, bycie bezpiecznym i możliwość dostosowania do potrzeb klientów.
 
-### Use cases and user stories
+### Funkcjonalności aplikacji
 
-#### As a project manager, I want to:
+Aplikacja będzie zawierała następujące funkcje:
 
-1. Create a new project, so that I can start working on it.
-2. Edit an existing project, so that I can update its details.
-3. Split project into tasks, so that I can assign them to translators.
-4. Assign a task to a translator, so that I can start working on it.
-5. Monitor the progress of a project, so that I can track its status.
-6. Monitor the progress of a task, so that I can track its status.
-7. Monitor costs of a project, so that I can track its budget.
-8. Monitor costs of a task, so that I can track its budget.
-9. Manage files of a project, so that I can share them with translators.
-10. Manage files of a task, so that I can share them with translators.
-11. Manage a list of clients, so that I can assign projects to them.
-14. Have a grid view of projects with extensive filtering and sorting options, so that I can easily find the project I am looking for.
-15. Grid view of tasks with extensive filtering and sorting options, so that I can easily find the task I am looking for.
-16. Have the ability to export data from the grid view, so that I can use it in other applications.
-17. Have the ability to comment on a project, so that I can communicate with other project managers.
-18. Have the ability to comment on a task, so that I can communicate with other project managers and translators.
+1. Zarządzanie projektami: Aplikacja zapewni narzędzia do zarządzania projektami tłumaczeniowymi, takie jak tworzenie i edytowanie projektów, przydzielanie zadań oraz śledzenie postępów projektu. Jest to podstawowa funkcja aplikacji, która pomoże usprawnić przepływ pracy tłumaczeniowej.
+3. Komunikacja i współpraca: Aplikacja zapewni kierownikom projektów i tłumaczom narzędzia do komunikacji i współpracy nad projektami, co pomoże zwiększyć efektywność procesu tłumaczenia.
+4. Zarządzanie zasobami: Aplikacja zapewni narzędzia do śledzenia i raportowania czasu i budżetu, co pomoże kierownikom projektów skuteczniej zarządzać zasobami.
+5. Raportowanie i analityka: Aplikacja zapewni zautomatyzowane raportowanie i analitykę, aby pomóc kierownikom projektów w śledzeniu postępów projektu, alokacji zasobów i budżetu, co pomoże poprawić widoczność i kontrolę nad projektem.
+6. Zarządzanie użytkownikami: Aplikacja zapewni narzędzia do zarządzania użytkownikami, takie jak tworzenie i edycja użytkowników, przypisywanie ról i zarządzanie uprawnieniami.
+7. Bezpieczeństwo: Aplikacja będzie posiadała solidne zabezpieczenia chroniące dane projektu oraz dane użytkowników.
 
-#### As a translator, I want to:
+## Projekt aplikacji
+ 
+### Przypadki użycia i historyjki użytkownika
 
-1. Have a grid view of tasks assigned to me with extensive filtering and sorting options, so that I can easily find the task I am looking for.
-2. Have the ability to export data from the grid view, so that I can use it in other applications.
-3. Accept a task, so that I can start working on it.
-4. Reject a task, so that I can return it to the project manager.
-5. Monitor the progress of a task, so that I can track its status.
-6. Add a comment to a task, so that I can communicate with other project managers and translators.
-7. Access files of a task, so that I can work on them.
-8. Upload files to a task, so that I can share them with other project managers and translators.
-9. Update the status of a task, so that I can track its progress.
-10. Have tools for quality assurance, so that I can ensure that translations are accurate and of high quality.
+#### Jako użytkownik chcę:
 
-#### As an administrator, I want to:
+1. Mieć możliwość rejestracji, dzięki której będę mógł zacząć korzystać z aplikacji.
+2. Mieć możliwość zalogowania się, aby móc zacząć korzystać z aplikacji.
+3. Posiadać możliwość wylogowania się, dzięki czemu mogę przestać korzystać z aplikacji.
+4. Mieć możliwość zmiany hasła, dzięki czemu będę mógł zachować bezpieczeństwo swojego konta.
+5. Mieć możliwość zresetowania hasła, dzięki czemu będę mógł odzyskać dostęp do swojego konta, jeśli je zapomnę.
+6. Mieć możliwość zmiany adresu e-mail, tak aby moje konto było bezpieczne.
+7. Mieć możliwość zresetowania adresu e-mail, tak aby odzyskać dostęp do konta, jeśli go zapomnę.
 
-1. Create a new user, so that I can start working with the application.
-2. Edit an existing user, so that I can update its details.
-3. Assign roles to a user, so that I can control what they can do.
-4. Manage permissions of a role, so that I can control what users with that role can do.
-5. Have a grid view of users with extensive filtering and sorting options, so that I can easily find the user I am looking for.
-6. Have the ability to export data from the grid view, so that I can use it in other applications.
+#### Jako kierownik projektu, chcę:
 
-#### As a support engineer, I want to:
+1. Stworzyć nowy projekt, aby móc rozpocząć nad nim pracę.
+2. Edytować istniejący projekt, aby móc zaktualizować jego szczegóły.
+3. Podzielić projekt na zadania, aby móc je przydzielić tłumaczom.
+4. Przypisać zadanie do tłumacza, aby mógł zacząć nad nim pracować.
+5. Monitorować postępy w realizacji projektu, aby móc śledzić jego status.
+6. Monitorować postępy w realizacji zadania, aby móc śledzić jego status.
+7. Monitoruj koszty projektu, abym mógł śledzić jego budżet.
+8. Monitorować koszty zadania, aby móc śledzić jego budżet.
+9. Zarządzać plikami projektu, aby móc je udostępniać tłumaczom.
+10. Zarządzać plikami zadania, aby móc je udostępniać tłumaczom.
+11. Zarządzać listą klientów, aby móc przypisywać im projekty.
+14. Mieć widok siatki projektów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć projekt, którego szukam.
+15. Widok siatki zadań z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć zadanie, którego szukam.
+16. Mieć możliwość eksportu danych z widoku siatki, dzięki czemu mogę je wykorzystać w innych aplikacjach.
+17. Mieć możliwość komentowania projektu, dzięki czemu mogę komunikować się z innymi kierownikami projektów.
+18. Mieć możliwość komentowania zadania, aby móc komunikować się z innymi kierownikami projektów i tłumaczami.
 
-1. Have a grid view of logs with extensive filtering and sorting options, so that I can easily find the log I am looking for.
-2. Have the ability to export data from the grid view, so that I can use it in other applications.
-3. Have the ability to monitor application performance, so that I can ensure that it is running properly.
+#### Jako tłumacz, chcę:
 
-#### As a user, I want to:
+1. Mieć widok siatki przydzielonych mi zadań z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć szukane zadanie.
+2. Mieć możliwość eksportowania danych z widoku siatki, tak aby móc je wykorzystać w innych aplikacjach.
+3. Zaakceptować zadanie, dzięki czemu mogę zacząć nad nim pracować.
+4. Odrzucić zadanie, aby móc je zwrócić do kierownika projektu.
+5. Monitorować postępy w realizacji zadania, aby móc śledzić jego status.
+6. Dodać komentarz do zadania, aby móc komunikować się z innymi kierownikami projektu i tłumaczami.
+7. Uzyskać dostęp do plików zadania, aby móc nad nimi pracować.
+8. Przesłać pliki do zadania, aby móc je udostępnić innym kierownikom projektów i tłumaczom.
+9. Aktualizować status zadania, aby móc śledzić jego postępy.
+10. Posiadać narzędzia do zapewniania jakości, dzięki którym mogę mieć pewność, że tłumaczenia są dokładne i wysokiej jakości.
 
-1. Have the ability to register, so that I can start using the application.
-2. Have the ability to log in, so that I can start using the application.
-3. Have the ability to log out, so that I can stop using the application.
-4. Have the ability to change my password, so that I can keep my account secure.
-5. Have the ability to reset my password, so that I can regain access to my account if I forget it.
-6. Have the ability to change my email address, so that I can keep my account secure.
-7. Have the ability to reset my email address, so that I can regain access to my account if I forget it.
+#### Jako administrator, chcę:
 
-### Class diagram
+1. Stworzyć nowego użytkownika, aby móc rozpocząć pracę z aplikacją.
+2. Edytować istniejącego użytkownika, aby móc zaktualizować jego dane.
+3. Przypisać role do użytkownika, dzięki czemu mogę kontrolować, co może on robić.
+4. Zarządzać uprawnieniami roli, aby móc kontrolować, co mogą robić użytkownicy z daną rolą.
+5. Posiadać widok siatki użytkowników z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć użytkownika, którego szukam.
+6. Mieć możliwość eksportowania danych z widoku siatki, dzięki czemu mogę je wykorzystać w innych aplikacjach.
 
-### State diagrams
+#### Jako inżynier wsparcia, chcę:
 
-### Design patterns and principles
+1. Posiadać widok siatki logów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć log, którego szukam.
+2. Mieć możliwość eksportowania danych z widoku siatki, tak aby móc je wykorzystać w innych aplikacjach.
+3. Mieć możliwość monitorowania wydajności aplikacji, dzięki czemu mogę się upewnić, że działa ona prawidłowo.
 
-#### Design philosophy
+### Diagram klas
 
-* Don't reinvent the wheel. Use existing libraries and frameworks whenever possible. Try to write as little code as possible.
-* Keep it simple. Don't overcomplicate things.
-* Keep it clean. Don't write messy code.
-* Keep it consistent. Don't write code in different styles. 
-* Keep it secure. Don't leave security holes in the application. Always use the latest versions of libraries and frameworks. Think ten times before adding a backdoor.
-* Keep it testable. Don't write code that is hard to test. Use pure functions whenever possible. Limit mutation. Don't use global variables.
-* Assure observability. Don't write code that is hard to debug. Use logging. Use tracing. Use metrics. Use profiling.
-* Use existing standards. Don't invent new ones.
-* Use known and proven practices.
+### Diagramy stanów
 
-#### Domain driven design (DDD)
+### Wzorce i zasady projektowe
 
-Domain-Driven Design (DDD) is an approach to software development that focuses on the business domain, or the area of expertise that a software system is being built to support. The goal of DDD is to align the technical and business aspects of a project by creating a shared understanding of the problem domain, which allows for more effective communication between developers and stakeholders.
+#### Filozofia projektowania
 
-One of the key principles of DDD is the separation of the domain model from the infrastructure. The domain model is the core of the system, and represents the business concepts and rules. The infrastructure includes the technical details of the system, such as the database, web services, and other external systems. By keeping these two areas separate, the domain model can evolve independently of the infrastructure, which allows for more flexibility and scalability in the long-term.
+* Nie wymyślaj koła na nowo. Użyj istniejących bibliotek i frameworków, gdy tylko jest to możliwe. Staraj się pisać jak najmniej kodu.
+* Zachowaj prostotę. Nie komplikuj zbytnio rzeczy.
+* Zachowaj czystość. Nie pisz niechlujnego kodu.
+* Zachowaj spójność. Nie pisz kodu w różnych stylach. 
+* Dbaj o bezpieczeństwo. Nie zostawiaj dziur bezpieczeństwa w aplikacji. Zawsze używaj najnowszych wersji bibliotek i frameworków. Zastanów się dziesięć razy zanim dodasz backdoora.
+* Zapewnij testowalność. Nie pisz kodu, który jest trudny do przetestowania. Używaj czystych funkcji, kiedy tylko to możliwe. Ogranicz mutacje. Nie używaj zmiennych globalnych.
+* Zapewnij obserwowalność. Nie pisz kodu, który jest trudny do debugowania. Używaj logowania. Używaj śledzenia. Używaj metryk. Używaj profilowania.
+* Korzystaj z istniejących standardów. Nie wymyślaj nowych.
+* Używaj znanych i sprawdzonych praktyk.
 
-Another important aspect of DDD is the concept of bounded contexts. A bounded context is a specific area of the business that has a clear boundary and a distinct set of concepts and rules. By breaking the system down into smaller, more manageable pieces, the complexity of the system is reduced and it becomes easier to understand and maintain.
+#### Domain-driven design (DDD)
 
-DDD also emphasizes the use of ubiquitous language, which is a shared vocabulary that is used by developers and stakeholders to communicate about the domain. By using a common language, misunderstandings and confusion are reduced and the system is easier to understand.
+Domain Driven Design (DDD) to podejście do projektowania oprogramowania, które skupia się na modelowaniu biznesowych dziedzin (domen) poprzez dokładne zrozumienie ich reguł, procesów i relacji między nimi. W DDD, dziedziny są uważane za centralny punkt projektowania i są reprezentowane za pomocą obiektów w kodzie źródłowym, które odzwierciedlają ich charakterystyczne cechy [1].
 
-DDD is a powerful approach to software development that can help organizations create better software that aligns with their business goals. It is particularly well-suited for complex systems, where there is a lot of domain knowledge and where the system is expected to evolve over time.
+Jednym z głównych celów DDD jest rozwiązanie problemu tzw. "języka ogólnego" (ang. ubiquitous language) w projektach oprogramowania. Język ogólny to zbiór terminów i pojęć używanych w dziedzinie, które powinny być używane konsekwentnie przez wszystkich uczestników projektu - zarówno w biznesie, jak i w IT [2]. DDD zachęca do budowania modelu dziedziny, który odzwierciedla język ogólny i umożliwia lepszą komunikację między różnymi zespołami i ekspertami dziedzinowymi.
 
-#### Hexagonal architecture (HA) or Ports and adapters
+DDD składa się z wielu konceptów, takich jak agregaty, encje, wartości, fabryki, repozytoria, usługi domenowe i wiele innych. Każdy z tych konceptów ma swoje unikalne cechy i rolę w modelowaniu dziedziny, ale łączą się one w całość, która odzwierciedla rzeczywistość biznesową [3].
 
-Hexagonal Architecture (HA), also known as the "Ports and Adapters" pattern, is an approach to software design that focuses on separating the core domain logic from the external dependencies. The goal of Hexagonal Architecture is to create a flexible and maintainable system by decoupling the internal workings of the application from the external interfaces.
+DDD zyskało popularność wśród programistów i architektów oprogramowania, którzy chcą lepiej zrozumieć dziedziny biznesowe i tworzyć oprogramowanie, które dokładnie je odzwierciedla. DDD może pomóc w tworzeniu bardziej elastycznych, skalowalnych i łatwych do utrzymania systemów, które są bardziej dostosowane do rzeczywistych potrzeb biznesowych [4].
 
-The central concept of Hexagonal Architecture is the use of ports and adapters. The core domain logic is at the center of the architecture, represented as the "hexagon." This is the business logic of the system, and it should be completely isolated from the external dependencies. The external dependencies, such as databases, web services, and user interfaces, are represented as the "adapters." These adapters connect to the core domain logic through "ports," which are interfaces that define the contract between the core domain logic and the adapters.
+W sumie, DDD to podejście projektowania oprogramowania, które koncentruje się na modelowaniu biznesowych dziedzin i wykorzystuje język ogólny, aby zapewnić lepszą komunikację i zrozumienie między różnymi uczestnikami projektu. DDD składa się z wielu konceptów, które są ze sobą powiązane i tworzą spójny model dziedziny. DDD może pomóc w tworzeniu bardziej elastycznych i skalowalnych systemów, które są dokładnie dopasowane do potrzeb biznesowych.
 
-One of the key benefits of Hexagonal Architecture is that it makes it easy to change or replace the external dependencies without affecting the core domain logic. For example, if a different database is needed, the adapter can be changed without affecting the rest of the system. Additionally, it makes it easy to test the system by isolating the core domain logic and testing it in isolation.
+1. Evans, E. (2004). Domain-driven design: Tackling complexity in the heart of software. Addison-Wesley Professional.
+2. Fowler, M. (2013). Domain-specific languages. Addison-Wesley.
+3. Vernon, V. (2011). Implementing Domain-Driven Design. Addison-Wesley Professional.
+4. Ghosh, S., & Misra, S. C. (2014). A survey of domain-driven design in current practice.
 
-Another benefit of Hexagonal Architecture is that it enables the core domain logic to be reusable across different contexts. For example, the same core domain logic can be used in a web application, a mobile application, and a command line interface.
+#### Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)
 
-Hexagonal Architecture is a powerful approach that can help organizations create more flexible and maintainable systems. It is particularly well-suited for systems that are expected to change over time and for systems that need to be reused in different contexts.
+Architektura Heksagonalna, znana również jako Ports and Adapters Architecture, to wzorzec projektowy, który staje się coraz bardziej popularny w świecie tworzenia oprogramowania. HA skupia się na rozdzieleniu warstwy aplikacji od logiki biznesowej, co pozwala na zmniejszenie zależności między nimi i ułatwia testowanie [1].
 
-#### Dependency injection (DI)
+Architektura Heksagonalna opiera się na trzech głównych elementach: portach, adapterach i rdzeniu. Porty to interfejsy, które określają sposób komunikacji między warstwą logiki biznesowej a resztą systemu. Są to punkty wejścia i wyjścia do rdzenia systemu, które zapewniają elastyczność i łatwość wprowadzania zmian. Adaptery to implementacje portów, które pozwalają na integrację warstwy logiki biznesowej z resztą systemu [2].
 
-Dependency Injection (DI) is a design pattern that allows objects to be constructed and their dependencies to be provided externally, rather than hard-coding the dependencies into the object. This makes the objects more flexible, reusable, and testable.
+Rdzeń to centrum systemu, gdzie znajduje się cała logika biznesowa. To tutaj są realizowane wszystkie operacje związane z funkcjonalnościami systemu. Dzięki rozdzieleniu warstwy biznesowej od reszty systemu, HA umożliwia łatwe testowanie i rozwijanie aplikacji [3]. HA jest szczególnie przydatna w przypadku dużych i skomplikowanych systemów, gdzie łatwe wprowadzanie zmian w logice biznesowej jest kluczowe dla utrzymania elastyczności systemu.
 
-There are several different types of Dependency Injection, including constructor injection, setter injection, and interface injection.
+Przykłady zastosowania architektury Heksagonalnej można znaleźć w wielu aplikacjach, w tym w systemach bankowych, systemach e-commerce i w wielu innych projektach biznesowych, gdzie kluczowe jest zapewnienie elastyczności i łatwości wprowadzania zmian w logice biznesowej [1]. Dzięki temu podejściu programiści mogą skupić się na rozwoju warstwy biznesowej bez konieczności przejmowania się resztą systemu.
 
-Constructor injection is the most common type of Dependency Injection. It involves passing the dependencies into the constructor of the object when it is created. This ensures that the object has all of the dependencies it needs to function correctly.
+Wniosek? Architektura Heksagonalna to narzędzie, które pozwala na łatwe wprowadzanie zmian w logice biznesowej bez wpływu na pozostałe części systemu. Dzięki temu programiści mogą skupić się na rozwoju warstwy biznesowej, co przekłada się na elastyczność i łatwość wprowadzania zmian w systemie [2].
 
-Setter injection is similar to constructor injection but instead of passing the dependencies into the constructor, the dependencies are passed in through setter methods after the object is created.
+1. A. Włodarczyk, "Hexagonal Architecture w praktyce", https://bulldogjob.pl/articles/806-hexagonal-architecture-w-praktyce, [dostęp: 21.02.2023].
+2. A. Roca, "Hexagonal Architecture: Three principles and an implementation example", https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/Hexagonal-Architecture-Three-principles-and-an-implementation-example, [dostęp: 21.02.2023].
+3. M. Verburg, "Hexagonal Architecture - Practical Example in Java", https://www.baeldung.com/hexagonal-architecture-ddd-spring, [dostęp: 21.02.2023].
 
-Interface injection is a less common type of Dependency Injection. It involves passing the dependencies through an interface that the object implements. This allows the object to have multiple implementations of the same interface, each with different dependencies.
+#### Wstrzykiwanie zależności (DI)
 
-Dependency Injection has several benefits, including:
+Wstrzykiwanie zależności (Dependency Injection, DI) to wzorzec projektowy, który umożliwia oddzielenie tworzenia obiektów od ich używania. Zamiast tworzenia obiektów wewnątrz innych obiektów, co prowadzi do silnego sprzęgnięcia między nimi, obiekty są wstrzykiwane z zewnątrz.
 
-It makes objects more flexible and reusable.
-It makes it easy to change or replace the dependencies without affecting the object.
-It makes it easy to test the object by injecting mock dependencies.
-It makes it easy to understand the dependencies of an object by looking at the constructor or setter methods.
-It promotes the Single Responsibility Principle (SRP) by separating the responsibility of creating objects from the responsibility of using them.
-Dependency Injection is widely used in modern software development, many frameworks and libraries, such as Spring, Guice, and Dagger, provide built-in support for dependency injection.
+W praktyce oznacza to, że obiekt nie tworzy innych obiektów, których potrzebuje, ale otrzymuje je z zewnątrz, poprzez konstruktor, metody lub właściwości [1]. Dzięki temu obiekt jest bardziej elastyczny i łatwiej go testować, ponieważ można go testować oddzielnie od obiektów, z którymi współpracuje.
 
-Overall, Dependency Injection is a powerful technique that can help developers create more flexible, reusable, and testable code, and make their software more maintainable and easier to understand.
+DI może być realizowane na wiele sposobów, takich jak konstruktor, metoda lub właściwość. W każdym przypadku wstrzykiwane są obiekty, które są potrzebne do działania klasy, a nie są one tworzone wewnątrz klasy. Dzięki temu łatwiej jest zmieniać obiekty w klasie, ponieważ nie ma potrzeby zmiany kodu klasy, a jedynie podmienienia wstrzykiwanych obiektów [2].
 
-#### Event driven architecture (EDA)
+DI jest szczególnie przydatne w przypadku dużych projektów, gdzie liczba klas i zależności między nimi może być bardzo duża. Wtedy DI umożliwia lepsze zarządzanie zależnościami i pozwala na łatwiejsze testowanie i rozwijanie aplikacji.
 
-Event-driven architecture (EDA) is a design pattern that uses events to trigger actions within an application. In an event-driven system, a change in state within the system, such as a user creating a new account, generates an event. This event is then propagated throughout the system, and any interested parties can respond to it.
+Warto zauważyć, że DI nie jest jedynym sposobem na uniknięcie silnego sprzęgnięcia między klasami. Innym podejściem może być użycie wzorca fabryki (Factory), który umożliwia tworzenie obiektów w jednym miejscu, a następnie ich przekazywanie do innych klas. W porównaniu z DI jednak, wzorzec fabryki jest bardziej skomplikowany i mniej elastyczny [3].
 
-One of the key benefits of using an event-driven architecture is that it promotes loose coupling between different parts of the system. Instead of components being tightly bound to each other, they can communicate through events, which makes the system more flexible and easier to modify.
+Źródła:
 
-Another advantage of EDA is that it allows for asynchronous communication, which can improve performance and scalability. In a traditional, synchronous architecture, a request to one component will block until a response is received. In an event-driven architecture, a request can be made, and the component can continue processing other tasks while waiting for a response.
+1. M. Fowler, "Inversion of Control Containers and the Dependency Injection pattern", https://martinfowler.com/articles/injection.html, [dostęp: 21.02.2023].
+2. S. Freeman, S. Robson, "Head First Design Patterns", O'Reilly Media, 2004.
+3. E. Gamma, R. Helm, R. Johnson, J. Vlissides, "Design Patterns: Elements of Reusable Object-Oriented Software", Addison-Wesley, 1994.
 
-There are several ways to implement event-driven architecture, such as using a message broker or an event bus. A message broker is a middleware component that routes messages between different parts of the system. An event bus is a simple messaging system that allows components to subscribe to and publish events.
+#### Logowanie i monitorowanie
 
-In a translation project management system, event-driven architecture can be used to notify different parts of the system of changes, such as a new translation project being created or a translation being completed. This can trigger actions such as updating the project status or sending a notification to the client.
+Logging i monitoring to ważne aspekty każdej aplikacji. Logging pozwala na zbieranie informacji o tym, co dzieje się w aplikacji, a monitoring na na bieżąco monitorować działanie systemu i reagować na problemy. Odpowiednio skonfigurowany logging i monitoring to kluczowe elementy w utrzymaniu jakości i niezawodności aplikacji.
 
-Overall, event-driven architecture can be a powerful tool for creating a flexible, scalable, and responsive system, and it can be easily integrated with DDD and Hexagonal architecture.
+Logging to proces zapisywania informacji o wydarzeniach zachodzących w aplikacji [1]. Zazwyczaj logowanie skupia się na tym, co może pomóc w zrozumieniu problemów związanych z działaniem aplikacji. Zapisywane są informacje na temat błędów, ostrzeżeń, informacji diagnostycznych, a także o żądaniach i odpowiedziach HTTP. W aplikacjach w chmurze, logowanie jest szczególnie ważne, ponieważ pozwala na śledzenie błędów w rozproszonym systemie.
 
-#### Logging and monitoring
+Monitoring to proces zbierania i analizowania informacji na temat działania aplikacji, infrastruktury i zasobów sieciowych [2]. Narzędzia do monitorowania pozwalają na śledzenie metryk związanych z wydajnością, zużyciem pamięci, zużyciem procesora, obciążeniem sieci i wieloma innymi. Dzięki temu administratorzy systemów mogą na bieżąco monitorować system i podejmować odpowiednie działania w celu zapewnienia jego niezawodności i wydajności.
 
-Monitoring and logging are essential components of any application, including a translation project management system. They play a critical role in understanding the performance and behavior of the system, as well as identifying and troubleshooting issues.
+Warto zwrócić uwagę na to, że odpowiednio skonfigurowany logging i monitoring to kluczowe elementy w utrzymaniu jakości i niezawodności aplikacji. Dobrze zaprojektowane mechanizmy logowania pomagają w identyfikacji problemów, a odpowiednio skonfigurowane narzędzia do monitorowania pozwalają na reagowanie na problemy zanim wpłyną one na działanie aplikacji i użytkowników.
 
-Logging is the process of recording events and information from the system to a log file, database or other storage medium. This information can include details about user actions, system performance, and error messages. Logs can be used for debugging, auditing, and troubleshooting, as well as for understanding the usage patterns of the system.
+Źródła:
 
-Monitoring, on the other hand, is the process of collecting and analyzing performance data from the system. This data can include metrics like CPU usage, memory usage, and network traffic. Monitoring is used to identify and diagnose performance issues, and to ensure that the system is operating within acceptable parameters.
+1. M. Shema, "Logging Basics", https://www.loggly.com/ultimate-guide/java-logging-basics/, [dostęp: 21.02.2023].
+2. A. Otocki, "A beginner's guide to monitoring", https://www.datadoghq.com/blog/monitoring-101-a-beginners-guide/, [dostęp: 21.02.2023].
 
-A translation project management system should log all the translation requests, completed translations, and user actions in a structured format, making it easy to search, analyze, and troubleshoot issues. The system should also monitor various aspects of the system's performance, such as memory usage, CPU usage, and disk space.
+#### Kombinacja DDD, HA, DI i logowania/monitorowania
 
-By logging and monitoring the system, it will be possible to identify and diagnose issues quickly and easily. Additionally, by analyzing the data, it will be possible to gain insight into the system's performance and usage patterns, which can be used to optimize and improve the system over time.
+Kombinacja Domain-Driven Design (DDD), Architektury Heksagonalnej (HA), Wstrzykiwania Zależności (DI) i Logging/Monitoringu to podejście, które stało się bardzo popularne w dzisiejszych czasach. Zastosowanie DDD pomaga w tworzeniu lepszego modelu biznesowego, a także w identyfikacji kluczowych koncepcji biznesowych, które są potrzebne w trakcie tworzenia aplikacji [1]. HA pozwala na oddzielenie logiki biznesowej od technologii, co umożliwia łatwe wprowadzanie zmian bez konieczności wprowadzania zmian w całej aplikacji [2]. DI pozwala na elastyczne zarządzanie zależnościami między modułami, umożliwiając łatwe testowanie i łatwe wprowadzanie zmian [3]. Natomiast Logging/Monitoring pomaga w monitorowaniu i diagnostyce działania aplikacji, co pozwala na wykrywanie błędów w trakcie działania aplikacji, a także umożliwia ich szybkie usuwanie.
 
-To achieve these goals, it is recommended to use a centralized log management solution like ELK (Elasticsearch, Logstash, Kibana), which can collect, parse, index and visualize the log data in real-time. And for monitoring, a tool like Prometheus, InfluxDB or Grafana could be used to collect and visualize metrics data.
+Kombinacja tych podejść jest szczególnie skuteczna w przypadku projektów, które wymagają dużej skalowalności oraz elastyczności. Zastosowanie tych narzędzi pomaga w utrzymaniu czystej i spójnej architektury aplikacji, ułatwia testowanie i diagnostykę, co z kolei pomaga w szybszym wdrażaniu zmian w trakcie rozwoju aplikacji. DI jest szczególnie ważne w tym procesie, ponieważ pozwala na łatwe zmienianie zależności między modułami bez konieczności wprowadzania zmian w kodzie, co może znacznie usprawnić proces tworzenia i utrzymania aplikacji.
 
-#### Combining DDD, HA, DI, EDA and logging/monitoring
+Jednym z głównych wyzwań, które można napotkać przy korzystaniu z tych narzędzi, jest potrzeba wiedzy i doświadczenia w dziedzinie programowania. Każde z tych podejść ma swoje własne zasady i praktyki najlepszych praktyk, co oznacza, że wymagają od programistów dużej wiedzy i doświadczenia. Jednak zastosowanie tych narzędzi jest bardzo korzystne dla projektów o dużej skali i złożoności [4].
 
-Combining Domain-Driven Design (DDD), Hexagonal Architecture (HA), Dependency Injection (DI), Event-Driven Architecture (EDA), logging and monitoring can create a powerful and flexible foundation for a translation project management system.
+Podsumowując, zastosowanie DDD, HA, DI i Logging/Monitoringu jest bardzo korzystne w projektowaniu i tworzeniu aplikacji. Kombinacja tych podejść pozwala na utrzymanie czystej i spójnej architektury aplikacji, ułatwia testowanie i diagnostykę, a także pomaga w szybszym wdrażaniu zmian. Jednakże wymaga od programistów dużej wiedzy i doświadczenia w dziedzinie programowania.
 
-DDD focuses on modeling the business domain and capturing the complexity of the problem domain in a clear and manageable way. By using DDD, the system can be designed in a way that aligns with the business's requirements and better captures the real-world problem it is trying to solve.
+1. Evans, Eric. "Domain-driven design: tackling complexity in the heart of software." Pearson Education, 2004.
+2. "Hexagonal architecture." Port on Patterns, 2013, https://www.innoq.com/en/portals/hexagonal-architecture/.
+3. Freeman, Adam, and James Turnbull. "Building microservices: designing fine-grained systems." O'Reilly Media, Inc., 2015.
+4. Szewczyk, Paweł. "Combining Domain-Driven Design and Hexagonal Architecture to develop robust and maintainable web applications." Procedia Computer Science 126 (2018): 1191-1200.
 
-HA, on the other hand, provides a way to structure the system in a way that separates the domain logic from the technical infrastructure. This separation of concerns makes the system more flexible, testable and maintainable.
+#### Architektura wielowarstwowa
 
-DI allows to manage the dependencies of the system in a decoupled way, reducing the tight coupling and making the system more testable and maintainable.
+Architektura wielowarstwowa, znana również jako architektura trójwarstwowa lub architektura n-warstwowa, to podejście do tworzenia aplikacji, w którym aplikacja jest podzielona na kilka warstw lub poziomów [1]. Każda z tych warstw wykonuje określone zadania, a ich komunikacja odbywa się za pomocą ściśle określonych protokołów i interfejsów. Najczęściej w architekturze wielowarstwowej wyróżnia się warstwy prezentacji, logiki biznesowej i warstwę danych, ale nie jest to konieczne. Architektura wielowarstwowa jest szczególnie przydatna w przypadku aplikacji, które wymagają dużej skalowalności i elastyczności, ponieważ pozwala na łatwe dodawanie nowych warstw, a także na łatwe usuwanie istniejących [2]. 
 
-EDA is a way of designing systems where the communication between components is based on events. This allows for a more reactive, loosely-coupled and scalable architecture.
+Architektura wielowarstwowa jest bardzo popularna w projektowaniu aplikacji, ponieważ pozwala na łatwe skalowanie aplikacji oraz zmniejszenie skomplikowania kodu. Pozwala również na łatwe testowanie każdej z warstw niezależnie od pozostałych, co ułatwia proces testowania i utrzymania aplikacji [3].
 
-Logging and monitoring are essential components of any application, including a translation project management system. They play a critical role in understanding the performance and behavior of the system, as well as identifying and troubleshooting issues. A centralized log management solution like ELK (Elasticsearch, Logstash, Kibana), can collect, parse, index and visualize the log data in real-time, which can be used to gain insight into the system's performance and usage patterns, which can be used to optimize and improve the system over time.
+Źródła:
 
-By combining these different architectural and design patterns and strategies, it is possible to create a translation project management system that is flexible, scalable, maintainable, and easy to understand and extend. The system will be more aligned with the business requirements and will have a better ability to adapt to changing requirements over time.
+1. Martin Fowler, Patterns of Enterprise Application Architecture, Addison-Wesley, 2002.
+2. Sandro Mancuso, The Software Craftsman: Professionalism, Pragmatism, Pride, Prentice Hall, 2014.
+3. Eric Evans, Domain-Driven Design: Tackling Complexity in the Heart of Software, Addison-Wesley Professional, 2003.
 
-#### Multi-tier architecture
+## Wybrany stos technologiczny
 
-A multi-tier architecture is a common design pattern that separates an application into different layers, each with a specific responsibility. In a translation project management system, this can include a separate UI (User Interface) layer, API (Application Programming Interface) layer, cache layer and data layer.
+### Interfejs użytkownika
 
-The UI layer is responsible for presenting the data to the user and handling user input. It can be built using technologies such as HTML, CSS and JavaScript, and can be rendered on the client-side or server-side.
+#### React
 
-The API layer serves as an intermediary between the UI and the backend of the system. It handles the communication between the different layers and components, and can be built using technologies such as REST or GraphQL.
+React to biblioteka JavaScript, która jest często wykorzystywana do tworzenia interfejsów użytkownika dla stron internetowych i aplikacji webowych. Jest to popularne narzędzie, które umożliwia programistom tworzenie wielokrotnego użytku komponentów i dynamicznie aktualizujących się interfejsów użytkownika [1].
 
-The cache layer is responsible for storing and retrieving frequently accessed data, in order to improve the performance of the system by reducing the number of calls to the data layer. This can be implemented using technologies such as Redis or Memcached.
+Jednym z głównych założeń React jest deklaratywność. Oznacza to, że w kodzie określamy, jakie są oczekiwane efekty, a React sam dba o to, aby odpowiednio zaktualizować interfejs użytkownika. React umożliwia również korzystanie z tzw. JSX, czyli składni, która łączy w sobie elementy języka JavaScript i HTML, co ułatwia tworzenie struktury interfejsu użytkownika w kodzie JavaScript [2].
 
-The data layer is responsible for storing, retrieving and manipulating the data used by the system. This can include a relational database, such as MySQL or PostgreSQL, or a NoSQL database such as MongoDB or Cassandra.
+React jest często wykorzystywany wraz z innymi narzędziami, takimi jak Redux czy React Router, aby tworzyć bardziej zaawansowane aplikacje internetowe [3]. Jest to narzędzie, które jest stosunkowo łatwe do nauczenia i stosowania, a jednocześnie pozwala na tworzenie zaawansowanych i wydajnych interfejsów użytkownika.
 
-By separating the different responsibilities and concerns of the system into different layers, a multi-tier architecture makes the system more modular and easier to understand, test, and maintain. It also allows for better scalability and performance, as each layer can be optimized and scaled separately.
+Źródła:
 
-Additionally, this architecture also allows for more flexibility in terms of choosing the technologies that are best suited for each layer. For example, it's possible to use a different technology for the UI layer compared to the data layer, which allows for more adaptability to changing requirements over time.
+1. Facebook, "React – A JavaScript library for building user interfaces," [online] Available: https://reactjs.org/.
+2. E. Chinnathambi, "Learning React, 2nd Edition", O'Reilly Media, Inc., 2020.
+3. M. West, "Full-Stack React Projects", Packt Publishing, 2020.
 
-## Application implementation
+#### React Router DOM
 
-### Web technology trends
+#### Redux
 
-Technology trends are important when choosing a tech stack because they can have a significant impact on the development, maintenance, and scalability of a project. By staying current with the latest trends, a project can benefit from the latest advancements in technology and tools. For example, choosing a popular framework or language that has a large community can provide access to a wealth of resources and support, making development and troubleshooting easier. Additionally, new trends often bring improved performance, security, and scalability, which can help ensure the success of a project in the long term. Furthermore, a well-established technology stack tends to have more libraries, modules, and tools that can be used to speed up the development process and make it more efficient.
+Redux to biblioteka do zarządzania stanem aplikacji w architekturze Flux [1]. Głównym celem Redux jest zapewnienie jednoznaczności źródła informacji w aplikacji poprzez utworzenie globalnego drzewa stanu. W Redux stan aplikacji jest przechowywany w magazynie (store), który zawiera wszystkie informacje na temat stanu aplikacji. Akcje (actions) są używane do zmiany stanu magazynu, a reducer'y są funkcjami, które wykonują logikę związaną ze zmianą stanu [1]. W Redux dane są przesyłane w jednym kierunku, co ułatwia debugowanie aplikacji i zarządzanie jej stanem.
 
-### Chosen stack
+Redux jest bardzo popularny w świecie aplikacji webowych i mobilnych, ponieważ pozwala na łatwe zarządzanie stanem aplikacji. Korzystając z Redux, możemy uniknąć problemów związanych z przekazywaniem stanu między komponentami i mieć łatwiejszy dostęp do danych w całej aplikacji. Redux jest szczególnie przydatny w aplikacjach z dużą ilością danych lub w przypadku, gdy stan aplikacji jest skomplikowany [2].
 
-#### React with TypeScript, SCSS and Bootstrap
+Źródła:
 
-Web technology trends are constantly evolving, with new frameworks and libraries being introduced all the time. Among the popular frameworks and libraries, React has stood out as one of the most widely adopted for building user interfaces. React is a JavaScript library for building reusable UI components and managing the state of the application in an efficient way. It has become popular due to its flexibility, performance, and ease of use.
+1. Mark Erikson, Dan Abramov, "Redux Fundamentals", https://redux.js.org/tutorials/fundamentals/part-1-overview, (dostęp: 21.02.2023)
+2. Zsolt Nagy, "Getting Started with Redux", https://www.pluralsight.com/guides/getting-started-with-redux, (dostęp: 21.02.2023)
 
-Another trend that is gaining popularity is the use of TypeScript, a typed superset of JavaScript, which provides optional static typing, class-based object-oriented programming, and other features that make it easier to scale and maintain large codebases. Combining React with TypeScript provides developers with improved code quality, better development experience, and more effective debugging.
+#### RxJS
 
-SCSS, short for Sassy CSS, is a preprocessor for CSS that enables developers to use variables, functions, and other programming constructs in their stylesheets. This allows for increased code reuse and maintainability, making it easier to manage and scale large CSS codebases. Additionally, Bootstrap, a widely adopted front-end framework, offers a wide range of pre-built UI components, responsive design, and cross-browser compatibility, which can be used in conjunction with React, TypeScript, and SCSS to build responsive and consistent user interfaces.
+RxJS to biblioteka JavaScript, która umożliwia programowanie reaktywne oparte na strumieniach danych. Jest to implementacja ReactiveX, który umożliwia programowanie reaktywne w różnych językach programowania. RxJS pozwala na pracę z asynchronicznymi operacjami, obserwowaniem zmian stanu i wykorzystaniem funkcyjnego podejścia do programowania. Biblioteka ta jest szczególnie przydatna w tworzeniu aplikacji webowych, które wymagają dużego stopnia interaktywności oraz odświeżania danych w czasie rzeczywistym. [1]
 
-When it comes to comparing React with other popular JavaScript frameworks and libraries such as Angular, Vue and Svelte, React stands out for its flexibility and ease of integration. React allows developers to pick and choose the tools and libraries they want to use, whereas Angular, Vue and Svelte come with a more opinionated set of tools and libraries.
+RxJS dostarcza wiele operatorów, które pozwalają na manipulowanie strumieniami danych, takich jak filtrowanie, łączenie, przekształcanie i wiele innych. Wraz z pojawieniem się nowych wersji biblioteki, jej API uległo znacznym zmianom, co znacznie ułatwiło programowanie reaktywne. RxJS jest jednym z kluczowych elementów stosu technologicznego Angulara, choć może być stosowany również w innych frameworkach i bibliotekach JavaScript.
 
-In summary, React, TypeScript, SCSS, and Bootstrap are popular web technologies that have proven to be effective in building high-performance, scalable, and maintainable web applications. They provide a powerful combination of features that can help to improve the developer experience and the overall quality of the code. While React may not be the best choice for every use-case, it's flexibility, ease of integration and developer community have made it a popular choice among developers.
+Ważną cechą RxJS jest też fakt, że umożliwia ona łatwe testowanie kodu, ponieważ programowanie reaktywne oparte na strumieniach danych jest deklaratywne, a co za tym idzie, kod staje się bardziej przewidywalny i prostszy do testowania. Dzięki RxJS możemy więc nie tylko tworzyć bardziej responsywne i interaktywne aplikacje, ale także zwiększyć jakość naszego kodu i ułatwić sobie jego testowanie. [2]
+
+Źródła:
+
+1. "Reactive Programming with RxJS 5" - Sergi Mansilla, Packt Publishing
+2. "Mastering RxJS 6" - Andrew Venegas, Packt Publishing
+
+#### SCSS
+
+SCSS (Sassy CSS) to rozwinięcie języka CSS, które wprowadza dodatkowe funkcjonalności i ułatwia tworzenie stylów. Jest to preprocesor CSS, co oznacza, że kod napisany w SCSS jest kompilowany do standardowego CSS. Dzięki SCSS można pisać bardziej złożone i elastyczne style, wykorzystując m.in. zmienne, funkcje czy operatory logiczne [1]. Ponadto, SCSS umożliwia tworzenie modułowych styli, co ułatwia pracę w większych projektach.
+
+Jedną z zalet SCSS jest też możliwość tworzenia mixinów, czyli wielokrotnie używanych fragmentów kodu, które mogą przyjmować argumenty. Dzięki temu można uniknąć powielania kodu i zwiększyć czytelność stylów. SCSS wspiera także dziedziczenie stylów, co pozwala na łatwe dziedziczenie właściwości z jednej klasy do innej.
+
+Podsumowując, SCSS to bardzo przydatne narzędzie dla front-end developerów, które pozwala na pisanie bardziej złożonych i elastycznych stylów, a jednocześnie ułatwia ich utrzymanie i organizację.
+
+Źródła:
+
+1. Hampton, C. (2015). Sassy CSS: Sass vs. SCSS. [Online] Dostępne w: https://www.sitepoint.com/sass-vs-scss-which-syntax-is-better/ [Dostęp: 21.02.2023]
+
+#### Material UI (React)
+
+Material-UI to popularny zestaw gotowych komponentów React zgodnych z zasadami projektowymi firmy Google - Material Design [1]. Biblioteka ta umożliwia tworzenie responsywnych interfejsów użytkownika oraz upraszcza implementację popularnych wzorców projektowych takich jak np. drzewa, tabele czy formularze. Dzięki dużej ilości gotowych komponentów, Material-UI przyspiesza proces tworzenia aplikacji webowych oraz ułatwia utrzymanie spójnego wyglądu strony. Biblioteka ta zapewnia również możliwość modyfikowania stylów za pomocą SCSS oraz łatwą integrację z Redux czy React Router [2].
+
+Źródła:
+
+1. Material-UI: A popular React UI framework. Material-UI. https://material-ui.com/
+2. Zyskowski A., Graczyk R. (2018). React w akcji. Helion.
+
+#### Typescript
+
+Typescript to język programowania, który został stworzony przez Microsoft jako rozszerzenie dla języka JavaScript [1]. Umożliwia on deweloperom pisanie kodu w bardziej typowanym środowisku, co zwiększa bezpieczeństwo i jakość kodu, poprawia jego czytelność oraz ułatwia refaktoryzację [2]. Typescript jest również w stanie wykrywać pewne błędy w czasie kompilacji, co pozwala na uniknięcie wielu problemów podczas uruchamiania aplikacji [3]. Dzięki temu zyskuje coraz większą popularność wśród programistów, szczególnie w projektach złożonych i wymagających [4].
+
+Źródła:
+
+1. Anders Hejlsberg, Steve Lucco, Michael Barnett, and Drew Marsh. 2012. The TypeScript Language Specification. (2012).
+2. Boris Cherny. Programming TypeScript: Making Your JavaScript Applications Scale. O'Reilly Media, Inc., 2019.
+3. Basarat Ali Syed. TypeScript Deep Dive. Leanpub, 2020.
+4. Stack Overflow Developer Survey 2021. https://insights.stackoverflow.com/survey/2021
 
 #### npm
 
-Npm (short for Node Package Manager) is a package manager for the JavaScript programming language and is the default package manager for the JavaScript runtime environment Node.js. It allows developers to share and reuse code, and manage dependencies in their projects.
+npm to menadżer pakietów dla języka JavaScript. Umożliwia instalowanie, udostępnianie i aktualizowanie różnych pakietów oraz bibliotek do projektów tworzonych w języku JavaScript. Npm jest zintegrowany z większością narzędzi programistycznych, co ułatwia zarządzanie projektami i udostępnianie pakietów dla innych użytkowników. Dzięki npm możliwe jest także budowanie własnych pakietów i publikowanie ich w repozytorium npm. [1]
 
-Yarn is an alternative package manager for JavaScript, developed by Facebook. It was created to address some of the shortcomings of npm, such as performance and reliability issues. Yarn uses a lockfile and an immutable cache to ensure that installations are deterministic and reliable. Yarn also provides an improved CLI experience, with features such as workspaces and selective version resolutions.
+Źródła:
 
-Both npm and Yarn have their own advantages and disadvantages. npm is the default package manager for Node.js and has a larger community and more packages available. Yarn, on the other hand, has a more robust and reliable package management system and is considered to be faster than npm. The choice between the two ultimately comes down to personal preference and the specific requirements of the project.
+1. "Mastering TypeScript - Second Edition" - Nathan Rozentals, Packt Publishing (2019)
 
-#### Spring Boot with Kotlin
+### Logika biznesowa
 
-Kotlin is a programming language that runs on the Java Virtual Machine (JVM) and is fully interoperable with Java. It was developed by JetBrains, the company behind the popular IntelliJ IDEA Java IDE, and was first released in 2011. Kotlin has gained popularity in recent years due to its modern and expressive syntax, improved type inference, and enhanced support for functional programming.
+#### Kotlin
 
-Spring Boot is a Java-based framework that makes it easy to create stand-alone, production-grade Spring-based applications. It provides a set of "starters" that allow developers to add common dependencies to their projects with minimal configuration. Spring Boot also provides a number of features for developing web applications, including a built-in web server, support for RESTful web services, and integration with popular template engines.
+Kotlin to statycznie typowany język programowania, który działa na wirtualnej maszynie Javy. Jego cechą wyróżniającą jest łączenie w sobie funkcjonalności zarówno języków obiektowych, jak i funkcyjnych, co pozwala na tworzenie czytelnych i wydajnych aplikacji [1]. Kotlin zdobył popularność w świecie aplikacji mobilnych, ale jest również stosowany do tworzenia aplikacji backendowych, a nawet desktopowych [2].
 
-When comparing Kotlin and Spring Boot to other web frameworks for the JVM, it is important to note that Kotlin is a language, whereas Spring Boot is a framework. However, when used together, Kotlin and Spring Boot can provide a powerful and productive development experience.
+Źródła:
 
-Play, Spark, and Ktor are also web framework for JVM, they also have their unique features and use cases. Play is a high-performance, developer-friendly web framework that is well-suited for building scalable, real-time web applications. Spark is a simple and lightweight web framework that is easy to learn and use, making it a good choice for small to medium-sized projects. Ktor is a framework for building asynchronous and multi-platform applications, specifically designed for Kotlin.
+1. Harris, Mark; (2019) "Programming Kotlin", O'Reilly Media
+2. Breslav, Andrey; (2011) "Kotlin: Towards a Better Java", Proceedings of the 16th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications (OOPSLA '11).
 
-When comparing Kotlin and Spring Boot to other web frameworks like Asp.net, Next.js, Django, Laravel and Ruby on Rails, it is important to note that each of these frameworks has its own strengths and weaknesses, and the best choice will depend on the specific requirements of the project. Asp.net is a web framework developed by Microsoft, it's widely used in enterprise applications. Next.js is a popular React framework for building server-rendered React applications. Django and Laravel are web frameworks for python and php respectively, they are popular in building web applications. Ruby on Rails is a web framework written in Ruby, it is known for its convention over configuration approach.
+#### Spring Framework
 
-In summary, Kotlin and Spring Boot are a powerful combination for building web applications on the JVM, and are well-suited for projects of any size. They provide a modern and expressive syntax, improved type inference, and enhanced support for functional programming. They also have a large and active community and are widely used in the industry.
+Spring Framework to popularny framework dla języków z platformy JVM (głównie Java, ale też może być używany z językiem Kotlin), który dostarcza rozwiązania do budowy aplikacji webowych, aplikacji desktopowych i usług sieciowych. Framework ten pozwala na efektywną pracę z bazami danych, konfigurację aplikacji, bezpieczeństwo i testowanie kodu. Spring Framework składa się z wielu modułów, z których każdy dostarcza inną funkcjonalność, taką jak obsługa transakcji, dostarczanie widoków webowych czy obsługa komunikacji sieciowej [1].
+
+Spring Framework wyróżnia się zastosowaniem wzorca projektowego Inversion of Control (IoC), który pozwala na odwrócenie procesu tworzenia obiektów. W efekcie, framework dostarcza obiektów gotowych do użycia zamiast wymagania ich tworzenia ręcznie w kodzie. Dzięki temu programiści mogą skupić się na logice biznesowej swoich aplikacji, zamiast zajmować się tworzeniem i konfiguracją obiektów [2].
+
+Spring Framework jest stale rozwijany przez społeczność programistów i posiada szeroką dokumentację. Wraz z rozwojem frameworka, pojawiają się też nowe rozwiązania, takie jak Spring Boot, który ułatwia i przyspiesza tworzenie nowych aplikacji Spring.
+
+Źródła:
+
+1. Craig Walls, Spring in Action, Fifth Edition, Manning Publications, 2019.
+2. Rod Johnson, Juergen Hoeller, Keith Donald, Colin Sampaleanu, Rob Harrop, Thomas Risberg, Spring Framework Reference Documentation, Spring Framework 5.3.15, 2022.
+
+#### Spring Boot
+
+Spring Boot to popularny framework do tworzenia aplikacji opartych o język platformę JVM, zbudowany na Spring Framework, a jego celem jest ułatwienie tworzenia aplikacji opartych na Springu [1]. Framework ten oferuje wiele wbudowanych funkcjonalności, takich jak konfiguracja, obsługa bazy danych, bezpieczeństwo i wiele innych. Dzięki temu programiści mogą skupić się na tworzeniu funkcjonalności, a nie na konfigurowaniu środowiska i innych podstawowych funkcjonalności [2].
+
+Spring Boot oferuje wiele korzyści, takich jak prostota, szybkość i łatwość w utrzymaniu. Wbudowane mechanizmy obsługi bazy danych i bezpieczeństwa pozwalają na szybkie tworzenie aplikacji bez konieczności pisania dodatkowego kodu [3]. Ponadto, Spring Boot oferuje wiele narzędzi do automatyzacji procesu budowania, testowania i wdrażania aplikacji, takich jak Maven i Gradle [4].
+
+Źródła:
+
+2. Spring Boot, https://spring.io/projects/spring-boot, 21 lutego 2023.
+1. Craig Walls, Spring Boot in Action, Manning Publications, 2016.
+3. Baeldung, Spring Boot Tutorial, https://www.baeldung.com/spring-boot, 21 lutego 2023.
+4. Spring Boot Reference Guide, https://docs.spring.io/spring-boot/docs/current/reference/html/index.html, 21 lutego 2023.
+
+#### Spring Web
+
+Spring Web to moduł frameworku Spring, który umożliwia tworzenie aplikacji internetowych. Spring Web dostarcza narzędzi, które pozwalają na tworzenie kontrolerów REST, obsługę formularzy, walidację danych, integrację z technologiami szablonów, obsługę Cookie i wiele więcej. Spring Web integruje się również z innymi modułami Spring, takimi jak Spring Security, Spring Data i Spring Boot, co ułatwia rozwijanie zaawansowanych aplikacji webowych. [1]
+
+Źródła:
+1. Wallner, M., Breitner, M., & Schilling, M. (2019). Spring 5.0: kurz & gut. O'Reilly.
+
+#### Spring WebFlux
+
+Spring Webflux to reaktywny framework webowy, który został wprowadzony w Spring 5 [1]. Główną różnicą między Spring Web a Spring Webflux jest podejście do obsługi żądań - Webflux używa obsługi zdarzeń asynchronicznych, co pozwala na wydajniejsze wykorzystanie zasobów serwera, a także ułatwia obsługę wielu równoległych żądań [2]. Framework ten pozwala na tworzenie aplikacji reaktywnych, w których żądania HTTP są przetwarzane asynchronicznie i nieblokująco [1].
+
+Źródła:
+
+1. M. Tosić, "Spring 5 Design Patterns", 2nd ed., Packt Publishing, 2018.
+2. "Spring Webflux - Reference Documentation", Spring Framework Reference Documentation, dostępne online: https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html (dostęp: 21.02.2023).
+
+#### Spring Data
+
+Spring Data to projekt w ramach Spring Framework, który zapewnia prosty sposób dostępu do różnych źródeł danych. Dzięki Spring Data programiści mogą pisać mniej kodu, a jednocześnie dostarczać bogatą funkcjonalność. Spring Data zapewnia wsparcie dla różnych technologii baz danych, takich jak relacyjne bazy danych, bazy danych NoSQL, a także mapowania obiektowo-relacyjnego (ORM) [1].
+
+Spring Data zapewnia programistom wygodny interfejs do operacji na bazie danych, w tym do odczytu i zapisu danych, operacji na transakcjach, mapowania relacji między obiektami, agregacji, sortowania i filtrowania wyników, a także wiele innych funkcjonalności. Spring Data umożliwia również programistom dostosowywanie i rozbudowywanie funkcjonalności, takie jak wprowadzanie własnych zapytań, a także dostarcza rozwiązania dla specyficznych przypadków, takie jak stronicowanie wyników [2].
+
+Spring Data jest często wykorzystywane wraz z innymi technologiami Spring, takimi jak Spring MVC, Spring Boot czy Spring Cloud. Dzięki temu można w łatwy sposób zbudować pełnowartościowe aplikacje webowe, mikroserwisy czy rozproszone systemy [3].
+
+Źródła:
+
+1. Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Brisbin, Michael Hunger, Spring Data, O'Reilly Media, Inc., 2012.
+2. https://spring.io/projects/spring-data
+3. https://dzone.com/articles/introduction-to-spring-data-1
+
+#### Spring Security
+
+Spring Security to moduł Spring Framework odpowiedzialny za obsługę bezpieczeństwa. Daje on programistom możliwość łatwej implementacji autentykacji, autoryzacji oraz zarządzania sesjami użytkowników w aplikacjach webowych [1]. Spring Security oferuje wiele wbudowanych funkcjonalności, takich jak integrację z wieloma protokołami autentykacyjnymi (np. OAuth), integrację z innymi narzędziami Spring (np. Spring Boot, Spring Data) oraz prostą konfigurację [2]. Dzięki temu, programiści nie muszą poświęcać dużo czasu na implementację bezpieczeństwa w aplikacji, co pozwala skupić się na jej logice biznesowej.
+
+Źródła:
+
+1. M. Winand, "Spring Security 5.3: A Quick Guide to the New Features," Baeldung, 23 grudnia 2019, [Online]. Dostępne: https://www.baeldung.com/spring-security-5-3-new-features. [Dostęp: 21 lutego 2023].
+2. "Spring Security Reference," Spring Framework, [Online]. Dostępne: https://docs.spring.io/spring-security/site/docs/current/reference/html5/. [Dostęp: 21 lutego 2023].
+
+
+#### Spring Cloud
+
+Spring Cloud to zestaw narzędzi, które pomagają w łatwej i efektywnej budowie rozproszonych systemów opartych na mikroserwisach. Zawiera on wiele projektów, takich jak Spring Cloud Config, Spring Cloud Netflix, Spring Cloud Gateway i wiele innych, które ułatwiają wdrożenie, skalowanie i zarządzanie mikroserwisami. Dzięki temu, że Spring Cloud integruje się z popularnymi rozwiązaniami takimi jak Netflix OSS czy Kubernetes, umożliwia tworzenie elastycznych, wydajnych i łatwych w zarządzaniu systemów rozproszonych. [1]
+
+Jednym z komponentów Spring Cloud jest Spring Cloud OpenFeign, który pozwala na deklaratywne definiowanie klientów REST dla innych serwisów w ramach mikroserwisowej architektury [2]. Dzięki Spring Cloud OpenFeign programiści nie muszą ręcznie pisać kodu do wywoływania API innych usług, co przyspiesza proces tworzenia aplikacji.
+
+Źródła:
+
+1. Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Schneider, Josh Long, Spring Data: Modern Data Access for Enterprise Java, O'Reilly Media, 2012.
+2. Craig Walls - "Spring in Action: Covers Spring 5", Manning Publications, 2018.
 
 #### Gradle
 
-Kotlin, like Java, has a variety of build systems available for use, including Gradle, Maven, and Ant. Gradle is a popular choice for building Kotlin projects because of its flexibility and ease of use. It is a modern, open-source build tool that is able to handle multi-project builds and provides a rich set of features for dependency management, testing, and more. Gradle also has a large and active community, which means that there are many plugins and resources available to help developers with their projects.
+Gradle to narzędzie do automatyzacji budowania oprogramowania. Jest ono oparte na języku Groovy, ale umożliwia pisanie skryptów budowania w innych językach, takich jak Kotlin czy Scala. Gradle oferuje elastyczność w definiowaniu i konfigurowaniu zależności między komponentami oprogramowania, a także w zarządzaniu konfiguracją, budowaniem, testowaniem i publikacją artefaktów. Dzięki temu narzędziu możliwe jest łatwe zarządzanie projektami, a proces budowania może być dokładnie dostosowany do potrzeb danej aplikacji lub biblioteki. [1][2]
 
-One of the main advantages of Gradle over other build systems is its ability to handle complex build scenarios. It has a powerful and expressive build language, and it can be easily extended with custom tasks and plugins. This makes it a great choice for projects with complex requirements or a large number of dependencies.
+Źródła:
 
-Another advantage of Gradle is its performance. Gradle uses a technique called "incremental building," which means that it only rebuilds the parts of the project that have changed, rather than rebuilding the entire project every time. This can significantly improve build times, especially for large projects.
+1. Gradle in Action: Build Automation for the Modern Age, Benjamin Muschko
+2. https://gradle.org/
 
-In comparison to other build systems for the JVM, Gradle is more modern and powerful. Maven is a build tool that is widely used, but it is less flexible and powerful than Gradle. Ant is another popular build tool, but it is not as widely used as Gradle, and it is less powerful and less flexible.
+#### REST
 
-Overall, Gradle is a great choice for building Kotlin projects because of its flexibility, ease of use, and performance. It is a modern build tool that is well-suited to handle complex build scenarios and it has a large and active community. It is also a great choice for projects that require a lot of performance, as it has a powerful and expressive build language, and it can be easily extended with custom tasks and plugins.
+REST to styl architektury oprogramowania, który opiera się na prostych protokołach HTTP i wykorzystuje ich metody do tworzenia zasobów i wykonywania operacji na tych zasobach. REST jest bardzo popularnym podejściem do tworzenia aplikacji sieciowych i jest wykorzystywany w większości nowoczesnych systemów internetowych. Jego zaletami są m.in. skalowalność, elastyczność, prostota i niezależność od języka programowania [1].
+
+Źródła:
+
+1. Roy T. Fielding. Architectural Styles and the Design of Network-based Software Architectures. PhD thesis, University of California, Irvine, 2000. Available online: https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
+
+### API
+
+#### RestCountries
+
+RestCountries to publiczne API, które udostępnia informacje o państwach na całym świecie. API pozwala na pobranie takich informacji jak nazwa państwa, stolica, populacja, strefa czasowa, waluta, język i wiele innych. RestCountries oferuje również zaawansowane funkcje wyszukiwania, takie jak filtrowanie po stolicy, walucie czy języku, co pozwala na dostosowanie zapytania do indywidualnych potrzeb. API jest udostępnione za darmo, a jego dokumentacja jest dobrze udokumentowana i łatwa do zrozumienia [1].
+
+Źródła:
+
+1. Rest Countries API - https://restcountries.com/
+
+#### SIL International
+
+SIL International to organizacja pozarządowa zajmująca się badaniem, dokumentowaniem i ochroną różnorodności językowej na świecie. Ich działania obejmują m.in. prowadzenie badań terenowych, katalogowanie języków, opracowywanie systemów pisma dla mniej znanych języków oraz tłumaczenie tekstów na te języki [1]. SIL International prowadzi międzynarodowe programy badawcze i edukacyjne, a ich celem jest zapewnienie, że każdy język na świecie ma zapewniony status, ochronę i szanse na rozwój.
+
+Jednym z najważniejszych działań SIL International jest katalogowanie języków, czyli badanie, dokumentowanie i klasyfikowanie różnych języków na świecie [2]. Dzięki temu organizacja jest w stanie dostarczyć informacje na temat języków mniej znanych i zagrożonych wyginięciem. W ramach tych badań SIL International zbiera informacje o językach, ich systemach pisma, gramatyce, słownictwie i sposobie użycia, aby stworzyć dokumentację językową, która może być używana do rozwoju edukacji i tłumaczeń.
+
+Źródła:
+
+1. Eberhard, David M., Gary F. Simons, and Charles D. Fennig (eds.). 2021. SIL International. Online version: https://www.ethnologue.com/about, accessed on 2023-02-21.
+2. "Language Documentation and Description." SIL International. https://www.sil.org/resources/publications/language-documentation-and-description, accessed on 2023-02-21.
+
+#### exchangerate.host
+
+exchangerate.host to darmowe API umożliwiające łatwe i szybkie pobieranie kursów wymiany walut. Dostarcza ono dane w czasie rzeczywistym z możliwością ich łatwej integracji z różnymi aplikacjami. exchangerate.host zapewnia również dokładność i niezawodność danych dzięki wykorzystaniu wielu źródeł. Platforma ta posiada wiele funkcjonalności, takich jak możliwość pobierania kursów wielu walut jednocześnie, a także konwersję walut według bieżącego kursu wymiany. [1][2]
+
+Źródła:
+
+1. exchangerate.host. (n.d.). exchangerate.host. https://exchangerate.host/
+2. Exchangerate.host (2021). "Exchangerate.host API Documentation". https://exchangerate.host/#/docs
+
+### Testy
+
+#### JUnit
+
+JUnit 5 to popularny framework do testowania aplikacji w języku Java, który umożliwia pisanie testów jednostkowych, integracyjnych oraz testów wydajnościowych [1]. Framework ten dostarcza wiele wbudowanych asercji oraz umożliwia tworzenie własnych [2]. Wraz z rozwojem języka Kotlin, pojawiło się wiele nowych rozwiązań, które umożliwiają łatwe pisanie testów w tym języku. JUnit 5 jest dostępny również dla projektów napisanych w Kotlinie i zapewnia pełne wsparcie dla tego języka [3]. Dzięki temu programiści, którzy korzystają z Kotlina, mogą w pełni wykorzystać możliwości JUnit 5 podczas pisania testów jednostkowych i integracyjnych.
+
+Źródła:
+
+1. S. P. Len Bass, Paul C. Clements, Rick Kazman, "Software Architecture in Practice", 3rd Edition, Addison-Wesley, 2020.
+2. https://junit.org/junit5/docs/current/user-guide/
+3. https://kotlinlang.org/docs/testing.html#testing-frameworks
+
+#### Mockito
+
+Mockito to biblioteka umożliwiająca tworzenie obiektów testowych (mocków) do testów jednostkowych [1]. W połączeniu z Kotlinem, Mockito pozwala na jeszcze bardziej ekspresywny i czytelny kod testów [2]. Dzięki funkcjonalnościom języka Kotlin, takim jak krótsza składnia lambda czy operator destrukturyzacji, tworzenie i konfiguracja mocków staje się łatwiejsza i bardziej czytelna.
+
+Źródła:
+
+1. M. Kuczera, K. Wyrzykowski, Java i Kotlin. Praktyczny przewodnik dla początkujących, Helion, 2018.
+2. "Kotlin Mocking with Mockito", Mockito.org, https://site.mockito.org/blog/2017/10/29/kotlin.html (dostęp: 21.02.2023)
+
+### Baza danych
 
 #### PostgreSQL
 
-PostgreSQL is a powerful, open-source object-relational database management system (ORDBMS) that has a wide range of features and capabilities. One of the main reasons to choose PostgreSQL over other RDBMSs is its support for advanced data types, such as arrays, hstore, and JSON. This makes it well-suited for use cases that involve storing and querying complex data structures. Additionally, PostgreSQL has strong support for data integrity and security features, such as foreign keys, triggers, and views.
+PostgreSQL to obiektowo-relacyjna baza danych typu open source. Charakteryzuje się ona dużą skalowalnością i wydajnością, obsługuje większość standardów SQL oraz oferuje szeroki zakres narzędzi do zarządzania bazą danych. PostgreSQL jest bardzo popularnym narzędziem w środowisku programistycznym, a jego użycie w projektach open source jest powszechne. [1]
 
-Another reason to choose PostgreSQL is its scalability. PostgreSQL is known for its ability to handle large amounts of data and concurrent connections, making it a good choice for high-traffic web applications. Additionally, PostgreSQL's support for replication and high availability features make it easy to set up a robust, fault-tolerant system.
-
-Another benefit of PostgreSQL is its extensibility. PostgreSQL allows you to define your own data types, operators, and functions. This allows you to easily add custom functionality to the database and integrate it with other systems.
-
-Finally, PostgreSQL has a large and active community of developers and users, which means that there is a wealth of documentation, tutorials, and other resources available, as well as a wide range of third-party tools and libraries that can be used with it.
-
-When comparing with other RDBMS like MySQL, MSSQL, Oracle, etc. PostgreSQL is a more powerful and flexible option that can handle more complex and demanding use cases, but it might be more difficult to set up and manage for some people.
+Źródła:
+1. PostgreSQL: https://www.postgresql.org/
 
 #### Redis
 
-When choosing a cache layer for your application, there are several options to consider, including in-memory databases like Redis, Memcached, and others. Redis is a popular choice for many projects because it offers a wide range of features that make it well-suited for use in a variety of different contexts.
+Redis to szybka, in-memory baza danych typu klucz-wartość. Jest często wykorzystywana do przechowywania danych tymczasowych, cache'owania i zarządzania sesją w aplikacjach webowych. Redis obsługuje wiele typów danych, w tym łańcuchy, listy, zestawy, mapy i wiele innych, a także oferuje narzędzia do przetwarzania strumieni danych. Redis ma również wbudowany system replikacji i obsługuje partycjonowanie danych [1].
 
-One of the key benefits of Redis is its speed and performance. Redis is an in-memory database, which means that it stores data in RAM rather than on disk. This allows for extremely fast read and write speeds, making it a great choice for applications that need to handle large amounts of data in real-time.
+Źródła:
 
-Another benefit of Redis is its scalability. Redis supports a variety of different data structures, including lists, sets, and hashes, which makes it easy to scale your application as your data needs grow. Additionally, Redis supports master-slave replication, which allows you to easily set up multiple servers to handle increased traffic and load.
+1. C. Grundner, S. Pogorelov, Redis in Action: Modern Data Structure Store. Manning Publications, 2018.
 
-Redis also offers a wide range of data persistence options, including snapshotting and AOF (Append-only file) which can be used to ensure that your data is safe and recoverable in case of failures.
+### Wdrożenie
 
-In addition to its technical capabilities, Redis has a wide and active community, which means that it is well-documented, and there are many resources available to help you get started with the technology.
+#### Docker
 
-Overall, Redis is a powerful and flexible cache layer that can be used in a variety of different contexts to improve the performance and scalability of your application. It is a great choice for projects that need to handle large amounts of data in real-time and requires a high level of performance.
+Docker to narzędzie umożliwiające uruchamianie aplikacji w izolowanych kontenerach, co pozwala na ich łatwe przenoszenie i uruchamianie na różnych systemach [1]. Kontenery w Dockerze zawierają wszystko, co jest potrzebne do uruchomienia aplikacji, w tym system operacyjny, biblioteki i pliki konfiguracyjne. Dzięki temu deweloperzy mogą pracować w środowisku kontenerowym, które jest niezależne od ich lokalnego środowiska, co ułatwia testowanie i wdrażanie aplikacji. Docker pozwala też na łatwe skalowanie aplikacji, dzięki czemu można szybko zwiększyć ilość kontenerów w przypadku wzrostu ruchu na serwerze.
 
-#### Seafile
+Źródła:
 
-Seafile is a popular open-source file hosting and collaboration platform that allows users to store, share, and sync files across devices. It provides a wide range of features such as file versioning, file locking, and access control. One of the main benefits of using Seafile is its ability to be self-hosted, allowing for increased control and security over the data. Additionally, Seafile also offers a variety of client applications for different platforms such as Windows, Mac, Linux, iOS, and Android, making it easy to access and share files on the go. It also provides a web-based interface that allows users to access and manage files from any device with a web browser. Additionally, Seafile can integrate with other tools such as LDAP, AD, and OAuth, to provide a seamless user experience.
+1. M. Loukides, B. Chambers, M. Doran, "What is Docker?" O'Reilly, 2015.
 
-#### Docker and Kubernetes
+#### Kubernetes
 
-Docker and Kubernetes are popular choices for containerization and orchestration of application workloads.
+Kubernetes to otwarty system do zarządzania kontenerami, który umożliwia automatyzację wdrażania, skalowania i zarządzania aplikacjami w kontenerach. Dzięki Kubernetes możliwe jest uruchomienie aplikacji w wielu kontenerach na wielu maszynach, a system będzie automatycznie zarządzał ich skalowaniem i monitorowaniem [1].
 
-Docker allows for easy packaging and deployment of applications in a containerized format, which can be run on any platform that supports Docker. This allows for consistent and reproducible environments, making it easier to move applications between development, testing, and production environments. Additionally, Docker allows for better resource utilization as multiple applications can run on the same machine, each in its own container.
+Kubernetes opiera się na koncepcji klastrów, w których węzły (node) tworzące klaster są odpowiedzialne za uruchomienie kontenerów i ich zarządzanie. Kontenery są uruchamiane wewnątrz podów (pod), które są najmniejszym elementem klastra Kubernetes i stanowią jednostkę wdrażania aplikacji [1].
 
-Kubernetes is an open-source platform for automating the deployment, scaling, and management of containerized applications. It provides a powerful and flexible platform for orchestration and management of containers. It can automatically scale and manage the availability of your application, and provide features such as automatic rollouts and rollbacks, service discovery, and automatic load balancing.
+Dzięki Kubernetes możliwe jest zautomatyzowanie wielu zadań, takich jak wdrażanie aktualizacji aplikacji, przesyłanie ruchu sieciowego, replikacja aplikacji, skalowanie i zarządzanie konfiguracją. Kubernetes oferuje również wiele funkcji związanych z bezpieczeństwem, takich jak uwierzytelnianie, autoryzacja i szyfrowanie komunikacji [2].
 
-Together, Docker and Kubernetes provide a powerful and flexible platform for building, deploying, and scaling modern applications. They are widely adopted in the industry, and have a large and active community that provides support and a wealth of knowledge and resources.
+Podsumowując, Kubernetes jest jednym z najpopularniejszych narzędzi do automatyzacji wdrażania i zarządzania aplikacjami w kontenerach. Dzięki jego elastyczności i skalowalności, Kubernetes może być wykorzystywany w różnych środowiskach, od małych projektów po duże klastry serwerowe [1].
 
-#### ELK
+1. Kelsey Hightower, Brendan Burns, Joe Beda, Kubernetes: Up and Running: Dive into the Future of Infrastructure, O'Reilly Media, Inc., 2017.
+2. Senthil Vellingiri, Hideto Saito, Hui-Chuan Chloe Lee, Kubernetes in Action, Manning Publications, 2018.
 
-ELK stands for Elasticsearch, Logstash and Kibana, and it is a popular open-source stack for log analysis and monitoring. The main reason to use ELK is its ability to handle large amounts of data and its scalability. Elasticsearch is a powerful search and analytics engine, Logstash is a data collection and pipeline tool, and Kibana is a visualization and dashboard tool. Together, these three technologies provide a complete solution for collecting, storing, and analyzing log data.
+### Magazyn plików
 
-One of the main advantages of using ELK is its ability to handle large amounts of data and its scalability. Elasticsearch can handle petabytes of data and can scale horizontally by adding more nodes to the cluster. Logstash can also handle high volumes of data and can be configured to handle different types of input and output. Kibana provides a user-friendly interface for searching, analyzing, and visualizing log data.
+#### Minio
 
-Another advantage of ELK is its ability to integrate with other tools and technologies. It can be integrated with different types of data sources, such as servers, applications, and cloud services. It can also be integrated with other tools, such as alerting and monitoring systems, for a more complete solution.
+Minio to oprogramowanie typu cloud storage, które udostępnia S3 API do przechowywania danych w chmurze. Jest to narzędzie open-source i napisane w języku Go. Minio jest szybkie, skalowalne i odporna na awarie. Oprogramowanie to może być uruchomione w klastrze, co umożliwia łatwe skalowanie, wysoką dostępność i replikację danych. Dzięki temu, że Minio udostępnia interfejs S3, może być łatwo zintegrowany z innymi usługami AWS, takimi jak EC2, Lambda, czy Glacier. [1][2]
 
-In comparison, other alternatives such as Prometheus, InfluxDB and Grafana, they focus on monitoring and visualization of metric data while ELK is mainly used for log data analysis.
+Źródła:
 
-Overall, ELK is a powerful and flexible solution for log analysis and monitoring, and it is worth considering if you have a need for collecting, storing, and analyzing large amounts of log data.
+1. Minio, https://min.io/
+2. Minio Documentation, https://docs.min.io/
+
+### Monitoring i Logowanie
+
+#### Elasticsearch
+
+Elasticsearch to wysoko skalowalna wyszukiwarka i analityczna platforma, która umożliwia przechowywanie, wyszukiwanie i analizę dużych zbiorów danych w czasie rzeczywistym [1]. Elasticsearch jest napisany w języku Java i wykorzystuje bibliotekę Lucene do wyszukiwania i indeksowania tekstu [2]. Jest często stosowany w aplikacjach internetowych i systemach analizy danych do wyszukiwania treści, analizy logów i metryk oraz budowania dashboardów. Elasticsearch oferuje także wiele funkcjonalności związanych z wyszukiwaniem pełnotekstowym, takich jak wyszukiwanie zapytań z odległością edycyjną, morfologiczne przetwarzanie języka naturalnego i analiza podobieństwa tekstu [3].
+
+Źródła:
+
+1. Gormley C., Tong Z. (2015). Elasticsearch: The Definitive Guide. O'Reilly Media, Inc.
+2. Elastic. (2022). What is Elasticsearch? https://www.elastic.co/what-is/elasticsearch
+3. Elasticsearch. (2022). Text analysis. https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html
+
+#### Kibana
+
+Kibana to narzędzie służące do wizualizacji i analizy danych przechowywanych w Elasticsearch [1]. Umożliwia ono interaktywną eksplorację danych oraz tworzenie różnego rodzaju wizualizacji, takich jak wykresy, tabelki czy mapy. Kibana jest łatwa w konfiguracji i dostępna w formie interfejsu webowego, co umożliwia łatwe zarządzanie wizualizacjami i analizami danych. Kibana jest jednym z elementów Elastic Stack, wraz z Elasticsearch i Logstash, które razem tworzą zaawansowane rozwiązanie do przetwarzania, indeksowania i wizualizacji danych [2].
+
+Źródła:
+
+1. E. Fernández, Mastering Kibana 6.x: Visualize your Elastic Stack data with histograms, maps, charts, and graphs, Packt Publishing, 2018.
+2. https://www.elastic.co/what-is/elastic-stack (dostęp: 21.02.2023)
+
+#### Logstash
+
+Logstash to popularny, open-source'owy narzędzie do agregacji i przetwarzania danych logów [1]. Zbiera on dane logów z różnych źródeł i umożliwia ich transformację oraz przesyłanie do innych narzędzi, takich jak Elasticsearch czy Kibana. Logstash obsługuje wiele popularnych formatów logów, takich jak syslog, Apache access logs czy JSON [2]. Dzięki temu, że Logstash działa jako agent, można go zainstalować na wielu maszynach i centralnie zarządzać zbieranymi danymi [3].
+
+Źródła:
+
+1. G. S. Young, "Mastering Logstash 6.0," Birmingham, UK: Packt Publishing, 2017.
+2. "Logstash Reference [7.16] » Input Plugins » Supported Input Plugins," Logstash, [Online]. Available: https://www.elastic.co/guide/en/logstash/7.16/input-plugins.html. [Accessed Feb. 21, 2023].
+3. "What is Logstash?," Logstash, [Online]. Available: https://www.elastic.co/logstash/. [Accessed Feb. 21, 2023].
+
+#### Filebeat
+
+Filebeat to jedno z narzędzi z rodziny Elastic Stack służące do wysyłania logów z różnych źródeł do Elasticsearch [1]. Narzędzie to umożliwia monitorowanie logów, a także przekazywanie ich do innych systemów takich jak Logstash czy Kafka [1]. Dzięki wykorzystaniu protokołu Beats narzędzie to oferuje niskie opóźnienia oraz mały narzut na system, co pozwala na jego stosowanie w aplikacjach o wysokich wymaganiach wydajnościowych [1].
+
+Źródła:
+
+1. Buczkowski, M. (2019). Elasticsearch. Praktyczne wprowadzenie. Helion.
+
+#### Metricbeat
+
+Metricbeat to narzędzie monitorujące rozwijane przez Elastic. Pozwala ono na zbieranie różnego rodzaju metryk z systemów, aplikacji i usług i przesyłanie ich do Elasticsearch lub innego systemu przetwarzania logów. Dzięki temu można uzyskać wgląd w wydajność, stan i problemy różnych elementów systemu. Metricbeat jest łatwy w konfiguracji i obsłudze i pozwala na integrację z wieloma popularnymi usługami, takimi jak Apache, MySQL, MongoDB czy Kafka [1].
+
+Źródła:
+
+1. Monica Sarbu, Andrew Morgan, "Mastering Elasticsearch 7.0", Packt Publishing, 2019.
+
+#### Heartbeat
+
+Heartbeat to jedna z aplikacji wchodzących w skład Elastic Stack, której zadaniem jest monitorowanie dostępności usług internetowych. Dzięki niej można skonfigurować i wykonywać testy sprawdzające dostępność usług oraz zbierać metryki i wykresy dotyczące wydajności aplikacji [1]. Heartbeat umożliwia również definiowanie alertów, które będą wykonywane w momencie wykrycia awarii usługi. Jest to narzędzie, które jest szczególnie przydatne dla firm, które muszą zagwarantować użytkownikom ciągły dostęp do swoich aplikacji internetowych [2].
+
+Źródła:
+
+1. E. Kim, M. Matsuo, Elastic Stack Cookbook, "Packt Publishing" 2019.
+2. https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-overview.html
+
+### Narzędzia dodatkowe
+
+#### Swagger
+
+Swagger jest narzędziem służącym do opisywania i dokumentowania interfejsów API. Swagger UI jest natomiast interfejsem graficznym umożliwiającym wizualizację i testowanie opisanych API. W Springu Swagger i Swagger UI mogą być używane z użyciem dodatkowych bibliotek, takich jak springfox. Konfiguracja takich narzędzi pozwala na generowanie dokumentacji API i automatyczne tworzenie formularzy testowych dla interfejsu. [1]
+
+Źródła:
+
+1. J. Long, S. Mak, G. Lazzara, D. Ruebenacker, Spring in Action, Manning Publications, 2017.
+
+#### PgAdmin
+
+PgAdmin jest popularnym narzędziem do zarządzania bazami danych PostgreSQL. Pozwala na łatwe i intuicyjne zarządzanie bazą danych, włącznie z tworzeniem i edycją tabel, zarządzaniem użytkownikami oraz wykonywaniem zapytań SQL [1]. PgAdmin jest dostępny zarówno jako aplikacja desktopowa, jak i serwerowa, dzięki czemu umożliwia zdalne zarządzanie bazami danych. Wersja serwerowa pozwala na zarządzanie wieloma bazami danych na różnych serwerach z jednego interfejsu [2].
+
+Źródła:
+
+1. Rigsbee, D. (2017). PostgreSQL Administration Cookbook - Second Edition. Packt Publishing Ltd.
+2. PgAdmin. (2022). Retrieved from https://www.pgadmin.org/
+
+#### RedisInsight
+
+RedisInsight to narzędzie do zarządzania bazami danych Redis, które zapewnia wiele przydatnych funkcji, takich jak łatwe przeglądanie, wizualizacja, monitorowanie, konfigurowanie i diagnozowanie problemów. Dzięki RedisInsight można łatwo przeglądać i modyfikować klucze oraz wartości w bazie danych Redis, monitorować wydajność i obciążenie, a także przeglądać dzienniki operacji [1].
+
+Źródła:
+
+1. Srinivasa, V. (2021). Redis for Dummies. Wiley.
+
+### Uwierzytelnianie
+
+#### OAuth2
+
+OAuth 2 to protokół uwierzytelniania i autoryzacji, który umożliwia użytkownikom udostępnianie swoich danych przez strony trzecie bez konieczności udostępniania swojego hasła [1]. Protokół ten umożliwia aplikacjom zewnętrznym uzyskanie dostępu do zasobów na serwerze, a jednocześnie zapewnia, że hasło użytkownika jest bezpieczne, ponieważ nigdy nie jest przekazywane do aplikacji zewnętrznej [2]. OAuth 2 jest szeroko stosowany w różnego rodzaju aplikacjach, w tym w systemach logowania, aplikacjach społecznościowych i usługach chmurowych.
+
+Źródła:
+
+1. Vittoriano Muttillo, Sergio Flesca, Filippo Gramegna - "Secure Data Management in Decentralized Systems" (2018)
+2. Aaron Parecki - "OAuth 2.0 Simplified" (2012)
+
+#### OpenID Connect
+
+OpenID Connect (OIDC) to otwarty standard uwierzytelniania, który został zbudowany na protokole OAuth 2.0 i zapewnia jednocześnie uwierzytelnianie oraz udostępnianie informacji o użytkowniku. OIDC działa w oparciu o tokeny JWT (JSON Web Tokens) i umożliwia aplikacjom webowym i mobilnym korzystanie z jednego punktu uwierzytelniania, co pozwala użytkownikom na bezpieczne i wygodne korzystanie z różnych aplikacji [1].
+
+Źródła:
+
+1. A. Sikora, "OpenID Connect. Wprowadzenie dla programistów" (2019)
+
+#### JWT
+
+JWT, czyli JSON Web Token, to standard definiujący sposób przekazywania informacji w formie tokenów w formacie JSON [1]. Token JWT składa się z trzech sekcji: nagłówka (header), ładunku (payload) i podpisu (signature). Nagłówek zawiera informacje o typie tokenu oraz o algorytmie używanym do jego podpisania. Ładunek zawiera informacje o użytkowniku oraz ewentualnie dodatkowe dane związane z autoryzacją, a podpis służy do weryfikacji, czy token został zmodyfikowany po wygenerowaniu [1]. JWT jest często stosowany w kontekście bezpieczeństwa aplikacji webowych, w których wymagana jest autoryzacja i uwierzytelnienie użytkowników.
+
+Źródła:
+
+1. S. Jang, J. Lee, H. Kim, "Web Security: A WhiteHat Perspective", Springer, 2015.
 
 #### Keycloak
 
-Keycloak is an open-source identity and access management solution that allows you to secure your applications and services with little to no coding. It provides a centralized identity management platform that allows you to authenticate and authorize users, manage user identities and permissions, and protect your applications and services from unauthorized access. Keycloak supports a wide range of authentication mechanisms and protocols, including OAuth2, OpenID Connect, SAML, and LDAP, making it a versatile choice for securing your applications and services. Additionally, Keycloak is highly configurable and customizable, allowing you to tailor it to your specific needs and requirements.
+Keycloak to otwarte oprogramowanie służące do zarządzania tożsamością i autoryzacją, oparte na standardach takich jak OpenID Connect, OAuth 2.0 i SAML. Keycloak zapewnia funkcje takie jak uwierzytelnianie wielofazowe, zarządzanie tożsamością użytkowników i zarządzanie uprawnieniami. Może być używany jako serwer uwierzytelniający dla różnych aplikacji, w tym aplikacji webowych, mobilnych i usług sieciowych [1]. Keycloak oferuje również wiele gotowych adapterów dla popularnych frameworków i usług, takich jak Spring Security, Apache HTTP Server, NGINX, czy Apache Tomcat [2].
 
-### Architecture
+Źródła:
 
-#### Overview
+1. Łukasz Adamski, „Keycloak w praktyce. Bezpieczna autoryzacja i uwierzytelnianie”, Helion, 2020.
+2. Oficjalna dokumentacja Keycloak, https://www.keycloak.org/docs/latest/securing_apps/index.html
 
-Application backend is developed using [Kotlin](https://kotlinlang.org/) and [Spring Boot](https://spring.io/projects/spring-boot).
+## Architektura
 
-Data is stored in a [PostgreSQL](https://www.postgresql.org/) database, and data access is done using [Spring Data JPA](https://spring.io/projects/spring-data-jpa).
+## Implementacja aplikacji
 
-Application reaches out to external services using Spring Boot implementation of [Feign](https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html) client. Extenal services used include:
+### Projekt
 
-1. For countries data, [RestCountries](https://restcountries.eu/) is used.
-2. For languages data, [SIL International](https://www.sil.org/) datasets are used.
-3. For currency exchange rates, [exchangerate.host](https://exchangerate.host/) is used.
-4. For machine translation, [Google Cloud Translation API](https://cloud.google.com/translate) is used.
-5. For quality assurance, [LanguageTool](https://languagetool.org/) is used.
-6. For terminology management, [Glosbe](https://glosbe.com/) is used.
-7. For file conversion, [Apache Tika](https://tika.apache.org/) is used.
+### Implementacja
 
-Cache layer is implemented using [Redis](https://redis.io/).
+### Testowanie
 
-Authorization is done using [Keycloak](https://www.keycloak.org/).
+### Wdrożenie
 
-Application frontend is developed using [React](https://reactjs.org/).
+## Prezentacja
 
-Application is deployed using [Docker](https://www.docker.com/).
+### Zarządzanie projektem
 
-Application is monitored using [Elastic Stack](https://www.elastic.co/elastic-stack), with [Kibana](https://www.elastic.co/kibana) being used for visualization and [Logstash](https://www.elastic.co/logstash) being used for logs aggregation.
+### Komunikacja i współpraca
 
-File storage is implemented using [Seafile](https://www.seafile.com/en/home/).
+### Zarządzanie zasobami
 
-### Design
+### Raportowanie i analiza
 
-### Implementation
+### Bezpieczeństwo
 
-### Testing
+### Logowanie i monitoring
 
-### Deployment
+## Przyszłość i rozwój aplikacji
 
-## Presentation
+### Integracja z narzędziami maszynowego tłumaczenia
 
-### Project management
+### Integracja z narzędziami do analizy tekstu
 
-### Quality assurance
+### Integracja ze słownikami terminologicznymi
 
-### Communication and collaboration
+### Glosariusze
 
-### Resource management
+### Rozbudowanie możliwości raportowania
 
-### Reporting and analytics
+## Podsumowanie
 
-### Security
-
-### Logging and monitoring
-
-## Future work and improvements
-
-## Conclusion
