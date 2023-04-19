@@ -248,7 +248,7 @@ Podsumowując, poprzez stworzenie specjalistycznego systemu zarządzania projekt
 
 ### Założenia i cele projektu
 
-Cele i założenia koncepcji aplikacji systemu zarządzania projektami tłumaczeniowymi obejmują:
+Cele i założenia koncepcji aplikacji systemu zarządzani a projektami tłumaczeniowymi obejmują:
 
 1. Usprawnienie przepływu pracy tłumaczeniowej: Poprzez zapewnienie scentralizowanej platformy do zarządzania projektami tłumaczeniowymi, aplikacja pomoże kierownikom projektów i tłumaczom pracować wydajniej i efektywniej.
 3. Ułatwienie komunikacji i współpracy: Aplikacja zapewni kierownikom projektów i tłumaczom narzędzia do komunikacji i współpracy nad projektami, co pomoże zwiększyć efektywność procesu tłumaczenia.

@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import axios from "axios";
 import { ClientTypeCreateRequest } from "./types/ClientTypeCreateRequest";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
-import { environment } from "../../../Environment";
 import { useNavigate } from "react-router-dom";
+import TpmClient from "../../../client/TpmClient";
 
 
 export const Create = () => {
@@ -15,12 +14,12 @@ export const Create = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (values: ClientTypeCreateRequest) =>
-    axios.post(`${environment.apiUrl}/client-type`, values)
-      .then(response => {
-        navigate("/client-types");
-      })
-      .catch(error => {
-        setServerError(error);
+    TpmClient.getInstance()
+      .clientTypes()
+      .create(values)
+      .subscribe({
+        next: () => navigate("/dictionaries/client-types"),
+        error: (error) => setServerError(error.message),
       });
 
   return (
