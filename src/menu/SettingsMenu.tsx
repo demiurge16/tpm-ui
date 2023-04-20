@@ -5,9 +5,9 @@ import {
   Menu as MuiMenu
 } from '@mui/material';
 import React from 'react';
-import { Account } from '../pages/Pages';
 import { MenuItem } from './MenuItem';
 import { MenuLink } from './MenuLink';
+import { Account } from '../pages/account/Account';
 
 export const SettingsMenu = () => {
 

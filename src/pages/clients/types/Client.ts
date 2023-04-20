@@ -1,5 +1,5 @@
-import { ClientType } from "../../dictionaries/client/types/ClientType"
-import { Country } from "../../dictionaries/common/types/Country"
+import { ClientType } from "../../dictionaries/client-type/types/ClientType"
+import { Country } from "../../dictionaries/country/types/Country"
 
 export interface Client {
   id: string,

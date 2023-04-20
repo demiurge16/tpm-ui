@@ -8,8 +8,8 @@ import { ClientCreateRequest } from "./types/ClientCreateRequest";
 import { environment } from "../../Environment";
 import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
-import { Country } from "../dictionaries/common/types/Country";
-import { ClientType } from "../dictionaries/client/types/ClientType";
+import { Country } from "../dictionaries/country/types/Country";
+import { ClientType } from "../dictionaries/client-type/types/ClientType";
 import { Page } from "../../components/grid/Page";
 
 export const Create = () => {

@@ -313,6 +313,11 @@ export default class TpmClient {
           deactivate: () => this.patch(`unit/${id}/deactivate`),
         };
       },
+      refdata: () => {
+        return {
+          measurements: () => this.get(`unit/refdata/measurement`),
+        };
+      }
     };
   }
 

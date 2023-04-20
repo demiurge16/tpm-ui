@@ -8,7 +8,24 @@ import { SettingsMenu } from './menu/SettingsMenu';
 import { Logo } from './menu/Logo';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { Projects, Clients, Languages, Countries, Currencies, ClientTypes, Dashboard, Account, CreateClientType, EditClientType, CreateClient, EditClient, Tasks, Invites, AdditionalCosts } from './pages/Pages';
+import { Units } from './pages/dictionaries/unit/Units';
+import { Priorities } from './pages/dictionaries/priority/Priorities';
+import { Industries } from './pages/dictionaries/industry/Industries';
+import { ExpenseCategories } from './pages/dictionaries/expense-category/ExpenseCategories';
+import { Accuracies } from './pages/dictionaries/accuracy/Accuracies';
+import { ClientTypes } from './pages/dictionaries/client-type/ClientTypes';
+import { Currencies } from './pages/dictionaries/currency/Currencies';
+import { Countries } from './pages/dictionaries/country/Countries';
+import { Languages } from './pages/dictionaries/language/Languages';
+import { Clients } from './pages/clients/Clients';
+import { Projects } from './pages/projects/Projects';
+import { Tasks } from './pages/tasks/Tasks';
+import { Expenses } from './pages/expenses/Expenses';
+import { Chats } from './pages/chats/Tasks';
+import { Notes } from './pages/notes/Tasks';
+import { Dashboard } from './pages/dashboard/Dashboard';
+import { Account } from './pages/account/Account';
+import { Users } from './pages/users/Users';
 
 function App() {
   const title = "Translation Project Manager";
@@ -29,55 +46,33 @@ function App() {
 
   const menu = new MenuConfig(
     [
-      {
-        label: "Projects",
-        path: "/projects",
-        element: <Projects />
-      },
-      {
-        label: "Tasks",
-        path: "/tasks",
-        element: <Tasks />
-      },
-      {
-        label: "Invites",
-        path: "/invites",
-        element: <Invites /> ,
-      },
-      {
-        label: "Additional Costs",
-        path: "/additional-costs",
-        element: <AdditionalCosts />
-      },
-      {
-        label: "Clients",
-        path: "/clients",
-        element: <Clients />
-      },
+      { label: Projects.title, path: Projects.path, element: <Projects.Index /> },
+      { label: Tasks.title, path: Tasks.path, element: <Tasks.Index /> },
+      { label: Tasks.title, path: Tasks.path, element: <Expenses.Index /> },
+      { label: Chats.title, path: Chats.path, element: <Chats.Index /> },
+      { label: Notes.title, path: Notes.path, element: <Notes.Index /> },
+      { label: Clients.title, path: Clients.path, element: <Clients.Index /> },
       {
         label: "Dictionaries",
         groups: {
           common: [
-            { label: "Languages", path: "/languages", element: <Languages /> },
-            { label: "Countries", path: "/countries", element: <Countries /> },
-            { label: "Currencies", path: "/currencies", element: <Currencies /> },
+            { label: Languages.title, path: Languages.path, element: <Languages.Index /> },
+            { label: Countries.title, path: Countries.path, element: <Countries.Index /> },
+            { label: Currencies.title, path: Currencies.path, element: <Currencies.Index /> },
+          ],
+          project: [
+            { label: Accuracies.title, path: Accuracies.path, element: <Accuracies.Index /> },
+            { label: ExpenseCategories.title, path: ExpenseCategories.path, element: <ExpenseCategories.Index /> },
+            { label: Industries.title, path: Industries.path, element: <Industries.Index /> },
+            { label: Priorities.title, path: Priorities.path, element: <Priorities.Index /> },
+            { label: Units.title, path: Units.path, element: <Units.Index /> },
           ],
           client: [
-            {
-              label: "Client types",
-              path: "/client-types",
-              element: <ClientTypes />,
-              subroutes: [
-                { 
-                  label: "Create client type",
-                  path: "create",
-                  element: <CreateClientType />
-                },
-              ]
-            },
+            { label: ClientTypes.title, path: ClientTypes.path, element: <ClientTypes.Index /> },
           ]
         }
-      }
+      },
+      { label: Users.title, path: Users.path, element: <Users.Index /> }
     ]
   );
 
@@ -90,19 +85,62 @@ function App() {
   const routerConfig: RouteConfig[] = [
     { path: "/", element: <Navigate to="/dashboard" /> },
     { path: "/dashboard", element: <Dashboard /> },
-    { path: "/projects", element: <Projects /> },
-    { path: "/clients", element: <Clients /> },
-    { path: "/clients/create", element: <CreateClient /> },
-    { path: "/clients/edit/:id", element: <EditClient />},
-    { path: "/tasks", element: <Tasks /> },
-    { path: "/invites", element: <Invites /> },
-    { path: "/additional-costs", element: <AdditionalCosts /> },
-    { path: "/languages", element: <Languages /> },
-    { path: "/countries", element: <Countries /> },
-    { path: "/currencies", element: <Currencies /> },
-    { path: "/client-types", element: <ClientTypes /> },
-    { path: "/client-types/create", element: <CreateClientType /> },
-    { path: "/client-types/edit/:id", element: <EditClientType /> },
+    { path: "/projects", element: <Projects.Index /> },
+    { path: "/projects/create", element: <Projects.Create /> },
+    { path: "/projects/:id/edit", element: <Projects.Edit /> },
+    { path: "/projects/:id", element: <Projects.Details /> },
+    { path: "/tasks", element: <Tasks.Index /> },
+    { path: "/tasks/create", element: <Tasks.Create /> },
+    { path: "/tasks/:id/edit", element: <Tasks.Edit /> },
+    { path: "/tasks/:id", element: <Tasks.Details /> },
+    { path: "/expenses", element: <Expenses.Index /> },
+    { path: "/expenses/create", element: <Expenses.Create /> },
+    { path: "/expenses/:id/edit", element: <Expenses.Edit /> },
+    { path: "/expenses/:id", element: <Expenses.Details /> },
+    { path: "/chats", element: <Chats.Index /> },
+    { path: "/chats/create", element: <Chats.Create /> },
+    { path: "/chats/:id/edit", element: <Chats.Edit /> },
+    { path: "/chats/:id", element: <Chats.Details /> },
+    { path: "/notes", element: <Notes.Index /> },
+    { path: "/notes/create", element: <Notes.Create /> },
+    { path: "/notes/:id/edit", element: <Notes.Edit /> },
+    { path: "/notes/:id", element: <Notes.Details /> },
+    { path: "/clients", element: <Clients.Index /> },
+    { path: "/clients/create", element: <Clients.Create /> },
+    { path: "/clients/:id/edit", element: <Clients.Edit /> },
+    { path: "/clients/:id", element: <Clients.Details /> },
+    { path: "/languages", element: <Languages.Index /> },
+    { path: "/languages/:id", element: <Languages.Details /> },
+    { path: "/countries", element: <Countries.Index /> },
+    { path: "/countries/:id", element: <Countries.Details /> },
+    { path: "/currencies", element: <Currencies.Index /> },
+    { path: "/currencies/:id", element: <Currencies.Details /> },
+    { path: "/accuracies", element: <Accuracies.Index /> },
+    { path: "/accuracies/create", element: <Accuracies.Create /> },
+    { path: "/accuracies/:id/edit", element: <Accuracies.Edit /> },
+    { path: "/accuracies/:id", element: <Accuracies.Details /> },
+    { path: "/expense-categories", element: <ExpenseCategories.Index /> },
+    { path: "/expense-categories/create", element: <ExpenseCategories.Create /> },
+    { path: "/expense-categories/:id/edit", element: <ExpenseCategories.Edit /> },
+    { path: "/expense-categories/:id", element: <ExpenseCategories.Details /> },
+    { path: "/industries", element: <Industries.Index /> },
+    { path: "/industries/create", element: <Industries.Create /> },
+    { path: "/industries/:id/edit", element: <Industries.Edit /> },
+    { path: "/industries/:id", element: <Industries.Details /> },
+    { path: "/priorities", element: <Priorities.Index /> },
+    { path: "/priorities/create", element: <Priorities.Create /> },
+    { path: "/priorities/:id/edit", element: <Priorities.Edit /> },
+    { path: "/priorities/:id", element: <Priorities.Details /> },
+    { path: "/units", element: <Units.Index /> },
+    { path: "/units/create", element: <Units.Create /> },
+    { path: "/units/:id/edit", element: <Units.Edit /> },
+    { path: "/units/:id", element: <Units.Details /> },
+    { path: "/client-types", element: <ClientTypes.Index /> },
+    { path: "/client-types/create", element: <ClientTypes.Create /> },
+    { path: "/client-types/:id/edit", element: <ClientTypes.Edit /> },
+    { path: "/client-types/:id", element: <ClientTypes.Details /> },
+    { path: "/users", element: <Users.Index /> },
+    { path: "/users/:id", element: <Users.Details /> },
     { path: "/account", element: <Account /> },
   ];
 
