@@ -54,7 +54,7 @@ export const Index = () => {
 
         setQueryDefinitions([
           {
-            id: 'code.value',
+            id: 'id.value',
             name: 'Code (ISO 639-3)',
             filter: true,
             sortable: true,

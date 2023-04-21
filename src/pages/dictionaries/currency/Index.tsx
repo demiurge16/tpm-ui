@@ -18,7 +18,7 @@ export const Index = () => {
 
   const [queryDefinitions, setQueryDefinitions] = useState([
     {
-      id: 'code.value',
+      id: 'id.value',
       name: 'Code',
       filter: true,
       sortable: true,
