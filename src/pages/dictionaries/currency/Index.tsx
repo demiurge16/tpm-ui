@@ -3,8 +3,8 @@ import { Box } from '@mui/system';
 import { useState } from 'react';
 import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
-import { environment } from '../../../Environment';
-import { Currency } from './types/Currency';
+import TpmClient from '../../../client/TpmClient';
+import { Currency } from '../../../client/types/dictionaries/Currency';
 
 export const Index = () => {
 
@@ -40,7 +40,7 @@ export const Index = () => {
       <Grid<Currency>
         startPage={startPage}
         pageSize={pageSize}
-        url={`${environment.apiUrl}/currency`}
+        fetch={TpmClient.getInstance().currencies().all}
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />

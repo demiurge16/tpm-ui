@@ -1,8 +1,7 @@
-import { Filter } from "./Filter";
+import { Filter } from "../../client/types/common/Search";
 import { QueryableColumnDefinition } from "./QueryableColumnDefinition";
 
 export interface QueryBuilderProps{
-  url: string;
   queryDefinitions: QueryableColumnDefinition[];
   onQueryChange: (filters: Filter[]) => void;
 }

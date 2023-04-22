@@ -1,4 +1,3 @@
-
 export interface Language {
   code: string;
   iso6391: string;
@@ -7,4 +6,14 @@ export interface Language {
   name: string;
   scope: string;
   type: string;
+}
+
+export interface LanguageScope {
+  code: string;
+  name: string;
+}
+
+export interface LanguageType {
+  code: string;
+  name: string;
 }

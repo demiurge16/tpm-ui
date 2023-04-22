@@ -6,7 +6,7 @@ interface PageSizeOption {
 export const PageSizeOptions: { [key: string]: PageSizeOption } = {
   unpaged: {
     label: 'Unpaged',
-    value: 0,
+    value: -1,
   },
   ten: {
     label: '10',

@@ -1,22 +1,21 @@
 import { AgGridReact } from "ag-grid-react";
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { Filter } from "./Filter";
 import { GridProps } from "./GridProps";
-import { Page } from "./Page";
-import { Query } from "./Query";
 import { QueryBuilder } from "./QueryBuilder";
 import { Box, TablePagination } from "@mui/material";
 import { SortChangedEvent } from "ag-grid-community";
+import { PageSizeOptions } from "./PageSizeOptions";
+import { Filter, Search, Sort, SortDirection } from "../../client/types/common/Search";
+import { Page } from "../../client/types/common/Page";
 
 export function Grid<Type>(props: GridProps<Type>) {
   const gridRef = useRef<AgGridReact<Type>>(null);
 
-  const [query, setQuery] = useState<Query>({
+  const [query, setQuery] = useState<Search>({
     page: props.startPage,
     pageSize: props.pageSize,
-    sort: "",
-    filters: [],
+    sort: new Array<Sort>(),
+    filters: new Array<Filter>(),
   });
 
   const [data, setData] = useState<Page<Type>>({
@@ -28,12 +27,6 @@ export function Grid<Type>(props: GridProps<Type>) {
   useEffect(() => reloadData(), []);
   useEffect(() => reloadData(), [query]);
 
-  function serializeSearch(filters: Filter[]): String {
-    return filters
-      .map((filter) => `${filter.field}:${filter.operator}:${filter.value}`)
-      .join("&");
-  }
-
   function handleChangePage(event: unknown, newPage: number) {
     setQuery({ ...query, page: newPage });
   }
@@ -43,37 +36,35 @@ export function Grid<Type>(props: GridProps<Type>) {
   }
 
   function handleSortChange(event: SortChangedEvent<Type>) {
-    const sort = event.columnApi.getColumns()
+    const sort: Sort[] = event.columnApi
+      .getColumns()
       ?.filter((column) => !!column.getSort())
-      .map((column) => `${column.getColId()}:${column.getSort()}`)
-      .join("&");
+      .map((column) => {
+        return { field: column.getColId(), direction: column.getSort() as SortDirection }
+      }) || [];
 
-    console.log(sort);
-    setQuery({ ...query, sort: sort || "" });
+    setQuery({ ...query, sort: sort || []});
   }
 
   function reloadData() {
-    axios
-      .get(props.url, {
-        params: {
-          page: query.page,
-          size: query.pageSize,
-          sort: query.sort,
-          search: serializeSearch(query.filters),
-        },
+    props
+      .fetch({
+        page: query.page,
+        pageSize: query.pageSize,
+        sort: query.sort,
+        filters: query.filters,
       })
-      .then((response) => response.data)
-      .then((data) => data as Page<Type>)
-      .then((data) => {
-        setData(data);
-        gridRef.current?.api?.sizeColumnsToFit();
+      .subscribe({
+        next: (data) => {
+          setData(data);
+          gridRef.current?.api?.sizeColumnsToFit();
+        },
       });
   }
 
   return (
     <div>
-      <QueryBuilder<Type>
-        url={props.url}
+      <QueryBuilder
         queryDefinitions={props.queryDefinitions}
         onQueryChange={(filters) => setQuery({ ...query, filters: filters })}
       />
@@ -97,6 +88,7 @@ export function Grid<Type>(props: GridProps<Type>) {
             onPageChange={handleChangePage}
             rowsPerPage={query.pageSize}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={Object.values(PageSizeOptions)}
           />
         </Box>
       </div>

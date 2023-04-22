@@ -47,6 +47,7 @@ export class Field {
     Operation.EQUALS,
     Operation.ANY,
     Operation.ALL,
+    Operation.NONE,
     Operation.IS_NULL
   ]);
 }

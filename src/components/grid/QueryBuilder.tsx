@@ -10,11 +10,11 @@ import { MultiselectFilter } from './filters/MultiselectFilter';
 import { NumberFilter } from './filters/NumberFilter';
 import { OperatorPicker } from './filters/OperationPicker';
 import { StringFilter } from './filters/StringFilter';
-import { Operation } from './Operation';
 import { QueryBuilderProps } from './QueryBuilderProps';
-import { Filter } from './Filter';
+import { Operation } from './Operation';
+import { Filter, FilterOperator } from '../../client/types/common/Search';
 
-export function QueryBuilder<Type>(props: QueryBuilderProps) {
+export function QueryBuilder(props: QueryBuilderProps) {
 
   const [state, setState] = useState<Filter[]>([]);
 
@@ -54,13 +54,13 @@ export function QueryBuilder<Type>(props: QueryBuilderProps) {
     setState(filters);
   };
 
-  const updateFilterOperator = (index: number, operator: string) => {
+  const updateFilterOperator = (index: number, operator: FilterOperator) => {
     const filters = [...state];
     filters[index].operator = operator;
     setState(filters);
   };
 
-  const updateFilterValue = (index: number, value: string | string[] | null) => {
+  const updateFilterValue = (index: number, value: string | string[] | undefined) => {
     const filters = [...state];
     filters[index].value = value;
     setState(filters);

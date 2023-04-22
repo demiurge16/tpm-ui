@@ -1,9 +1,9 @@
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
-import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
-import { environment } from '../../../Environment';
-import { Country } from './types/Country';
+import TpmClient from '../../../client/TpmClient';
+import { Field } from '../../../components/grid/Field';
+import { Country } from '../../../client/types/dictionaries/Country';
 
 export const Index = () => {
 
@@ -46,7 +46,7 @@ export const Index = () => {
       <Grid<Country>
         startPage={startPage}
         pageSize={pageSize}
-        url={`${environment.apiUrl}/country`}
+        fetch={TpmClient.getInstance().countries().all}
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />

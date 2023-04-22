@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { Box, Button, Typography } from "@mui/material";
-import { Field } from "../../../components/grid/Field";
-import { Grid } from "../../../components/grid/Grid";
-import { environment } from "../../../Environment";
-import { ClientType } from "./types/ClientType";
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { GridApi } from 'ag-grid-community';
+import TpmClient from '../../../client/TpmClient';
+import { Field } from '../../../components/grid/Field';
+import { Grid } from '../../../components/grid/Grid';
+import { ClientType, ClientTypeStatus } from '../../../client/types/client/ClientType';
 
 export const Index = () => {
   const startPage = 0;
@@ -26,7 +25,7 @@ export const Index = () => {
         const clientType = params.data as ClientType;
         const gridApi = params.api as GridApi;
 
-        const refresh = (data: any) => {
+        const refresh = (data: ClientTypeStatus) => {
           const rowNode = gridApi.getRowNode(params.rowIndex);
 
           if (rowNode) {
@@ -58,23 +57,29 @@ export const Index = () => {
     }
   ]);
 
-  const activate = (id: string, refresh: (data: any) => void) => axios.patch(`${environment.apiUrl}/client-type/${id}/activate`)
-    .then(response => {
-      console.log(`Activated ${id}`);
-      refresh(response.data);
-    })
-    .catch(error => {
-      console.log(`Error activating ${id}`);
-    });
+  const activate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
+    TpmClient.getInstance().clientTypes().withId(id).activate()
+      .subscribe({
+        next: (response) => {
+          console.log(`Activated ${id}`);
+          refresh(response);
+        },
+        error: (error) => {
+          console.log(`Error activating ${id}`);
+        }
+      });
 
-  const deactivate = (id: string, refresh: (data: any) => void) => axios.patch(`${environment.apiUrl}/client-type/${id}/deactivate`)
-    .then(response => {
-      console.log(`Deactivated ${id}`);
-      refresh(response.data);
-    })
-    .catch(error => {
-      console.log(`Error deactivating ${id}`);
-    });
+  const deactivate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
+    TpmClient.getInstance().clientTypes().withId(id).deactivate()
+      .subscribe({
+        next: (response) => {
+          console.log(`Deactivated ${id}`);
+          refresh(response);
+        },
+        error: (error) => {
+          console.log(`Error deactivating ${id}`);
+        }
+      });
 
   const [queryDefinitions, setQueryDefinitions] = useState([
     {
@@ -121,7 +126,7 @@ export const Index = () => {
       <Grid<ClientType>
         startPage={startPage}
         pageSize={pageSize}
-        url={`${environment.apiUrl}/client-type`}
+        fetch={TpmClient.getInstance().clientTypes().all}
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />

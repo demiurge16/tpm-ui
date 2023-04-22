@@ -7,11 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { environment } from "../../Environment";
 import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
-import { Country } from "../dictionaries/country/types/Country";
-import { ClientType } from "../dictionaries/client-type/types/ClientType";
-import { Page } from "../../components/grid/Page";
-import { Client } from "./types/Client";
-import { ClientUpdateRequest } from "./types/ClientUpdateRequest";
+import { Page } from "../../client/types/common/Page";
+import { Country } from "../../client/types/dictionaries/Country";
+import { ClientType } from "../../client/types/client/ClientType";
+import { Client, UpdateClient } from "../../client/types/client/Client";
 
 export interface EditParams {
   id: string;
@@ -22,7 +21,7 @@ export const Edit = () => {
 
   const [countries, setCountries] = useState<Array<Country>>([]);
   const [types, setTypes] = useState<Array<ClientType>>([]);
-  const [initialValues, setInitialValues] = useState<ClientUpdateRequest>({} as ClientUpdateRequest);
+  const [initialValues, setInitialValues] = useState<UpdateClient>({} as UpdateClient);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -55,7 +54,7 @@ export const Edit = () => {
     });
   }, [id]);
 
-  const handleSubmit = async (values: ClientUpdateRequest) =>
+  const handleSubmit = async (values: UpdateClient) =>
     axios.put(`${environment.apiUrl}/client/${id}`, values)
       .then(response => {
         navigate("/clients");

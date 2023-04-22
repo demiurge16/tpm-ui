@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { ClientTypeCreateRequest } from "./types/ClientTypeCreateRequest";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate } from "react-router-dom";
 import TpmClient from "../../../client/TpmClient";
+import { CreateClientType } from "../../../client/types/client/ClientType";
 
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: ClientTypeCreateRequest) =>
+  const handleSubmit = async (values: CreateClientType) =>
     TpmClient.getInstance()
       .clientTypes()
       .create(values)

@@ -7,9 +7,8 @@ import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
 import { QueryableColumnDefinition } from '../../../components/grid/QueryableColumnDefinition';
 import { environment } from '../../../Environment';
-import { Language } from './types/Language';
-import { LanguageScope } from './types/LanguageScope';
-import { LanguageType } from './types/LanguageType';
+import TpmClient from '../../../client/TpmClient';
+import { Language, LanguageScope, LanguageType } from '../../../client/types/dictionaries/Language';
 
 export const Index = () => {
 
@@ -101,8 +100,6 @@ export const Index = () => {
       });
   }, []);
 
-
-
   return (
     <Box>
       <Typography variant="h4">Languages</Typography>
@@ -110,7 +107,7 @@ export const Index = () => {
       <Grid<Language>
         startPage={startPage}
         pageSize={pageSize}
-        url={`${environment.apiUrl}/language`}
+        fetch={TpmClient.getInstance().languages().all}
         queryDefinitions={queryDefinitions}
         columnDefinitions={columnDefs}
       />

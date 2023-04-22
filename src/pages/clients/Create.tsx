@@ -4,13 +4,13 @@ import { Box } from "@mui/system";
 import axios from "axios";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
-import { ClientCreateRequest } from "./types/ClientCreateRequest";
 import { environment } from "../../Environment";
 import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
-import { Country } from "../dictionaries/country/types/Country";
-import { ClientType } from "../dictionaries/client-type/types/ClientType";
-import { Page } from "../../components/grid/Page";
+import { Page } from "../../client/types/common/Page";
+import { CreateClient } from "../../client/types/client/Client";
+import { Country } from "../../client/types/dictionaries/Country";
+import { ClientType } from "../../client/types/client/ClientType";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -20,7 +20,7 @@ export const Create = () => {
 
   const navigate = useNavigate();
 
-  const initialValues: ClientCreateRequest = {
+  const initialValues: CreateClient = {
     name: '',
     email: '',
     phone: '',
@@ -48,7 +48,7 @@ export const Create = () => {
     });
   }, []);
 
-  const handleSubmit = async (values: ClientCreateRequest) =>
+  const handleSubmit = async (values: CreateClient) =>
     axios.post(`${environment.apiUrl}/client`, values)
       .then(response => {
         navigate("/clients");
