@@ -99,63 +99,54 @@ export const Index = () => {
           id: "id",
           name: "Id",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "name",
           name: "Name",
           filter: true,
-          sortable: true,
           type: Field.STRING
         },
         {
           id: "email",
           name: "Email",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "phone",
           name: "Phone",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "address",
           name: "Address",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "city",
           name: "City",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "state",
           name: "State",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "zip",
           name: "Zip",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "country.code",
           name: "Country",
           filter: true,
-          sortable: false,
           type: Field.SELECT,
           options: countries.items.map(c => ({ value: c.code, label: c.name }))
         },
@@ -163,14 +154,12 @@ export const Index = () => {
           id: "vat",
           name: "VAT",
           filter: true,
-          sortable: false,
           type: Field.STRING
         },
         {
           id: "type.id.value",
           name: "Type",
           filter: true,
-          sortable: false,
           type: Field.SELECT,
           options: types.items.map(t => ({ value: t.id, label: t.name }))
         },
@@ -178,7 +167,6 @@ export const Index = () => {
           id: "active",
           name: "Active",
           filter: true,
-          sortable: false,
           type: Field.BOOLEAN
         }
       ]);

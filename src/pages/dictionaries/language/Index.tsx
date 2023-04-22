@@ -27,11 +27,11 @@ export const Index = () => {
       .then(([scopesResponse, typesResponse]) => Promise.all([scopesResponse.data, typesResponse.data]))
       .then(([scopes, types]) => {
         setColumnDefs([
-          { headerName: 'Code (ISO 639-3)', field: 'code', resizable: true },
-          { headerName: 'Code (ISO 639-2/T)', field: 'iso6392t', resizable: true },
-          { headerName: 'Code (ISO 639-2/B)', field: 'iso6392b', resizable: true },
-          { headerName: 'Code (ISO 639-1)', field: 'iso6391', resizable: true },
-          { headerName: 'Name', field: 'name', resizable: true },
+          { headerName: 'Code (ISO 639-3)', field: 'code', resizable: true, sortable: true },
+          { headerName: 'Code (ISO 639-2/T)', field: 'iso6392t', resizable: true, sortable: true },
+          { headerName: 'Code (ISO 639-2/B)', field: 'iso6392b', resizable: true, sortable: true },
+          { headerName: 'Code (ISO 639-1)', field: 'iso6391', resizable: true, sortable: true },
+          { headerName: 'Name', field: 'name', resizable: true, sortable: true },
           {
             headerName: 'Scope',
             field: 'scope',
@@ -57,42 +57,36 @@ export const Index = () => {
             id: 'id.value',
             name: 'Code (ISO 639-3)',
             filter: true,
-            sortable: true,
             type: Field.STRING
           },
           {
             id: 'iso6392T',
             name: 'Code (ISO 639-2/T)',
             filter: true,
-            sortable: true,
             type: Field.STRING
           },
           {
             id: 'iso6392B',
             name: 'Code (ISO 639-2/B)',
             filter: true,
-            sortable: true,
             type: Field.STRING
           },
           {
             id: 'iso6391',
             name: 'Code (ISO 639-1)',
             filter: true,
-            sortable: true,
             type: Field.STRING
           },
           {
             id: 'name',
             name: 'Name',
             filter: true,
-            sortable: true,
             type: Field.STRING
           },
           {
             id: 'scope',
             name: 'Scope',
             filter: true,
-            sortable: false,
             type: Field.SELECT,
             options: scopes.map(scope => ({ value: scope.code, label: scope.name }))
           },
@@ -100,7 +94,6 @@ export const Index = () => {
             id: 'type',
             name: 'Type',
             filter: true,
-            sortable: false,
             type: Field.SELECT,
             options: types.map(type => ({ value: type.code, label: type.name }))
           },
