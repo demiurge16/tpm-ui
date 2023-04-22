@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import axios from "axios";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
-import { environment } from "../../../Environment";
 import { useNavigate, useParams, } from "react-router-dom";
 import { UpdateClientType } from "../../../client/types/client/ClientType";
+import TpmClient from "../../../client/TpmClient";
 
 export interface EditParams {
   id: string;
@@ -20,24 +19,31 @@ export const Edit = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    axios.get(`${environment.apiUrl}/client-type/${id}`)
-      .then(response => {
-        setClientType(response.data);
-      })
-      .catch(error => {
-        setServerError(error);
+    if (!id) return;
+
+    TpmClient.getInstance()
+      .clientTypes()
+      .withId(id)
+      .get()
+      .subscribe({
+        next: (response) => setClientType(response),
+        error: (error) => setServerError(error)
       });
   }, [id]);
 
-  const handleSubmit = async (values: UpdateClientType) =>
-    axios.put(`${environment.apiUrl}/client-type/${id}`, values)
-      .then(response => {
-        navigate("/client-types");
-      })
-      .catch(error => {
-        setServerError(error);
-      });
+  const handleSubmit = async (values: UpdateClientType) => {
+    if (!id) return;
 
+    TpmClient.getInstance()
+      .clientTypes()
+      .withId(id)
+      .update(values)
+      .subscribe({
+        next: () => navigate("/client-types"),
+        error: (error) => setServerError(error)
+      });
+  }
+    
   return (
     <Box>
       <Typography variant="h4">Edit client type</Typography>

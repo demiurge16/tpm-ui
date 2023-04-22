@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import axios from "axios";
 import { Form } from "react-final-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { environment } from "../../Environment";
 import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
-import { Page } from "../../client/types/common/Page";
 import { Country } from "../../client/types/dictionaries/Country";
 import { ClientType } from "../../client/types/client/ClientType";
-import { Client, UpdateClient } from "../../client/types/client/Client";
+import { UpdateClient } from "../../client/types/client/Client";
+import { forkJoin } from "rxjs";
+import TpmClient from "../../client/TpmClient";
 
 export interface EditParams {
   id: string;
@@ -27,17 +26,19 @@ export const Edit = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    Promise.all([
-      axios.get<Page<Country>>(`${environment.apiUrl}/country`),
-      axios.get<Page<ClientType>>(`${environment.apiUrl}/client-type`),
-      axios.get<Client>(`${environment.apiUrl}/client/${id}`)
-    ]).then(([countriesResponse, typesResponse, clientResponse]) => {
-      return Promise.all([
-        countriesResponse.data.items, typesResponse.data.items, clientResponse.data
-      ]);
-    }).then(([countries, types, client]) => {
-      setCountries(countries);
-      setTypes(types);
+    if (!id) {
+      return;
+    }
+
+    forkJoin({
+      countries: TpmClient.getInstance().countries().all(),
+      types: TpmClient.getInstance().clientTypes().all(),
+      client: TpmClient.getInstance().clients().withId(id).get()
+    }).subscribe((response) => {
+      const { countries, types, client } = response;
+
+      setCountries(countries.items);
+      setTypes(types.items);
       setInitialValues({
         name: client.name,
         email: client.email,
@@ -54,14 +55,20 @@ export const Edit = () => {
     });
   }, [id]);
 
-  const handleSubmit = async (values: UpdateClient) =>
-    axios.put(`${environment.apiUrl}/client/${id}`, values)
-      .then(response => {
-        navigate("/clients");
-      })
-      .catch(error => {
-        setServerError(error);
+  const handleSubmit = async (values: UpdateClient) => {
+    if (!id) {
+      return;
+    }
+
+    TpmClient.getInstance()
+      .clients()
+      .withId(id)
+      .update(values)
+      .subscribe({
+        next: () => navigate("/clients"),
+        error: (error) => setServerError(error)
       });
+  }
 
   return (
     <Box>

@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import axios from "axios";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
-import { environment } from "../../Environment";
 import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
-import { Page } from "../../client/types/common/Page";
 import { CreateClient } from "../../client/types/client/Client";
 import { Country } from "../../client/types/dictionaries/Country";
 import { ClientType } from "../../client/types/client/ClientType";
+import { forkJoin } from "rxjs";
+import TpmClient from "../../client/TpmClient";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -35,26 +34,22 @@ export const Create = () => {
   };
 
   useEffect(() => {
-    Promise.all([
-      axios.get<Page<Country>>(`${environment.apiUrl}/country`),
-      axios.get<Page<ClientType>>(`${environment.apiUrl}/client-type`)
-    ]).then(([countriesResponse, typesResponse]) => {
-      return Promise.all([
-        countriesResponse.data.items, typesResponse.data.items
-      ]);
-    }).then(([countries, types]) => {
-      setCountries(countries);
-      setTypes(types);
+    forkJoin({
+      countries: TpmClient.getInstance().countries().all(),
+      types: TpmClient.getInstance().clientTypes().all()
+    }).subscribe((response) => {
+      setCountries(response.countries.items);
+      setTypes(response.types.items);
     });
   }, []);
 
   const handleSubmit = async (values: CreateClient) =>
-    axios.post(`${environment.apiUrl}/client`, values)
-      .then(response => {
-        navigate("/clients");
-      })
-      .catch(error => {
-        setServerError(error);
+    TpmClient.getInstance()
+      .clients()
+      .create(values)
+      .subscribe({
+        next: () => navigate("/clients"),
+        error: (error) => setServerError(error)
       });
 
   return (
