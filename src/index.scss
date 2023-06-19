@@ -1,8 +1,37 @@
+@import "../node_modules/ag-grid-community/src/styles/ag-grid.scss";
+@import "../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
+
+@font-face {
+  font-family: "Noto Color Emoji";
+  src: url("../assets/fonts/NotoColorEmoji-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "EmojiMart";
+  src: url("../assets/fonts/NotoColorEmoji-Regular.ttf") format("truetype");
+}
+
+// decare the font family variables
+$font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  "Noto Color Emoji", sans-serif;
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: $font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.ag-theme-material-tpm {
+  @include ag-theme-material();
+
+  // Override the font family
+  .ag-root {
+    font-family: $font-family;
+  }
+}
+
+em-emoji-picker {
+  --border-radius: 0;
 }

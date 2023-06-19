@@ -1,26 +1,23 @@
 import "./App.scss";
+import { useContext, useState } from "react";
 import {
-  Routes,
   Route,
   Link as RouterLink,
-  useLocation,
   Navigate,
+  Routes,
 } from "react-router-dom";
-import { MenuConfig } from "./menu/MenuConfig";
 import {
-  AppBar,
   Container,
   CssBaseline,
-  Toolbar,
   Typography,
   Box,
-  Link,
+  IconButton,
   Breadcrumbs,
-  Divider,
+  Link,
+  AppBar,
+  Toolbar,
+  useTheme,
 } from "@mui/material";
-import { Navbar } from "./menu/Navbar";
-import { SettingsMenu } from "./menu/SettingsMenu";
-import { Logo } from "./menu/Logo";
 import { Units } from "./pages/dictionaries/unit/Units";
 import { Priorities } from "./pages/dictionaries/priority/Priorities";
 import { Industries } from "./pages/dictionaries/industry/Industries";
@@ -40,93 +37,20 @@ import { Dashboard } from "./pages/dashboard/Dashboard";
 import { Account } from "./pages/account/Account";
 import { Users } from "./pages/users/Users";
 import { SecuredRoute } from "./components/routing/PrivateRoute";
-import { Utils } from "./pages/utils/Utils";
+import MenuIcon from "@mui/icons-material/Menu";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { SettingsMenu } from "./layout/SettingsMenu";
+import { Search } from "./layout/Search";
+import { Notifications } from "./layout/Notifications";
+import { Messages } from "./layout/Messages";
+import { LanguageSwitcher } from "./layout/LanguageSwitcher";
+import { ThemeSwitcher } from "./layout/ThemeSwitcher";
+import { NavigationDrawer } from "./layout/NavigationDrawer";
+import { Errors } from "./pages/errors/Errors";
+import { BreadcrumbsContext } from "./contexts/BreadcrumbsContext";
 
 function App() {
   const title = "Translation Project Manager";
-
-  const breadcrumb = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Projects", path: "/projects" },
-    { name: "Tasks", path: "/tasks" },
-    { name: "Expenses", path: "/expenses" },
-    { name: "Chats", path: "/chats" },
-    { name: "Notes", path: "/notes" },
-    { name: "Clients", path: "/clients" },
-    { name: "Languages", path: "/languages" },
-    { name: "Countries", path: "/countries" },
-    { name: "Currencies", path: "/currencies" },
-    { name: "Accuracies", path: "/accuracies" },
-    { name: "Expense categories", path: "/expense-categories" },
-    { name: "Industries", path: "/industries" },
-    { name: "Priorities", path: "/priorities" },
-    { name: "Units", path: "/units" },
-    { name: "Client types", path: "/client-types" },
-    { name: "Users", path: "/users" },
-    { name: "Account", path: "/account" },
-  ];
-
-  const menu = new MenuConfig([
-    { label: Projects.title, path: Projects.path, element: <Projects.Index /> },
-    { label: Tasks.title, path: Tasks.path, element: <Tasks.Index /> },
-    { label: Expenses.title, path: Expenses.path, element: <Expenses.Index /> },
-    { label: Chats.title, path: Chats.path, element: <Chats.Index /> },
-    { label: Notes.title, path: Notes.path, element: <Notes.Index /> },
-    { label: Clients.title, path: Clients.path, element: <Clients.Index /> },
-    {
-      label: "Dictionaries",
-      groups: {
-        common: [
-          {
-            label: Languages.title,
-            path: Languages.path,
-            element: <Languages.Index />,
-          },
-          {
-            label: Countries.title,
-            path: Countries.path,
-            element: <Countries.Index />,
-          },
-          {
-            label: Currencies.title,
-            path: Currencies.path,
-            element: <Currencies.Index />,
-          },
-        ],
-        project: [
-          {
-            label: Accuracies.title,
-            path: Accuracies.path,
-            element: <Accuracies.Index />,
-          },
-          {
-            label: ExpenseCategories.title,
-            path: ExpenseCategories.path,
-            element: <ExpenseCategories.Index />,
-          },
-          {
-            label: Industries.title,
-            path: Industries.path,
-            element: <Industries.Index />,
-          },
-          {
-            label: Priorities.title,
-            path: Priorities.path,
-            element: <Priorities.Index />,
-          },
-          { label: Units.title, path: Units.path, element: <Units.Index /> },
-        ],
-        client: [
-          {
-            label: ClientTypes.title,
-            path: ClientTypes.path,
-            element: <ClientTypes.Index />,
-          },
-        ],
-      },
-    },
-    { label: Users.title, path: Users.path, element: <Users.Index /> },
-  ]);
 
   type RouteConfig = {
     path: string;
@@ -211,66 +135,116 @@ function App() {
       );
     });
 
-  const location = useLocation();
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const currentBreadcrumb = breadcrumbsContext.breadcrumbs;
 
-  const currentBreadcrumb = breadcrumb.find(
-    (x) => x.path === location.pathname
-  );
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
+  const drawerWidth = 240;
+  const theme = useTheme();
+  const drawerOpenAnimation = theme.transitions.create("padding-left", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  });
+  const drawerCloseAnimation = theme.transitions.create("padding-left", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  });
 
   return (
     <>
       <CssBaseline />
-      <AppBar position="sticky">
-        <Container maxWidth="xl">
+      <Container
+        maxWidth={false}
+        sx={{
+          display: "flex",
+          minHeight: "100vh",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+        }}
+      >
+        <AppBar
+          position="fixed"
+          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        >
           <Toolbar>
-            <Logo title={title}></Logo>
-            <Navbar elements={menu.elements}></Navbar>
-            <Box sx={{ flexGrow: 1 }} />
-            <SettingsMenu></SettingsMenu>
-          </Toolbar>
-        </Container>
-        <Divider />
-        <Container maxWidth="xl">
-          {currentBreadcrumb && (
-            <Breadcrumbs aria-label="breadcrumb">
-              <Link
-                underline="hover"
-                color="inherit"
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={() => toggleDrawer()}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />}>
+              <Link underline="hover" color="text.primary"
                 component={RouterLink}
                 to="/dashboard"
               >
-                Home
+                <Typography variant="h6" component="div">
+                  {title}
+                </Typography>
               </Link>
-              <Typography color="text.primary">
-                {currentBreadcrumb.name}
-              </Typography>
+              {currentBreadcrumb && (
+                currentBreadcrumb.map((item) => {
+                  return (
+                    <Link
+                      underline="hover"
+                      color="inherit"
+                      component={RouterLink}
+                      to={item.path}
+                    >
+                      <Typography variant="h6" component="div" color="inherit">
+                        {item.label}
+                      </Typography>
+                    </Link>
+                  );
+                })
+              )}
             </Breadcrumbs>
-          )}
-        </Container>
-      </AppBar>
-      <main role="main">
-        <Container maxWidth="xl">
-          <Box sx={{ pt: 4 }}>
-            <Routes>{routesRender(routerConfig)}</Routes>
-          </Box>
-        </Container>
-      </main>
-      <footer>
-        <Container maxWidth="xl">
-          <Toolbar>
-            <Typography variant="body1" color="inherit">
-              © 2022 Translation Project Manager by&nbsp;
-              <Link
-                href="https://nuclear-prometheus.net/"
-                color="inherit"
-                underline="hover"
-              >
-                nuclear-prometheus.net
-              </Link>
-            </Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            <Search></Search>
+            <Notifications></Notifications>
+            <Messages></Messages>
+            <ThemeSwitcher></ThemeSwitcher>
+            <LanguageSwitcher></LanguageSwitcher>
+            <SettingsMenu></SettingsMenu>
           </Toolbar>
-        </Container>
-      </footer>
+        </AppBar>
+        <NavigationDrawer open={drawerOpen}></NavigationDrawer>
+        <Box
+          component="main"
+          sx={{
+            paddingLeft: drawerOpen ? `${drawerWidth}px` : theme.spacing(7),
+            transition: drawerOpen ? drawerOpenAnimation : drawerCloseAnimation,
+          }}
+        >
+          <Toolbar />
+          <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
+            <Routes>
+              {routesRender(routerConfig)}
+              <Route path="*" element={<Errors.NotFound />} />
+            </Routes>
+          </Container>
+        </Box>
+        <Box component="footer" sx={{ p: 2 }}>
+          <Typography variant="body2" color="text.secondary" align="center">
+            © 2022 Translation Project Manager by&nbsp;
+            <Link
+              href="https://nuclear-prometheus.net/"
+              color="inherit"
+              underline="hover"
+            >
+              nuclear-prometheus.net
+            </Link>
+          </Typography>
+        </Box>
+      </Container>
     </>
   );
 }

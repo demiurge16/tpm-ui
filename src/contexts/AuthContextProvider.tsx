@@ -113,6 +113,7 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
   }, [isAuthenticated]);
 
   const logout = () => {
+    setAuthenticated(false);
     keycloak.logout();
   };
 

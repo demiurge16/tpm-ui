@@ -4,8 +4,7 @@
 
 * [Wprowadzenie](#wprowadzenie)
   * [Wspóczesne zarządzanie projektami](#wspóczesne-zarządzanie-projektami)
-  * [Czym jest system zarządzania projektami](#czym-jest-system-zarządzania-projektami)
-  * [Czemu warto używać systemu zarządzania projektami](#czemu-warto-używać-systemu-zarządzania-projektami)
+  * [Systemy zarządzania projektami](#systemy-zarządzania-projektami)
   * [Biznes tłumaczeń w dzisiejszych czasach](#biznes-tłumaczeń-w-dzisiejszych-czasach)
   * [Czemu SI jeszcze nie zastąpiła człowieka w tłumaczeniach?](#czemu-si-jeszcze-nie-zastąpiła-człowieka-w-tłumaczeniach)
   * [Czemu warto używać specjalistycznego narzędzia](#czemu-warto-używać-specjalistycznego-narzędzia)
@@ -103,9 +102,19 @@
 
 ###	Wspóczesne zarządzanie projektami
 
-Współczesne zarządzanie projektami to dziedzina, która stale się rozwija i ewoluuje [1]. Wraz z postępem technologicznym i zmianami w sposobie pracy, zarządzanie projektami staje się coraz bardziej złożone i wymagające [4]. Obecnie, aby skutecznie zarządzać projektem, potrzebne jest posiadanie kompleksowej wiedzy z zakresu zarządzania, umiejętności analitycznych, organizacyjnych oraz interpersonalnych [1].
+Wykonanie każdego zadania, nieważne jak skomplikowane i wielkie - czy ż by to była budowa nowego wieżowca czy otwarcie małego osiedlowego sklepu - może być nazwane projektem. Większość z nas dokładnie wie, jak tego rodzaju dzieła kształtują nasz życiu osobistym i/lub zawodowym. Niestety, nie wszystkie projekty kończą się pełnym sukcesem. Zdarzają się prekroczenia budżetów i terminów realizacji, mogą nie spełniać wymagań stawianych przez klientów lub przez nas samych. Część projektów zostaje porzucona.
 
-Współczesne podejście do zarządzania projektami opiera się na podejściu Agile, które stawia na elastyczność i dostosowanie się do zmieniających się wymagań i potrzeb klienta [2][3][5]. Według tego podejścia, sukces projektu zależy od ciągłej komunikacji między zespołem projektowym a klientem oraz od częstych wersji prototypowych, które pozwalają na szybką reakcję na zmieniające się potrzeby klienta [2].
+Umiejętne zarżądzanie jest ważnym czynnikiem, mającym znaczący wpływ na sukces w realizacji projektu. Skuteczne zarządzanie opiera się na wysokim poziomie kompetencji w kilku obszarach. Potrzebne są umiejętności optymalnego planowania, podtrzymania motywacji zespołu, komunikacji interpersonalnej oraz często szeroka wiedza techniczna i dziedzinowa. Wszystkie te elementy są istotne podczas realizacji różnorodnych typu projektów i maja olbrzymi wpływ na ich końcowy sukces [1]. Zarządzanie projektami dzisiaj zajmuje się zbieraniem wiedzy i poszerzaniem wiedzy oraz budowaniem narzędzi, metodyk i technik, które pomagają w efektywnej realizacji projektów. Zarządzanie projektami jest bardzo bogatą i szeroką dyscypliną zawiera w sobie tysiące lat doświadczenia w realizacji różnej skali projektów i stanowi jedną z najbardziej dynamicznie rozwijających się dziedzin zarządzania. Wiele organizacji, w tym także te związane z tłumaczeniami, zaczyna dostrzegać korzyści płynące z zastosowania narzędzi i technik zarządzania projektami.
+
+Pierwsza połowa XX wieku stała się początkiem ery szerokiego użycia nowych technologii i narzędzi. Upowszechnienie samolotów i samochodów poskutkowało zwiększeniem mobilności zasobów i pozwoliło na dużo bardziej efektywną ich alokację. Rozwój środków telekomunikacji w postaci telegrafów i telefonów spowodował zanczące uproszenia w komunikacji na duże odłegłosći. Pojawiały się pierwsze komputery i bazy danych, co z kolei uprościło różnolakie obliczenia i procesy administracyjne. Kolejnym ważnym w tym okresie wydarzeniem było pojawienie się pierwszych koncepcji zarządzania projektami. W 1917 roku Henry Gantt opracował diagram, który pozwalał na wizualizację harmonogramu projektu. Jednym z pierwszych zastosowań wykresu Gantta w dużych projektach było planowanie i realizacja budowy Zapory Hoovera w latach 1931-1936[2]. 
+
+Za początek współczesnego zarządzania projektami można uznać założenie Amerykańskiego Stowarzyszenia Inżynierów Kosztów (ang. The American Association of Cost Engineers, dzisiaj AACE International) w roku 1956, które do dzisiaj pozostaje wiodącym stowarzyszeniem zawodowym dla kosztorysantów, inżynierów kosztów, planistów, kierowników projektów i specjalistów ds. kontroli projektów. W kolejnych latach zaczęły pojawiać się pierwsze metodyki zarządzania projektami, takie jak CPM/PERT. W roku 1969 powstał Project Management Institute (PMI), który jest największą organizacją na świecie zrzeszającą specjalistów z zakresu zarządzania projektami. W kolejnych latach zaczęły pojawiać się kolejne metodyki zarządzania projektami, takie jak PRINCE2, PMBOK, Scrum, Kanban, Lean, itd.
+
+Na przesztrzeni lat możemy zauważyć jak podejście do zarządzania projektami zmieniało się od bardziej "sztywnego" sekwencyjnego podejścia, które zakładało że wszystkie wymagania projektówe są znane na początku realizacji do "reaktywnego" zwinnego podejścia, które pozwalało lepiej przystosować się do ciągle zmieniających sie potrzeb. Zmiany te wynikały ze wzrostem skali i złożoności projektów oraz potrzebą reagować na coraz bardziej dynamicznie rozwijający się świat.
+
+Najbardziej znaną sekwencyjną metodyką jest Waterfall. W dniu dzisiejszym najczęściej Waterfall jest wykorzystywany w małych projektach, termin realizacji których jest za mały żeby zaszła możliwość zmiany wymagań lub w projektach, które są bardzo dobrze zdefiniowane i nie ulegają zmianie w trakcie realizacji, np. grach wideo czy projektach budowlanych.
+
+W większości innych przypadków są stosowane podejścia zwinne, często określanie jako podejścia Agile. Agile sam w sobie nie jest metodyką, a raczej zbiorem wartości i zasad, które są opisane w Agile Manifesto. Metody, które spełniają wartości Agile, to np. Scrum, Kanban, FDD, RAD, XP, itd. Metodyki Agile pozwalają na szybkie dostosowanie się do potrzeb klięnta czy zmian rynku[2][3][5]. Według tego podejścia, sukces projektu zależy od ciągłej komunikacji między zespołem projektowym a klientem oraz od częstych wersji prototypowych, które pozwalają na szybką reakcję na zmieniające się potrzeby klienta [2]. Chociaż najczęściej podejście Agile stosowane jest w projektach informatycznych, to jednak może być również wykorzystywane w innych projektach, które wymagają częstych zmian i dostosowywania się do zmieniających się potrzeb klienta [6], czy też w projektach, które wymagają częstego testowania i weryfikacji.
 
 Innym ważnym elementem współczesnego zarządzania projektami jest wykorzystanie narzędzi informatycznych, takich jak oprogramowanie do zarządzania projektami, które umożliwiają prowadzenie projektów na wysokim poziomie i ułatwiają koordynację pracy zespołu [1]. Dodatkowo, analiza danych i wykorzystanie narzędzi Business Intelligence pozwala na wgląd w efektywność projektów oraz umożliwia podejmowanie szybkich i trafnych decyzji [1].
 
@@ -118,51 +127,45 @@ Ważnym elementem współczesnego zarządzania projektami jest również zwróce
 3. "Agile Project Management with Scrum" - Ken Schwaber
 4. "Effective Project Management: Traditional, Agile, Extreme" - Robert K. Wysocki
 5. "The Project Manager's Guide to Mastering Agile" - Charles G. Cobb
+6. Waterfall vs Agile - https://www.atlassian.com/agile/project-management/waterfall-vs-agile
+7. Waterfall Model a Complete Guide - 2019 Edition - Gerardus Blokdyk
 
-### Czym jest system zarządzania projektami
+### Systemy zarządzania projektami
 
-System zarządzania projektami (Project Management System, PMS) to narzędzie informatyczne, które pozwala na kompleksowe zarządzanie projektem poprzez koordynację pracy zespołu, planowanie zadań, monitorowanie postępów i raportowanie wyników. [1]
-
-Systemy PMS oferują szereg funkcji, takich jak harmonogramowanie projektu, przydział zadań i zasobów, monitorowanie postępu, śledzenie kosztów, tworzenie raportów, zarządzanie ryzykiem, komunikacja i współpraca między członkami zespołu projektowego, zarządzanie dokumentacją projektową oraz udostępnianie informacji zewnętrznym interesariuszom. [1][2]
-
-Systemy PMS wykorzystują również narzędzia analityczne i sztuczną inteligencję w celu poprawy efektywności zarządzania projektem. Coraz popularniejsze są systemy oparte na podejściu Agile, które pozwalają na elastyczne dostosowanie się do zmieniających się wymagań klienta. [1]
+System zarządzania projektami (Project Management System, PMS) to narzędzie informatyczne, które pozwala na kompleksowe zarządzanie projektem poprzez koordynację pracy zespołu, planowanie zadań, monitorowanie postępów i raportowanie wyników. Często PMS wspierają różne współczesne metody zarządznia projektami, w tym z rodziny Agile. [8][9]
 
 Przykładowe PMS to:
 
 * Asana
 * Trello
-* Jira
+* Jira (często w połączeniu z Confluence)
 * Monday
 * Basecamp
 * Microsoft Project
 * Smartsheet
 * Wrike
+* Notion
+* Redmine
 
-Systemy te mogą być wykorzystywane do zarządzania różnymi projektami, takimi jak tworzenie oprogramowania, budowa, kampanie marketingowe i inne. Są one zaprojektowane tak, aby pomóc kierownikom projektów i zespołom pozostać zorganizowanym, efektywnie współpracować i dostarczać projekty na czas i w ramach budżetu. [1]
+Systemy PMS oferują szereg funkcji, takich jak harmonogramowanie projektu, przydział zadań i zasobów, monitorowanie postępu, śledzenie kosztów, tworzenie raportów, zarządzanie ryzykiem, komunikacja i współpraca między członkami zespołu projektowego, zarządzanie dokumentacją projektową oraz udostępnianie informacji zewnętrznym interesariuszom.
 
-Źródła:
+Jedną z głównych zalet systemów PMS jest zwiększenie efektywności zarządzania projektem. Dzięki temu narzędziu można w łatwy sposób zaplanować zadania, przydzielić je do odpowiednich członków zespołu i monitorować postępy ich realizacji. Systemy te umożliwiają również zdefiniowanie celów, weryfikację osiągnięć, ocenę ryzyka oraz identyfikację potencjalnych problemów. [10]
 
-1. Project Management Institute (PMI) - https://www.pmi.org/
-2. "Project Management Systems: A Technology Review" - Alok Mishra and Neeraj Mishra, International Journal of Computer Applications Technology and Research, Volume 5– Issue 1, 2016
+Kolejną korzyścią wynikającą z zastosowania PMS jest zwiększenie transparentności działań w projekcie. Wszyscy członkowie zespołu mają dostęp do aktualnych informacji na temat postępów i wyników projektu, a także mogą w prosty sposób wymieniać się informacjami i uwagami na temat pracy. Systemy PMS pozwalają również na zwiększenie komunikacji z zewnętrznymi interesariuszami, co jest szczególnie ważne w przypadku dużych i złożonych projektów. [11]
 
-### Czemu warto używać systemu zarządzania projektami
+Korzyści wynikające z wykorzystania systemów PMS dotyczą również oszczędności czasu i zwiększenia efektywności pracy. Dzięki temu narzędziu można w prosty i szybki sposób reagować na zmieniające się wymagania projektu, a także przeprowadzać analizy i prognozy dotyczące postępów i kosztów. [12]
 
-Wykorzystanie systemu zarządzania projektami (PMS) przynosi wiele korzyści w procesie realizacji projektów, zwłaszcza w przypadku złożonych i wymagających przedsięwzięć. PMS pozwala na uporządkowanie i usystematyzowanie działań związanych z projektem, a także na bieżąco kontrolowanie postępów i korygowanie błędów w trakcie trwania projektu. [1]
+Systemy PMS wykorzystują również narzędzia analityczne i sztuczną inteligencję w celu poprawy efektywności zarządzania projektem. [8]
 
-Jedną z głównych zalet systemów PMS jest zwiększenie efektywności zarządzania projektem. Dzięki temu narzędziu można w łatwy sposób zaplanować zadania, przydzielić je do odpowiednich członków zespołu i monitorować postępy ich realizacji. Systemy te umożliwiają również zdefiniowanie celów, weryfikację osiągnięć, ocenę ryzyka oraz identyfikację potencjalnych problemów. [2]
-
-Kolejną korzyścią wynikającą z zastosowania PMS jest zwiększenie transparentności działań w projekcie. Wszyscy członkowie zespołu mają dostęp do aktualnych informacji na temat postępów i wyników projektu, a także mogą w prosty sposób wymieniać się informacjami i uwagami na temat pracy. Systemy PMS pozwalają również na zwiększenie komunikacji z zewnętrznymi interesariuszami, co jest szczególnie ważne w przypadku dużych i złożonych projektów. [3]
-
-Korzyści wynikające z wykorzystania systemów PMS dotyczą również oszczędności czasu i zwiększenia efektywności pracy. Dzięki temu narzędziu można w prosty i szybki sposób reagować na zmieniające się wymagania projektu, a także przeprowadzać analizy i prognozy dotyczące postępów i kosztów. [4]
-
-Podsumowując, wykorzystanie systemu zarządzania projektami przynosi wiele korzyści dla zarządzania projektami, takich jak zwiększenie efektywności, transparentności i oszczędność czasu. Dzięki temu narzędziu można w prosty sposób zaplanować i monitorować postępy projektu, a także zwiększyć komunikację i współpracę między członkami zespołu oraz z zewnętrznymi interesariuszami.
+Systemy te mogą być wykorzystywane do zarządzania różnymi projektami, takimi jak tworzenie oprogramowania, budowa, kampanie marketingowe i inne. Są one zaprojektowane tak, aby pomóc kierownikom projektów i zespołom pozostać zorganizowanym, efektywnie współpracować i dostarczać projekty na czas i w ramach budżetu. [8]
 
 Źródła:
 
-1. "Project Management Systems: A Technology Review" - Alok Mishra and Neeraj Mishra, International Journal of Computer Applications Technology and Research, Volume 5– Issue 1, 2016
-2. "The Benefits of Project Management Software" - Derek Huether, ProjectManager.com - https://www.projectmanager.com/blog/the-benefits-of-project-management-software
-3. "The Advantages of Project Management Software" - Workzone - https://www.workzone.com/blog/the-advantages-of-project-management-software/
-4. "Why Use Project Management Software?" - Zoho - https://www.zoho.com/projects/blog/
+8. Project Management Institute (PMI) - https://www.pmi.org/
+9. "Project Management Systems: A Technology Review" - Alok Mishra and Neeraj Mishra, International Journal of Computer Applications Technology and Research, Volume 5– Issue 1, 2016
+10. "The Benefits of Project Management Software" - Derek Huether, ProjectManager.com - https://www.projectmanager.com/blog/the-benefits-of-project-management-software
+11. "The Advantages of Project Management Software" - Workzone - https://www.workzone.com/blog/the-advantages-of-project-management-software/
+12. "Why Use Project Management Software?" - Zoho - https://www.zoho.com/projects/blog/
 
 ### Biznes tłumaczeń w dzisiejszych czasach
 

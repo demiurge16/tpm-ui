@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
@@ -7,18 +7,29 @@ import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate } from "react-router-dom";
 import TpmClient from "../../../client/TpmClient";
 import { CreateClientType } from "../../../client/types/client/ClientType";
+import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
+import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
+  useEffect(() => {
+    breadcrumbsContext.setBreadcrumbs([
+      { label: 'Client types', path: '/client-types' },
+      { label: 'Create', path: '/client-types/create' }
+    ]);
+  }, [breadcrumbsContext]);
+
   const handleSubmit = async (values: CreateClientType) =>
     TpmClient.getInstance()
       .clientTypes()
       .create(values)
       .subscribe({
-        next: () => navigate("/dictionaries/client-types"),
+        next: () => navigate("/client-types"),
         error: (error) => setServerError(error.message),
       });
 
@@ -33,6 +44,7 @@ export const Create = () => {
             <TextField name="name" label="Name" required />
             <TextField name="description" label="Description" multiline rows={4} required />
             <BooleanField name="corporate" label="Corporate" required />
+            <EmojiPickerField label="Emoji" name="emoji"></EmojiPickerField>
 
             <Box pb={2} />
             {serverError && (

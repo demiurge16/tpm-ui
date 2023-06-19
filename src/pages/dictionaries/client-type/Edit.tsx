@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
@@ -7,6 +7,7 @@ import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate, useParams, } from "react-router-dom";
 import { UpdateClientType } from "../../../client/types/client/ClientType";
 import TpmClient from "../../../client/TpmClient";
+import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 
 export interface EditParams {
   id: string;
@@ -17,6 +18,7 @@ export const Edit = () => {
   const [clientType, setClientType] = useState<UpdateClientType>({ name: '', description: '', corporate: false });
   const navigate = useNavigate();
   const { id } = useParams();
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   useEffect(() => {
     if (!id) return;
@@ -26,10 +28,17 @@ export const Edit = () => {
       .withId(id)
       .get()
       .subscribe({
-        next: (response) => setClientType(response),
+        next: (response) => {
+          setClientType(response);
+          breadcrumbsContext.setBreadcrumbs([
+            { label: 'Client types', path: '/client-types' },
+            { label: response.name, path: `/client-types/${response.id}` },
+            { label: 'Edit', path: `/client-types/${response.id}/edit` }
+          ]);
+        },
         error: (error) => setServerError(error)
       });
-  }, [id]);
+  }, [id, breadcrumbsContext]);
 
   const handleSubmit = async (values: UpdateClientType) => {
     if (!id) return;

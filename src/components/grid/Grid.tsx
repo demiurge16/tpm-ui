@@ -69,7 +69,7 @@ export function Grid<Type>(props: GridProps<Type>) {
         onQueryChange={(filters) => setQuery({ ...query, filters: filters })}
       />
 
-      <div className="ag-theme-material">
+      <div className="ag-theme-material-tpm">
         <AgGridReact<Type>
           domLayout="autoHeight"
           ref={gridRef}

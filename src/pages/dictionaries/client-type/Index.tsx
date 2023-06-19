@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Box, Button, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
 import { GridApi } from 'ag-grid-community';
@@ -6,6 +6,7 @@ import TpmClient from '../../../client/TpmClient';
 import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
 import { ClientType, ClientTypeStatus } from '../../../client/types/client/ClientType';
+import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 
 export const Index = () => {
   const startPage = 0;
@@ -37,7 +38,7 @@ export const Index = () => {
         return (
           <Box>
             <Box component="span" pr={2}>
-              <Button variant="contained" component={Link} to={`edit/${clientType.id}`}>Edit</Button>
+              <Button variant="contained" component={Link} to={`${clientType.id}/edit`}>Edit</Button>
             </Box>
 
             {
@@ -56,6 +57,15 @@ export const Index = () => {
       }
     }
   ]);
+
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
+  useEffect(() => {
+    breadcrumbsContext.setBreadcrumbs([
+      { label: 'Client types', path: '/client-types' }
+    ]);
+  }, [breadcrumbsContext]);
+
 
   const activate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
     TpmClient.getInstance().clientTypes().withId(id).activate()

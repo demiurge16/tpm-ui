@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { ColDef, ColGroupDef, GridApi } from "ag-grid-community";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Field } from "../../components/grid/Field";
 import { Grid } from "../../components/grid/Grid";
@@ -9,14 +9,15 @@ import { forkJoin } from "rxjs";
 import TpmClient from "../../client/TpmClient";
 import { Client, ClientStatus } from "../../client/types/client/Client";
 import { ClientType } from "../../client/types/client/ClientType";
+import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 
 export const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
   const [columnDefs, setColumnDefs] = useState<Array<ColDef<Client> | ColGroupDef<Client>>>([]);
-
   const [queryDefinitions, setQueryDefinitions] = useState<Array<QueryableColumnDefinition>>([]);
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   useEffect(() => {
     forkJoin({
@@ -70,7 +71,7 @@ export const Index = () => {
                     <Button
                       variant="contained"
                       component={Link}
-                      to={`edit/${clientType.id}`}
+                      to={`${clientType.id}/edit`}
                     >
                       Edit
                     </Button>
@@ -186,12 +187,16 @@ export const Index = () => {
             type: Field.BOOLEAN,
           },
         ]);
+        
+        breadcrumbsContext.setBreadcrumbs([
+          { label: "Clients", path: "/clients" },
+        ]);
       },
       error: (error) => {
         console.log(error);
       },
     });
-  }, []);
+  }, [breadcrumbsContext]);
 
   const activate = (id: string,refresh: (data: ClientStatus) => void) =>
     TpmClient.getInstance()

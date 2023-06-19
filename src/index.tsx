@@ -8,10 +8,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import AuthContextProvider from "./contexts/AuthContextProvider";
+import BreadcrumbsContextProvider from "./contexts/BreadcrumbsContext";
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
+  },
+  typography: {
+    fontFamily: `"Roboto", "Helvetica Neue", "Arial", "Noto Color Emoji", "sans-serif"`
   },
 });
 
@@ -20,15 +24,17 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <AuthContextProvider>
-    <React.StrictMode>
-      <BrowserRouter>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={darkTheme}>
-            <App />
-          </ThemeProvider>
-        </LocalizationProvider>
-      </BrowserRouter>
-    </React.StrictMode>
+    <BreadcrumbsContextProvider>
+      <React.StrictMode>
+        <BrowserRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={darkTheme}>
+              <App />
+            </ThemeProvider>
+          </LocalizationProvider>
+        </BrowserRouter>
+      </React.StrictMode>
+    </BreadcrumbsContextProvider>
   </AuthContextProvider>
 );
 

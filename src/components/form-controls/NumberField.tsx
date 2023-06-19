@@ -1,29 +1,31 @@
-import { TextField } from '@mui/material';
-import { Field } from 'react-final-form';
+import { TextField } from "@mui/material";
+import { Field } from "react-final-form";
 
-export interface NumberInputProps {
+export interface NumberFieldProps {
   name: string;
   label: string;
   required?: boolean;
   defaultValue?: string;
 }
 
-export const NumberField = (props: NumberInputProps) => {
+export const NumberField = (props: NumberFieldProps) => {
   const { name, label, required, defaultValue } = props;
 
-  <Field name={name} defaultValue={defaultValue}>
-    {({ input, meta }) => (
-      <TextField
-        {...input}
-        label={label}
-        type="number"
-        required={required}
-        margin="normal"
-        fullWidth
-        variant="outlined"
-        error={meta.error && meta.touched}
-        helperText={meta.error}
-      />
-    )}
-  </Field>
-} 
+  return (
+    <Field name={name} defaultValue={defaultValue}>
+      {({ input, meta }) => (
+        <TextField
+          {...input}
+          label={label}
+          type="number"
+          required={required}
+          margin="normal"
+          fullWidth
+          variant="outlined"
+          error={meta.error && meta.touched}
+          helperText={meta.error}
+        />
+      )}
+    </Field>
+  );
+};
