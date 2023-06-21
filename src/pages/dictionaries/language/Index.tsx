@@ -2,9 +2,8 @@ import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { ColDef, ColGroupDef } from 'ag-grid-community';
 import { useEffect, useState } from 'react';
-import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
-import { QueryableColumnDefinition } from '../../../components/grid/QueryableColumnDefinition';
+import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import TpmClient from '../../../client/TpmClient';
 import { Language } from '../../../client/types/dictionaries/Language';
 import { forkJoin } from 'rxjs';
@@ -15,7 +14,7 @@ export const Index = () => {
   const pageSize = 25;
 
   const [columnDefs, setColumnDefs] = useState<Array<(ColDef<Language> | ColGroupDef<Language>)>>([]);
-  const [queryDefinitions, setQueryDefinitions] = useState<Array<QueryableColumnDefinition>>([]);
+  const [filters, setFilters] = useState<Array<FilterDefinition>>([]);
 
   useEffect(() => {
     forkJoin({
@@ -50,51 +49,14 @@ export const Index = () => {
         },
       ]);
 
-      setQueryDefinitions([
-        {
-          id: 'id.value',
-          name: 'Code (ISO 639-3)',
-          filter: true,
-          type: Field.STRING
-        },
-        {
-          id: 'iso6392T',
-          name: 'Code (ISO 639-2/T)',
-          filter: true,
-          type: Field.STRING
-        },
-        {
-          id: 'iso6392B',
-          name: 'Code (ISO 639-2/B)',
-          filter: true,
-          type: Field.STRING
-        },
-        {
-          id: 'iso6391',
-          name: 'Code (ISO 639-1)',
-          filter: true,
-          type: Field.STRING
-        },
-        {
-          id: 'name',
-          name: 'Name',
-          filter: true,
-          type: Field.STRING
-        },
-        {
-          id: 'scope',
-          name: 'Scope',
-          filter: true,
-          type: Field.SELECT,
-          options: scopes.map(scope => ({ value: scope.code, label: scope.name }))
-        },
-        {
-          id: 'type',
-          name: 'Type',
-          filter: true,
-          type: Field.SELECT,
-          options: types.map(type => ({ value: type.code, label: type.name }))
-        },
+      setFilters([
+        FilterDefinition.string('id.value', 'Code (ISO 639-3)'),
+        FilterDefinition.string('iso6392t', 'Code (ISO 639-2/T)'),
+        FilterDefinition.string('iso6392b', 'Code (ISO 639-2/B)'),
+        FilterDefinition.string('iso6391', 'Code (ISO 639-1)'),
+        FilterDefinition.string('name', 'Name'),
+        FilterDefinition.select('scope', 'Scope', scopes.map(scope => ({ value: scope.code, label: scope.name }))),
+        FilterDefinition.select('type', 'Type', types.map(type => ({ value: type.code, label: type.name }))),
       ]);
     });
   }, []);
@@ -107,7 +69,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().languages().all}
-        queryDefinitions={queryDefinitions}
+        filters={filters}
         columnDefinitions={columnDefs}
       />
     </Box>

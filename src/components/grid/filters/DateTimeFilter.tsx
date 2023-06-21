@@ -14,12 +14,12 @@ export const DateTimeFilter = (props: DateTimeFilterProps) => {
   const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
 
   return (
-    <FormControl variant="outlined" size='small' fullWidth>
+    <FormControl variant="standard" size="small" fullWidth>
       <DateTimePicker
         label={label}
         value={value}
         onChange={onChange}
-        renderInput={(params) => <TextField id={id} {...params} variant="outlined" size='small' />}
+        renderInput={(params) => <TextField id={id} {...params} variant="outlined" size="small" />}
       />
     </FormControl>
   );

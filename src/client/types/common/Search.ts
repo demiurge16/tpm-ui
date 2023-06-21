@@ -12,8 +12,10 @@ export type Sort = {
 };
 
 export type FilterOperator = 'eq' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte' | 'any' | 'all' | 'none' | 'null' | 'empty';
-export type Filter = {
+export interface Filter {
   field: string;
   operator: FilterOperator;
-  value?: string | string[];
+  value: FilterValue;
 };
+
+export type FilterValue = string | number | boolean | Date | string[];

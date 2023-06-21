@@ -16,7 +16,7 @@ export const FieldPicker = (props: FieldPickerProps) => {
   };
 
   return (
-    <FormControl variant="outlined" size='small' fullWidth>
+    <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id="field-selector-label">Field</InputLabel>
       <Select id="field-selector"
         labelId="field-selector-label"

@@ -1,10 +1,10 @@
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useState } from 'react';
-import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
 import TpmClient from '../../../client/TpmClient';
 import { Currency } from '../../../client/types/dictionaries/Currency';
+import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 
 export const Index = () => {
 
@@ -16,21 +16,9 @@ export const Index = () => {
     { headerName: 'Name', field: 'name', resizable: true }
   ]);
 
-  const [queryDefinitions, setQueryDefinitions] = useState([
-    {
-      id: 'id.value',
-      name: 'Code',
-      filter: true,
-      sortable: true,
-      type: Field.STRING
-    },
-    {
-      id: 'name',
-      name: 'Name',
-      filter: true,
-      sortable: true,
-      type: Field.STRING
-    }
+  const [filters, setFilters] = useState<FilterDefinition[]>([
+    FilterDefinition.string('id.value', 'Code'),
+    FilterDefinition.string('name', 'Name')
   ]);
 
   return (
@@ -41,7 +29,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().currencies().all}
-        queryDefinitions={queryDefinitions}
+        filters={filters}
         columnDefinitions={columnDefs}
       />
     </Box>

@@ -3,10 +3,10 @@ import { Box, Button, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
 import { GridApi } from 'ag-grid-community';
 import TpmClient from '../../../client/TpmClient';
-import { Field } from '../../../components/grid/Field';
 import { Grid } from '../../../components/grid/Grid';
 import { ClientType, ClientTypeStatus } from '../../../client/types/client/ClientType';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 
 export const Index = () => {
   const startPage = 0;
@@ -59,7 +59,6 @@ export const Index = () => {
   ]);
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
-
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Client types', path: '/client-types' }
@@ -75,7 +74,7 @@ export const Index = () => {
           refresh(response);
         },
         error: (error) => {
-          console.log(`Error activating ${id}`);
+          console.error(`Error activating ${id}`);
         }
       });
 
@@ -87,46 +86,16 @@ export const Index = () => {
           refresh(response);
         },
         error: (error) => {
-          console.log(`Error deactivating ${id}`);
+          console.error(`Error deactivating ${id}`);
         }
       });
 
-  const [queryDefinitions, setQueryDefinitions] = useState([
-    {
-      id: "id",
-      name: "Id",
-      filter: true,
-      sortable: false,
-      type: Field.STRING
-    },
-    {
-      id: "name",
-      name: "Name",
-      filter: true,
-      sortable: true,
-      type: Field.STRING
-    },
-    {
-      id: "active",
-      name: "Active",
-      filter: true,
-      sortable: false,
-      type: Field.BOOLEAN
-    },
-    {
-      id: "corporate",
-      name: "Corporate",
-      filter: true,
-      sortable: false,
-      type: Field.BOOLEAN
-    },
-    {
-      id: "description",
-      name: "Description",
-      filter: true,
-      sortable: false,
-      type: Field.STRING
-    }
+  const [filters, setFilters] = useState<FilterDefinition[]>([
+    FilterDefinition.string('id', 'Id'),
+    FilterDefinition.string('name', 'Name'),
+    FilterDefinition.boolean('active', 'Active'),
+    FilterDefinition.boolean('corporate', 'Corporate'),
+    FilterDefinition.string('description', 'Description')
   ]);
 
   return (
@@ -137,7 +106,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().clientTypes().all}
-        queryDefinitions={queryDefinitions}
+        filters={filters}
         columnDefinitions={columnDefs}
       />
       <Box pb={2} />

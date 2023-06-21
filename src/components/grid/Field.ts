@@ -1,3 +1,4 @@
+import { FilterValue } from "../../client/types/common/Search";
 import { FieldType } from "./FieldType";
 import { Operation } from "./Operation";
 
@@ -50,4 +51,22 @@ export class Field {
     Operation.NONE,
     Operation.IS_NULL
   ]);
+
+  getDefaultValue(): FilterValue {
+    switch (this.type) {
+      case FieldType.BOOLEAN:
+        return false;
+      case FieldType.DATE:
+        return new Date();
+      case FieldType.DATETIME:
+        return new Date();
+      case FieldType.NUMBER:
+        return 0;
+      case FieldType.SELECT:
+        return [];
+      case FieldType.STRING:
+      default:
+        return "";
+    }
+  }
 }

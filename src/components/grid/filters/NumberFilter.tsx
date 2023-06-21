@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, OutlinedInput } from "@mui/material";
+import { FormControl, InputLabel, Input } from "@mui/material";
 
 export interface NumberFilterProps {
   id: string;
@@ -12,13 +12,12 @@ export const NumberFilter = (props: NumberFilterProps) => {
   const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
 
   return (
-    <FormControl variant="outlined" size='small' fullWidth>
+    <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={id}>{label}</InputLabel>
-      <OutlinedInput id={id}
+      <Input id={id}
         type="number"
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        label={label}
       />
     </FormControl>
   );

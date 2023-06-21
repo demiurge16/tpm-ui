@@ -22,7 +22,7 @@ export const OperatorPicker = (props: OperatorPickerProps) => {
   };
 
   return (
-    <FormControl variant="outlined" size='small' fullWidth>
+    <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id="operator-selector-label">Operator</InputLabel>
       <Select id="operator-selector"
         labelId="operator-selector-label"

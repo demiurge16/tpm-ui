@@ -9,19 +9,21 @@ export interface MultiselectFilterProps {
 }
 
 export const MultiselectFilter = (props: MultiselectFilterProps) => {
-
   const [id, label, value, options, onChange] = [props.id, props.label, props.value, props.options, props.onChange];
   const labelId = `${id}-label`;
 
   return (
-    <FormControl variant="outlined" size='small' fullWidth>
+    <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={labelId}>{label}</InputLabel>
       <Select id={id}
         labelId={labelId}
         label={label}
         value={value}
         multiple
-        onChange={(e) => onChange(e.target.value as string[])}
+        onChange={(e) => { 
+          console.log(e.target.value);
+          onChange(e.target.value as string[]);
+        }}
 
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

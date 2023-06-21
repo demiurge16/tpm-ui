@@ -13,7 +13,7 @@ export const BooleanFilter = (props: BooleanFilterProps) => {
   const labelId = `${id}-label`;
 
   return (
-    <FormControl variant="outlined" size='small' fullWidth>
+    <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={labelId}>{label}</InputLabel>
       <Select id={id}
         labelId={labelId}

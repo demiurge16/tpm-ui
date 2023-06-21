@@ -7,7 +7,6 @@ import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate } from "react-router-dom";
 import TpmClient from "../../../client/TpmClient";
 import { CreateClientType } from "../../../client/types/client/ClientType";
-import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 
 
@@ -44,7 +43,6 @@ export const Create = () => {
             <TextField name="name" label="Name" required />
             <TextField name="description" label="Description" multiline rows={4} required />
             <BooleanField name="corporate" label="Corporate" required />
-            <EmojiPickerField label="Emoji" name="emoji"></EmojiPickerField>
 
             <Box pb={2} />
             {serverError && (

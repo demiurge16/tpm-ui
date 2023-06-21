@@ -232,7 +232,7 @@ function App() {
             </Routes>
           </Container>
         </Box>
-        <Box component="footer" sx={{ p: 2 }}>
+        <Box component="footer" sx={{ p: 2, mt: "auto" , mx: "auto" }}>
           <Typography variant="body2" color="text.secondary" align="center">
             © 2022 Translation Project Manager by&nbsp;
             <Link

@@ -2,9 +2,8 @@ import { Box, Button, Typography } from "@mui/material";
 import { ColDef, ColGroupDef, GridApi } from "ag-grid-community";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Field } from "../../components/grid/Field";
 import { Grid } from "../../components/grid/Grid";
-import { QueryableColumnDefinition } from "../../components/grid/QueryableColumnDefinition";
+import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { forkJoin } from "rxjs";
 import TpmClient from "../../client/TpmClient";
 import { Client, ClientStatus } from "../../client/types/client/Client";
@@ -16,7 +15,7 @@ export const Index = () => {
   const pageSize = 25;
 
   const [columnDefs, setColumnDefs] = useState<Array<ColDef<Client> | ColGroupDef<Client>>>([]);
-  const [queryDefinitions, setQueryDefinitions] = useState<Array<QueryableColumnDefinition>>([]);
+  const [filters, setFilters] = useState<FilterDefinition[]>([]);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   useEffect(() => {
@@ -108,92 +107,35 @@ export const Index = () => {
 
         const { countries, types } = data;
 
-        setQueryDefinitions([
-          {
-            id: "id",
-            name: "Id",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "name",
-            name: "Name",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "email",
-            name: "Email",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "phone",
-            name: "Phone",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "address",
-            name: "Address",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "city",
-            name: "City",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "state",
-            name: "State",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "zip",
-            name: "Zip",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "country.code",
-            name: "Country",
-            filter: true,
-            type: Field.SELECT,
-            options: countries.items.map((c) => ({
-              value: c.code,
-              label: c.name,
-            })),
-          },
-          {
-            id: "vat",
-            name: "VAT",
-            filter: true,
-            type: Field.STRING,
-          },
-          {
-            id: "type.id.value",
-            name: "Type",
-            filter: true,
-            type: Field.SELECT,
-            options: types.items.map((t) => ({ value: t.id, label: t.name })),
-          },
-          {
-            id: "active",
-            name: "Active",
-            filter: true,
-            type: Field.BOOLEAN,
-          },
+        setFilters([
+          FilterDefinition.string("id", "Id"),
+          FilterDefinition.string("name", "Name"),
+          FilterDefinition.string("email", "Email"),
+          FilterDefinition.string("phone", "Phone"),
+          FilterDefinition.string("address", "Address"),
+          FilterDefinition.string("city", "City"),
+          FilterDefinition.string("state", "State"),
+          FilterDefinition.string("zip", "Zip"),
+          FilterDefinition.select(
+            "country.code",
+            "Country",
+            countries.items.map((c) => ({ value: c.code, label: c.name }))
+          ),
+          FilterDefinition.string("vat", "VAT"),
+          FilterDefinition.select(
+            "type.id.value",
+            "Type",
+            types.items.map((t) => ({ value: t.id, label: t.name }))
+          ),
+          FilterDefinition.boolean("active", "Active"),
         ]);
-        
+
         breadcrumbsContext.setBreadcrumbs([
           { label: "Clients", path: "/clients" },
         ]);
       },
       error: (error) => {
-        console.log(error);
+        console.error(error);
       },
     });
   }, [breadcrumbsContext]);
@@ -209,7 +151,7 @@ export const Index = () => {
           refresh(response);
         },
         error: (error) => {
-          console.log(`Error activating ${id}`);
+          console.error(`Error activating ${id}`);
         },
       });
 
@@ -224,7 +166,7 @@ export const Index = () => {
           refresh(response);
         },
         error: (error) => {
-          console.log(`Error deactivating ${id}`);
+          console.error(`Error deactivating ${id}`);
         },
       });
 
@@ -236,7 +178,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().clients().all}
-        queryDefinitions={queryDefinitions}
+        filters={filters}
         columnDefinitions={columnDefs}
       />
       <Box pb={2} />
