@@ -1,7 +1,11 @@
+import { Box, Typography } from "@mui/material";
+import { Accuracies } from "./Accuracies";
+
 export const Index = () => {
   return (
-    <div>
-      <h1>Units</h1>
-    </div>
+    <Box>
+      <Typography variant="h4">{Accuracies.title}</Typography>
+      <Typography variant="subtitle1">{Accuracies.description}</Typography>
+    </Box>
   );
 };

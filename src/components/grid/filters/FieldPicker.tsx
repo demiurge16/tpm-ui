@@ -2,16 +2,17 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 
 export interface FieldPickerProps {
+  selectedField: string;
   fields: { id: string, name: string }[];
   onChange: (field: string) => void;
 }
 
 export const FieldPicker = (props: FieldPickerProps) => {
-  const [fields, onChange] = [props.fields, props.onChange];
-  const [field, setField] = useState<string>(fields[0].id);
+  const { selectedField, fields, onChange } = props;
+  const [state, setState] = useState<string>(selectedField);
 
   const handleChange = (field: string) => {
-    setField(field);
+    setState(field);
     onChange(field);
   };
 
@@ -20,7 +21,7 @@ export const FieldPicker = (props: FieldPickerProps) => {
       <InputLabel id="field-selector-label">Field</InputLabel>
       <Select id="field-selector"
         labelId="field-selector-label"
-        value={field}
+        value={selectedField}
         onChange={(e) => handleChange(e.target.value as string)}
         label="Field"
       >

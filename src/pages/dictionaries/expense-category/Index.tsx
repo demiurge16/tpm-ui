@@ -1,7 +1,11 @@
+import { Box, Typography } from "@mui/material";
+import { ExpenseCategories } from "./ExpenseCategories";
+
 export const Index = () => {
   return (
-    <div>
-      <h1>Expense categories</h1>
-    </div>
+    <Box>
+      <Typography variant="h4">{ExpenseCategories.title}</Typography>
+      <Typography variant="subtitle1">{ExpenseCategories.description}</Typography>
+    </Box>
   );
 };

@@ -1,5 +1,5 @@
 @import "../node_modules/ag-grid-community/src/styles/ag-grid.scss";
-@import "../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
+@import "../node_modules/ag-grid-community/src/styles/ag-theme-alpine/sass/ag-theme-alpine.scss";
 
 @font-face {
   font-family: "Noto Color Emoji";
@@ -21,15 +21,6 @@ body {
   font-family: $font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.ag-theme-material-tpm {
-  @include ag-theme-material();
-
-  // Override the font family
-  .ag-root {
-    font-family: $font-family;
-  }
 }
 
 em-emoji-picker {

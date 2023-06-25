@@ -45,7 +45,7 @@ import ListItemIcon from "@mui/material/ListItemIcon/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText/ListItemText";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Collapse, ListSubheader } from "@mui/material";
 
 export interface NavigationDrawerProps {
@@ -255,6 +255,7 @@ const NavigationDrawerItem = (props: {
 }) => {
   const [open, setOpen] = useState(props.open);
   const { index, icon, label, path } = props;
+  const location = useLocation();
 
   useEffect(() => setOpen(props.open), [props.open]);
 
@@ -273,6 +274,7 @@ const NavigationDrawerItem = (props: {
             justifyContent: open ? "initial" : "center",
             px: 2.5,
           }}
+          selected={location.pathname === path}
         >
           <ListItemIcon
             sx={{

@@ -1,19 +1,19 @@
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { ColDef, ColGroupDef } from 'ag-grid-community';
 import { useEffect, useState } from 'react';
 import { Grid } from '../../../components/grid/Grid';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import TpmClient from '../../../client/TpmClient';
 import { Language } from '../../../client/types/dictionaries/Language';
 import { forkJoin } from 'rxjs';
+import { ColumnDefinition } from '../../../components/grid/GridProps';
+import { Languages } from './Languages';
 
 export const Index = () => {
-
   const startPage = 0;
   const pageSize = 25;
 
-  const [columnDefs, setColumnDefs] = useState<Array<(ColDef<Language> | ColGroupDef<Language>)>>([]);
+  const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Language>>>([]);
   const [filters, setFilters] = useState<Array<FilterDefinition>>([]);
 
   useEffect(() => {
@@ -63,7 +63,8 @@ export const Index = () => {
 
   return (
     <Box>
-      <Typography variant="h4">Languages</Typography>
+      <Typography variant="h4">{Languages.title}</Typography>
+      <Typography variant="subtitle1">{Languages.description}</Typography>
       <Box pb={2} />
       <Grid<Language>
         startPage={startPage}

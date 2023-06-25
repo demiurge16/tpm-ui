@@ -9,15 +9,47 @@ import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import AuthContextProvider from "./contexts/AuthContextProvider";
 import BreadcrumbsContextProvider from "./contexts/BreadcrumbsContext";
+import ThemeContextProvider, {
+  Theme,
+  ThemeContext,
+} from "./contexts/ThemeContext";
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
   typography: {
-    fontFamily: `"Roboto", "Helvetica Neue", "Arial", "Noto Color Emoji", "sans-serif"`
+    fontFamily: `"Roboto", "Helvetica Neue", "Arial", "Noto Color Emoji", "sans-serif"`,
   },
 });
+
+const lightTheme = createTheme({
+  palette: {
+    mode: "light",
+  },
+  typography: {
+    fontFamily: `"Roboto", "Helvetica Neue", "Arial", "Noto Color Emoji", "sans-serif"`,
+  },
+});
+
+const Root = () => {
+  const themeContext = React.useContext(ThemeContext);
+  const theme = React.useMemo(() => {
+    return themeContext.theme === "dark" ? darkTheme : lightTheme;
+  }, [themeContext.theme]);
+
+  return (
+    <React.StrictMode>
+      <BrowserRouter>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <App />
+          </ThemeProvider>
+        </LocalizationProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+};
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -25,15 +57,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <AuthContextProvider>
     <BreadcrumbsContextProvider>
-      <React.StrictMode>
-        <BrowserRouter>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={darkTheme}>
-              <App />
-            </ThemeProvider>
-          </LocalizationProvider>
-        </BrowserRouter>
-      </React.StrictMode>
+      <ThemeContextProvider>
+        <Root />
+      </ThemeContextProvider>
     </BreadcrumbsContextProvider>
   </AuthContextProvider>
 );

@@ -5,6 +5,7 @@ import { Grid } from '../../../components/grid/Grid';
 import TpmClient from '../../../client/TpmClient';
 import { Currency } from '../../../client/types/dictionaries/Currency';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
+import { Currencies } from './Currencies';
 
 export const Index = () => {
 
@@ -23,7 +24,8 @@ export const Index = () => {
 
   return (
     <Box>
-      <Typography variant="h4">Currency</Typography>
+      <Typography variant="h4">{Currencies.title}</Typography>
+      <Typography variant="subtitle1">{Currencies.description}</Typography>
       <Box pb={2} />
       <Grid<Currency>
         startPage={startPage}

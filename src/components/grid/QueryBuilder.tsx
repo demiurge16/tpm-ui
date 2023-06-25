@@ -100,24 +100,38 @@ export function QueryBuilder(props: QueryBuilderProps) {
     setState(newState);
   };
 
+  const clearFilters = () => {
+    setState(
+      [
+        {
+          field: filters[0].id,
+          operator: filters[0].getDefaultOperation().symbol,
+          value: filters[0].getDefaultValue()
+        }
+      ]
+    );
+  };
+
   return (
     <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3} padding={1} width={828}>
-      <Grid item xs={12}>
+      <Grid item xs={12} key={"filters"}>
         {
           state.map((filter, index) => (
             <Box mb={1}>
               <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3} key={index}>
-                <Grid item xs={1}>
+                <Grid item xs={1} mt={1}>
                   <IconButton
                     aria-label="remove filter"
+                    disabled={state.length === 1}
                     onClick={() => setState(state.filter((f, i) => i !== index))}
                     edge="end"
                   >
                     <Clear />
                   </IconButton>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} ml={-3}>
                   <FieldPicker
+                    selectedField={filter.field}
                     fields={filters.map(e => ({ id: e.id, name: e.name }))}
                     onChange={(e) => updateFilterField(index, e)}
                   />
@@ -126,7 +140,7 @@ export function QueryBuilder(props: QueryBuilderProps) {
                   filter.field && (
                     <Grid item xs={3}>
                       <OperatorPicker
-                        value={filter.operator}
+                        selectedOperator={filter.operator}
                         operations={getColumnDefinition(filter.field)?.type.operations ?? []}
                         onChange={(e) => updateFilterOperator(index, e.symbol)}
                       />
@@ -152,7 +166,7 @@ export function QueryBuilder(props: QueryBuilderProps) {
         }
         
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} key={"actions"}>
         <Box mb={2}>
           <Grid container direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={3}>
             <Grid item xs={6}>
@@ -172,7 +186,7 @@ export function QueryBuilder(props: QueryBuilderProps) {
                 color="secondary"
                 size="small"
                 startIcon={<Clear />}
-                onClick={() => setState([])}
+                onClick={() => clearFilters()}
               >
                 Clear
               </Button>

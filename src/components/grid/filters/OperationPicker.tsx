@@ -3,21 +3,20 @@ import { useState } from "react";
 import { Operation } from "../Operation";
 
 export interface OperatorPickerProps {
-  value: Operation | string | undefined | null;
+  selectedOperator: string;
   operations: Operation[];
   onChange: (operator: Operation) => void;
 }
 
 export const OperatorPicker = (props: OperatorPickerProps) => {
+  const { selectedOperator, operations, onChange } = props;
   const defaultOperator = props.operations[0];
 
-  const [operations, onChange] = [props.operations, props.onChange];
-  const [operator, setOperator] = useState<string>(defaultOperator.symbol);
+  const [state, setState] = useState<string>(selectedOperator);
 
   const handleChange = (operator: string) => {
     let operation = operations.find(o => o.symbol === operator);
-    
-    setOperator(operation?.symbol ?? defaultOperator.symbol);
+    setState(operation?.symbol ?? defaultOperator.symbol);
     onChange(operation ?? defaultOperator);
   };
 
@@ -26,7 +25,7 @@ export const OperatorPicker = (props: OperatorPickerProps) => {
       <InputLabel id="operator-selector-label">Operator</InputLabel>
       <Select id="operator-selector"
         labelId="operator-selector-label"
-        value={operator}
+        value={selectedOperator}
         onChange={(e) => handleChange(e.target.value as string)}
         label="Operator"
       >

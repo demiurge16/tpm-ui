@@ -8,7 +8,7 @@ export const Details = () => {
       { label: 'Country', path: '/countries' },
       { label: 'Details', path: '/countries/details' },
     ]);
-  }, [breadcrumbsContext]);
+  }, []);
 
   return (
     <div>

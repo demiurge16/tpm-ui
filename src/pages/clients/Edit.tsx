@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
@@ -10,6 +10,7 @@ import { ClientType } from "../../client/types/client/ClientType";
 import { UpdateClient } from "../../client/types/client/Client";
 import { forkJoin } from "rxjs";
 import TpmClient from "../../client/TpmClient";
+import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 
 export interface EditParams {
   id: string;
@@ -21,6 +22,8 @@ export const Edit = () => {
   const [countries, setCountries] = useState<Array<Country>>([]);
   const [types, setTypes] = useState<Array<ClientType>>([]);
   const [initialValues, setInitialValues] = useState<UpdateClient>({} as UpdateClient);
+
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -52,6 +55,12 @@ export const Edit = () => {
         notes: client.notes,
         clientTypeId: client.type.id
       });
+
+      breadcrumbsContext.setBreadcrumbs([
+        { label: "Clients", path: "/clients" },
+        { label: client.name, path: `/clients/${id}` },
+        { label: "Edit", path: `/clients/${id}/edit` }
+      ]);
     });
   }, [id]);
 

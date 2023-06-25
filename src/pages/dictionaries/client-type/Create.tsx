@@ -21,7 +21,7 @@ export const Create = () => {
       { label: 'Client types', path: '/client-types' },
       { label: 'Create', path: '/client-types/create' }
     ]);
-  }, [breadcrumbsContext]);
+  }, []);
 
   const handleSubmit = async (values: CreateClientType) =>
     TpmClient.getInstance()

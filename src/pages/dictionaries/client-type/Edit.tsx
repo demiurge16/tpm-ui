@@ -38,7 +38,7 @@ export const Edit = () => {
         },
         error: (error) => setServerError(error)
       });
-  }, [id, breadcrumbsContext]);
+  }, [id]);
 
   const handleSubmit = async (values: UpdateClientType) => {
     if (!id) return;

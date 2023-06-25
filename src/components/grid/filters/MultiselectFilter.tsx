@@ -1,4 +1,4 @@
-import { Box, Checkbox, Chip, FormControl, InputLabel, ListItemText, MenuItem, Select } from "@mui/material";
+import { Box, Checkbox, Chip, FormControl, InputLabel, ListItemText, MenuItem, Select, Typography } from "@mui/material";
 
 export interface MultiselectFilterProps {
   id: string;
@@ -11,6 +11,10 @@ export interface MultiselectFilterProps {
 export const MultiselectFilter = (props: MultiselectFilterProps) => {
   const [id, label, value, options, onChange] = [props.id, props.label, props.value, props.options, props.onChange];
   const labelId = `${id}-label`;
+
+  const renderValue = (values: string[]) => {
+    return values.map(v => options.find(e => e.value == v)?.label).join(', ');
+  }
 
   return (
     <FormControl variant="standard" size="small" fullWidth>
@@ -26,11 +30,7 @@ export const MultiselectFilter = (props: MultiselectFilterProps) => {
         }}
 
         renderValue={(selected) => (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {selected.map((value) => (
-              <Chip key={value} label={options.find(e => e.value == value)?.label} />
-            ))}
-          </Box>
+          <Typography variant="body1">{renderValue(selected)}</Typography>
         )}
       >
         {

@@ -8,7 +8,7 @@ export const Account = () => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Account', path: '/account' },
     ]);
-  }, [breadcrumbsContext]);
+  }, []);
 
   return (
     <div>

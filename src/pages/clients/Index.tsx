@@ -1,6 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
-import { ColDef, ColGroupDef, GridApi } from "ag-grid-community";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Grid } from "../../components/grid/Grid";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
@@ -9,14 +8,20 @@ import TpmClient from "../../client/TpmClient";
 import { Client, ClientStatus } from "../../client/types/client/Client";
 import { ClientType } from "../../client/types/client/ClientType";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
+import { Clients } from "./Clients";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 
 export const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
-  const [columnDefs, setColumnDefs] = useState<Array<ColDef<Client> | ColGroupDef<Client>>>([]);
+  const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Client>>>([]);
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const gridRef = useRef<GridHandle>(null);
 
   useEffect(() => {
     forkJoin({
@@ -25,21 +30,37 @@ export const Index = () => {
     }).subscribe({
       next: (data) => {
         setColumnDefs([
-          { headerName: "Id", field: "id", resizable: true },
+          {
+            headerName: "Id",
+            field: "id",
+            resizable: true,
+            lockVisible: true,
+            cellRenderer: (params: any) => {
+              const client = params.data as Client;
+              return (
+                <Box>
+                  <Button variant="text" component={Link} to={`${client.id}`}>
+                    {client.id}
+                  </Button>
+                </Box>
+              );
+            }
+          },
           { headerName: "Name", field: "name", resizable: true },
           { headerName: "Email", field: "email", resizable: true },
           { headerName: "Phone", field: "phone", resizable: true },
-          { headerName: "Address", field: "address", resizable: true },
-          { headerName: "City", field: "city", resizable: true },
-          { headerName: "State", field: "state", resizable: true },
-          { headerName: "Zip", field: "zip", resizable: true },
+          { headerName: "Address", field: "address", resizable: true, hide: true },
+          { headerName: "City", field: "city", resizable: true, hide: true },
+          { headerName: "State", field: "state", resizable: true, hide: true },
+          { headerName: "Zip", field: "zip", resizable: true, hide: true },
           {
             headerName: "Country",
             field: "country",
             resizable: true,
             valueFormatter: (params) => params.value.name,
+            hide: true,
           },
-          { headerName: "VAT", field: "vat", resizable: true },
+          { headerName: "VAT", field: "vat", resizable: true, hide: true },
           {
             headerName: "Type",
             field: "type",
@@ -51,50 +72,31 @@ export const Index = () => {
             headerName: "Actions",
             field: "actions",
             resizable: true,
+            lockVisible: true,
             cellRenderer: (params: any) => {
               const clientType = params.data as ClientType;
-              const gridApi = params.api as GridApi;
 
-              const refresh = (data: ClientStatus) => {
-                const rowNode = gridApi.getRowNode(params.rowIndex);
-
-                if (rowNode) {
-                  rowNode.setDataValue("active", data.active);
-                  gridApi.refreshCells({ force: true });
-                }
+              const refresh = () => {
+                gridRef.current?.refresh();
               };
 
               return (
                 <Box>
                   <Box component="span" pr={2}>
-                    <Button
-                      variant="contained"
-                      component={Link}
-                      to={`${clientType.id}/edit`}
-                    >
+                    <Button variant="text" startIcon={<EditIcon />} component={Link} to={`${clientType.id}/edit`}>
                       Edit
                     </Button>
                   </Box>
 
                   {clientType.active ? (
                     <Box component="span" pr={2}>
-                      <Button
-                        variant="contained"
-                        onClick={() =>
-                          deactivate(clientType.id, (data) => refresh(data))
-                        }
-                      >
+                      <Button variant="text" startIcon={<DeleteIcon />} onClick={() => deactivate(clientType.id, refresh)}>
                         Deactivate
                       </Button>
                     </Box>
                   ) : (
                     <Box component="span" pr={2}>
-                      <Button
-                        variant="contained"
-                        onClick={() =>
-                          activate(clientType.id, (data) => refresh(data))
-                        }
-                      >
+                      <Button variant="text" startIcon={<RestoreFromTrashIcon />} onClick={() => activate(clientType.id, refresh)}>
                         Activate
                       </Button>
                     </Box>
@@ -138,7 +140,7 @@ export const Index = () => {
         console.error(error);
       },
     });
-  }, [breadcrumbsContext]);
+  }, []);
 
   const activate = (id: string,refresh: (data: ClientStatus) => void) =>
     TpmClient.getInstance()
@@ -172,9 +174,11 @@ export const Index = () => {
 
   return (
     <Box>
-      <Typography variant="h4">Clients</Typography>
+      <Typography variant="h4">{Clients.title}</Typography>
+      <Typography variant="subtitle1">{Clients.description}</Typography>
       <Box pb={2} />
       <Grid<Client>
+        innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().clients().all}

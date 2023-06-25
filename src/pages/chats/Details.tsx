@@ -9,7 +9,7 @@ export const Details = () => {
       { label: 'Chats', path: '/chats' },
       { label: 'Details', path: '/chats/details' },
     ]);
-  }, [breadcrumbsContext]);
+  }, []);
 
   return (
     <div>
