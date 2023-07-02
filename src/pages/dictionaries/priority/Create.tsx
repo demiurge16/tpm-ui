@@ -6,32 +6,36 @@ import { TextField } from "../../../components/form-controls/TextField";
 import TpmClient from "../../../client/TpmClient";
 import { CreatePriority } from "../../../client/types/dictionaries/Priority";
 import { NumberField } from "../../../components/form-controls/NumberField";
+import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: CreatePriority) =>
+  const handleSubmit = (data: CreatePriority) => {
+    console.log(data);
+    
     TpmClient.getInstance()
-      .priorities()
-      .create(data)
-      .subscribe({
-        next: () => navigate("/priorities"),
-        error: (error) => setServerError(error.message),
-      });
+    .priorities()
+    .create(data)
+    .subscribe({
+      next: () => navigate("/priorities"),
+      error: (error) => setServerError(error.message),
+    });
+  }
 
   return (
     <Box>
       <Typography variant="h4">Create new priority</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
-        initialValues={{ name: '', description: '', corporate: false }}
+        initialValues={{ name: '', description: '', value: 0, emoji: '' }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate> 
             <TextField name="name" label="Name" required />
             <TextField name="description" label="Description" multiline rows={4} required />
             <NumberField name="value" label="Value" required />
-            <TextField name="emoji" label="Emoji" required />
+            <EmojiPickerField name="emoji" label="Emoji" required />
 
             <Box pb={2} />
             {serverError && (

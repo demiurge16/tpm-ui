@@ -6,7 +6,7 @@ import { Search } from "./types/common/Search";
 import { CreateProject, ProjectDeadlineMoved, ProjectMoveDeadline, ProjectMoveStart, ProjectNewStatus, Project, ProjectStartMoved, ProjectStatus, UpdateProject } from "./types/project/Project";
 import { CreateTeamMember, TeamMember } from "./types/project/TeamMember";
 import { CreateTask } from "./types/project/Task";
-import { Assign, Assigned, ChangePriority, Priority, PriorityChanged, Task, TaskDeadlineMoved, TaskMoveDeadline, TaskMoveStart, TaskNewStatus, TaskStartMoved, TaskStatus, UpdateTask } from "./types/task/Task";
+import { Assign, Assigned, ChangePriority, PriorityChanged, Task, TaskDeadlineMoved, TaskMoveDeadline, TaskMoveStart, TaskNewStatus, TaskStartMoved, TaskStatus, UpdateTask } from "./types/task/Task";
 import { CreateChat } from "./types/project/Chat";
 import { AddParticipant, Chat, ChatMember, ChatStatus, RemoveParticipant, TransferOwnership, UpdateChat } from "./types/chat/Chat";
 import { Expense } from "./types/expense/Expense";
@@ -22,7 +22,7 @@ import { Currency, CurrencyExchangeRates } from "./types/dictionaries/Currency";
 import { CreateExpenseCategory, ExpenseCategory, ExpenseCategoryStatus, UpdateExpenseCategory } from "./types/dictionaries/ExpenseCategory";
 import { CreateIndustry, Industry, IndustryStatus, UpdateIndustry } from "./types/dictionaries/Industry";
 import { Language, LanguageScope, LanguageType } from "./types/dictionaries/Language";
-import { CreatePriority, PriorityStatus, UpdatePriority } from "./types/dictionaries/Priority";
+import { CreatePriority, Priority, PriorityStatus, UpdatePriority } from "./types/dictionaries/Priority";
 import { CreateUnit, Measurement, Unit, UnitStatus, UpdateUnit } from "./types/dictionaries/Unit";
 import { User } from "./types/user/User";
 

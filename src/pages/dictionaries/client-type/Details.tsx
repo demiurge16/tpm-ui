@@ -64,20 +64,20 @@ export const Details = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>{clientType?.name}</Typography>
+      <Typography variant="h4" gutterBottom>{clientType.name}</Typography>
 
       <Typography variant="h5" gutterBottom>Description</Typography>
-      <Typography variant="body1" gutterBottom>{clientType?.description}</Typography>
+      <Typography variant="body1" gutterBottom>{clientType.description}</Typography>
 
       <Typography variant="h5" gutterBottom>Details</Typography>
-      <Typography variant="body1">Id: {clientType?.id}</Typography>
-      <Typography variant="body1">Corporate: {clientType?.corporate ? 'Yes' : 'No'}</Typography>
-      <Typography variant="body1" gutterBottom>Active: {clientType?.active ? 'Yes' : 'No'}</Typography>
+      <Typography variant="body1">Id: {clientType.id}</Typography>
+      <Typography variant="body1">Corporate: {clientType.corporate ? 'Yes' : 'No'}</Typography>
+      <Typography variant="body1" gutterBottom>Active: {clientType.active ? 'Yes' : 'No'}</Typography>
 
       <Typography variant="h5" gutterBottom>Actions</Typography>
 
       <Box component="span" pr={2}>
-        <Button variant="contained" color="primary" component={Link} to={`/client-types/${clientType?.id}/edit`}>Edit</Button>
+        <Button variant="contained" color="primary" component={Link} to={`${clientType.id}/edit`}>Edit</Button>
       </Box>
       <Box component="span" pr={2}>
         {

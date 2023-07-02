@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Button, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
@@ -9,13 +8,13 @@ import { UpdateClientType } from "../../../client/types/client/ClientType";
 import TpmClient from "../../../client/TpmClient";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 
-export interface EditParams {
-  id: string;
-}
-
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
-  const [clientType, setClientType] = useState<UpdateClientType>({ name: '', description: '', corporate: false });
+  const [clientType, setClientType] = useState<UpdateClientType>({
+    name: '',
+    description: '',
+    corporate: false
+  });
   const navigate = useNavigate();
   const { id } = useParams();
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -40,7 +39,7 @@ export const Edit = () => {
       });
   }, [id]);
 
-  const handleSubmit = async (values: UpdateClientType) => {
+  const handleSubmit = (values: UpdateClientType) => {
     if (!id) return;
 
     TpmClient.getInstance()
@@ -55,7 +54,7 @@ export const Edit = () => {
     
   return (
     <Box>
-      <Typography variant="h4">Edit client type</Typography>
+      <Typography variant="h4">Edit {clientType.name}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         initialValues={{ name: clientType.name, description: clientType.description, corporate: clientType.corporate }}

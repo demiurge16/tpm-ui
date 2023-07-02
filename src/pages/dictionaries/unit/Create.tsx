@@ -24,7 +24,7 @@ export const Create = () => {
       });
   }, []);
 
-  const handleSubmit = async (data: CreateUnit) =>
+  const handleSubmit = (data: CreateUnit) =>
     TpmClient.getInstance()
       .units()
       .create(data)

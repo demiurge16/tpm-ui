@@ -10,7 +10,7 @@ export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: CreateIndustry) =>
+  const handleSubmit = (data: CreateIndustry) =>
     TpmClient.getInstance()
       .industries()
       .create(data)
@@ -24,7 +24,7 @@ export const Create = () => {
       <Typography variant="h4">Create new industry</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
-        initialValues={{ name: '', description: '', corporate: false }}
+        initialValues={{ name: '', description: '' }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <TextField name="name" label="Name" required />

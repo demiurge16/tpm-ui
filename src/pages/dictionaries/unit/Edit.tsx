@@ -1,8 +1,103 @@
+import { useContext, useEffect, useState } from 'react';
+import { Measurement, UpdateUnit } from '../../../client/types/dictionaries/Unit';
+import { useNavigate, useParams } from 'react-router-dom';
+import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import TpmClient from '../../../client/TpmClient';
+import { forkJoin } from 'rxjs';
+import { Box, Button, Typography } from '@mui/material';
+import { Form } from 'react-final-form';
+import { TextField } from '../../../components/form-controls/TextField';
+import { NumberField } from '../../../components/form-controls/NumberField';
+import { SelectField } from '../../../components/form-controls/SelectField';
 
 export const Edit = () => {
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [unit, setUnit] = useState<UpdateUnit>({
+    name: '',
+    description: '',
+    value: 0,
+    measurement: 'POINTS'
+  });
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
+  useEffect(() => {
+    if (!id) return;
+
+    forkJoin([
+      TpmClient.getInstance().units().withId(id).get(),
+      TpmClient.getInstance().units().refdata().measurements()
+    ]).subscribe({
+      next: ([unit, measurements]) => {
+        setUnit({
+          name: unit.name,
+          description: unit.description,
+          value: unit.value,
+          measurement: unit.measurement.code
+        });
+        setMeasurements(measurements);
+        breadcrumbsContext.setBreadcrumbs([
+          { label: 'Unit', path: '/unit' },
+          { label: unit.name, path: `/unit/${unit.id}` },
+          { label: 'Edit', path: `/unit/${unit.id}/edit` }
+        ]);
+      },
+      error: (error) => setServerError(error)
+    });
+  }, [id]);
+
+  const handleSubmit = (values: UpdateUnit) => {
+    if (!id) return;
+
+    TpmClient.getInstance()
+      .units()
+      .withId(id)
+      .update(values)
+      .subscribe({
+        next: () => navigate('/units'),
+        error: (error) => setServerError(error)
+      });
+  };
+
   return (
-    <div>
-      <h1>Edit Unit</h1>
-    </div>
+    <Box>
+      <Typography variant="h4">Edit {unit.name}</Typography>
+      <Box pb={2} />
+      <Form onSubmit={handleSubmit}
+        initialValues={{
+          name: unit.name,
+          description: unit.description,
+          value: unit.value,
+          measurement: unit.measurement
+        }}
+        render={({ handleSubmit, form, submitting, pristine }) => (
+          <form onSubmit={handleSubmit} noValidate>
+            <TextField name="name" label="Name" required />
+            <TextField name="description" label="Description" multiline rows={4} required />
+            <NumberField name="value" label="Value" required />
+            <SelectField name="measurement" label="Measurement" required
+              options={
+                measurements.map((e) => ({ key: e.code as string, value: e.name,}))
+              }
+            />
+
+            <Box pb={2} />
+            {serverError && (
+              <Typography color="error">Error: {serverError}</Typography>
+            )}
+            <Box pb={2} />
+
+            <Button type="submit" disabled={submitting || pristine}>
+              Submit
+            </Button>
+            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+              Reset
+            </Button>
+          </form>
+        )}
+      />
+    </Box>
   );
 };

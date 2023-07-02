@@ -78,7 +78,6 @@ export const Index = () => {
     ]);
   }, []);
 
-
   const activate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
     TpmClient.getInstance().clientTypes().withId(id).activate()
       .subscribe({

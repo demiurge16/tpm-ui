@@ -4,7 +4,6 @@ import { Field } from "react-final-form";
 import data from '@emoji-mart/data/sets/14/google.json'
 import Picker from '@emoji-mart/react'
 import { MoodOutlined } from "@mui/icons-material";
-import { Emoji } from "@emoji-mart/data";
 
 export interface EmojiPickerProps {
   name: string;
