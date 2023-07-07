@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import TpmClient from '../../../client/TpmClient';
 import { Box, Button, Typography } from '@mui/material';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 
 export const Details = () => {
   const [priority, setPriority] = useState<Priority>({
@@ -17,7 +18,9 @@ export const Details = () => {
 
   const { id } = useParams();
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  
   useEffect(() => {
     if (!id) return;
 
@@ -33,7 +36,7 @@ export const Details = () => {
             { label: response.name, path: `priority/${response.id}` },
           ]);
         },
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error loading priority ${id}`, error.message)
       });
   }, []);
 
@@ -46,7 +49,7 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => setPriority({ ...priority, active: response.active }),
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error activating priority ${id}`, error.message)
       });
   }
 
@@ -59,7 +62,7 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => setPriority({ ...priority, active: response.active }),
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error deactivating priority ${id}`, error.message)
       });
   }
 

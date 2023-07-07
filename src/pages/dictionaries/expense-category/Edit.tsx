@@ -6,6 +6,7 @@ import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -15,6 +16,8 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   useEffect(() => {
@@ -33,7 +36,10 @@ export const Edit = () => {
             { label: 'Edit', path: `/expense-category/${response.id}/edit` }
           ]);
         },
-        error: (error) => setServerError(error)
+        error: (error) => {
+          snackbarContext.showError("Success", "Error loading expense category");
+          setServerError(error);
+        }
       });
   }, [id]);
 
@@ -45,8 +51,14 @@ export const Edit = () => {
       .withId(id)
       .update(values)
       .subscribe({
-        next: () => navigate("/expense-categories"),
-        error: (error) => setServerError(error)
+        next: () => {
+          snackbarContext.showSuccess("Success", "Expense category updated");
+          navigate("/expense-categories");
+        },
+        error: (error) => {
+          snackbarContext.showError("Error updating expense category", error.message);
+          setServerError(error);
+        }
       });
   }
 

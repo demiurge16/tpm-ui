@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
@@ -10,6 +10,8 @@ import { Country } from "../../client/types/dictionaries/Country";
 import { ClientType } from "../../client/types/client/ClientType";
 import { forkJoin } from "rxjs";
 import TpmClient from "../../client/TpmClient";
+import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { SnackbarContext } from "../../contexts/SnackbarContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -18,6 +20,9 @@ export const Create = () => {
   const [types, setTypes] = useState<Array<ClientType>>([]);
 
   const navigate = useNavigate();
+
+  const snackbarContext = useContext(SnackbarContext);
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const initialValues: CreateClient = {
     name: '',
@@ -37,10 +42,21 @@ export const Create = () => {
     forkJoin({
       countries: TpmClient.getInstance().countries().all(),
       types: TpmClient.getInstance().clientTypes().all()
-    }).subscribe((response) => {
-      setCountries(response.countries.items);
-      setTypes(response.types.items);
+    }).subscribe({
+      next: (response) => {
+        setCountries(response.countries.items);
+        setTypes(response.types.items);
+      },
+      error: (error) => {
+        snackbarContext.showError("Error loading reference data", error.message);
+        setServerError(error.message);
+      }
     });
+
+    breadcrumbsContext.setBreadcrumbs([
+      { label: "Clients", path: "/clients" },
+      { label: "Create", path: "/clients/create" },
+    ]);
   }, []);
 
   const handleSubmit = async (values: CreateClient) =>
@@ -48,8 +64,14 @@ export const Create = () => {
       .clients()
       .create(values)
       .subscribe({
-        next: () => navigate("/clients"),
-        error: (error) => setServerError(error)
+        next: () => {
+          snackbarContext.showSuccess("Success", "Client created");
+          navigate("/clients");
+        },
+        error: (error) => {
+          snackbarContext.showError("Error creating client", error.message);
+          setServerError(error.message);
+        }
       });
 
   return (

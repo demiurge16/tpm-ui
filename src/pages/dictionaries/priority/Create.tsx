@@ -1,3 +1,4 @@
+import { useContext, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 import { Form } from "react-final-form";
@@ -7,22 +8,37 @@ import TpmClient from "../../../client/TpmClient";
 import { CreatePriority } from "../../../client/types/dictionaries/Priority";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
+import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (data: CreatePriority) => {
-    console.log(data);
-    
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const snackbarContext = useContext(SnackbarContext);
+
+  useEffect(() => {
+    breadcrumbsContext.setBreadcrumbs([
+      { label: "Priority", path: "/priorities" },
+      { label: "Create", path: "/priorities/create" },
+    ]);
+  }, []);
+
+  const handleSubmit = (data: CreatePriority) => 
     TpmClient.getInstance()
-    .priorities()
-    .create(data)
-    .subscribe({
-      next: () => navigate("/priorities"),
-      error: (error) => setServerError(error.message),
-    });
-  }
+      .priorities()
+      .create(data)
+      .subscribe({
+        next: () => {
+          snackbarContext.showSuccess("Success", "Priority created");
+          navigate("/priorities");
+        },
+        error: (error) => {
+          snackbarContext.showError("Error creating priority", error.message);
+          setServerError(error.message);
+        }
+      });
 
   return (
     <Box>

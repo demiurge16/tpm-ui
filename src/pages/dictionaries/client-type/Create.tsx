@@ -8,12 +8,14 @@ import { useNavigate } from "react-router-dom";
 import TpmClient from "../../../client/TpmClient";
 import { CreateClientType } from "../../../client/types/client/ClientType";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   useEffect(() => {
@@ -28,8 +30,14 @@ export const Create = () => {
       .clientTypes()
       .create(values)
       .subscribe({
-        next: () => navigate("/client-types"),
-        error: (error) => setServerError(error.message),
+        next: () => {
+          snackbarContext.showSuccess('Success', 'Client type created');
+          navigate("/client-types");
+        },
+        error: (error) => {
+          snackbarContext.showError('Error creating client type', error.message);
+          setServerError(error.message);
+        }
       });
 
   return (

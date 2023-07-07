@@ -9,10 +9,8 @@ import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import AuthContextProvider from "./contexts/AuthContextProvider";
 import BreadcrumbsContextProvider from "./contexts/BreadcrumbsContext";
-import ThemeContextProvider, {
-  Theme,
-  ThemeContext,
-} from "./contexts/ThemeContext";
+import ThemeContextProvider, { ThemeContext } from "./contexts/ThemeContext";
+import SnackbarContextProvider from "./contexts/SnackbarContext";
 
 const darkTheme = createTheme({
   palette: {
@@ -42,8 +40,10 @@ const Root = () => {
     <React.StrictMode>
       <BrowserRouter>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <App />
+          <ThemeProvider theme={theme}>    
+            <SnackbarContextProvider>
+              <App />
+            </SnackbarContextProvider>
           </ThemeProvider>
         </LocalizationProvider>
       </BrowserRouter>

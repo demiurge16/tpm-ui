@@ -11,6 +11,7 @@ import { UpdateClient } from "../../client/types/client/Client";
 import { forkJoin } from "rxjs";
 import TpmClient from "../../client/TpmClient";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { SnackbarContext } from "../../contexts/SnackbarContext";
 
 export interface EditParams {
   id: string;
@@ -23,6 +24,7 @@ export const Edit = () => {
   const [types, setTypes] = useState<Array<ClientType>>([]);
   const [initialValues, setInitialValues] = useState<UpdateClient>({} as UpdateClient);
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const navigate = useNavigate();
@@ -37,30 +39,36 @@ export const Edit = () => {
       countries: TpmClient.getInstance().countries().all(),
       types: TpmClient.getInstance().clientTypes().all(),
       client: TpmClient.getInstance().clients().withId(id).get()
-    }).subscribe((response) => {
-      const { countries, types, client } = response;
+    }).subscribe({
+      next: (response) => {
+        const { countries, types, client } = response;
 
-      setCountries(countries.items);
-      setTypes(types.items);
-      setInitialValues({
-        name: client.name,
-        email: client.email,
-        phone: client.phone,
-        address: client.address,
-        city: client.city,
-        state: client.state,
-        zip: client.zip,
-        countryCode: client.country.code,
-        vat: client.vat,
-        notes: client.notes,
-        clientTypeId: client.type.id
-      });
+        setCountries(countries.items);
+        setTypes(types.items);
+        setInitialValues({
+          name: client.name,
+          email: client.email,
+          phone: client.phone,
+          address: client.address,
+          city: client.city,
+          state: client.state,
+          zip: client.zip,
+          countryCode: client.country.code,
+          vat: client.vat,
+          notes: client.notes,
+          clientTypeId: client.type.id
+        });
 
-      breadcrumbsContext.setBreadcrumbs([
-        { label: "Clients", path: "/clients" },
-        { label: client.name, path: `/clients/${id}` },
-        { label: "Edit", path: `/clients/${id}/edit` }
-      ]);
+        breadcrumbsContext.setBreadcrumbs([
+          { label: "Clients", path: "/clients" },
+          { label: client.name, path: `/clients/${id}` },
+          { label: "Edit", path: `/clients/${id}/edit` }
+        ]);
+      },
+      error: (error) => {
+        setServerError(error.message);
+        snackbarContext.showError(`Error loading client ${id}`, error.message);
+      }
     });
   }, [id]);
 
@@ -74,14 +82,20 @@ export const Edit = () => {
       .withId(id)
       .update(values)
       .subscribe({
-        next: () => navigate("/clients"),
-        error: (error) => setServerError(error)
+        next: () => {
+          snackbarContext.showSuccess("Success", "Client updated successfully");
+          navigate("/clients");
+        },
+        error: (error) =>{
+          snackbarContext.showError("Error updating client", error.message);
+          setServerError(error.message);
+        }
       });
   }
 
   return (
     <Box>
-      <Typography variant="h4">Edit client</Typography>
+      <Typography variant="h4">Edit {initialValues.name}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         initialValues={initialValues}

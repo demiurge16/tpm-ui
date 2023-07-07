@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import TpmClient from '../../../client/TpmClient';
 import { Box, Button, Typography } from '@mui/material';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 
 export const Details = () => {
   const [accuracy, setAccuracy] = useState<Accuracy>({
@@ -15,7 +16,9 @@ export const Details = () => {
 
   const { id } = useParams();
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+
   useEffect(() => {
     if (!id) return;
 
@@ -27,11 +30,11 @@ export const Details = () => {
         next: (response) => {
           setAccuracy(response);
           breadcrumbsContext.setBreadcrumbs([
-            { label: 'Accuracy', path: 'accuracy' },
-            { label: response.name, path: `accuracy/${response.id}` },
+            { label: 'Accuracy', path: '/accuracy' },
+            { label: response.name, path: `/accuracy/${response.id}` },
           ]);
         },
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error loading accuracy ${id}`, error.message)
       });
   }, []);
 
@@ -44,7 +47,7 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => setAccuracy({ ...accuracy, active: response.active }),
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error activating accuracy ${id}`, error.message)
       });
   }
 
@@ -57,7 +60,7 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => setAccuracy({ ...accuracy, active: response.active }),
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error deactivating accuracy ${id}`, error.message)
       });
   }
 
@@ -75,7 +78,7 @@ export const Details = () => {
       <Typography variant="h5" gutterBottom>Actions</Typography>
 
       <Box component="span" pr={2}>
-        <Button variant="contained" color="primary" component={Link} to={`${accuracy.id}/edit`}>Edit</Button>
+        <Button variant="contained" color="primary" component={Link} to={`edit`}>Edit</Button>
       </Box>
       <Box component="span" pr={2}>
         {

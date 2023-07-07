@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Details = () => {
   const [expenseCategory, setExpenseCategory] = useState<ExpenseCategory>({
@@ -15,7 +16,9 @@ export const Details = () => {
 
   const { id } = useParams();
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  
   useEffect(() => {
     if (!id) return;
 
@@ -31,7 +34,7 @@ export const Details = () => {
             { label: response.name, path: `expense-category/${response.id}` },
           ]);
         },
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error loading expense category ${id}`, error.message)
       });
   }, []);
 
@@ -43,8 +46,11 @@ export const Details = () => {
       .withId(id)
       .activate()
       .subscribe({
-        next: (response) => setExpenseCategory({ ...expenseCategory, active: response.active }),
-        error: (error) => console.error(error)
+        next: (response) => {
+          snackbarContext.showSuccess("Success", `Expense category ${id} activated`);
+          setExpenseCategory({ ...expenseCategory, active: response.active });
+        },
+        error: (error) => snackbarContext.showError(`Error activating expense category ${id}`, error.message)
       });
   }
 
@@ -56,8 +62,11 @@ export const Details = () => {
       .withId(id)
       .deactivate()
       .subscribe({
-        next: (response) => setExpenseCategory({ ...expenseCategory, active: response.active }),
-        error: (error) => console.error(error)
+        next: (response) => {
+          snackbarContext.showSuccess("Success", `Expense category ${id} deactivated`);
+          setExpenseCategory({ ...expenseCategory, active: response.active });
+        },
+        error: (error) => snackbarContext.showError(`Error deactivating expense category ${id}`, error.message)
       });
   }
 
@@ -75,7 +84,7 @@ export const Details = () => {
       <Typography variant="h5" gutterBottom>Actions</Typography>
 
       <Box component="span" pr={2}>
-        <Button variant="contained" color="primary" component={Link} to={`${expenseCategory.id}/edit`}>Edit</Button>
+        <Button variant="contained" color="primary" component={Link} to={`edit`}>Edit</Button>
       </Box>
       <Box component="span" pr={2}>
         {

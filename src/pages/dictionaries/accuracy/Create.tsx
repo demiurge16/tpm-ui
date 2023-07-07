@@ -1,24 +1,41 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateAccuracy } from "../../../client/types/dictionaries/Accuracy";
 import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const snackbarContext = useContext(SnackbarContext);
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
+  useEffect(() => {
+    breadcrumbsContext.setBreadcrumbs([
+      { label: "Accuracies", path: "/accuracies" },
+      { label: "Create", path: "/accuracies/create" },
+    ]);
+  }, []);
 
   const handleSubmit = (data: CreateAccuracy) =>
     TpmClient.getInstance()
       .accuracies()
       .create(data)
       .subscribe({
-        next: () => navigate("/accuracies"),
-        error: (error) => setServerError(error.message),
+        next: () => {
+          snackbarContext.showSuccess("Success", "Accuracy created");
+          navigate("/accuracies");
+        },
+        error: (error) => {
+          snackbarContext.showError("Error creating accuracy", error.message);
+          setServerError(error.message);
+        }
       });
-
 
   return (
     <Box>

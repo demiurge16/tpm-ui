@@ -8,6 +8,7 @@ import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -19,7 +20,9 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
+
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const snackbarContext = useContext(SnackbarContext);
 
   useEffect(() => {
     if (!id) return;
@@ -32,12 +35,15 @@ export const Edit = () => {
         next: (response) => {
           setPriority(response);
           breadcrumbsContext.setBreadcrumbs([
-            { label: 'Priority', path: '/priority' },
-            { label: response.name, path: `/priority/${response.id}` },
-            { label: 'Edit', path: `/priority/${response.id}/edit` }
+            { label: 'Priority', path: '/priorities' },
+            { label: response.name, path: `/priorities/${response.id}` },
+            { label: 'Edit', path: `/priorities/${response.id}/edit` }
           ]);
         },
-        error: (error) => setServerError(error)
+        error: (error) => {
+          snackbarContext.showError(`Error loading priority ${id}`, error.message);
+          setServerError(error.message);
+        }
       });
   }, [id]);
 
@@ -49,8 +55,14 @@ export const Edit = () => {
       .withId(id)
       .update(values)
       .subscribe({
-        next: () => navigate('/priorities'),
-        error: (error) => setServerError(error)
+        next: () => {
+          snackbarContext.showSuccess('Success', 'Priority updated');
+          navigate('/priorities');
+        },
+        error: (error) => {
+          snackbarContext.showError("Error updating priority", error.message);
+          setServerError(error);
+        }
       });
   };
 

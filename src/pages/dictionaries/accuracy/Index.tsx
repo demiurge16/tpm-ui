@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Grid } from "../../../components/grid/Grid";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -18,6 +19,7 @@ export const Index = () => {
 
   const gridRef = useRef<GridHandle>(null);
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
@@ -52,7 +54,6 @@ export const Index = () => {
         const accuracy = params.data as Accuracy;
 
         const refresh = () => {
-          console.log('refreshing', accuracy);
           gridRef.current?.refresh();
         };
 
@@ -81,11 +82,11 @@ export const Index = () => {
     TpmClient.getInstance().accuracies().withId(id).activate()
       .subscribe({
         next: (response) => {
-          console.log(`Activated ${id}`);
+          snackbarContext.showSuccess("Success", `Activated ${id}`);
           refresh();
         },
         error: (error) => {
-          console.error(`Error activating ${id}`);
+          snackbarContext.showError(`Error activating ${id}`, error.message);
         }
       });
 
@@ -93,11 +94,11 @@ export const Index = () => {
     TpmClient.getInstance().accuracies().withId(id).deactivate()
       .subscribe({
         next: (response) => {
-          console.log(`Deactivated ${id}`);
+          snackbarContext.showSuccess("Success", `Deactivated ${id}`);
           refresh();
         },
         error: (error) => {
-          console.error(`Error deactivating ${id}`);
+          snackbarContext.showError(`Error deactivating ${id}`, error.message);
         }
       });
 

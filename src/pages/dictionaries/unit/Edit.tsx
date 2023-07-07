@@ -9,6 +9,7 @@ import { Form } from 'react-final-form';
 import { TextField } from '../../../components/form-controls/TextField';
 import { NumberField } from '../../../components/form-controls/NumberField';
 import { SelectField } from '../../../components/form-controls/SelectField';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 
 export const Edit = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
@@ -16,12 +17,14 @@ export const Edit = () => {
   const [unit, setUnit] = useState<UpdateUnit>({
     name: '',
     description: '',
-    value: 0,
+    volume: 0,
     measurement: 'POINTS'
   });
   const navigate = useNavigate();
   const { id } = useParams();
+
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const snackbarContext = useContext(SnackbarContext);
 
   useEffect(() => {
     if (!id) return;
@@ -34,17 +37,20 @@ export const Edit = () => {
         setUnit({
           name: unit.name,
           description: unit.description,
-          value: unit.value,
+          volume: unit.volume,
           measurement: unit.measurement.code
         });
         setMeasurements(measurements);
         breadcrumbsContext.setBreadcrumbs([
-          { label: 'Unit', path: '/unit' },
-          { label: unit.name, path: `/unit/${unit.id}` },
-          { label: 'Edit', path: `/unit/${unit.id}/edit` }
+          { label: 'Units', path: '/units' },
+          { label: unit.name, path: `/units/${unit.id}` },
+          { label: 'Edit', path: `/units/${unit.id}/edit` }
         ]);
       },
-      error: (error) => setServerError(error)
+      error: (error) => {
+        snackbarContext.showError('Error loading unit', error.message);
+        setServerError(error.message);
+      }
     });
   }, [id]);
 
@@ -69,14 +75,14 @@ export const Edit = () => {
         initialValues={{
           name: unit.name,
           description: unit.description,
-          value: unit.value,
+          volume: unit.volume,
           measurement: unit.measurement
         }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <TextField name="name" label="Name" required />
             <TextField name="description" label="Description" multiline rows={4} required />
-            <NumberField name="value" label="Value" required />
+            <NumberField name="volume" label="Volume" required />
             <SelectField name="measurement" label="Measurement" required
               options={
                 measurements.map((e) => ({ key: e.code as string, value: e.name,}))

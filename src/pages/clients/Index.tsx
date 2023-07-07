@@ -13,6 +13,7 @@ import { Clients } from "./Clients";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
+import { SnackbarContext } from "../../contexts/SnackbarContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -21,6 +22,7 @@ export const Index = () => {
   const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Client>>>([]);
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const snackbarContext = useContext(SnackbarContext);
   const gridRef = useRef<GridHandle>(null);
 
   useEffect(() => {
@@ -137,7 +139,7 @@ export const Index = () => {
         ]);
       },
       error: (error) => {
-        console.error(error);
+        snackbarContext.showError("Error fetching client types", error.message);
       },
     });
   }, []);
@@ -149,11 +151,11 @@ export const Index = () => {
       .activate()
       .subscribe({
         next: (response) => {
-          console.log(`Activated ${id}`);
+          snackbarContext.showSuccess("Success", `Activated ${id}`);
           refresh(response);
         },
         error: (error) => {
-          console.error(`Error activating ${id}`);
+          snackbarContext.showError(`Error activating ${id}`, error.message);
         },
       });
 
@@ -164,11 +166,11 @@ export const Index = () => {
       .deactivate()
       .subscribe({
         next: (response) => {
-          console.log(`Deactivated ${id}`);
+          snackbarContext.showSuccess("Success", `Deactivated ${id}`);
           refresh(response);
         },
         error: (error) => {
-          console.error(`Error deactivating ${id}`);
+          snackbarContext.showError(`Error deactivating ${id}`, error.message);
         },
       });
 

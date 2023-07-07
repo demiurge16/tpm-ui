@@ -11,6 +11,7 @@ import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Industry } from "../../../client/types/dictionaries/Industry";
 import { Link } from "react-router-dom";
 import { Grid } from "../../../components/grid/Grid";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -18,6 +19,7 @@ export const Index = () => {
 
   const gridRef = useRef<GridHandle>(null);
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
@@ -80,11 +82,11 @@ export const Index = () => {
     TpmClient.getInstance().industries().withId(id).activate()
       .subscribe({
         next: (response) => {
-          console.log(`Activated ${id}`);
+          snackbarContext.showSuccess('Success', `Activated ${id}`);
           refresh();
         },
         error: (error) => {
-          console.error(`Error activating ${id}`);
+          snackbarContext.showError(`Error activating ${id}`, error.message);
         }
       });
   };
@@ -93,11 +95,11 @@ export const Index = () => {
     TpmClient.getInstance().industries().withId(id).deactivate()
       .subscribe({
         next: (response) => {
-          console.log(`Deactivated ${id}`);
+          snackbarContext.showSuccess('Success', `Deactivated ${id}`);
           refresh();
         },
         error: (error) => {
-          console.error(`Error deactivating ${id}`);
+          snackbarContext.showError(`Error deactivating ${id}`, error.message);
         }
       });
   };

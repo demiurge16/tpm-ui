@@ -7,6 +7,7 @@ import { useNavigate, useParams, } from "react-router-dom";
 import { UpdateClientType } from "../../../client/types/client/ClientType";
 import TpmClient from "../../../client/TpmClient";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -17,6 +18,8 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   useEffect(() => {
@@ -35,7 +38,10 @@ export const Edit = () => {
             { label: 'Edit', path: `/client-types/${response.id}/edit` }
           ]);
         },
-        error: (error) => setServerError(error)
+        error: (error) => {
+          snackbarContext.showError("Error loading client type", error.message);
+          setServerError(error.message);
+        }
       });
   }, [id]);
 
@@ -47,8 +53,14 @@ export const Edit = () => {
       .withId(id)
       .update(values)
       .subscribe({
-        next: () => navigate("/client-types"),
-        error: (error) => setServerError(error)
+        next: () => {
+          snackbarContext.showSuccess("Success", "Client type updated");
+          navigate("/client-types");
+        },
+        error: (error) => {
+          snackbarContext.showError("Error updating client type", error.message);
+          setServerError(error.message);
+        }
       });
   }
     

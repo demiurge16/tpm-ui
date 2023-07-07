@@ -11,6 +11,7 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import TpmClient from "../../../client/TpmClient";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -20,7 +21,9 @@ export const Index = () => {
   const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Unit>>>([]);
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+
   useEffect(() => {
     TpmClient.getInstance()
       .units()
@@ -57,7 +60,7 @@ export const Index = () => {
             { headerName: "Name", field: "name", resizable: true },
             { headerName: "Description", field: "description", resizable: true },
             { headerName: "Active", field: "active", resizable: true },
-            { headerName: "Value", field: "value", resizable: true },
+            { headerName: "Volume", field: "volume", resizable: true },
             { 
               headerName: "Measurement",
               field: "measurement",
@@ -98,7 +101,7 @@ export const Index = () => {
           ]);
         },
         error: (error) => {
-          console.error("Error loading measurements");
+          snackbarContext.showError("Error loading units", error);
         }
       });
       
@@ -111,11 +114,11 @@ export const Index = () => {
     TpmClient.getInstance().priorities().withId(id).activate()
       .subscribe({
         next: (response) => {
-          console.log(`Activated ${id}`);
+          snackbarContext.showSuccess('Success', `Activated ${id}`);
           refresh();
         },
         error: (error) => {
-          console.error(`Error activating ${id}`);
+          snackbarContext.showError(`Error activating ${id}`, error.message);
         }
       });
   };
@@ -124,11 +127,11 @@ export const Index = () => {
     TpmClient.getInstance().priorities().withId(id).deactivate()
       .subscribe({
         next: (response) => {
-          console.log(`Deactivated ${id}`);
+          snackbarContext.showSuccess('Success', `Deactivated ${id}`);
           refresh();
         },
         error: (error) => {
-          console.error(`Error deactivating ${id}`);
+          snackbarContext.showError(`Error deactivating ${id}`, error.message);
         }
       });
   };

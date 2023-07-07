@@ -11,6 +11,7 @@ import { GridHandle } from '../../../components/grid/GridProps';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 
 export const Index = () => {
   const startPage = 0;
@@ -71,6 +72,7 @@ export const Index = () => {
     }
   ]);
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
@@ -82,11 +84,11 @@ export const Index = () => {
     TpmClient.getInstance().clientTypes().withId(id).activate()
       .subscribe({
         next: (response) => {
-          console.log(`Activated ${id}`);
+          snackbarContext.showSuccess("Success", `Activated ${id}`);
           refresh(response);
         },
         error: (error) => {
-          console.error(`Error activating ${id}`);
+          snackbarContext.showError(`Error activating ${id}`, error.message);
         }
       });
 
@@ -94,11 +96,11 @@ export const Index = () => {
     TpmClient.getInstance().clientTypes().withId(id).deactivate()
       .subscribe({
         next: (response) => {
-          console.log(`Deactivated ${id}`);
+          snackbarContext.showSuccess("Success", `Deactivated ${id}`);
           refresh(response);
         },
         error: (error) => {
-          console.error(`Error deactivating ${id}`);
+          snackbarContext.showError(`Error deactivating ${id}`, error.message);
         }
       });
 

@@ -4,13 +4,14 @@ import { Link, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Details = () => {
   const [unit, setUnit] = useState<Unit>({
     id: '',
     name: '',
     description: '',
-    value: 0,
+    volume: 0,
     measurement: {
       code: 'POINTS',
       name: 'Points',
@@ -21,6 +22,7 @@ export const Details = () => {
 
   const { id } = useParams();
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   useEffect(() => {
     if (!id) return;
@@ -33,11 +35,11 @@ export const Details = () => {
         next: (response) => {
           setUnit(response);
           breadcrumbsContext.setBreadcrumbs([
-            { label: 'Unit', path: 'unit' },
-            { label: response.name, path: `unit/${response.id}` },
+            { label: 'Units', path: 'units' },
+            { label: response.name, path: `units/${response.id}` },
           ]);
         },
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error loading unit ${id}`, error.message)
       });
   }, []);
 
@@ -49,8 +51,11 @@ export const Details = () => {
       .withId(id)
       .activate()
       .subscribe({
-        next: (response) => setUnit({ ...unit, active: response.active }),
-        error: (error) => console.error(error)
+        next: (response) => {
+          snackbarContext.showSuccess("Success", `Unit ${id} activated`);
+          setUnit({ ...unit, active: response.active });
+        },
+        error: (error) => snackbarContext.showError(`Error activating unit ${id}`, error.message)
       });
   }
 
@@ -62,8 +67,11 @@ export const Details = () => {
       .withId(id)
       .deactivate()
       .subscribe({
-        next: (response) => setUnit({ ...unit, active: response.active }),
-        error: (error) => console.error(error)
+        next: (response) => {
+          snackbarContext.showSuccess("Success", `Unit ${id} deactivated`);
+          setUnit({ ...unit, active: response.active });
+        },
+        error: (error) => snackbarContext.showError(`Error deactivating unit ${id}`, error.message)
       });
   }
 
@@ -76,13 +84,13 @@ export const Details = () => {
 
       <Typography variant="h5" gutterBottom>Details</Typography>
       <Typography variant="body1">Id: {unit.id}</Typography>
-      <Typography variant="body1">Value: {unit.value} {unit.measurement.name}</Typography>
+      <Typography variant="body1">Volume: {unit.volume} {unit.measurement.name}</Typography>
       <Typography variant="body1" gutterBottom>Active: {unit.active ? 'Yes' : 'No'}</Typography>
 
       <Typography variant="h5" gutterBottom>Actions</Typography>
 
       <Box component="span" pr={2}>
-        <Button variant="contained" color="primary" component={Link} to={`/client-types/${unit.id}/edit`}>Edit</Button>
+        <Button variant="contained" color="primary" component={Link} to={`edit`}>Edit</Button>
       </Box>
       <Box component="span" pr={2}>
         {

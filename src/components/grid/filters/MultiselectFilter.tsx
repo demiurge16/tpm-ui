@@ -25,7 +25,6 @@ export const MultiselectFilter = (props: MultiselectFilterProps) => {
         value={value}
         multiple
         onChange={(e) => { 
-          console.log(e.target.value);
           onChange(e.target.value as string[]);
         }}
 

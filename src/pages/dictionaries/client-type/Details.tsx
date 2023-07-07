@@ -4,6 +4,7 @@ import { ClientType } from "../../../client/types/client/ClientType";
 import TpmClient from "../../../client/TpmClient";
 import { Link, useParams } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
 
 export const Details = () => {
   const [clientType, setClientType] = useState<ClientType>({
@@ -16,7 +17,9 @@ export const Details = () => {
 
   const { id } = useParams();
 
+  const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+
   useEffect(() => {
     if (!id) return;
 
@@ -32,7 +35,7 @@ export const Details = () => {
             { label: response.name, path: `client-types/${response.id}` },
           ]);
         },
-        error: (error) => console.error(error)
+        error: (error) => snackbarContext.showError(`Error loading client type ${id}`, error.message)
       });
   }, []);
 
@@ -44,8 +47,11 @@ export const Details = () => {
       .withId(id)
       .activate()
       .subscribe({
-        next: (response) => setClientType({ ...clientType, active: response.active }),
-        error: (error) => console.error(error)
+        next: (response) => {
+          snackbarContext.showSuccess('Success', `Client type ${id} activated`);
+          setClientType({ ...clientType, active: response.active });
+        },
+        error: (error) => snackbarContext.showError(`Error activating client type ${id}`, error.message)
       });
   }
 
@@ -57,8 +63,11 @@ export const Details = () => {
       .withId(id)
       .deactivate()
       .subscribe({
-        next: (response) => setClientType({ ...clientType, active: response.active }),
-        error: (error) => console.error(error)
+        next: (response) => {
+          snackbarContext.showSuccess('Success', `Client type ${id} deactivated`);
+          setClientType({ ...clientType, active: response.active });
+        },
+        error: (error) => snackbarContext.showError(`Error deactivating client type ${id}`, error.message)
       });
   }
 
@@ -77,7 +86,7 @@ export const Details = () => {
       <Typography variant="h5" gutterBottom>Actions</Typography>
 
       <Box component="span" pr={2}>
-        <Button variant="contained" color="primary" component={Link} to={`${clientType.id}/edit`}>Edit</Button>
+        <Button variant="contained" color="primary" component={Link} to={`edit`}>Edit</Button>
       </Box>
       <Box component="span" pr={2}>
         {

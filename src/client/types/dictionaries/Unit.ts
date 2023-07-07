@@ -1,14 +1,14 @@
 export interface CreateUnit {
   name: string,
   description: string,
-  value: number,
+  volume: number,
   measurement: MeasurementCode
 }
 
 export interface UpdateUnit {
   name: string,
   description: string,
-  value: number,
+  volume: number,
   measurement: MeasurementCode
 }
 
@@ -18,7 +18,7 @@ export interface Unit {
   id: string,
   name: string,
   description: string,
-  value: number,
+  volume: number,
   measurement: Measurement,
   active: boolean
 }
