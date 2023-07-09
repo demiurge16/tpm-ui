@@ -1,17 +1,17 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { Field } from 'react-final-form';
 
 export interface SelectFieldProps {
   name: string;
   label: string;
+  multiple?: boolean;
   required?: boolean;
-  defaultValue?: boolean;
+  defaultValue?: [];
   options: { key: string, value: string }[];
 }
 
 export const SelectField = (props: SelectFieldProps) => {
-
-  const { name, label, required, defaultValue, options } = props;
+  const { name, label, multiple, required, defaultValue, options } = props;
   const labelId = `${name}-label`;
 
   return (
@@ -24,6 +24,7 @@ export const SelectField = (props: SelectFieldProps) => {
             label={label}
             labelId={labelId}
             displayEmpty
+            multiple={multiple}
             required={required}
             inputProps={{ name: label, id: label }}
           >
@@ -33,6 +34,7 @@ export const SelectField = (props: SelectFieldProps) => {
               ))
             }
           </Select>
+          <FormHelperText>{meta.error && meta.touched && meta.error}</FormHelperText>
         </FormControl>
       )}
     </Field>

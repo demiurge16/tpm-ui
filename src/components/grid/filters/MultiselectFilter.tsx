@@ -1,4 +1,4 @@
-import { Box, Checkbox, Chip, FormControl, InputLabel, ListItemText, MenuItem, Select, Typography } from "@mui/material";
+import { Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Select, Typography } from "@mui/material";
 
 export interface MultiselectFilterProps {
   id: string;

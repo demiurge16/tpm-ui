@@ -1,11 +1,11 @@
-import { FormControl, TextField } from "@mui/material";
+import { FormControl } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
 
 export interface DateTimeFilterProps {
   id: string;
   label: string;
-  value: Date | string | null;
+  value: Date | null;
   onChange: (value: Date | null) => void;
 }
 
@@ -19,7 +19,6 @@ export const DateTimeFilter = (props: DateTimeFilterProps) => {
         label={label}
         value={value}
         onChange={onChange}
-        renderInput={(params) => <TextField id={id} {...params} variant="outlined" size="small" />}
       />
     </FormControl>
   );

@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { Field } from 'react-final-form';
 
 export interface BooleanFieldProps {
@@ -29,6 +29,7 @@ export const BooleanField = (props: BooleanFieldProps) => {
             <MenuItem key="false" value="false">No</MenuItem>
             <MenuItem key="true" value="true">Yes</MenuItem>
           </Select>
+          <FormHelperText>{meta.error && meta.touched && meta.error}</FormHelperText>
         </FormControl>
       )}
     </Field>

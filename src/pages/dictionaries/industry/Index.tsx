@@ -119,7 +119,7 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().expenseCategories().all}
+        fetch={TpmClient.getInstance().industries().all}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />
