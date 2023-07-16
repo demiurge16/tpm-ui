@@ -126,9 +126,9 @@ function App() {
   ];
 
   const routesRender = (config: RouteConfig[]) =>
-    config.map((item) => {
+    config.map((item, index) => {
       return (
-        <Route
+        <Route key={`route-${index}`}
           path={item.path}
           element={<SecuredRoute>{item.element}</SecuredRoute>}
         />
@@ -191,9 +191,10 @@ function App() {
                 </Typography>
               </Link>
               {currentBreadcrumb && (
-                currentBreadcrumb.map((item) => {
+                currentBreadcrumb.map((item, index) => {
                   return (
                     <Link
+                      key={`breadcrumb-${index}`}
                       underline="hover"
                       color="inherit"
                       component={RouterLink}

@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 import { Page } from "./types/common/Page";
 import { Search } from "./types/common/Search";
 import { CreateProject, ProjectDeadlineMoved, ProjectMoveDeadline, ProjectMoveStart, ProjectNewStatus, Project, ProjectStartMoved, ProjectStatus, UpdateProject } from "./types/project/Project";
-import { CreateTeamMember, TeamMember } from "./types/project/TeamMember";
+import { CreateTeamMember, Role, TeamMember } from "./types/project/TeamMember";
 import { CreateTask } from "./types/project/Task";
 import { Assign, Assigned, ChangePriority, PriorityChanged, Task, TaskDeadlineMoved, TaskMoveDeadline, TaskMoveStart, TaskNewStatus, TaskStartMoved, TaskStatus, UpdateTask } from "./types/task/Task";
 import { CreateChat } from "./types/project/Chat";
@@ -124,9 +124,14 @@ export default class TpmClient {
       refdata: () => {
         return {
           statuses: (): Observable<ProjectStatus[]> => this.get(`project/refdata/status`),
+          teamMembers: () => {
+            return {
+              roles: (): Observable<Role[]> => this.get(`project/refdata/team-member/role`),
+            };
+          }
         };
       },
-      withId: (id: number) => {
+      withId: (id: string) => {
         return {
           get: (): Observable<Project> => this.get(`project/${id}`),
           update: (body: UpdateProject): Observable<Project> => this.put(`project/${id}`, body),
@@ -147,39 +152,39 @@ export default class TpmClient {
           teamMembers: () => {
             return {
               all: (search?: Search): Observable<Page<TeamMember>> => this.get(`project/${id}/team-member`, search),
-              add: (body: CreateTeamMember): Observable<TeamMember> => this.post(`projects/${id}/team-member`, body),
-              remove: (id: string) => this.delete(`projects/${id}/team-member/${id}`),
+              add: (body: CreateTeamMember): Observable<TeamMember> => this.post(`project/${id}/team-member`, body),
+              remove: (id: string) => this.delete(`project/${id}/team-member/${id}`)
             };
           },
           tasks: () => {
             return {
               all: (search?: Search): Observable<Page<Task>> => this.get(`project/${id}/task`, search),
-              create: (body: CreateTask): Observable<Task> => this.post(`projects/${id}/task`, body),
+              create: (body: CreateTask): Observable<Task> => this.post(`project/${id}/task`, body),
             };
           },
           chats: () => {
             return {
               all: (search?: Search): Observable<Page<Chat>> => this.get(`project/${id}/chat`, search),
-              create: (body: CreateChat): Observable<Chat> => this.post(`projects/${id}/chat`, body),
+              create: (body: CreateChat): Observable<Chat> => this.post(`project/${id}/chat`, body),
             };
           },
           expenses: () => {
             return {
               all: (search?: Search): Observable<Page<Expense>> => this.get(`project/${id}/expense`, search),
-              create: (body: CreateExpense): Observable<Expense> => this.post(`projects/${id}/expense`, body),
+              create: (body: CreateExpense): Observable<Expense> => this.post(`project/${id}/expense`, body),
             };
           },
           notes: () => {
             return {
               all: (search?: Search): Observable<Page<Note>> => this.get(`project/${id}/note`, search),
-              create: (body: CreateNote): Observable<Note> => this.post(`projects/${id}/note`, body),
+              create: (body: CreateNote): Observable<Note> => this.post(`project/${id}/note`, body),
             };
           },
           files: () => {
             return {
               all: (search?: Search): Observable<Page<File>> => this.get(`project/${id}/file`, search),
               // TODO: add types for body and response
-              create: (body: any) => this.post(`projects/${id}/file`, body),
+              create: (body: any) => this.post(`project/${id}/file`, body),
             };
           },
         };
@@ -420,7 +425,7 @@ export default class TpmClient {
 
   users() {
     return {
-      all: (): Observable<Page<User>> => this.get(`user`),
+      all: (search?: Search): Observable<Page<User>> => this.get(`user`),
       withId: (id: string) => {
         return {
           get: (): Observable<User> => this.get(`user/${id}`),

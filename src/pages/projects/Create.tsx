@@ -59,11 +59,13 @@ export const Create = () => {
     accuracyId: string().required('Accuracy is required'),
     industryId: string().required('Industry is required'),
     unitId: string().required('Unit is required'),
-    amount: number().required('Amount is required'),
+    amount: number().required('Amount is required')
+      .min(1, 'Amount must be greater than or equal to 1'),
     expectedStart: date().required('Expected start date is required'),
     internalDeadline: date().required('Internal deadline is required'),
     externalDeadline: date().required('External deadline is required'),
-    budget: number().required('Budget is required'),
+    budget: number().required('Budget is required')
+      .min(0, 'Budget must be greater than or equal to 0'),
     currencyCode: string().required('Currency is required'),
     clientId: string().required('Client is required')
   });
@@ -130,7 +132,7 @@ export const Create = () => {
         initialValues={initialValues}
         validate={validate}
         render={({ handleSubmit, form, submitting, pristine }) => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit}>
             <TextField name="title" label="Title" required/>
             <TextField name="description" label="Description" multiline required/>
             <AsyncSelectField name="sourceLanguage" label="Source Language" required
@@ -155,7 +157,7 @@ export const Create = () => {
                         totalPages: response.totalPages,
                         totalElements: response.totalElements,
                         items: response.items.map((language) => ({ key: language.code, value: language.name }))
-                      }
+                      };
                     }
                   ))
               }

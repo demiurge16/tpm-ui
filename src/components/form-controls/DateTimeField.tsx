@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText } from "@mui/material";
+import { FormControl } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { Field } from "react-final-form";
 
@@ -28,8 +28,13 @@ export const DateTimeField = (props: DateFieldProps) => {
             label={label}
             ampm={false}
             format="DDD HH:mm"
+            slotProps={{
+              textField: {
+                error: meta.error && meta.touched,
+                helperText: meta.error && meta.touched && meta.error,
+              },
+            }}
           />
-          <FormHelperText>{meta.error && meta.touched && meta.error}</FormHelperText>
         </FormControl>
       )}
     </Field>

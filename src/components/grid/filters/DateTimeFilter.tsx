@@ -14,7 +14,7 @@ export const DateTimeFilter = (props: DateTimeFilterProps) => {
   const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
 
   return (
-    <FormControl variant="standard" size="small" fullWidth>
+    <FormControl id={id} variant="standard" size="small" fullWidth>
       <DateTimePicker
         label={label}
         value={value}
