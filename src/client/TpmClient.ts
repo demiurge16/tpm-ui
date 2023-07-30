@@ -25,6 +25,7 @@ import { Language, LanguageScope, LanguageType } from "./types/dictionaries/Lang
 import { CreatePriority, Priority, PriorityStatus, UpdatePriority } from "./types/dictionaries/Priority";
 import { CreateUnit, Measurement, Unit, UnitStatus, UpdateUnit } from "./types/dictionaries/Unit";
 import { User } from "./types/user/User";
+import { File } from "./types/file/File";
 
 export default class TpmClient {
 

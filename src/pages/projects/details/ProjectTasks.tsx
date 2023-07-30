@@ -1,26 +1,25 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { FilterDefinition } from "../../components/grid/FilterDefinition";
-import { Task } from "../../client/types/task/Task";
-import { forkJoin } from "rxjs";
-import TpmClient from "../../client/TpmClient";
-import { Box, Button, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useRef, useState } from 'react';
+import { ColumnDefinition, GridHandle } from '../../../components/grid/GridProps';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useProjectContext } from './ProjectContext';
+import { FilterDefinition } from '../../../components/grid/FilterDefinition';
+import { Task } from '../../../client/types/task/Task';
+import { Box, Button, Typography } from '@mui/material';
+import { Grid } from '../../../components/grid/Grid';
+import TpmClient from '../../../client/TpmClient';
+import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Grid } from "../../components/grid/Grid";
-import { Tasks } from "./Tasks";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { forkJoin } from 'rxjs';
 
-export const Index = () => {
+export const ProjectTasks = () => {
   const startPage = 0;
   const pageSize = 25;
 
   const gridRef = useRef<GridHandle>(null);
 
   const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { project, setProject } = useProjectContext();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
@@ -168,20 +167,6 @@ export const Index = () => {
               return task.industry.name;
             }
           },
-          {
-            headerName: 'Project',
-            resizable: true,
-            cellRenderer: (params: any) => {
-              const task = params.data as Task;
-              return (
-                <Box>
-                  <Button variant="text" component={Link} to={`/projects/${task.projectId}`}>
-                    {task.projectId}
-                  </Button>
-                </Box>
-              );
-            }
-          },
           { 
             headerName: 'Actions',
             field: 'actions',
@@ -214,25 +199,22 @@ export const Index = () => {
         snackbarContext.showError("Failed to load project tasks", error.message);
       }
     });
-
-    breadcrumbsContext.setBreadcrumbs([
-      { label: 'Tasks', path: '/tasks' }
-    ]);
   }, []);
 
   return (
     <Box>
-    <Typography variant="h4">{Tasks.title}</Typography>
-    <Typography variant="subtitle1">{Tasks.description}</Typography>
-    <Box pb={2} />
+      <Typography variant="h5" gutterBottom>Project tasks</Typography>
+      <Box pb={2} />
       <Grid<Task>
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().tasks().all}
+        fetch={TpmClient.getInstance().projects().withId(project.id).tasks().all}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />
+      <Box pb={2} />
+      <Button variant="contained" component={Link} to="tasks/create">Create</Button>
     </Box>
   );
-};
+}

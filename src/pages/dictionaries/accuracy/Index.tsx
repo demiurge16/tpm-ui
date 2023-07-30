@@ -122,7 +122,7 @@ export const Index = () => {
         columnDefinitions={columnDefs}
       />
       <Box pb={2} />
-      <Button variant="contained" component={Link} to="create">Create</Button>
+      <Button variant="contained"component={Link} to="create">Create</Button>
     </Box>
   );
 };

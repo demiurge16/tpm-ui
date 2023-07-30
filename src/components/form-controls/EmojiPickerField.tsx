@@ -46,6 +46,7 @@ export const EmojiPickerField = (props: EmojiPickerProps) => {
           error={meta.error && meta.touched}
           helperText={meta.error}
           value={emoji}
+          onChange={(e) => input.onChange(e.target.value)}
           InputProps={{
             endAdornment: (
               <>

@@ -23,6 +23,17 @@ export const Index = () => {
   const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Project>>>([]);
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
 
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('en-GB', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: false
+    });
+  }
+
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Projects', path: '/projects' }
@@ -97,18 +108,14 @@ export const Index = () => {
             },
           },
           { headerName: "Title", field: "title", resizable: true },
-          { headerName: "Description", field: "description", resizable: true },
-          { 
-            headerName: "Source Language",
-            field: "sourceLanguage",
-            resizable: true,
-            cellRenderer: (params: any) => params.data.sourceLanguage.name
-          },
+          { headerName: "Description", field: "description", resizable: true, hide: true },
           {
-            headerName: "Target Languages",
-            field: "targetLanguages",
+            headerName: "Language Pair (Source -> Target)",
             resizable: true,
-            cellRenderer: (params: any) => params.data.targetLanguages.map((l: any) => l.name).join(", ")
+            cellRenderer: (params: any) => {
+              const project = params.data as Project;
+              return `${project.sourceLanguage.name} -> ${project.targetLanguages.map((l: any) => l.name).join(", ")}`;
+            }
           },
           {
             headerName: "Accuracy",
@@ -123,9 +130,12 @@ export const Index = () => {
             cellRenderer: (params: any) => params.data.industry.name
           },
           {
-            headerName: "Amount",
+            headerName: "Volume",
             resizable: true,
-            cellRenderer: (params: any) => `${params.data.amount} ${params.data.unit.name}`
+            cellRenderer: (params: any) => {
+              const project = params.data as Project;
+              return `${project.amount} ${project.unit.name}`
+            }
           },
           {
             headerName: "Budget",
@@ -137,6 +147,14 @@ export const Index = () => {
             field: "status",
             resizable: true,
             cellRenderer: (params: any) => params.data.status.name
+          },
+          {
+            headerName: "Timeframe (Expected Start -> Internal Deadline -> External Deadline)",
+            resizable: true,
+            cellRenderer: (params: any) => {
+              const project = params.data as Project;
+              return `${formatDate(project.expectedStart)} -> ${formatDate(project.internalDeadline)} -> ${formatDate(project.externalDeadline)}`;
+            }
           },
           {
             headerName: "Client",

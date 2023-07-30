@@ -82,7 +82,7 @@ export const Details = () => {
       <Typography variant="h5" gutterBottom>Actions</Typography>
 
       <Box component="span" pr={2}>
-        <Button variant="contained" color="primary" component={Link} to={`/accuracies/${priority.id}/edit`}>Edit</Button>
+        <Button variant="contained" color="primary" component={Link} to="edit">Edit</Button>
       </Box>
       <Box component="span" pr={2}>
         {

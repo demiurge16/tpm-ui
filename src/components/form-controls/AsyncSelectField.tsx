@@ -17,7 +17,7 @@ export interface AsyncSelectFieldProps {
   label: string;
   multiple?: boolean;
   required?: boolean;
-  defaultValue?: [];
+  defaultValue?: string | Array<string>;
   optionsLoader: OptionsLoader;
 }
 
@@ -88,9 +88,8 @@ export const AsyncSelectField = (props: AsyncSelectFieldProps) => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={label}
+                label={label + (required ? " *" : "")}
                 variant="outlined"
-                required={required}
                 error={meta.error && meta.touched}
                 helperText={meta.touched && meta.error}
                 InputProps={{
@@ -104,6 +103,7 @@ export const AsyncSelectField = (props: AsyncSelectFieldProps) => {
                 }}
               />
             )}
+            noOptionsText="No options found. Please refine your search term."
           />
         </FormControl>
       )}

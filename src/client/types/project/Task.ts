@@ -3,14 +3,13 @@ export interface CreateTask {
   description: string;
   sourceLanguage: string;
   targetLanguage: string;
-  accuracy: string;
-  industry: string;
-  unit: string;
+  accuracyId: string;
+  industryId: string;
+  unitId: string;
   amount: number;
   expectedStart: Date;
   deadline: Date;
   budget: number;
-  currency: string;
+  currencyCode: string;
   priorityId: string;
-  projectId: string;
 }

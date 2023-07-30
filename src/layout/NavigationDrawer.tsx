@@ -32,6 +32,7 @@ import ConstructionIcon from "@mui/icons-material/Construction";
 import LowPriorityIcon from "@mui/icons-material/LowPriority";
 import PercentIcon from "@mui/icons-material/Percent";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
+import DesignServicesIcon from '@mui/icons-material/DesignServices';
 import { css } from "@emotion/css";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box/Box";
@@ -47,6 +48,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Collapse, ListSubheader } from "@mui/material";
+import { ServiceTypes } from "../pages/dictionaries/service-types/ServiceTypes";
 
 export interface NavigationDrawerProps {
   open: boolean;
@@ -176,6 +178,11 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               label: Units.title,
               path: Units.path,
             },
+            {
+              icon: DesignServicesIcon,
+              label: ServiceTypes.title,
+              path: ServiceTypes.path,
+            }
           ],
         },
         {

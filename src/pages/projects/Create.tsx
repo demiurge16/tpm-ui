@@ -5,11 +5,9 @@ import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { useNavigate } from 'react-router-dom';
 import TpmClient from '../../client/TpmClient';
 import { forkJoin, map } from 'rxjs';
-import { Language } from '../../client/types/dictionaries/Language';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
 import { Unit } from '../../client/types/dictionaries/Unit';
-import { Currency } from '../../client/types/dictionaries/Currency';
 import { Client } from '../../client/types/client/Client';
 import { Box, Button, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
@@ -204,14 +202,20 @@ export const Create = () => {
             <NumberField name="amount" label="Amount" required/>
             <NumberField name="budget" label="Budget" required/>
             <AsyncSelectField name="currencyCode" label="Currency" required
-              optionsLoader={() =>
+              optionsLoader={(search) =>
                 TpmClient.getInstance()
                   .currencies()
                   .all({
                     page: 0,
                     pageSize: 25,
                     sort: [],
-                    filters: []
+                    filters: [
+                      {
+                        field: 'name',
+                        operator: 'contains',
+                        value: search
+                      }
+                    ]
                   })
                   .pipe(
                     map((response) => {

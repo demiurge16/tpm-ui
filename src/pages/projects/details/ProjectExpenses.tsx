@@ -1,19 +1,18 @@
 import { useContext, useEffect, useRef, useState } from 'react';
+import { ColumnDefinition, GridHandle } from '../../../components/grid/GridProps';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useProjectContext } from './ProjectContext';
+import { FilterDefinition } from '../../../components/grid/FilterDefinition';
+import { Expense } from '../../../client/types/expense/Expense';
+import { Box, Button, Typography } from '@mui/material';
+import { Grid } from '../../../components/grid/Grid';
+import TpmClient from '../../../client/TpmClient';
+import { Link } from 'react-router-dom';
+import { ExpenseCategory } from '../../../client/types/dictionaries/ExpenseCategory';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { ColumnDefinition, GridHandle } from '../../components/grid/GridProps';
-import { ExpenseCategory } from '../../client/types/dictionaries/ExpenseCategory';
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { FilterDefinition } from '../../components/grid/FilterDefinition';
-import { Expense } from '../../client/types/expense/Expense';
-import TpmClient from '../../client/TpmClient';
-import { Box, Button, Typography } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { Grid } from '../../components/grid/Grid';
-import { Expenses } from './Expenses';
-import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 
-export const Index = () => {
+export const ProjectExpenses = () => {
   const startPage = 0;
   const pageSize = 25;
 
@@ -22,7 +21,7 @@ export const Index = () => {
   const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
 
   const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { project, setProject } = useProjectContext();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Expense>[]>([]);
@@ -82,20 +81,6 @@ export const Index = () => {
             //   resizable: true
             // },
             {
-              headerName: 'Project',
-              resizable: true,
-              cellRenderer: (params: any) => {
-                const task = params.data as Expense;
-                return (
-                  <Box>
-                    <Button variant="text" component={Link} to={`/projects/${task.projectId}`}>
-                      {task.projectId}
-                    </Button>
-                  </Box>
-                );
-              }
-            },
-            {
               headerName: 'Actions',
               field: 'actions',
               resizable: true,
@@ -132,24 +117,23 @@ export const Index = () => {
           ]);
         }
       });
-
-      breadcrumbsContext.setBreadcrumbs([
-        { label: 'Expenses', path: '/expenses' }
-      ]);
-    }, []);
+    }
+  , []);
 
   return (
     <Box>
-      <Typography variant="h4">{Expenses.title}</Typography>
-      <Typography variant="subtitle1">{Expenses.description}</Typography>
+      <Typography variant="h5" gutterBottom>Project expenses</Typography>
+      <Box pb={2} />
       <Grid<Expense>
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().expenses().all}
+        fetch={TpmClient.getInstance().projects().withId(project.id).expenses().all}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />
+      <Box pb={2} />
+      <Button variant="contained" component={Link} to="expenses/create" >Create</Button>
     </Box>
   );
-};
+}

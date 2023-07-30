@@ -5,7 +5,7 @@ export const ProjectDetails = () => {
   const { project, setProject } = useProjectContext();
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString('en-GB', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -17,7 +17,7 @@ export const ProjectDetails = () => {
 
   return (
     <>
-      <Typography variant="h5" gutterBottom>Details</Typography>
+      <Typography variant="h5" gutterBottom>Description</Typography>
       <Typography variant="body1">
         Languages (from -&gt; to): {`${project.sourceLanguage.name} -> ${project.targetLanguages.map((language) => language.name).join(', ')}`}
       </Typography>
