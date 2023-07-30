@@ -1,23 +1,18 @@
-import React, { SyntheticEvent, useEffect, useState, useContext, useRef } from "react";
+import React, { SyntheticEvent, useEffect, useState, useContext } from "react";
 import { Project } from "../../client/types/project/Project"
-import { Box,  Button,  Tab, Tabs, Typography } from "@mui/material";
-import { Link, useParams } from "react-router-dom";
+import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { useParams } from "react-router-dom";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import TpmClient from "../../client/TpmClient";
-import ProjectContextProvider, { useProjectContext } from "./details/ProjectContext";
+import ProjectContextProvider from "./details/ProjectContext";
 import { ProjectDetails } from "./details/ProjectDetails";
 import { ProjectStatusDetails } from "./details/ProjectStatusDetails";
 import { ProjectTeamMembers } from "./details/ProjectTeamMembers";
-import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
-import { Grid } from "../../components/grid/Grid";
-import { Task } from "../../client/types/task/Task";
-import { FilterDefinition } from "../../components/grid/FilterDefinition";
-import { Expense } from "../../client/types/expense/Expense";
-import { File } from "../../client/types/file/File";
 import { ProjectFiles } from "./details/ProjectFiles";
 import { ProjectExpenses } from "./details/ProjectExpenses";
 import { ProjectTasks } from "./details/ProjectTasks";
+import { ProjectNotes } from "./details/ProjectNotes";
 
 export const Details = () => {
   const [project, setProject] = useState<Project>({
@@ -155,10 +150,10 @@ export const Details = () => {
           <ProjectExpenses />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
-          <ProjectChats project={project} />
+          <ProjectChats />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={6}>
-          <ProjectNotes project={project} />
+          <ProjectNotes />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={7}>
           <ProjectFiles />
@@ -194,18 +189,13 @@ const CustomTabPanel = (props: TabPanelProps) => {
   );
 }
 
-const ProjectChats = (props: { project: Project }) => {
+const ProjectChats = () => {
   return (
-    <div>
-      <h1>Project Chats</h1>
-    </div>
+    <Box>
+      <Typography variant="h5" gutterBottom>Project chats</Typography>
+      <Box pb={2} />
+    </Box>
   );
 }
 
-const ProjectNotes = (props: { project: Project }) => {
-  return (
-    <div>
-      <h1>Project Notes</h1>
-    </div>
-  );
-}
+

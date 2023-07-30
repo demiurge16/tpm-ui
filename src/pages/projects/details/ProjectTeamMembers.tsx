@@ -4,7 +4,7 @@ import { useProjectContext } from './ProjectContext';
 import { CreateTeamMember, Role, TeamMember } from '../../../client/types/project/TeamMember';
 import { forkJoin, map } from 'rxjs';
 import TpmClient from '../../../client/TpmClient';
-import { Avatar, Box, Button, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
+import { Avatar, Box, Button, Divider, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Form } from 'react-final-form';
 import { AsyncSelectField } from '../../../components/form-controls/AsyncSelectField';
@@ -120,41 +120,67 @@ export const ProjectTeamMembers = () => {
           }}
           render={({ handleSubmit, form, submitting, pristine }) => (
             <form onSubmit={handleSubmit}>
-              <AsyncSelectField name="userId" label="User" required
-                optionsLoader={(search: string) =>
-                  TpmClient.getInstance()
-                    .users()
-                    .all({
-                      page: 0,
-                      pageSize: 25,
-                      sort: [],
-                      filters: [
-                        {
-                          field: 'name',
-                          operator: 'contains',
-                          value: search
-                        }
-                      ]
-                    })
-                    .pipe(
-                      map(
-                        (response) => {
-                          return {
-                            totalPages: response.totalPages,
-                            totalElements: response.totalElements,
-                            items: response.items.map((user) => ({ key: user.id, value: user.firstName + ' ' + user.lastName }))
-                          };
-                        }
-                      )
-                    )
-                }
-              />
-              <SelectField name="role" label="Role" required
-                options={roles.map((role) => ({ key: role.role, value: role.title }))}
-              />
-
-              <Button type="submit" variant="contained" color="primary" disabled={submitting || pristine}>Add</Button>
-              <Button type="button" variant="contained" color="secondary" onClick={() => form.reset()} disabled={submitting || pristine}>Reset</Button>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={5}>
+                  <AsyncSelectField name="userId" label="User" required
+                    optionsLoader={(search: string) =>
+                      TpmClient.getInstance()
+                        .users()
+                        .all({
+                          page: 0,
+                          pageSize: 25,
+                          sort: [],
+                          filters: [
+                            {
+                              field: 'name',
+                              operator: 'contains',
+                              value: search
+                            }
+                          ]
+                        })
+                        .pipe(
+                          map(
+                            (response) => {
+                              return {
+                                totalPages: response.totalPages,
+                                totalElements: response.totalElements,
+                                items: response.items.map((user) => ({ key: user.id, value: user.firstName + ' ' + user.lastName }))
+                              };
+                            }
+                          )
+                        )
+                    }
+                  />  
+                </Grid>
+                <Grid item xs={12} sm={5}>
+                  <SelectField name="role" label="Role" required
+                    options={roles.map((role) => ({ key: role.role, value: role.title }))}
+                  />  
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <Button type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    size='large'
+                    disabled={submitting || pristine}
+                  >
+                    Add
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <Button type="button"
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    size='large'
+                    onClick={() => form.reset()}
+                    disabled={submitting || pristine}
+                  >
+                    Reset
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
           )}
         />

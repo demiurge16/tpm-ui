@@ -117,8 +117,7 @@ export const ProjectExpenses = () => {
           ]);
         }
       });
-    }
-  , []);
+    }, []);
 
   return (
     <Box>
