@@ -83,7 +83,7 @@ export const Index = () => {
           FilterDefinition.select(
             "status",
             "Status",
-            response.statuses.map(s => ({ label: s.name, value: s.status }))
+            response.statuses.map(s => ({ label: s.title, value: s.status }))
           ),
           FilterDefinition.select(
             "client",
@@ -146,7 +146,7 @@ export const Index = () => {
             headerName: "Status",
             field: "status",
             resizable: true,
-            cellRenderer: (params: any) => params.data.status.name
+            cellRenderer: (params: any) => params.data.status.title
           },
           {
             headerName: "Timeframe (Expected Start -> Internal Deadline -> External Deadline)",

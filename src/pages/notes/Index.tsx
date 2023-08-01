@@ -3,7 +3,7 @@ import TpmClient from "../../client/TpmClient";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Note } from "../../client/types/note/Note";
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, List, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, List, Typography } from "@mui/material";
 import { Notes } from "./Tasks";
 import { Link } from "react-router-dom";
 
@@ -54,7 +54,7 @@ export const Index = () => {
                 />
               }
               title={note.author.firstName + ' ' + note.author.lastName}
-              subheader={formatDate(note.createdAt)}
+              subheader={formatDate(note.createdAt) + ' in project ' + note.project.title}
             />
             <CardContent>
               <Typography variant="body2" color="text.secondary">
@@ -65,7 +65,7 @@ export const Index = () => {
               <Button variant="text"
                 color="primary"
                 component={Link}
-                to={`/projects/${note.projectId}`}
+                to={`/projects/${note.project.id}`}
               >
                 Go to project
               </Button>

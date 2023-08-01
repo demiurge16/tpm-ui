@@ -42,7 +42,7 @@ const defaultProjectContextValues: ProjectContextValues = {
     },
     status: {
       status: 'DRAFT',
-      name: '',
+      title: '',
       description: ''
     },
     client: {

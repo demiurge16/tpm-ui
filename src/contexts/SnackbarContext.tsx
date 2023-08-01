@@ -79,7 +79,7 @@ const SnackbarContextProvider = (
           severity={snack?.severity}
           sx={{ width: '100%' }}
         >
-          <AlertTitle>{snack?.severity}</AlertTitle>
+          <AlertTitle>{snack?.title}</AlertTitle>
           {snack?.message}
         </Alert>
       </Snackbar>

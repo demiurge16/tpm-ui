@@ -50,7 +50,7 @@ export const Details = () => {
     },
     status: {
       status: 'DRAFT',
-      name: '',
+      title: '',
       description: ''
     },
     client: {

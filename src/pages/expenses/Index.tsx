@@ -76,11 +76,15 @@ export const Index = () => {
               resizable: true,
               cellRenderer: (params: any) => `${params.data.amount.toFixed(2)} ${params.data.currency.name}`
             },
-            // {
-            //   headerName: 'Team member',
-            //   field: 'teamMemberId',
-            //   resizable: true
-            // },
+            {
+              headerName: 'Team member',
+              resizable: true,
+              hide: true,
+              cellRenderer: (params: any) => {
+                const task = params.data as Expense;
+                return task.teamMember.firstName + ' ' + task.teamMember.lastName;
+              }
+            },
             {
               headerName: 'Project',
               resizable: true,
@@ -88,8 +92,8 @@ export const Index = () => {
                 const task = params.data as Expense;
                 return (
                   <Box>
-                    <Button variant="text" component={Link} to={`/projects/${task.projectId}`}>
-                      {task.projectId}
+                    <Button variant="text" component={Link} to={`/projects/${task.project.id}`}>
+                      {task.project.title}
                     </Button>
                   </Box>
                 );

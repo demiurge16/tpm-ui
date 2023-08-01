@@ -126,7 +126,7 @@ export const ProjectStatusDetails = () => {
       <Grid item xs={12} sm={6}>
         <Typography variant="h5" gutterBottom>Project status</Typography>
         <Typography variant="body1">
-          Status: {project.status.name}
+          Status: {project.status.title}
         </Typography>
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -162,7 +162,7 @@ export const ProjectStatusDetails = () => {
                   }
                   }
                 >
-                  {statuses.find((status) => status.status === statusCode)?.name}
+                  {statuses.find((status) => status.status === statusCode)?.title}
                 </Button>
               );
             })

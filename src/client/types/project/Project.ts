@@ -94,7 +94,7 @@ export interface Language {
 
 export interface ProjectStatus {
   status: StatusCode;
-  name: string;
+  title: string;
   description: string;
 }
 

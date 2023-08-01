@@ -12,11 +12,25 @@ export interface TeamMember {
   lastName: string;
   email: string;
   role: Role,
-  projectId: string;
+  project: string;
 }
 
 export interface Role {
   role: RoleCode;
   title: string;
+  description: string;
+}
+
+export interface ProjectShortView {
+  id: string;
+  title: string;
+  status: ProjectStatus;
+}
+
+export type StatusCode = "DRAFT" | "READY_TO_START" | "ACTIVE" | "ON_HOLD" | "READY_TO_DELIVER" | "DELIVERED" | "CANCELLED" | "INVOICED" | "PAID";
+
+export interface ProjectStatus {
+  status: StatusCode;
+  name: string;
   description: string;
 }

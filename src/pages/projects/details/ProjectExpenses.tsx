@@ -75,11 +75,14 @@ export const ProjectExpenses = () => {
               resizable: true,
               cellRenderer: (params: any) => `${params.data.amount.toFixed(2)} ${params.data.currency.name}`
             },
-            // {
-            //   headerName: 'Team member',
-            //   field: 'teamMemberId',
-            //   resizable: true
-            // },
+            {
+              headerName: 'Team member',
+              resizable: true,
+              cellRenderer: (params: any) => {
+                const expense = params.data as Expense;
+                return expense.teamMember.firstName + ' ' + expense.teamMember.lastName;
+              }
+            },
             {
               headerName: 'Actions',
               field: 'actions',

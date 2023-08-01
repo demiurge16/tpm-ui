@@ -51,7 +51,7 @@ export const ProjectTeamMembers = () => {
           setTeamMembers([...teamMembers, response]);
           snackbarContext.showSuccess('Success', 'Team member added');
         },
-        error: (error) => snackbarContext.showError('Error', error.message)
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
   const removeTeamMember = (teamMember: TeamMember) =>
