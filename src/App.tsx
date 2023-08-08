@@ -48,6 +48,7 @@ import { ThemeSwitcher } from "./layout/ThemeSwitcher";
 import { NavigationDrawer } from "./layout/NavigationDrawer";
 import { Errors } from "./pages/errors/Errors";
 import { BreadcrumbsContext } from "./contexts/BreadcrumbsContext";
+import { environment } from "./Environment";
 
 function App() {
   const title = "Translation Project Manager";
@@ -243,6 +244,9 @@ function App() {
             >
               nuclear-prometheus.net
             </Link>
+          </Typography>
+          <Typography variant="body2" color="text.secondary" align="center">
+            Version {environment.version}
           </Typography>
         </Box>
       </Container>

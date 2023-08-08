@@ -95,6 +95,7 @@ export const Create = () => {
       <Typography variant="h4">Add new expense</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={initialValues}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>

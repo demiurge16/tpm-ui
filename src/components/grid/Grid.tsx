@@ -201,6 +201,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
           animateRows={true}
           rowSelection="multiple"
           multiSortKey="ctrl"
+          suppressDragLeaveHidesColumns={true}
           onSortChanged={(event) => handleSortChange(event)}
         />
         <Box className={styles.pagination}>

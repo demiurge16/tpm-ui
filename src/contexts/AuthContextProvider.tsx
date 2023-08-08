@@ -1,11 +1,12 @@
 import axios from "axios";
 import Keycloak, { KeycloakConfig, KeycloakInitOptions } from "keycloak-js";
 import { createContext, useState, useEffect } from "react";
+import { environment } from "../Environment";
 
 const keycloakConfig: KeycloakConfig = {
   realm: "tpm",
   clientId: "tpm-frontend",
-  url: "http://auth.tpm.localhost",
+  url: environment.authServerUrl,
 };
 
 const keycloakInitOptions: KeycloakInitOptions = {

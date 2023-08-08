@@ -65,7 +65,7 @@ export const ProjectTeamMembers = () => {
           setTeamMembers(teamMembers.filter((tm) => tm.id !== teamMember.id));
           snackbarContext.showSuccess('Success', 'Team member removed');
         },
-        error: (error) => snackbarContext.showError('Error', error.message)
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
   return (
@@ -114,6 +114,7 @@ export const ProjectTeamMembers = () => {
       >
         <Typography variant="h6" gutterBottom>Add team member</Typography>
         <Form onSubmit={addTeamMember}
+          keepDirtyOnReinitialize
           initialValues={{
             userId: '',
             role: ''

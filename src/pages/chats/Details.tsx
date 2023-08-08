@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
+import { UnderConstruction } from '../utils/UnderConstruction';
 
 export const Details = () => {
 
@@ -12,8 +13,6 @@ export const Details = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Chat Details</h1>
-    </div>
+    <UnderConstruction />
   );
 };

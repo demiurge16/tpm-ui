@@ -13,6 +13,7 @@ import { ProjectFiles } from "./details/ProjectFiles";
 import { ProjectExpenses } from "./details/ProjectExpenses";
 import { ProjectTasks } from "./details/ProjectTasks";
 import { ProjectNotes } from "./details/ProjectNotes";
+import { UnderConstruction } from "../utils/UnderConstruction";
 
 export const Details = () => {
   const [project, setProject] = useState<Project>({
@@ -191,10 +192,7 @@ const CustomTabPanel = (props: TabPanelProps) => {
 
 const ProjectChats = () => {
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>Project chats</Typography>
-      <Box pb={2} />
-    </Box>
+    <UnderConstruction />
   );
 }
 

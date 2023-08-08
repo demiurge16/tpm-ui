@@ -224,7 +224,7 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
       }}
     >
       <Toolbar />
-      <Box sx={{ overflow: "hidden" }}>
+      <Box sx={{ overflowY: "auto" }}>
         <List>
           {menu.map((menuItem, index) =>
             menuItem.path ? (

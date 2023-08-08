@@ -9,6 +9,8 @@ import { NumberField } from "../../../components/form-controls/NumberField";
 import { SelectField } from "../../../components/form-controls/SelectField";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { number, object, string } from "yup";
+import { validateWithSchema } from "../../../utils/validate";
 
 export const Create = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
@@ -41,6 +43,20 @@ export const Create = () => {
     ]);
   }, []);
 
+  const validationSchema = object({
+    name: string().required("Name is required")
+      .min(3, "Name must be at least 3 characters long")
+      .max(50, "Name must be at most 50 characters long"),
+    description: string().required("Description is required")
+      .min(3, "Description must be at least 3 characters long")
+      .max(1000, "Description must be at most 1000 characters long"),
+    volume: number().required("Volume is required")
+      .integer("Volume must be an integer")
+      .min(0, "Volume must be at least 0")
+      .max(1000000, "Volume must be at most 1000000"),
+    measurement: string().required("Measurement is required")
+  });
+
   const handleSubmit = (data: CreateUnit) =>
     TpmClient.getInstance()
       .units()
@@ -61,7 +77,9 @@ export const Create = () => {
       <Typography variant="h4">Create new unit</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={initialValues}
+        validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <TextField name="name" label="Name" required />

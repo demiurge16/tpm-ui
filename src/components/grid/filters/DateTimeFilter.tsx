@@ -1,6 +1,6 @@
 import { FormControl } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
-
+import { DateTime } from "luxon";
 
 export interface DateTimeFilterProps {
   id: string;
@@ -17,8 +17,18 @@ export const DateTimeFilter = (props: DateTimeFilterProps) => {
     <FormControl id={id} variant="standard" size="small" fullWidth>
       <DateTimePicker
         label={label}
-        value={value}
-        onChange={onChange}
+        value={value ? DateTime.fromJSDate(value) : null}
+        onChange={
+          (date) => {
+            onChange(date?.toJSDate() ?? null);
+          }
+        }
+        slotProps={{
+          textField: {
+            variant: "standard",
+            size: "small"
+          }
+        }}
       />
     </FormControl>
   );

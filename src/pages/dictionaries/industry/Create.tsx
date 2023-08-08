@@ -42,6 +42,7 @@ export const Create = () => {
       <Typography variant="h4">Create new industry</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={{ name: '', description: '' }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>

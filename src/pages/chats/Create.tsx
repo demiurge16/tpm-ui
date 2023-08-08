@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
+import { UnderConstruction } from '../utils/UnderConstruction';
 
 export const Create = () => {
 
@@ -12,8 +13,6 @@ export const Create = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Create Chat</h1>
-    </div>
+    <UnderConstruction />
   );
 };

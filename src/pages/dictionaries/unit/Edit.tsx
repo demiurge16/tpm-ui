@@ -72,6 +72,7 @@ export const Edit = () => {
       <Typography variant="h4">Edit {unit.name}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={{
           name: unit.name,
           description: unit.description,

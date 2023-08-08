@@ -65,6 +65,7 @@ export const Edit = () => {
       <Typography variant="h4">Edit {industry.name}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={{ name: industry.name, description: industry.description }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>

@@ -57,7 +57,10 @@ export const ColumnPicker = <Type extends any>(props: ColumnPickerProps<Type>) =
                     control={
                       <Switch
                         checked={column.hide !== true}
-                        disabled={column.lockVisible || columnDefinitions.filter((column) => column.hide !== true).length === 1}
+                        disabled={
+                          (columnDefinitions.filter((column) => column.hide !== true).length === 1 && column.hide !== true)
+                            || column.lockVisible
+                        }
                         onChange={(event) => {
                           const newColumnDefinitions = [...columnDefinitions];
                           newColumnDefinitions[index] = { ...column, hide: !event.target.checked };

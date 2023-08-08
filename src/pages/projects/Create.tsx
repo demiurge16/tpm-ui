@@ -18,6 +18,7 @@ import { DateTimeField } from '../../components/form-controls/DateTimeField';
 import { object, string, array, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
 import { ValidationErrors } from 'final-form';
+import { validateWithSchema } from '../../utils/validate';
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -68,19 +69,6 @@ export const Create = () => {
     clientId: string().required('Client is required')
   });
 
-  const validate = (values: CreateProject): ValidationErrors => {
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-    } catch (error: any) {
-      return error.inner.reduce((errors: any, error: any) => {
-        return {
-          ...errors,
-          [error.path]: error.message
-        };
-      }, {});
-    }
-  };
-
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Projects', path: '/projects' },
@@ -127,8 +115,9 @@ export const Create = () => {
       <Typography variant="h4">Create Project</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={initialValues}
-        validate={validate}
+        validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit}>
             <TextField name="title" label="Title" required/>

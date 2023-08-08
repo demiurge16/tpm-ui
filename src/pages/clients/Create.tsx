@@ -8,10 +8,11 @@ import { TextField } from "../../components/form-controls/TextField";
 import { CreateClient } from "../../client/types/client/Client";
 import { Country } from "../../client/types/dictionaries/Country";
 import { ClientType } from "../../client/types/client/ClientType";
-import { forkJoin } from "rxjs";
+import { forkJoin, map } from "rxjs";
 import TpmClient from "../../client/TpmClient";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -80,6 +81,7 @@ export const Create = () => {
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         initialValues={initialValues}
+        keepDirtyOnReinitialize
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <TextField name="name" label="Name" required />
@@ -89,8 +91,36 @@ export const Create = () => {
             <TextField name="city" label="City" required />
             <TextField name="state" label="State" required />
             <TextField name="zip" label="Zip" required />
-            <SelectField name="countryCode" label="Country" required
-              options={countries.map((e) => ({ key: e.code, value: e.name}))} />
+            <AsyncSelectField name="countryCode" label="Country" required
+              optionsLoader={(search) =>
+                TpmClient.getInstance()
+                  .countries()
+                  .all({
+                    page: 0,
+                    pageSize: 25,
+                    sort: [{
+                      field: 'name',
+                      direction: 'asc'
+                    }],
+                    filters: [
+                      {
+                        field: 'name',
+                        operator: 'contains',
+                        value: search
+                      }
+                    ]
+                  })
+                  .pipe(
+                    map((response) => {
+                      return {
+                        totalPages: response.totalPages,
+                        totalElements: response.totalElements,
+                        items: response.items.map((language) => ({ key: language.code, value: language.name }))
+                      };
+                    }
+                  ))
+              }
+            />
             <TextField name="vat" label="VAT" required />
             <TextField name="notes" label="Notes" required />
             <SelectField name="clientTypeId" label="Client type" required

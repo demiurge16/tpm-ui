@@ -134,6 +134,7 @@ export const Create = () => {
       <Typography variant="h4">Create new task</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={initialValues}
         validate={validate}
         render={({ handleSubmit, form, submitting, pristine }) => (

@@ -10,6 +10,8 @@ import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { number, object, string } from "yup";
+import { validateWithSchema } from "../../../utils/validate";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -40,12 +42,28 @@ export const Create = () => {
         }
       });
 
+  const validationSchema = object({
+    name: string().required("Name is required")
+      .min(3, "Name must be at least 3 characters long")
+      .max(50, "Name must be at most 50 characters long"),
+    description: string().required("Description is required")
+      .min(3, "Description must be at least 3 characters long")
+      .max(1000, "Description must be at most 1000 characters long"),
+    value: number().required("Value is required")
+      .integer("Value must be an integer")
+      .min(0, "Value must be at least 0")
+      .max(1000000, "Value must be at most 1000000"),
+    emoji: string().required("Emoji is required")
+  });
+
   return (
     <Box>
       <Typography variant="h4">Create new priority</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
         initialValues={{ name: '', description: '', value: 0, emoji: '' }}
+        validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate> 
             <TextField name="name" label="Name" required />

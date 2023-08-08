@@ -51,7 +51,7 @@ export const ProjectNotes = () => {
           setNotes([...notes, response]);
           snackbarContext.showSuccess('Success', 'Note added');
         },
-        error: (error) => snackbarContext.showError('Error', error.message)
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
   const removeNote = (note: Note) =>
@@ -64,7 +64,7 @@ export const ProjectNotes = () => {
           setNotes(notes.filter((x) => x.id !== note.id));
           snackbarContext.showSuccess('Success', 'Note removed');
         },
-        error: (error) => snackbarContext.showError('Error', error.message)
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
   return (
@@ -105,6 +105,7 @@ export const ProjectNotes = () => {
       >
         <Typography variant="h6" gutterBottom>Add note</Typography>
         <Form onSubmit={addNote}
+          keepDirtyOnReinitialize
           initialValues={{
             userId: '',
             role: ''
