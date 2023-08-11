@@ -11,8 +11,8 @@ import { CreateChat } from "./types/project/Chat";
 import { AddParticipant, Chat, ChatMember, ChatStatus, RemoveParticipant, TransferOwnership, UpdateChat } from "./types/chat/Chat";
 import { Expense } from "./types/expense/Expense";
 import { CreateExpense } from "./types/project/Expense";
-import { Note } from "./types/note/Note";
-import { CreateNote } from "./types/project/Note";
+import { Thread, ThreadLike, ThreadNewStatus } from "./types/thread/Thread";
+import { CreateThread } from "./types/project/Thread";
 import { CreateMessage, Message } from "./types/chat/Message";
 import { Client, ClientStatus, CreateClient, UpdateClient } from "./types/client/Client";
 import { ClientType, ClientTypeStatus, CreateClientType, UpdateClientType } from "./types/client/ClientType";
@@ -175,10 +175,10 @@ export default class TpmClient {
               create: (body: CreateExpense): Observable<Expense> => this.post(`project/${id}/expense`, body),
             };
           },
-          notes: () => {
+          threads: () => {
             return {
-              all: (search?: Search): Observable<Page<Note>> => this.get(`project/${id}/note`, search),
-              create: (body: CreateNote): Observable<Note> => this.post(`project/${id}/note`, body),
+              all: (search?: Search): Observable<Page<Thread>> => this.get(`project/${id}/note`, search),
+              create: (body: CreateThread): Observable<Thread> => this.post(`project/${id}/note`, body),
             };
           },
           files: () => {
@@ -383,13 +383,19 @@ export default class TpmClient {
     };
   }
 
-  notes() {
+  threads() {
     return {
-      all: (search?: Search): Observable<Page<Note>> => this.get(`note`, search),
+      all: (search?: Search): Observable<Page<Thread>> => this.get(`thread`, search),
       withId: (id: string) => {
         return {
-          get: (): Observable<Note> => this.get(`note/${id}`),
-          delete: () => this.delete(`note/${id}`),
+          get: (): Observable<Thread> => this.get(`thread/${id}`),
+          like: (): Observable<ThreadLike> => this.patch(`thread/${id}/like`),
+          dislike: (): Observable<ThreadLike> => this.patch(`thread/${id}/dislike`),
+          activate: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/activate`),
+          freeze: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/freeze`),
+          close: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/close`),
+          archive: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/archive`),
+          delete: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/delete`),
         };
       },
     };

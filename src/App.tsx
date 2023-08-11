@@ -31,8 +31,7 @@ import { Clients } from "./pages/clients/Clients";
 import { Projects } from "./pages/projects/Projects";
 import { Tasks } from "./pages/tasks/Tasks";
 import { Expenses } from "./pages/expenses/Expenses";
-import { Chats } from "./pages/chats/Tasks";
-import { Notes } from "./pages/notes/Tasks";
+import { Threads } from "./pages/threads/Threads";
 import { Dashboard } from "./pages/dashboard/Dashboard";
 import { Account } from "./pages/account/Account";
 import { Users } from "./pages/users/Users";
@@ -73,14 +72,10 @@ function App() {
     { path: "/projects/:projectId/expenses/create", element: <Expenses.Create /> },
     { path: "/expenses/:id/edit", element: <Expenses.Edit /> },
     { path: "/expenses/:id", element: <Expenses.Details /> },
-    { path: "/chats", element: <Chats.Index /> },
-    { path: "/chats/create", element: <Chats.Create /> },
-    { path: "/chats/:id/edit", element: <Chats.Edit /> },
-    { path: "/chats/:id", element: <Chats.Details /> },
-    { path: "/notes", element: <Notes.Index /> },
-    { path: "/notes/create", element: <Notes.Create /> },
-    { path: "/notes/:id/edit", element: <Notes.Edit /> },
-    { path: "/notes/:id", element: <Notes.Details /> },
+    { path: "/threads", element: <Threads.Index /> },
+    { path: "/threads/create", element: <Threads.Create /> },
+    { path: "/threads/:id/edit", element: <Threads.Edit /> },
+    { path: "/threads/:id", element: <Threads.Details /> },
     { path: "/clients", element: <Clients.Index /> },
     { path: "/clients/create", element: <Clients.Create /> },
     { path: "/clients/:id/edit", element: <Clients.Edit /> },

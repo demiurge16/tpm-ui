@@ -8,8 +8,7 @@ import { Industries } from "../pages/dictionaries/industry/Industries";
 import { Projects } from "../pages/projects/Projects";
 import { Tasks } from "../pages/tasks/Tasks";
 import { Expenses } from "../pages/expenses/Expenses";
-import { Chats } from "../pages/chats/Tasks";
-import { Notes } from "../pages/notes/Tasks";
+import { Threads } from "../pages/threads/Threads";
 import { Clients } from "../pages/clients/Clients";
 import { Priorities } from "../pages/dictionaries/priority/Priorities";
 import { Units } from "../pages/dictionaries/unit/Units";
@@ -18,7 +17,6 @@ import { Users } from "../pages/users/Users";
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import TaskIcon from "@mui/icons-material/Task";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
-import ChatIcon from "@mui/icons-material/Chat";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import WorkIcon from "@mui/icons-material/Work";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -112,14 +110,9 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
       path: Expenses.path,
     },
     {
-      icon: ChatIcon,
-      label: Chats.title,
-      path: Chats.path,
-    },
-    {
       icon: NoteAltIcon,
-      label: Notes.title,
-      path: Notes.path,
+      label: Threads.title,
+      path: Threads.path,
     },
     {
       icon: WorkIcon,

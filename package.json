@@ -15,17 +15,20 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@tinymce/tinymce-react": "^4.3.0",
     "@types/jest": "^27.5.2",
     "@types/luxon": "^3.3.1",
     "@types/node": "^16.18.3",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
+    "@types/tinymce": "^4.6.5",
     "ag-grid-community": "^28.2.1",
     "ag-grid-react": "^28.2.1",
     "axios": "^1.2.0",
     "emoji-mart": "^5.5.2",
     "env-cmd": "^10.1.0",
     "final-form": "^4.20.9",
+    "fs-extra": "^11.1.1",
     "install": "^0.13.0",
     "keycloak-js": "^21.1.0-1",
     "luxon": "^3.3.0",
@@ -40,6 +43,7 @@
     "redux": "^4.2.0",
     "redux-thunk": "^2.4.2",
     "rxjs": "^7.8.0",
+    "tinymce": "^6.6.1",
     "typescript": "^4.9.3",
     "web-vitals": "^2.1.4",
     "yup": "^1.2.0"
@@ -55,7 +59,8 @@
     "build:prod": "env-cmd -f ./environments/prod.env react-scripts build",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "node ./postinstall.ts"
   },
   "eslintConfig": {
     "extends": [

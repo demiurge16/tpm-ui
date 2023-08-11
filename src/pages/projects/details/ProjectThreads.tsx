@@ -2,18 +2,18 @@ import { useContext, useEffect, useState } from "react";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Grid, IconButton, List, Typography } from "@mui/material";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { useProjectContext } from "./ProjectContext";
-import { Note } from "../../../client/types/note/Note";
+import { Thread } from "../../../client/types/thread/Thread";
 import TpmClient from "../../../client/TpmClient";
-import { CreateNote } from "../../../client/types/project/Note";
+import { CreateThread } from "../../../client/types/project/Thread";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export const ProjectNotes = () => {
+export const ProjectThreads = () => {
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
 
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<Thread[]>([]);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-GB', {
@@ -32,7 +32,7 @@ export const ProjectNotes = () => {
     TpmClient.getInstance()
       .projects()
       .withId(project.id)
-      .notes()
+      .threads()
       .all()
       .subscribe({
         next: (response) => setNotes(response.items),
@@ -40,11 +40,11 @@ export const ProjectNotes = () => {
       });
   }, [project.id]);
 
-  const addNote = (note: CreateNote) =>
+  const addThread = (note: CreateThread) =>
     TpmClient.getInstance()
       .projects()
       .withId(project.id)
-      .notes()
+      .threads()
       .create(note)
       .subscribe({
         next: (response) => {
@@ -54,9 +54,9 @@ export const ProjectNotes = () => {
         error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
-  const removeNote = (note: Note) =>
+  const removeThread = (note: Thread) =>
     TpmClient.getInstance()
-      .notes()
+      .threads()
       .withId(note.id)
       .delete()
       .subscribe({
@@ -69,7 +69,7 @@ export const ProjectNotes = () => {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>Project notes</Typography>
+      <Typography variant="h5" gutterBottom>Project threads</Typography>
       <Box pb={2} />
       <List>
         {notes.map((note) => (
@@ -90,7 +90,7 @@ export const ProjectNotes = () => {
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
-              <IconButton aria-label="remove note" onClick={() => removeNote(note)}>
+              <IconButton aria-label="remove note" onClick={() => removeThread(note)}>
                 <DeleteIcon />
               </IconButton>
             </CardActions>
@@ -103,8 +103,8 @@ export const ProjectNotes = () => {
           pb: 2,
         }}
       >
-        <Typography variant="h6" gutterBottom>Add note</Typography>
-        <Form onSubmit={addNote}
+        <Typography variant="h6" gutterBottom>Add thread</Typography>
+        <Form onSubmit={addThread}
           keepDirtyOnReinitialize
           initialValues={{
             userId: '',

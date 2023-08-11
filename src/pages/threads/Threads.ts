@@ -3,10 +3,10 @@ import { Details as DetailsPage } from './Details';
 import { Create as CreatePage } from './Create';
 import { Edit as EditPage } from './Edit';
 
-export namespace Notes {
-  export const path = '/notes';
-  export const title = 'Notes';
-  export const description = 'This is the notes page. It contains a list of notes you have created.';
+export namespace Threads {
+  export const path = '/threads';
+  export const title = 'Threads';
+  export const description = 'This is the threads page. There are all the threads from all the projects.';
   export const Index = IndexPage;
   export const Details = DetailsPage;
   export const Create = CreatePage;

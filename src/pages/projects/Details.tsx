@@ -12,8 +12,7 @@ import { ProjectTeamMembers } from "./details/ProjectTeamMembers";
 import { ProjectFiles } from "./details/ProjectFiles";
 import { ProjectExpenses } from "./details/ProjectExpenses";
 import { ProjectTasks } from "./details/ProjectTasks";
-import { ProjectNotes } from "./details/ProjectNotes";
-import { UnderConstruction } from "../utils/UnderConstruction";
+import { ProjectThreads } from "./details/ProjectThreads";
 
 export const Details = () => {
   const [project, setProject] = useState<Project>({
@@ -151,12 +150,9 @@ export const Details = () => {
           <ProjectExpenses />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
-          <ProjectChats />
+          <ProjectThreads />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={6}>
-          <ProjectNotes />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={7}>
           <ProjectFiles />
         </CustomTabPanel>
       </Box>
@@ -189,11 +185,3 @@ const CustomTabPanel = (props: TabPanelProps) => {
     </div>
   );
 }
-
-const ProjectChats = () => {
-  return (
-    <UnderConstruction />
-  );
-}
-
-
