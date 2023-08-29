@@ -28,28 +28,36 @@ export const Index = () => {
 
   useEffect(() => {
     forkJoin({
+      languages: TpmClient.getInstance().languages().all(),
+      currencies: TpmClient.getInstance().currencies().all(),
       accuracies: TpmClient.getInstance().accuracies().all(),
+      industries: TpmClient.getInstance().industries().all(),
+      units: TpmClient.getInstance().units().all(),
       priorities: TpmClient.getInstance().priorities().all(),
       statuses: TpmClient.getInstance().tasks().refdata().statuses(),
-      units: TpmClient.getInstance().units().all(),
+      users: TpmClient.getInstance().users().all(),
+      projects: TpmClient.getInstance().projects().all(),
     }).subscribe({
       next: (data) => {
-        const accuracies = data.accuracies.items;
-        const priorities = data.priorities.items;
-        const statuses = data.statuses;
-        const units = data.units.items;
+        const { languages, currencies, accuracies, industries, priorities, statuses, units, users, projects } = data;
 
         setFilterDefs([
+          FilterDefinition.uniqueToken('id', 'Id'),
           FilterDefinition.string('title', 'Title'),
-          FilterDefinition.string('description', 'Description'),
-          FilterDefinition.select('status', 'Status', statuses.map((s) => ({ value: s.status, label: s.name }))),
-          FilterDefinition.select('priority', 'Priority', priorities.map((p) => ({ value: p.id, label: p.name }))),
-          FilterDefinition.select('accuracy', 'Accuracy', accuracies.map((a) => ({ value: a.id, label: a.name }))),
+          FilterDefinition.select('sourceLanguage', 'Source language', languages.items.map((l) => ({ value: l.code, label: l.name }))),
+          FilterDefinition.select('targetLanguage', 'Target language', languages.items.map((l) => ({ value: l.code, label: l.name }))),
+          FilterDefinition.select('accuracy', 'Accuracy', accuracies.items.map((a) => ({ value: a.id, label: a.name }))),
+          FilterDefinition.select('industry', 'Industry', industries.items.map((i) => ({ value: i.id, label: i.name }))),
+          FilterDefinition.number('amount', 'Amount'),
+          FilterDefinition.select('unit', 'Unit', units.items.map((u) => ({ value: u.id, label: u.name }))),
           FilterDefinition.datetime('expectedStart', 'Expected Start'),
           FilterDefinition.datetime('deadline', 'Deadline'),
-          FilterDefinition.select('unit', 'Unit', units.map((u) => ({ value: u.id, label: u.name }))),
-          FilterDefinition.number('amount', 'Amount'),
           FilterDefinition.number('budget', 'Budget'),
+          FilterDefinition.select('currency', 'Currency', currencies.items.map((c) => ({ value: c.code, label: c.name }))),
+          FilterDefinition.select('status', 'Status', statuses.map((s) => ({ value: s.status, label: s.name }))),
+          FilterDefinition.select('priority', 'Priority', priorities.items.map((p) => ({ value: p.id, label: p.name }))),
+          FilterDefinition.select('assigneeId', 'Assignee', users.items.map((u) => ({ value: u.id, label: `${u.firstName} ${u.lastName}` }))),
+          FilterDefinition.select('projectId', 'Project', projects.items.map((p) => ({ value: p.id, label: p.title }))),
         ]);
         
         setColumnDefs([
