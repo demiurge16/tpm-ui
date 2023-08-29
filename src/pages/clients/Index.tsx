@@ -113,7 +113,7 @@ export const Index = () => {
         const { countries, types } = data;
 
         setFilters([
-          FilterDefinition.string("id", "Id"),
+          FilterDefinition.uniqueToken("id", "Id"),
           FilterDefinition.string("name", "Name"),
           FilterDefinition.string("email", "Email"),
           FilterDefinition.string("phone", "Phone"),
@@ -122,13 +122,13 @@ export const Index = () => {
           FilterDefinition.string("state", "State"),
           FilterDefinition.string("zip", "Zip"),
           FilterDefinition.select(
-            "country.code",
+            "countryCode",
             "Country",
             countries.items.map((c) => ({ value: c.code, label: c.name }))
           ),
           FilterDefinition.string("vat", "VAT"),
           FilterDefinition.select(
-            "type.id.value",
+            "clientTypeId",
             "Type",
             types.items.map((t) => ({ value: t.id, label: t.name }))
           ),

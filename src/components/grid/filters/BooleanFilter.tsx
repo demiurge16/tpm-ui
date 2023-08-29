@@ -22,7 +22,7 @@ export const BooleanFilter = (props: BooleanFilterProps) => {
         onChange={(e) => onChange(e.target.value as boolean)}
       >
         <MenuItem value="true">True</MenuItem>
-        <MenuItem value="true">False</MenuItem>
+        <MenuItem value="false">False</MenuItem>
       </Select>
     </FormControl>
   )
