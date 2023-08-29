@@ -7,7 +7,6 @@ export interface File {
 }
 
 export interface Uploader {
-  teamMemberId: string,
   userId: string,
   firstName: string,
   lastName: string,

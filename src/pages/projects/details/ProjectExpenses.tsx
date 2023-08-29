@@ -160,7 +160,7 @@ export const ProjectExpenses = () => {
         columnDefinitions={columnDefs}
       />
       <Box pb={2} />
-      <Button variant="contained" component={Link} to="expenses/create" >Create</Button>
+      <Button variant="contained" component={Link} to="expenses/create">Create</Button>
     </Box>
   );
 }

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import { ColumnDefinition, GridHandle } from '../../../components/grid/GridProps';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { useProjectContext } from './ProjectContext';
@@ -8,6 +8,8 @@ import { Grid } from '../../../components/grid/Grid';
 import TpmClient from '../../../client/TpmClient';
 import { File } from '../../../client/types/file/File';
 import { Link } from 'react-router-dom';
+import { User } from '../../../client/types/user/User';
+import { forkJoin } from 'rxjs';
 
 export const ProjectFiles = () => {
   const startPage = 0;
@@ -20,6 +22,70 @@ export const ProjectFiles = () => {
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<File>[]>([]);
+
+  useEffect(() => {
+    forkJoin({
+      users: TpmClient.getInstance().users().all()
+    }).subscribe({
+      next: (result) => {
+        const users = result.users.items as User[];
+
+        setColumnDefs([
+          {
+            headerName: 'Id',
+            field: 'id',
+            resizable: true,
+            lockVisible: true
+          },
+          {
+            headerName: 'Name',
+            field: 'name',
+            resizable: true,
+            lockVisible: true
+          },
+          {
+            headerName: "Upload date",
+            field: "uploadTime",
+            resizable: true,
+            hide: true
+          },
+          {
+            headerName: "Uploader",
+            field: "uploader",
+            resizable: true,
+            cellRenderer: (params: any) => {
+              const file = params.data as File;
+              return `${file.uploader.firstName} ${file.uploader.lastName}`;
+            }
+          },
+          {
+            headerName: 'Actions',
+            field: 'actions',
+            resizable: true,
+            lockVisible: true,
+            cellRenderer: (params: any) => {
+              const file = params.data as File;
+              return (
+                <Box>
+                  <Button variant="text" component={Link} to={`${file.id}`}>
+                    Download
+                  </Button>
+                </Box>
+              );
+            }
+          }
+        ]);
+
+        setFilterDefs([
+          FilterDefinition.uniqueToken('id', 'Id'),
+          FilterDefinition.string('name', 'Name'),
+          FilterDefinition.date('uploadTime', 'Upload date'),
+          FilterDefinition.select('uploader', 'Uploader', users.map((user) => ({ value: user.id, label: `${user.firstName} ${user.lastName}` }))),
+        ]);
+      },
+      error: (error) => snackbarContext.showError(error.message, error.response.data.message),
+    });
+  }, []);
 
   return (
     <Box>
