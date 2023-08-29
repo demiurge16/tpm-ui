@@ -11,6 +11,10 @@ import { Link } from 'react-router-dom';
 import { ExpenseCategory } from '../../../client/types/dictionaries/ExpenseCategory';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Currency } from '../../../client/types/dictionaries/Currency';
+import { User } from '../../../client/types/user/User';
+import { Project } from '../../../client/types/project/Project';
+import { forkJoin } from 'rxjs';
 
 export const ProjectExpenses = () => {
   const startPage = 0;
@@ -18,7 +22,9 @@ export const ProjectExpenses = () => {
 
   const gridRef = useRef<GridHandle>(null);
 
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
@@ -27,12 +33,15 @@ export const ProjectExpenses = () => {
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Expense>[]>([]);
 
   useEffect(() => {
-    TpmClient.getInstance()
-      .expenseCategories()
-      .all()
-      .subscribe({
-        next: (categories) => {
-          setExpenseCategories(categories.items);
+    forkJoin({
+      currencies: TpmClient.getInstance().currencies().all(),
+      expenseCategories: TpmClient.getInstance().expenseCategories().all(),
+      users: TpmClient.getInstance().users().all()
+    }).subscribe({
+        next: (data) => {
+          setCurrencies(data.currencies.items);
+          setExpenseCategories(data.expenseCategories.items);
+          setUsers(data.users.items);
 
           setColumnDefs([
             {
@@ -114,11 +123,27 @@ export const ProjectExpenses = () => {
           ]);
 
           setFilterDefs([
-            FilterDefinition.date('date', 'Date'),
-            FilterDefinition.select('category', 'Category', expenseCategories.map((c) => ({ value: c.id, label: c.name }))),
-            FilterDefinition.number('amount', 'Amount'),
+            FilterDefinition.uniqueToken("id", "Id"),
+            FilterDefinition.number("amount", "Amount"),
+            FilterDefinition.select(
+              "currency",
+              "Currency",
+              currencies.map((c) => ({ value: c.code, label: c.name }))  
+            ),
+            FilterDefinition.date("date", "Date"),
+            FilterDefinition.select(
+              "categoryId",
+              "Category",
+              expenseCategories.map((c) => ({ value: c.id, label: c.name }))
+            ),
+            FilterDefinition.select(
+              "spenderId",
+              "Team member",
+              users.map((u) => ({ value: u.id, label: u.firstName + " " + u.lastName }))
+            )
           ]);
-        }
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
     }, []);
 
