@@ -36,6 +36,7 @@ export const Index = () => {
             headerName: "Id",
             field: "id",
             resizable: true,
+            sortable: true,
             lockVisible: true,
             cellRenderer: (params: any) => {
               const client = params.data as Client;
@@ -48,13 +49,13 @@ export const Index = () => {
               );
             }
           },
-          { headerName: "Name", field: "name", resizable: true },
-          { headerName: "Email", field: "email", resizable: true },
-          { headerName: "Phone", field: "phone", resizable: true },
-          { headerName: "Address", field: "address", resizable: true, hide: true },
-          { headerName: "City", field: "city", resizable: true, hide: true },
-          { headerName: "State", field: "state", resizable: true, hide: true },
-          { headerName: "Zip", field: "zip", resizable: true, hide: true },
+          { headerName: "Name", field: "name", resizable: true, sortable: true },
+          { headerName: "Email", field: "email", resizable: true, sortable: true },
+          { headerName: "Phone", field: "phone", resizable: true, sortable: true },
+          { headerName: "Address", field: "address", resizable: true, hide: true, sortable: true },
+          { headerName: "City", field: "city", resizable: true, sortable: true, hide: true },
+          { headerName: "State", field: "state", resizable: true, sortable: true, hide: true },
+          { headerName: "Zip", field: "zip", resizable: true, sortable: true, hide: true },
           {
             headerName: "Country",
             field: "country",

@@ -32,14 +32,15 @@ export const Index = () => {
       .subscribe({
         next: (response) => {
           setFilters([
+            FilterDefinition.uniqueToken("id", "Id"),
             FilterDefinition.string("name", "Name"),
-            FilterDefinition.string("description", "Description"),
-            FilterDefinition.boolean("active", "Active"),
+            FilterDefinition.number("volume", "Volume"),
             FilterDefinition.select(
               "measurement",
               "Measurement",
               response.map(m => ({ label: m.name, value: m.code }))
-            )
+            ),
+            FilterDefinition.boolean("active", "Active")
           ]);
 
           setColumnDefs([

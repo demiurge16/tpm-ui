@@ -9,7 +9,7 @@ import Avatar from "@mui/material/Avatar/Avatar";
 import Menu from "@mui/material/Menu/Menu";
 import MenuList from "@mui/material/MenuList/MenuList";
 import Link from "@mui/material/Link/Link";
-import { Link as RouterLink } from "react-router-dom";
+import { environment } from "../Environment";
 
 export const SettingsMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -59,7 +59,10 @@ export const SettingsMenu = () => {
         onClose={handleCloseMenu}
       >
         <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
-          <Link component={RouterLink} to="/account" underline="none" color="inherit">
+          <Link href={`${environment.authServerUrl}/realms/${environment.authServerRealm}/account`}
+            underline="none"
+            color="inherit"
+          >
             <MenuItem onClick={handleCloseMenu} label="Account"/>
           </Link>
           <MenuItem onClick={handleLogout} label="Logout" />

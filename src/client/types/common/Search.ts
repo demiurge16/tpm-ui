@@ -15,7 +15,7 @@ export type FilterOperator = 'eq' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte' | '
 export interface Filter {
   field: string;
   operator: FilterOperator;
-  value: FilterValue;
+  value: FilterValue | null;
 };
 
-export type FilterValue = string | number | boolean | Date | string[];
+export type FilterValue = string | number | boolean | Date | string[] | number[] | boolean[] | Date[];

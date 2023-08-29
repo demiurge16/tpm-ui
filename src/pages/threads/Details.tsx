@@ -1,244 +1,236 @@
-import { useState } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, CardActions, CardContent, CardHeader, Divider, IconButton, Popover, Typography } from "@mui/material";
-import { Reply, Thread, ThreadStatusCode } from "../../client/types/thread/Thread";
-import { Editor } from "../../components/editor/Editor";
+import { useContext, useEffect, useState } from "react";
+import { Box, Button, Divider, Popover, Typography } from "@mui/material";
+import { Reply, Thread } from "../../client/types/thread/Thread";
+import { Link, useParams } from "react-router-dom";
+import TpmClient from "../../client/TpmClient";
+import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { AuthContext } from "../../contexts/AuthContextProvider";
+import { createStatusTransitionHandler } from "./details/ThreadStatusTransitionsHandlers";
+import { ReplyEditor } from "./details/ReplyEditor";
+import { ReplyTree } from "./details/ReplyTree";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import ReplyIcon from "@mui/icons-material/Reply";
-import SendIcon from '@mui/icons-material/Send';
-import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Link } from "react-router-dom";
-import { Observable } from "rxjs";
-import TpmClient from "../../client/TpmClient";
-
-type StatusTransition = {
-  [key in ThreadStatusCode]: {
-    [key in ThreadStatusCode]?: () => Observable<any>
-  }
-};
+import EditIcon from '@mui/icons-material/Edit';
+import { HtmlPanel } from "../../components/editor/HtmlPanel";
+import { formatDate } from "../../utils/dateFormatters";
 
 export const Details = () => {
-  const thread: Thread = {
-    id: '1',
-    title: 'Thread 1',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-    createdAt: new Date(),
+  const snackbarContext = useContext(SnackbarContext);
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const authContext = useContext(AuthContext);
+
+  const { id } = useParams();
+
+  const [thread, setThread] = useState<Thread>({
+    id: '',
+    title: '',
+    content: '',
     author: {
-      teamMemberId: '1',
-      userId: '1',
-      firstName: 'John',
-      lastName: 'Doe',
+      userId: '',
+      firstName: '',
+      lastName: '',
       email: '',
     },
+    createdAt: new Date(),
     project: {
-      id: '1',
-      title: 'Project 1',
+      id: '',
+      title: '',
       status: {
         status: 'DRAFT',
-        name: 'Draft',
-        description: 'Draft project'
+        name: '',
+        description: ''
       },
     },
-    replies: [
-      {
-        id: '1',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-        createdAt: new Date(),
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        parentReplyId: null
-      },
-      {
-        id: '2',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-        createdAt: new Date(),
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        parentReplyId: null
-      },
-      {
-        id: '3',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-        createdAt: new Date(),
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        parentReplyId: '1'
-      },
-      {
-        id: '4',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-        createdAt: new Date(),
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        parentReplyId: '1'
-      },
-      {
-        id: '5',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-        createdAt: new Date(),
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        parentReplyId: '4'
-      },
-    ],
     status: {
       status: 'DRAFT',
-      name: 'Open',
-      description: 'Open thread'
+      name: '',
+      description: ''
     },
-    likes: [
-      {
-        id: '1',
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        createdAt: new Date(),
-      },
-      {
-        id: '2',
-        author: {
-          teamMemberId: '2',
-          userId: '2',
-          firstName: 'Jane',
-          lastName: 'Doe',
-          email: '',
-        },
-        createdAt: new Date(),
-      },
-    ],
-    dislikes: [
-      {
-        id: '1',
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        createdAt: new Date(),
-      },
-    ],
-  };
-
-  const statusTransitions: StatusTransition = {
-    "DRAFT": {
-      "ACTIVE": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .activate(),
-      "DELETED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .delete(),
-    },
-    "ACTIVE": {
-      "FREEZE": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .freeze(),
-      "CLOSED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .close(),
-      "DELETED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .delete(),
-    },
-    "FREEZE": {
-      "ACTIVE": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .activate(),
-      "CLOSED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .close(),
-      "DELETED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .delete(),
-    },
-    "CLOSED": {
-      "ACTIVE": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .activate(),
-      "ARCHIVED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .archive(),
-      "DELETED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .delete(),
-    },
-    "ARCHIVED": {
-      "ACTIVE": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .activate(),
-      "CLOSED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .close(),
-      "DELETED": () => TpmClient.getInstance()
-        .threads()
-        .withId(thread.id)
-        .delete(),
-    },
-    "DELETED": {},
-  };
+    likes: [],
+    dislikes: [],
+    tags: []
+  });
+  const [replies, setReplies] = useState<Reply[]>([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [expanded, setExpanded] = useState<boolean>();
+  const [replyEditorExpanded, setReplyEditorExpanded] = useState<boolean>();
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
+  const statusTransitionHandler = createStatusTransitionHandler(id || '');
+
+  const threadLiked = () => thread.likes.some((like) => like.author.userId === authContext.userId);
+  const threadDisliked = () => thread.dislikes.some((dislike) => dislike.author.userId === authContext.userId);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    TpmClient.getInstance()
+      .threads()
+      .withId(id)
+      .get()
+      .subscribe({
+        next: (response) => {
+          setThread(response);
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      });
+
+    TpmClient.getInstance()
+      .threads()
+      .withId(id)
+      .replies()
+      .all()
+      .subscribe({
+        next: (response) => {
+          setReplies(response.items);
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      });
+
+    breadcrumbsContext.setBreadcrumbs([
+      { label: 'Home', path: '/' },
+      { label: 'Threads', path: '/threads' },
+      { label: thread?.title ?? "Thread", path: `/threads/${thread?.id}` },
+    ]);
+  }, []);
+
+  const handleLike = () => {
+    if (!thread) {
+      return;
+    }
+
+    TpmClient.getInstance()
+      .threads()
+      .withId(thread.id)
+      .like()
+      .subscribe({
+        next: (response) => {
+          if (thread.dislikes.some((dislike) => dislike.author.userId === response.author.userId)) {
+            thread.dislikes = thread.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId);
+          }
+          if (thread.likes.some((like) => like.author.userId === response.author.userId)) {
+            thread.likes = thread.likes.map((like) => like.author.userId === response.author.userId ? response : like);
+            return;
+          }
+
+          setThread({
+            ...thread,
+            likes: [
+              ...thread.likes,
+              response
+            ]
+          });
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      });
+  };
+
+  const handleUnlike = () => {
+    if (!thread) {
+      return;
+    }
+
+    TpmClient.getInstance()
+      .threads()
+      .withId(thread.id)
+      .unlike()
+      .subscribe({
+        next: (response) => {
+          setThread({
+            ...thread,
+            likes: thread.likes.filter((like) => like.author.userId !== response.author.userId)
+          });
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      });
+  };
+
+  const handleDislike = () => {
+    if (!thread) {
+      return;
+    }
+
+    TpmClient.getInstance()
+      .threads()
+      .withId(thread.id)
+      .dislike()
+      .subscribe({
+        next: (response) => {
+          if (thread.likes.some((like) => like.author.userId === response.author.userId)) {
+            thread.likes = thread.likes.filter((like) => like.author.userId !== response.author.userId);
+          }
+
+          if (thread.dislikes.some((dislike) => dislike.author.userId === response.author.userId)) {
+            thread.dislikes = thread.dislikes.map((dislike) => dislike.author.userId === response.author.userId ? response : dislike);
+            return;
+          }
+
+          setThread({
+            ...thread,
+            dislikes: [
+              ...thread.dislikes,
+              response
+            ]
+          });
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      });
+  };
+
+  const handleUndislike = () => {
+    if (!thread) {
+      return;
+    }
+
+    TpmClient.getInstance()
+      .threads()
+      .withId(thread.id)
+      .undislike()
+      .subscribe({
+        next: (response) => {
+          setThread({
+            ...thread,
+            dislikes: thread.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId)
+          });
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      });
+  };
+
+  const handleExpandReplyEditorClick = () => {
+    setReplyEditorExpanded(!replyEditorExpanded);
   };
 
   const handleReplySubmit = (content: string) => {
-    // TODO: Submit reply
-    console.log(content);
-    setExpanded(false);
+    if (!thread) {
+      return;
+    }
+
+    TpmClient.getInstance()
+      .threads()
+      .withId(thread.id)
+      .replies()
+      .create({ content, parentReplyId: null })
+      .subscribe({
+        next: (response) => {
+          setReplies([
+            ...replies,
+            response
+          ]);
+          snackbarContext.showSuccess('Success', 'Reply added');
+          setReplyEditorExpanded(false);
+        },
+        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      });
   };
 
   const handleReplyCancel = () => {
-    setExpanded(false);
+    setReplyEditorExpanded(false);
   };
 
   const handleOpen = (event: any) => {
@@ -252,7 +244,7 @@ export const Details = () => {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>{thread.title}</Typography>
-      <Typography variant="body1" gutterBottom>
+      <Typography variant="body1" gutterBottom component="div">
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
           In Project:
           <Button variant="text" component={Link} to={`/projects/${thread.project.id}`}>
@@ -263,28 +255,44 @@ export const Details = () => {
           <Button variant="text" component={Link} to={`/users/${thread.author.userId}`}>
             {thread.author.firstName} {thread.author.lastName}
           </Button>
-          at {thread.createdAt.toLocaleString()}
+          at {formatDate(thread.createdAt)}
         </Box>
       </Typography>
-      <Typography variant="body1" gutterBottom>{thread.content}</Typography>
+      <HtmlPanel html={thread.content}/>
 
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <Button variant="text" startIcon={<ThumbUpIcon />}>
+        <Button variant="text"
+          color={threadLiked() ? 'success' : 'inherit'}
+          startIcon={<ThumbUpIcon />}
+          onClick={() => threadLiked() ? handleUnlike() : handleLike()}
+        >
           {thread.likes.length} {thread.likes.length === 1 ? 'Like' : 'Likes'}
         </Button>
-        <Button variant="text" startIcon={<ThumbDownIcon />}>
+        <Button variant="text"
+          color={threadDisliked() ? 'error' : 'inherit'}
+          startIcon={<ThumbDownIcon />}
+          onClick={() => threadDisliked() ? handleUndislike() : handleDislike()}
+        >
           {thread.dislikes.length} {thread.dislikes.length === 1 ? 'Dislike' : 'Dislikes'}
         </Button>
-        <Button variant="text" startIcon={<ChatBubbleOutlineIcon />} color="primary">
-          {thread.replies.length} {thread.replies.length === 1 ? 'Reply' : 'Replies'}
-        </Button>
         <Button variant="text"
-          startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          onClick={handleExpandClick}
+          color={replyEditorExpanded ? 'primary' : 'inherit'}
+          startIcon={replyEditorExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          onClick={handleExpandReplyEditorClick}
         >
           Reply
         </Button>
-        <Button variant="text" startIcon={<MoreVertIcon />} onClick={handleOpen}>More</Button>
+        <Button variant="text"
+          startIcon={<EditIcon />}
+          component={Link}
+          to="edit"
+          color="inherit"
+        >
+          Edit
+        </Button>
+        <Button variant="text" startIcon={<MoreVertIcon />} onClick={handleOpen} color="inherit">
+          More
+        </Button>
         <Popover
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
@@ -294,161 +302,40 @@ export const Details = () => {
             horizontal: 'left',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', p: 2 }}>
-            <Typography variant="body1" gutterBottom>Change status to:</Typography>
-            {Object.entries(statusTransitions[thread.status.status]).map(([status, transition]) => (
-              <Button key={status} variant="text" onClick={() => transition()}>{status}</Button>
-            ))}
+          <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'flex-start', flexDirection: 'column', p: 2 }}>
+            {
+              Object.entries(statusTransitionHandler[thread.status.status]).map(([status, handler]) => (
+                <Button key={status}
+                  variant="text"
+                  onClick={() => {
+                    handler.action()
+                      .subscribe({
+                        next: (response) => {
+                          setThread((thread) => {
+                            return {
+                              ...thread,
+                              status: response.status
+                            };
+                          });
+                          snackbarContext.showSuccess('Success', 'Thread status changed');
+                        }
+                      });
+                  }}
+                >
+                  {handler.name}
+                </Button>
+              ))
+            }
           </Box>
         </Popover>
       </Box>
-      {expanded && <ReplyEditor onSend={handleReplySubmit} onCancel={handleReplyCancel}/>}
+      {replyEditorExpanded && <ReplyEditor onSend={handleReplySubmit} onCancel={handleReplyCancel}/>}
       <Divider sx={{ my: 2 }} />
 
-      <Typography variant="h5" gutterBottom>Comments</Typography>
-      <ReplyTree replies={thread.replies} />
+      <Typography variant="h5" gutterBottom>
+        {replies.length} {replies.length === 1 ? 'Reply' : 'Replies'}
+      </Typography>
+      <ReplyTree threadId={thread.id} replies={replies} />
     </Box>
   );
 };
-
-interface ReplyTreeProps {
-  replies: Reply[];
-}
-
-const transformToTree = (replies: Reply[]): Record<string, Reply[]> => {
-  const replyMap: Record<string, Reply[]> = { root: [] };
-
-  replies.forEach((reply) => {
-    const parentReplyId = reply.parentReplyId ?? 'root';
-    if (!replyMap[parentReplyId]) {
-      replyMap[parentReplyId] = [];
-    }
-    replyMap[parentReplyId].push(reply);
-  });
-
-  return replyMap;
-};
-
-const ReplyTree: React.FC<ReplyTreeProps> = ({ replies }) => {
-  const replyMap = transformToTree(replies);
-  const [openedReplyEditor, setOpenedReplyEditor] = useState<string | null>(null);
-
-  const toggleReplyEditor = (replyId: string) => {
-    if (openedReplyEditor === replyId) {
-      setOpenedReplyEditor(null);
-    } else {
-      setOpenedReplyEditor(replyId);
-    }
-  };
-
-  const handleReplySubmit = (content: string) => {
-    // TODO: Submit reply
-    console.log(content);
-    setOpenedReplyEditor(null);
-  };
-
-  const handleReplyCancel = () => {
-    setOpenedReplyEditor(null);
-  };
-
-  const renderReplies = (replyId: string): JSX.Element[] => {
-    if (!replyMap[replyId]) {
-      return [];
-    }
-
-    return replyMap[replyId].map((reply) => (
-      <Accordion key={reply.id}
-        defaultExpanded
-        sx={{
-          borderLeft: '3px solid',
-          borderBottom: replyId === 'root' ? "3px solid" : 0,
-          mb: replyId === 'root' ? 2 : 0,
-          borderColor: 'divider',
-          boxShadow: 'none',
-        }}
-        disableGutters
-      >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <CardHeader
-            avatar={<Avatar>{reply.author.firstName[0]}</Avatar>}
-            title={`${reply.author.firstName} ${reply.author.lastName}`}
-            subheader={reply.createdAt.toLocaleDateString()}
-            sx={{ pb: 0 }}
-          />
-        </AccordionSummary>
-        <AccordionDetails>
-          <CardContent sx={{ pt: 0 }}>
-            <Typography variant="body1">{reply.content}</Typography>
-          </CardContent>
-          <CardActions>
-            <IconButton size="small">
-              <ThumbUpIcon />
-            </IconButton>
-            <IconButton size="small">
-              <ThumbDownIcon />
-            </IconButton>
-            <IconButton size="small" onClick={() => toggleReplyEditor(reply.id)}>
-              <ReplyIcon />
-            </IconButton>
-          </CardActions>
-          {openedReplyEditor === reply.id && <ReplyEditor onSend={handleReplySubmit} onCancel={handleReplyCancel}/>}
-          {renderReplies(reply.id)}
-        </AccordionDetails>
-      </Accordion>
-    ));
-  };
-
-  return (
-    <div>
-      {renderReplies('root')}
-    </div>
-  );
-};
-
-interface ReplyEditorProps {
-  onSend: (content: string) => void;
-  onCancel?: () => void;
-}
-
-const ReplyEditor: React.FC<ReplyEditorProps> = (props: ReplyEditorProps) => {
-  const { onSend, onCancel } = props;
-  const [content, setContent] = useState<string>('');
-
-  const handleSend = () => {
-    onSend(content);
-    setContent('');
-  };
-
-  const handleCancel = () => {
-    setContent('');
-    onCancel?.();
-  };
-
-  const handleContentChange = (content: string) => {
-    setContent(content);
-  };
-
-  return (
-    <Box sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      py: 2
-    }}>
-      <Box sx={{ border: '1px solid', borderColor: 'divider', p: 2 }}>
-        <Editor  onEditorChange={handleContentChange}/>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          mt: 2
-        }}>
-          <Button sx={{ ml: 2 }} variant="contained" color="primary" startIcon={<SendIcon />} onClick={handleSend}>Send</Button>
-          <Button sx={{ ml: 2 }} variant="contained" color="secondary" startIcon={<CloseIcon />} onClick={handleCancel}>Cancel</Button>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
-
-export default ReplyTree;

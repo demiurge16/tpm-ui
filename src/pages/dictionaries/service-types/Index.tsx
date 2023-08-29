@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import { Priorities } from "./Priorities";
+import { ServiceTypes } from "./ServiceTypes";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Priority } from "../../../client/types/dictionaries/Priority";
 import { Link } from "react-router-dom";
@@ -12,6 +12,7 @@ import { GridHandle } from "../../../components/grid/GridProps";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { ServiceType } from "../../../client/types/dictionaries/ServiceType";
 
 export const Index = () => {
   const startPage = 0;
@@ -23,7 +24,7 @@ export const Index = () => {
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
-      { label: 'Priorities', path: '/priorities' }
+      { label: 'Service types', path: '/service-types' }
     ]);
   }, []);
 
@@ -81,7 +82,7 @@ export const Index = () => {
   ]);
 
   const activate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().priorities().withId(id).activate()
+    TpmClient.getInstance().serviceTypes().withId(id).activate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Activated ${id}`);
@@ -94,7 +95,7 @@ export const Index = () => {
   };
 
   const deactivate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().priorities().withId(id).deactivate()
+    TpmClient.getInstance().serviceTypes().withId(id).deactivate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Deactivated ${id}`);
@@ -109,20 +110,19 @@ export const Index = () => {
   const [filterDefs, setFilterDefs] = useState([
     FilterDefinition.uniqueToken("id", "Id"),
     FilterDefinition.string("name", "Name"),
-    FilterDefinition.number("value", "Value"),
     FilterDefinition.boolean("active", "Active")
   ]);
 
   return (
     <Box>
-      <Typography variant="h4">{Priorities.title}</Typography>
-      <Typography variant="subtitle1">{Priorities.description}</Typography>
+      <Typography variant="h4">{ServiceTypes.title}</Typography>
+      <Typography variant="subtitle1">{ServiceTypes.description}</Typography>
       <Box pb={2} />
-      <Grid<Priority>
+      <Grid<ServiceType>
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().priorities().all}
+        fetch={TpmClient.getInstance().serviceTypes().all}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

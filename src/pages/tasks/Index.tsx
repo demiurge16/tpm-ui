@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Grid } from "../../components/grid/Grid";
 import { Tasks } from "./Tasks";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { formatDate } from "../../utils/dateFormatters";
 
 export const Index = () => {
   const startPage = 0;
@@ -24,17 +25,6 @@ export const Index = () => {
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false
-    });
-  }
 
   useEffect(() => {
     forkJoin({

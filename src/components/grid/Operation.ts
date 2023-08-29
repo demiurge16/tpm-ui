@@ -1,21 +1,21 @@
 import { FilterOperator } from "../../client/types/common/Search";
 
 export class Operation {
-  constructor(public symbol: FilterOperator, public name: string) { }
+  constructor(public symbol: FilterOperator, public name: string, public multivalue: boolean) { }
 
-  static EQUALS = new Operation("eq", "Is equal to");
-  static CONTAINS = new Operation("contains", "Contains");
-  static GREATER_THAN = new Operation("gt", "Greater than");
-  static LESS_THAN = new Operation("lt", "Less than");
-  static GREATER_THAN_OR_EQUAL = new Operation("gte", "Greater than or equal");
-  static LESS_THAN_OR_EQUAL = new Operation("lte", "Less than or equal");
-  static ANY = new Operation("any", "Is any of");
-  static ALL = new Operation("all", "Is all of");
-  static NONE = new Operation("none", "Is none of");
-  static IS_NULL = new Operation("null", "Is null");
-  static IS_EMPTY = new Operation("empty", "Is empty");
+  static EQUALS = new Operation("eq", "Is equal to", false);
+  static CONTAINS = new Operation("contains", "Contains", false);
+  static GREATER_THAN = new Operation("gt", "Greater than", false);
+  static LESS_THAN = new Operation("lt", "Less than", false);
+  static GREATER_THAN_OR_EQUAL = new Operation("gte", "Greater than or equal", false);
+  static LESS_THAN_OR_EQUAL = new Operation("lte", "Less than or equal", false);
+  static ANY = new Operation("any", "Is any of", true);
+  static ALL = new Operation("all", "Is all of", true);
+  static NONE = new Operation("none", "Is none of", true);
+  static IS_NULL = new Operation("null", "Is null", false);
+  static IS_EMPTY = new Operation("empty", "Is empty", false);
 
-  static getOperationsForSymbol(type: FilterOperator): Operation {
+  static getOperationForSymbol(type: FilterOperator): Operation {
     switch (type) {
       case "eq":
         return Operation.EQUALS;

@@ -118,9 +118,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
     const column =
       props.filters.find((column) => column.id === filter.field)?.name ||
       filter.field;
-    const operator = Operation.getOperationsForSymbol(
-      filter.operator
-    ).name.toLowerCase();
+    const operator = Operation.getOperationForSymbol(filter.operator).name.toLowerCase();
 
     if (filter.value instanceof Array) {
       const options =

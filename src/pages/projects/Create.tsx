@@ -9,7 +9,7 @@ import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
 import { Unit } from '../../client/types/dictionaries/Unit';
 import { Client } from '../../client/types/client/Client';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
 import { TextField } from '../../components/form-controls/TextField';
 import { SelectField } from '../../components/form-controls/SelectField';
@@ -17,7 +17,6 @@ import { NumberField } from '../../components/form-controls/NumberField';
 import { DateTimeField } from '../../components/form-controls/DateTimeField';
 import { object, string, array, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
-import { ValidationErrors } from 'final-form';
 import { validateWithSchema } from '../../utils/validate';
 
 export const Create = () => {
@@ -120,119 +119,151 @@ export const Create = () => {
         validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit}>
-            <TextField name="title" label="Title" required/>
-            <TextField name="description" label="Description" multiline required/>
-            <AsyncSelectField name="sourceLanguage" label="Source Language" required
-              optionsLoader={(search) =>
-                TpmClient.getInstance()
-                  .languages()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [],
-                    filters: [
-                      {
-                        field: 'name',
-                        operator: 'contains',
-                        value: search
-                      }
-                    ]
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        totalPages: response.totalPages,
-                        totalElements: response.totalElements,
-                        items: response.items.map((language) => ({ key: language.code, value: language.name }))
-                      };
-                    }
-                  ))
-              }
-            />
-            <AsyncSelectField name="targetLanguages" label="Target Languages" required multiple
-              optionsLoader={(search) =>
-                TpmClient.getInstance()
-                  .languages()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [],
-                    filters: [
-                      {
-                        field: 'name',
-                        operator: 'contains',
-                        value: search
-                      }
-                    ]
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        totalPages: response.totalPages,
-                        totalElements: response.totalElements,
-                        items: response.items.map((language) => ({ key: language.code, value: language.name }))
-                      }
-                    }
-                  ))
-              }
-            />
-            <SelectField name="accuracyId" label="Accuracy" required
-              options={accuracies.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
-            />
-            <SelectField name="industryId" label="Industry" required
-              options={industries.map((industry) => ({ key: industry.id, value: industry.name }))}
-            />
-            <DateTimeField name="expectedStart" label="Expected Start" required/>
-            <DateTimeField name="internalDeadline" label="Internal Deadline" required/>
-            <DateTimeField name="externalDeadline" label="External Deadline" required/>
-            <SelectField name="unitId" label="Unit" required
-              options={units.map((unit) => ({ key: unit.id, value: unit.name }))}
-            />
-            <NumberField name="amount" label="Amount" required/>
-            <NumberField name="budget" label="Budget" required/>
-            <AsyncSelectField name="currencyCode" label="Currency" required
-              optionsLoader={(search) =>
-                TpmClient.getInstance()
-                  .currencies()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [],
-                    filters: [
-                      {
-                        field: 'name',
-                        operator: 'contains',
-                        value: search
-                      }
-                    ]
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        totalPages: response.totalPages,
-                        totalElements: response.totalElements,
-                        items: response.items.map((currency) => ({ key: currency.code, value: currency.name }))
-                      }
-                    }
-                  ))
-              }
-            />
-            <SelectField name="clientId" label="Client" required
-              options={clients.map((client) => ({ key: client.id, value: client.name }))}
-            />
-            
-            <Box pb={2} />
-            {serverError && (
-              <Typography color="error">Error: {serverError}</Typography>
-            )}
-            <Box pb={2} />
-
-            <Button type="submit" disabled={submitting || pristine}>
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Grid container columnSpacing={2}>
+              <Grid item xs={12}>
+                <TextField name="title" label="Title" required />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField name="description" label="Description" multiline rows={4} required />
+              </Grid>
+              <Grid item xs={6}>
+                <SelectField name="industryId" label="Industry" required
+                  options={industries.map((industry) => ({ key: industry.id, value: industry.name }))}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <SelectField name="accuracyId" label="Accuracy" required
+                  options={accuracies.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <AsyncSelectField name="sourceLanguage" label="Source Language" required
+                  optionsLoader={(search) =>
+                    TpmClient.getInstance()
+                      .languages()
+                      .all({
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      })
+                      .pipe(
+                        map((response) => {
+                          return {
+                            totalPages: response.totalPages,
+                            totalElements: response.totalElements,
+                            items: response.items.map((language) => ({ key: language.code, value: language.name }))
+                          };
+                        }
+                      ))
+                  }
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <AsyncSelectField name="targetLanguages" label="Target Languages" required multiple
+                  optionsLoader={(search) =>
+                    TpmClient.getInstance()
+                      .languages()
+                      .all({
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      })
+                      .pipe(
+                        map((response) => {
+                          return {
+                            totalPages: response.totalPages,
+                            totalElements: response.totalElements,
+                            items: response.items.map((language) => ({ key: language.code, value: language.name }))
+                          }
+                        }
+                      ))
+                  }
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <DateTimeField name="expectedStart" label="Expected Start" required/>
+              </Grid>
+              <Grid item xs={4}>
+                <DateTimeField name="internalDeadline" label="Internal Deadline" required/>
+              </Grid>
+              <Grid item xs={4}>
+                <DateTimeField name="externalDeadline" label="External Deadline" required/>
+              </Grid>
+              <Grid item xs={6}>
+                <NumberField name="amount" label="Amount" required/>
+              </Grid>
+              <Grid item xs={6}>
+                <SelectField name="unitId" label="Unit" required
+                  options={units.map((unit) => ({ key: unit.id, value: unit.name }))}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <NumberField name="budget" label="Budget" required/>
+              </Grid>
+              <Grid item xs={6}>
+                <AsyncSelectField name="currencyCode" label="Currency" required
+                  optionsLoader={(search) =>
+                    TpmClient.getInstance()
+                      .currencies()
+                      .all({
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      })
+                      .pipe(
+                        map((response) => {
+                          return {
+                            totalPages: response.totalPages,
+                            totalElements: response.totalElements,
+                            items: response.items.map((currency) => ({ key: currency.code, value: currency.name }))
+                          }
+                        }
+                      ))
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <SelectField name="clientId" label="Client" required
+                  options={clients.map((client) => ({ key: client.id, value: client.name }))}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Box pb={2} />
+                {serverError && (
+                  <Typography color="error">Error: {serverError}</Typography>
+                )}
+                <Box pb={2} />
+              </Grid>
+              <Grid item xs={12}>
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
           </form>
         )}
       />

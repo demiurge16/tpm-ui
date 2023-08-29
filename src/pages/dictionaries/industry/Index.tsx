@@ -105,9 +105,9 @@ export const Index = () => {
   };
 
   const [filterDefs, setFilterDefs] = useState([
+    FilterDefinition.uniqueToken("id", "Id"),
     FilterDefinition.string("name", "Name"),
-    FilterDefinition.string("description", "Description"),
-    FilterDefinition.boolean("active", "Active"),
+    FilterDefinition.boolean("active", "Active")
   ]);
 
   return (

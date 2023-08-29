@@ -10,6 +10,7 @@ import { Grid } from "../../components/grid/Grid";
 import TpmClient from "../../client/TpmClient";
 import { Link } from "react-router-dom";
 import { forkJoin } from "rxjs";
+import { formatDate } from "../../utils/dateFormatters";
 
 export const Index = () => {
   const startPage = 0;
@@ -22,17 +23,6 @@ export const Index = () => {
 
   const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Project>>>([]);
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false
-    });
-  }
 
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
@@ -50,31 +40,38 @@ export const Index = () => {
     }).subscribe({
       next: (response) => {
         setFilters([
-          FilterDefinition.string("name", "Name"),
-          FilterDefinition.string("description", "Description"),
+          FilterDefinition.uniqueToken("id", "Id"),
+          FilterDefinition.string("title", "Title"),
           FilterDefinition.select(
-            "language",
-            "Language",
+            "sourceLanguage",
+            "Source Language",
+            response.languages.items.map(l => ({ label: l.name, value: l.code }))
+          ),
+          FilterDefinition.multiSelect(
+            "targetLanguages",
+            "Target Languages",
             response.languages.items.map(l => ({ label: l.name, value: l.code }))
           ),
           FilterDefinition.select(
-            "accuracy",
+            "accuracyId",
             "Accuracy",
             response.accuracies.items.map(a => ({ label: a.name, value: a.id }))
           ),
           FilterDefinition.select(
-            "industry",
+            "industryId",
             "Industry",
             response.industries.items.map(i => ({ label: i.name, value: i.id }))
           ),
           FilterDefinition.select(
-            "unit",
+            "unitId",
             "Unit",
             response.units.items.map(u => ({ label: u.name, value: u.id }))
           ),
+          FilterDefinition.number("amount", "Amount"),
           FilterDefinition.datetime("expectedStart", "Expected Start"),
           FilterDefinition.datetime("internalDeadline", "Internal Deadline"),
           FilterDefinition.datetime("externalDeadline", "External Deadline"),
+          FilterDefinition.number("budget", "Budget"),
           FilterDefinition.select(
             "currency",
             "Currency",
@@ -86,7 +83,7 @@ export const Index = () => {
             response.statuses.map(s => ({ label: s.title, value: s.status }))
           ),
           FilterDefinition.select(
-            "client",
+            "clientId",
             "Client",
             response.clients.items.map(c => ({ label: c.name, value: c.id }))
           )

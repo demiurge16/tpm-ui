@@ -7,13 +7,10 @@ import { CreateProject, ProjectDeadlineMoved, ProjectMoveDeadline, ProjectMoveSt
 import { CreateTeamMember, Role, TeamMember } from "./types/project/TeamMember";
 import { CreateTask } from "./types/project/Task";
 import { Assign, Assigned, ChangePriority, PriorityChanged, Task, TaskDeadlineMoved, TaskMoveDeadline, TaskMoveStart, TaskNewStatus, TaskStartMoved, TaskStatus, UpdateTask } from "./types/task/Task";
-import { CreateChat } from "./types/project/Chat";
-import { AddParticipant, Chat, ChatMember, ChatStatus, RemoveParticipant, TransferOwnership, UpdateChat } from "./types/chat/Chat";
 import { Expense } from "./types/expense/Expense";
 import { CreateExpense } from "./types/project/Expense";
-import { Thread, ThreadLike, ThreadNewStatus } from "./types/thread/Thread";
+import { CreateReply, Reply, ReplyDislike, ReplyDislikeRemoved, ReplyLike, ReplyLikeRemoved, Thread, ThreadDislike, ThreadDislikeRemoved, ThreadLike, ThreadLikeRemoved, ThreadNewStatus, UpdateReply, UpdateThread } from "./types/thread/Thread";
 import { CreateThread } from "./types/project/Thread";
-import { CreateMessage, Message } from "./types/chat/Message";
 import { Client, ClientStatus, CreateClient, UpdateClient } from "./types/client/Client";
 import { ClientType, ClientTypeStatus, CreateClientType, UpdateClientType } from "./types/client/ClientType";
 import { Accuracy, AccuracyStatus, CreateAccuracy, UpdateAccuracy } from "./types/dictionaries/Accuracy";
@@ -26,6 +23,7 @@ import { CreatePriority, Priority, PriorityStatus, UpdatePriority } from "./type
 import { CreateUnit, Measurement, Unit, UnitStatus, UpdateUnit } from "./types/dictionaries/Unit";
 import { User } from "./types/user/User";
 import { File } from "./types/file/File";
+import { CreateServiceType, ServiceType, ServiceTypeStatus, UpdateServiceType } from "./types/dictionaries/ServiceType";
 
 export default class TpmClient {
 
@@ -163,12 +161,6 @@ export default class TpmClient {
               create: (body: CreateTask): Observable<Task> => this.post(`project/${id}/task`, body),
             };
           },
-          chats: () => {
-            return {
-              all: (search?: Search): Observable<Page<Chat>> => this.get(`project/${id}/chat`, search),
-              create: (body: CreateChat): Observable<Chat> => this.post(`project/${id}/chat`, body),
-            };
-          },
           expenses: () => {
             return {
               all: (search?: Search): Observable<Page<Expense>> => this.get(`project/${id}/expense`, search),
@@ -177,8 +169,8 @@ export default class TpmClient {
           },
           threads: () => {
             return {
-              all: (search?: Search): Observable<Page<Thread>> => this.get(`project/${id}/note`, search),
-              create: (body: CreateThread): Observable<Thread> => this.post(`project/${id}/note`, body),
+              all: (search?: Search): Observable<Page<Thread>> => this.get(`project/${id}/thread`, search),
+              create: (body: CreateThread): Observable<Thread> => this.post(`project/${id}/thread`, body),
             };
           },
           files: () => {
@@ -186,30 +178,6 @@ export default class TpmClient {
               all: (search?: Search): Observable<Page<File>> => this.get(`project/${id}/file`, search),
               // TODO: add types for body and response
               create: (body: any) => this.post(`project/${id}/file`, body),
-            };
-          },
-        };
-      },
-    };
-  }
-
-  chats() {
-    return {
-      all: (search?: Search): Observable<Page<Chat>> => this.get(`chat`, search),
-      withId: (id: number) => {
-        return {
-          get: (): Observable<Chat> => this.get(`chat/${id}`),
-          update: (body: UpdateChat): Observable<Chat> => this.put(`chat/${id}`, body),
-          activate: (): Observable<ChatStatus> => this.patch(`chat/${id}/activate`),
-          freeze: (): Observable<ChatStatus> => this.patch(`chat/${id}/freeze`),
-          archive: (): Observable<ChatStatus> => this.patch(`chat/${id}/archive`),
-          transferOwnership: (body: TransferOwnership): Observable<ChatMember> => this.patch(`chat/${id}/transfer-ownership`, body),
-          addParticipant: (body: AddParticipant): Observable<ChatMember> => this.patch(`chat/${id}/add-participant`, body),
-          removeParticipant: (body: RemoveParticipant) => this.patch(`chat/${id}/remove-participant`, body),
-          messages: () => {
-            return {
-              all: (search: Search): Observable<Page<Message>> => this.get(`chat/${id}/message`, search),
-              create: (body: CreateMessage): Observable<Message> => this.post(`chat/${id}/message`, body),
             };
           },
         };
@@ -337,6 +305,21 @@ export default class TpmClient {
     };
   }
 
+  serviceTypes() {
+    return {
+      all: (search?: Search): Observable<Page<ServiceType>> => this.get(`service-type`, search),
+      create: (body: CreateServiceType): Observable<ServiceType> => this.post(`service-type`, body),
+      withId: (id: string) => {
+        return {
+          get: (): Observable<ServiceType> => this.get(`service-type/${id}`),
+          update: (body: UpdateServiceType): Observable<ServiceType> => this.put(`service-type/${id}`, body),
+          activate: (): Observable<ServiceTypeStatus> => this.patch(`service-type/${id}/activate`),
+          deactivate: (): Observable<ServiceTypeStatus> => this.patch(`service-type/${id}/deactivate`),
+        };
+      },
+    };
+  }
+
   units() {
     return {
       all: (search?: Search): Observable<Page<Unit>> => this.get(`unit`, search),
@@ -389,13 +372,38 @@ export default class TpmClient {
       withId: (id: string) => {
         return {
           get: (): Observable<Thread> => this.get(`thread/${id}`),
+          update: (body: UpdateThread): Observable<Thread> => this.put(`thread/${id}`, body),
           like: (): Observable<ThreadLike> => this.patch(`thread/${id}/like`),
-          dislike: (): Observable<ThreadLike> => this.patch(`thread/${id}/dislike`),
+          unlike: (): Observable<ThreadLikeRemoved> => this.patch(`thread/${id}/unlike`),
+          dislike: (): Observable<ThreadDislike> => this.patch(`thread/${id}/dislike`),
+          undislike: (): Observable<ThreadDislikeRemoved> => this.patch(`thread/${id}/undislike`),
           activate: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/activate`),
           freeze: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/freeze`),
           close: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/close`),
           archive: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/archive`),
           delete: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/delete`),
+          replies: () => {
+            return {
+              all: (search?: Search): Observable<Page<Reply>> => this.get(`thread/${id}/reply`, search),
+              create: (body: CreateReply): Observable<Reply> => this.post(`thread/${id}/reply`, body),
+            };
+          }
+        };
+      },
+    };
+  }
+
+  replies() {
+    return {
+      withId: (id: string) => {
+        return {
+          get: (): Observable<Reply> => this.get(`reply/${id}`),
+          update: (body: UpdateReply): Observable<Reply> => this.put(`reply/${id}`, body),
+          like: (): Observable<ReplyLike> => this.patch(`reply/${id}/like`),
+          unlike: (): Observable<ReplyLikeRemoved> => this.patch(`reply/${id}/unlike`),
+          dislike: (): Observable<ReplyDislike> => this.patch(`reply/${id}/dislike`),
+          undislike: (): Observable<ReplyDislikeRemoved> => this.patch(`reply/${id}/undislike`),
+          delete: (): Observable<unknown> => this.delete(`reply/${id}`)
         };
       },
     };

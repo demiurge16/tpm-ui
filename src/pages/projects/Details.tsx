@@ -104,7 +104,6 @@ export const Details = () => {
 
 
   const [value, setValue] = useState(0);
-
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -129,9 +128,8 @@ export const Details = () => {
             <Tab label="Team members" {...a11yProps(2)} />
             <Tab label="Tasks" {...a11yProps(3)} />
             <Tab label="Expenses" {...a11yProps(4)} />
-            <Tab label="Chats" {...a11yProps(5)} />
-            <Tab label="Notes" {...a11yProps(6)} />
-            <Tab label="Files" {...a11yProps(7)} />
+            <Tab label="Threads" {...a11yProps(5)} />
+            <Tab label="Files" {...a11yProps(6)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>

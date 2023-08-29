@@ -5,6 +5,9 @@ import { Thread } from "../../client/types/thread/Thread";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, List, Typography } from "@mui/material";
 import { Threads } from "./Threads";
 import { Link } from "react-router-dom";
+import TpmClient from "../../client/TpmClient";
+import { HtmlPanel } from "../../components/editor/HtmlPanel";
+import { formatDate } from "../../utils/dateFormatters";
 
 export const Index = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -12,87 +15,15 @@ export const Index = () => {
 
   const [notes, setNotes] = useState<Thread[]>([]);
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false
-    });
-  }
-
   useEffect(() => {
-    // TpmClient.getInstance()
-    //   .notes()
-    //   .all()
-    //   .subscribe({
-    //     next: (response) => setNotes(response.items),
-    //     error: (error) => snackbarContext.showError('Error loading notes', error.message)
-    //   });
+    TpmClient.getInstance()
+      .threads()
+      .all()
+      .subscribe({
+        next: (response) => setNotes(response.items),
+        error: (error) => snackbarContext.showError('Error loading threads', error.message)
+      });
 
-    setNotes([
-      {
-        id: '1',
-        title: 'Thread 1',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-        createdAt: new Date(),
-        author: {
-          teamMemberId: '1',
-          userId: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: '',
-        },
-        project: {
-          id: '1',
-          title: 'Project 1',
-          status: {
-            status: 'DRAFT',
-            name: 'Draft',
-            description: 'Draft project'
-          },
-        },
-        replies: [
-          {
-            id: '1',
-            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-            createdAt: new Date(),
-            author: {
-              teamMemberId: '1',
-              userId: '1',
-              firstName: 'John',
-              lastName: 'Doe',
-              email: '',
-            },
-            parentReplyId: null
-          },
-          {
-            id: '2',
-            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl. Donec euismod, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.',
-            createdAt: new Date(),
-            author: {
-              teamMemberId: '1',
-              userId: '1',
-              firstName: 'John',
-              lastName: 'Doe',
-              email: '',
-            },
-            parentReplyId: null
-          },
-        ],
-        status: {
-          status: 'DRAFT',
-          name: 'Open',
-          description: 'Open thread'
-        },
-        likes: [],
-        dislikes: []
-      }
-    ]);
-
-    
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Threads', path: '/threads' }
     ]);
@@ -120,9 +51,7 @@ export const Index = () => {
               <Typography variant="h5" component="div" gutterBottom>
                 {note.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {note.content}
-              </Typography>
+              <HtmlPanel html={note.content} />
             </CardContent>
             <CardActions disableSpacing>
               <Button variant="text"

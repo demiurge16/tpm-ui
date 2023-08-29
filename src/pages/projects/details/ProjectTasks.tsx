@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { forkJoin } from 'rxjs';
+import { formatDate } from '../../../utils/dateFormatters';
 
 export const ProjectTasks = () => {
   const startPage = 0;
@@ -23,17 +24,6 @@ export const ProjectTasks = () => {
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false
-    });
-  }
 
   useEffect(() => {
     forkJoin({

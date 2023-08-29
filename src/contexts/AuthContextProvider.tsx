@@ -16,24 +16,38 @@ const keycloakInitOptions: KeycloakInitOptions = {
 
 const keycloak = new Keycloak(keycloakConfig);
 
+export type Role = "admin"
+  | "project-manager"
+  | "translator"
+  | "editor"
+  | "proofreader"
+  | "subject-matter-expert"
+  | "publisher"
+  | "observer"
+  | "user";
+
 interface AuthContextValues {
   isAuthenticated: boolean;
   logout: () => void;
+  userId: string;
   username: string;
   firstName: string;
   lastName: string;
   email: string;
-  roles: string[];
+  roles: Role[];
+  hasRole: (role: Role) => boolean;
 }
 
 const defaultAuthContextValues: AuthContextValues = {
   isAuthenticated: false,
   logout: () => {},
+  userId: "",
   username: "",
   firstName: "",
   lastName: "",
   email: "",
   roles: [],
+  hasRole: (role: Role) => false
 };
 
 export const AuthContext = createContext<AuthContextValues>(
@@ -46,11 +60,12 @@ interface AuthContextProviderProps {
 
 const AuthContextProvider = (props: AuthContextProviderProps) => {
   const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [roles, setRoles] = useState<string[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
 
   useEffect(() => {
     keycloak.init(keycloakInitOptions)
@@ -60,6 +75,12 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
         }
 
         setAuthenticated(authenticated);
+        setUserId(keycloak.tokenParsed?.sub || "");
+        setUsername(keycloak.tokenParsed?.preferred_username);
+        setFirstName(keycloak.tokenParsed?.given_name);
+        setLastName(keycloak.tokenParsed?.family_name);
+        setEmail(keycloak.tokenParsed?.email);
+        setRoles(keycloak.tokenParsed?.realm_access?.roles as Array<Role> || []);
 
         axios.interceptors.request.use(
           (config) => {
@@ -105,11 +126,12 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
 
   useEffect(() => {
     if (isAuthenticated) {
+      setUserId(keycloak.tokenParsed?.sub || "");
       setUsername(keycloak.tokenParsed?.preferred_username);
       setFirstName(keycloak.tokenParsed?.given_name);
       setLastName(keycloak.tokenParsed?.family_name);
       setEmail(keycloak.tokenParsed?.email);
-      setRoles(keycloak.tokenParsed?.realm_access?.roles || []);
+      setRoles(keycloak.tokenParsed?.realm_access?.roles as Array<Role> || []);
     }
   }, [isAuthenticated]);
 
@@ -117,8 +139,12 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
     keycloak.logout();
   };
 
+  const hasRole = (role: Role) => {
+    return roles.includes(role);
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, logout, username, firstName, lastName, email, roles }}>
+    <AuthContext.Provider value={{ isAuthenticated, logout, userId, username, firstName, lastName, email, roles, hasRole }}>
       {props.children}
     </AuthContext.Provider>
   );

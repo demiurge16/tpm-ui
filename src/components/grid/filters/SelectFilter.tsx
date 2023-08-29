@@ -1,19 +1,23 @@
 import { Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Select, Typography } from "@mui/material";
 
-export interface MultiselectFilterProps {
+export interface SelectFilterProps {
   id: string;
   label: string;
-  value: string[];
+  value: string | string[];
+  multiple?: boolean;
   options: { value: string, label: string }[];
-  onChange: (value: string[]) => void;
+  onChange: (value: string | string[]) => void;
 }
 
-export const MultiselectFilter = (props: MultiselectFilterProps) => {
-  const [id, label, value, options, onChange] = [props.id, props.label, props.value, props.options, props.onChange];
+export const SelectFilter = (props: SelectFilterProps) => {
+  const { id, label, value, multiple, options, onChange } = props;
   const labelId = `${id}-label`;
 
-  const renderValue = (values: string[]) => {
-    return values.map(v => options.find(e => e.value == v)?.label).join(', ');
+  const renderValue = (values: string | string[]) => {
+    if (!multiple) {
+      return options.find(e => e.value == values)?.label;
+    }
+    return (values as string[]).map(v => options.find(e => e.value == v)?.label).join(', ');
   }
 
   return (
@@ -23,9 +27,9 @@ export const MultiselectFilter = (props: MultiselectFilterProps) => {
         labelId={labelId}
         label={label}
         value={value}
-        multiple
+        multiple={multiple ?? false}
         onChange={(e) => { 
-          onChange(e.target.value as string[]);
+          onChange(e.target.value);
         }}
 
         renderValue={(selected) => (

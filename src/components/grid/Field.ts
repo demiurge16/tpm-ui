@@ -5,68 +5,104 @@ import { Operation } from "./Operation";
 export class Field {
   constructor(public type: FieldType, public name: string, public operations: Operation[]) { }
 
-  static STRING = new Field(FieldType.STRING, "String", [
-    Operation.EQUALS,
-    Operation.CONTAINS,
-    Operation.IS_NULL,
-    Operation.IS_EMPTY
-  ]);
+  static UNIQUE_TOKEN = new Field(
+    FieldType.UNIQUE_TOKEN,
+    "Unique Token",
+    [
+      Operation.EQUALS,
+      Operation.ANY,
+      Operation.NONE,
+      Operation.IS_NULL
+    ]
+  );
 
-  static NUMBER = new Field(FieldType.NUMBER, "Number", [
-    Operation.EQUALS,
-    Operation.GREATER_THAN,
-    Operation.LESS_THAN,
-    Operation.GREATER_THAN_OR_EQUAL,
-    Operation.LESS_THAN_OR_EQUAL,
-    Operation.IS_NULL
-  ]);
+  static STRING = new Field(
+    FieldType.STRING,
+    "String",
+    [
+      Operation.EQUALS,
+      Operation.CONTAINS,
+      Operation.ANY,
+      Operation.NONE,
+      Operation.IS_NULL,
+      Operation.IS_EMPTY
+    ]
+  );
 
-  static DATE = new Field(FieldType.DATE, "Date", [
-    Operation.EQUALS,
-    Operation.GREATER_THAN,
-    Operation.LESS_THAN,
-    Operation.GREATER_THAN_OR_EQUAL,
-    Operation.LESS_THAN_OR_EQUAL,
-    Operation.IS_NULL
-  ]);
+  static NUMBER = new Field(
+    FieldType.NUMBER,
+    "Number",
+    [
+      Operation.EQUALS,
+      Operation.GREATER_THAN,
+      Operation.LESS_THAN,
+      Operation.GREATER_THAN_OR_EQUAL,
+      Operation.LESS_THAN_OR_EQUAL,
+      Operation.ANY,
+      Operation.NONE,
+      Operation.IS_NULL
+    ]
+  );
 
-  static DATETIME = new Field(FieldType.DATETIME, "Datetime", [
-    Operation.EQUALS,
-    Operation.GREATER_THAN,
-    Operation.LESS_THAN,
-    Operation.GREATER_THAN_OR_EQUAL,
-    Operation.LESS_THAN_OR_EQUAL,
-    Operation.IS_NULL
-  ]);
+  static DATE = new Field(
+    FieldType.DATE,
+    "Date",
+    [
+      Operation.EQUALS,
+      Operation.GREATER_THAN,
+      Operation.LESS_THAN,
+      Operation.GREATER_THAN_OR_EQUAL,
+      Operation.LESS_THAN_OR_EQUAL,
+      Operation.ANY,
+      Operation.NONE,
+      Operation.IS_NULL
+    ]
+  );
 
-  static BOOLEAN = new Field(FieldType.BOOLEAN, "Boolean", [
-    Operation.EQUALS,
-    Operation.IS_NULL
-  ]);
+  static DATETIME = new Field(
+    FieldType.DATETIME,
+    "Datetime",
+    [
+      Operation.EQUALS,
+      Operation.GREATER_THAN,
+      Operation.LESS_THAN,
+      Operation.GREATER_THAN_OR_EQUAL,
+      Operation.LESS_THAN_OR_EQUAL,
+      Operation.ANY,
+      Operation.NONE,
+      Operation.IS_NULL
+    ]
+  );
 
-  static SELECT = new Field(FieldType.SELECT, "Select", [
-    Operation.EQUALS,
-    Operation.ANY,
-    Operation.ALL,
-    Operation.NONE,
-    Operation.IS_NULL
-  ]);
+  static BOOLEAN = new Field(
+    FieldType.BOOLEAN,
+    "Boolean",
+    [
+      Operation.EQUALS,
+      Operation.IS_NULL
+    ]
+  );
 
-  getDefaultValue(): FilterValue {
-    switch (this.type) {
-      case FieldType.BOOLEAN:
-        return false;
-      case FieldType.DATE:
-        return new Date();
-      case FieldType.DATETIME:
-        return new Date();
-      case FieldType.NUMBER:
-        return 0;
-      case FieldType.SELECT:
-        return [];
-      case FieldType.STRING:
-      default:
-        return "";
-    }
-  }
+  static SELECT = new Field(
+    FieldType.SELECT,
+    "Select",
+    [
+      Operation.EQUALS,
+      Operation.ANY,
+      Operation.NONE,
+      Operation.IS_NULL
+    ]
+  );
+
+  static MULTISELECT = new Field(
+    FieldType.MULTISELECT,
+    "Multi Select",
+    [
+      Operation.ANY,
+      Operation.ALL,
+      Operation.NONE,
+      Operation.IS_NULL,
+      Operation.IS_EMPTY
+    ]
+  );
 }

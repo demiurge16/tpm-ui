@@ -296,7 +296,7 @@ Aplikacja będzie zawierała następujące funkcje:
 4. Przypisać zadanie do tłumacza, aby mógł zacząć nad nim pracować.
 5. Monitorować postępy w realizacji projektu, aby móc śledzić jego status.
 6. Monitorować postępy w realizacji zadania, aby móc śledzić jego status.
-7. Monitoruj koszty projektu, abym mógł śledzić jego budżet.
+7. Monitorować koszty projektu, abym mógł śledzić jego budżet.
 8. Monitorować koszty zadania, aby móc śledzić jego budżet.
 9. Zarządzać plikami projektu, aby móc je udostępniać tłumaczom.
 10. Zarządzać plikami zadania, aby móc je udostępniać tłumaczom.

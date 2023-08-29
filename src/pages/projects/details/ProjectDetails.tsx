@@ -1,19 +1,9 @@
 import { Typography } from "@mui/material";
 import { useProjectContext } from "./ProjectContext";
+import { formatDate } from "../../../utils/dateFormatters";
 
 export const ProjectDetails = () => {
   const { project, setProject } = useProjectContext();
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false
-    });
-  }
 
   return (
     <>

@@ -1,30 +1,21 @@
 import { useContext, useEffect, useState } from "react";
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Grid, IconButton, List, Typography } from "@mui/material";
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, IconButton, Link as MuiLink, List, Typography, Button } from "@mui/material";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { useProjectContext } from "./ProjectContext";
 import { Thread } from "../../../client/types/thread/Thread";
 import TpmClient from "../../../client/TpmClient";
 import { CreateThread } from "../../../client/types/project/Thread";
-import { Form } from "react-final-form";
-import { TextField } from "../../../components/form-controls/TextField";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Link } from "react-router-dom";
+import { Html } from "@mui/icons-material";
+import { HtmlPanel } from "../../../components/editor/HtmlPanel";
+import { formatDate } from "../../../utils/dateFormatters";
 
 export const ProjectThreads = () => {
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
 
   const [notes, setNotes] = useState<Thread[]>([]);
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false
-    });
-  }
 
   useEffect(() => {
     if (!project) return;
@@ -36,7 +27,7 @@ export const ProjectThreads = () => {
       .all()
       .subscribe({
         next: (response) => setNotes(response.items),
-        error: (error) => snackbarContext.showError('Error loading notes', error.message)
+        error: (error) => snackbarContext.showError('Error loading threads', error.message)
       });
   }, [project.id]);
 
@@ -71,6 +62,13 @@ export const ProjectThreads = () => {
     <Box>
       <Typography variant="h5" gutterBottom>Project threads</Typography>
       <Box pb={2} />
+      {
+        notes.length === 0 && (
+          <Typography variant="body1" gutterBottom>
+            Project has no open discussions yet. <MuiLink component={Link} to={`threads/create`}>Be first to start one</MuiLink>
+          </Typography>
+        )
+      }
       <List>
         {notes.map((note) => (
           <Card key={note.id} sx={{ mb: 2 }}>
@@ -85,65 +83,24 @@ export const ProjectThreads = () => {
               subheader={formatDate(note.createdAt)}
             />
             <CardContent>
-              <Typography variant="body2" color="text.secondary">
-                {note.content}
+              <Typography variant="h5" component="div" gutterBottom>
+                {note.title}
               </Typography>
+              <HtmlPanel html={note.content} />
             </CardContent>
             <CardActions disableSpacing>
-              <IconButton aria-label="remove note" onClick={() => removeThread(note)}>
-                <DeleteIcon />
-              </IconButton>
+              <Button variant="text"
+                color="primary"
+                component={Link}
+                to={`/threads/${note.id}`}
+              >
+                Show thread
+              </Button>
             </CardActions>
           </Card>
         ))}
       </List>
-
-      <Box 
-        sx={{
-          pb: 2,
-        }}
-      >
-        <Typography variant="h6" gutterBottom>Add thread</Typography>
-        <Form onSubmit={addThread}
-          keepDirtyOnReinitialize
-          initialValues={{
-            userId: '',
-            role: ''
-          }}
-          render={({ handleSubmit, form, submitting, pristine }) => (
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={10}>
-                  <TextField name="content" label="Content" multiline required/>
-                </Grid>
-                <Grid item xs={1} alignItems="stretch">
-                  <Button type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    disabled={submitting || pristine}
-                    size="large"
-                  >
-                    Add
-                  </Button>
-                </Grid>
-                <Grid item xs={1}>
-                  <Button type="button"
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                    size="large"
-                    onClick={() => form.reset()}
-                    disabled={submitting || pristine}
-                  >
-                    Reset
-                  </Button>
-                </Grid>
-              </Grid>
-            </form>
-          )}
-        />
-      </Box>
+      { notes.length !== 0 && <MuiLink component={Link} to={`threads/create`}>Create new thread</MuiLink> }
     </Box>
   );
 }

@@ -159,8 +159,7 @@ export const ProjectStatusDetails = () => {
                           snackbarContext.showError('Failed to change project status', error.message);
                         }
                       });
-                  }
-                  }
+                  }}
                 >
                   {statuses.find((status) => status.status === statusCode)?.title}
                 </Button>

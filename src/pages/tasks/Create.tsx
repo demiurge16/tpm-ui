@@ -19,6 +19,7 @@ import { AsyncSelectField } from '../../components/form-controls/AsyncSelectFiel
 import { ValidationErrors } from 'final-form';
 import { CreateTask } from '../../client/types/project/Task';
 import { Priority } from '../../client/types/dictionaries/Priority';
+import { validateWithSchema } from '../../utils/validate';
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -68,23 +69,11 @@ export const Create = () => {
     priorityId: string().required('Priority is required')
   });
 
-  const validate = (values: CreateTask): ValidationErrors => {
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-    } catch (error: any) {
-      return error.inner.reduce((errors: any, error: any) => {
-        return {
-          ...errors,
-          [error.path]: error.message
-        };
-      }, {});
-    }
-  };
-
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Projects', path: '/projects' },
-      { label: 'Create Task', path: '/projects/create' }
+      { label: 'Project', path: `/projects/${projectId}` },
+      { label: 'Create Task', path: '/projects/tasks/create' }
     ]);
 
     forkJoin({
@@ -136,7 +125,7 @@ export const Create = () => {
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={initialValues}
-        validate={validate}
+        validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit}>
             <TextField name="title" label="Title" required/>

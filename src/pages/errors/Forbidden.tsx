@@ -1,8 +1,15 @@
+import { Box, Typography } from "@mui/material";
 
 export const Forbidden = () => {
   return (
-    <div>
-      <h1>Forbidden</h1>
-    </div>
+    <Box flex={{
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center"
+    }}>
+      <Typography variant="h4">403 Forbidden</Typography>
+      <Typography variant="body1">You are not authorized to view this page.</Typography>
+    </Box>
   );
 };

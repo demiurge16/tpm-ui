@@ -1,4 +1,3 @@
-import { FilterValue } from "../../client/types/common/Search";
 import { Field } from "./Field";
 import { Operation } from "./Operation";
 
@@ -14,12 +13,12 @@ export class FilterDefinition {
     return this.type.operations[0];
   }
 
-  public getDefaultValue(): FilterValue {
-    return this.type.getDefaultValue();
-  }
-
   public getOptions(): { value: string, label: string }[] {
     return this.options || [];
+  }
+
+  public static uniqueToken(id: string, name: string): FilterDefinition {
+    return new FilterDefinition(id, name, Field.UNIQUE_TOKEN);
   }
 
   public static string(id: string, name: string): FilterDefinition {
@@ -44,5 +43,9 @@ export class FilterDefinition {
 
   public static select(id: string, name: string, options: { value: string, label: string }[]): FilterDefinition {
     return new FilterDefinition(id, name, Field.SELECT, options);
+  }
+
+  public static multiSelect(id: string, name: string, options: { value: string, label: string }[]): FilterDefinition {
+    return new FilterDefinition(id, name, Field.MULTISELECT, options);
   }
 }

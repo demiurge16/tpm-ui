@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Languages } from "../pages/dictionaries/language/Languages";
 import { Countries } from "../pages/dictionaries/country/Countries";
 import { Currencies } from "../pages/dictionaries/currency/Currencies";
@@ -47,6 +47,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Collapse, ListSubheader } from "@mui/material";
 import { ServiceTypes } from "../pages/dictionaries/service-types/ServiceTypes";
+import { AuthContext, Role } from "../contexts/AuthContextProvider";
 
 export interface NavigationDrawerProps {
   open: boolean;
@@ -56,6 +57,7 @@ type MenuItem = {
   icon: any;
   label: string;
   path?: string;
+  roles?: Role[];
   groups?: {
     label?: string;
     items: MenuItem[];
@@ -98,26 +100,65 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
       icon: ChecklistIcon,
       label: Projects.title,
       path: Projects.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
     },
     {
       icon: TaskIcon,
       label: Tasks.title,
       path: Tasks.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
+
     },
     {
       icon: RequestQuoteIcon,
       label: Expenses.title,
       path: Expenses.path,
+      roles: [
+        "admin",
+        "project-manager"
+      ],
     },
     {
       icon: NoteAltIcon,
       label: Threads.title,
       path: Threads.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
     },
     {
       icon: WorkIcon,
       label: Clients.title,
       path: Clients.path,
+      roles: [
+        "admin",
+        "project-manager"
+      ],
     },
     {
       icon: MenuBookIcon,
@@ -130,16 +171,28 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               icon: TranslateIcon,
               label: Languages.title,
               path: Languages.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
             {
               icon: PublicIcon,
               label: Countries.title,
               path: Countries.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
             {
               icon: CurrencyExchangeIcon,
               label: Currencies.title,
               path: Currencies.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
           ],
         },
@@ -150,31 +203,55 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               icon: FactCheckIcon,
               label: Accuracies.title,
               path: Accuracies.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
             {
               icon: ProductionQuantityLimitsIcon,
               label: ExpenseCategories.title,
               path: ExpenseCategories.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
             {
               icon: ConstructionIcon,
               label: Industries.title,
               path: Industries.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
             {
               icon: LowPriorityIcon,
               label: Priorities.title,
               path: Priorities.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
             {
               icon: PercentIcon,
               label: Units.title,
               path: Units.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
             {
               icon: DesignServicesIcon,
               label: ServiceTypes.title,
               path: ServiceTypes.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             }
           ],
         },
@@ -185,6 +262,10 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               icon: HomeWorkIcon,
               label: ClientTypes.title,
               path: ClientTypes.path,
+              roles: [
+                "admin",
+                "project-manager"
+              ],
             },
           ],
         },
@@ -194,6 +275,10 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
       icon: PersonIcon,
       label: Users.title,
       path: Users.path,
+      roles: [
+        "admin",
+        "project-manager"
+      ],
     },
   ];
 
@@ -227,6 +312,7 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
                 icon={menuItem.icon}
                 label={menuItem.label}
                 path={menuItem.path}
+                roles={menuItem.roles!!}
               />
             ) : (
               menuItem.groups && (
@@ -252,14 +338,16 @@ const NavigationDrawerItem = (props: {
   icon: React.ElementType;
   label: string;
   path: string;
+  roles: Role[];
 }) => {
   const [open, setOpen] = useState(props.open);
-  const { index, icon, label, path } = props;
+  const { index, icon, label, path, roles } = props;
   const location = useLocation();
+  const authContext = useContext(AuthContext);
 
   useEffect(() => setOpen(props.open), [props.open]);
 
-  return (
+  return roles.some(authContext.hasRole) ? (
     <Link
       key={index}
       component={RouterLink}
@@ -295,6 +383,8 @@ const NavigationDrawerItem = (props: {
         </ListItemButton>
       </ListItem>
     </Link>
+  ) : (
+    <></>
   );
 };
 
@@ -373,6 +463,7 @@ const NavigationDrawerItemGroup = (props: {
                         icon={item.icon}
                         label={item.label}
                         path={item.path}
+                        roles={item.roles!!}
                       />
                     )) || (
                       <NavigationDrawerItemGroup
