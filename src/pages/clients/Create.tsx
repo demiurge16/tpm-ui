@@ -113,9 +113,12 @@ export const Create = () => {
                   .pipe(
                     map((response) => {
                       return {
+                        items: response.items.map((language) => ({ key: language.code, value: language.name })),
+                        currentPage: response.currentPage,
                         totalPages: response.totalPages,
-                        totalElements: response.totalElements,
-                        items: response.items.map((language) => ({ key: language.code, value: language.name }))
+                        totalItems: response.totalItems,
+                        hasNextPage: response.hasNextPage,
+                        hasPreviousPage: response.hasPreviousPage
                       };
                     }
                   ))

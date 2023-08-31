@@ -199,6 +199,7 @@ export const ProjectTasks = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().projects().withId(project.id).tasks().all}
+        export={TpmClient.getInstance().projects().withId(project.id).tasks().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

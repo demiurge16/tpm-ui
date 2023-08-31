@@ -156,6 +156,7 @@ export const ProjectExpenses = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().projects().withId(project.id).expenses().all}
+        export={TpmClient.getInstance().projects().withId(project.id).expenses().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

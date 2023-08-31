@@ -117,9 +117,12 @@ export const Create = () => {
                   .pipe(
                     map((response) => {
                       return {
+                        items: response.items.map((currency) => ({ key: currency.code, value: currency.name })),
+                        currentPage: response.currentPage,
                         totalPages: response.totalPages,
-                        totalElements: response.totalElements,
-                        items: response.items.map((currency) => ({ key: currency.code, value: currency.name }))
+                        totalItems: response.totalItems,
+                        hasNextPage: response.hasNextPage,
+                        hasPreviousPage: response.hasPreviousPage
                       }
                     }
                   ))

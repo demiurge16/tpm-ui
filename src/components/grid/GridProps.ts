@@ -16,5 +16,6 @@ export interface GridProps<Type> {
   columnDefinitions: ColumnDefinition<Type>[];
   filters: FilterDefinition[];
   fetch: (search: Search) => Observable<Page<Type>>;
+  export?: (search: Partial<Search>) => Observable<any>;
   innerRef?: React.Ref<GridHandle>;
 }

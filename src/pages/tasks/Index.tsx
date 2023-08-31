@@ -220,14 +220,15 @@ export const Index = () => {
 
   return (
     <Box>
-    <Typography variant="h4">{Tasks.title}</Typography>
-    <Typography variant="subtitle1">{Tasks.description}</Typography>
-    <Box pb={2} />
+      <Typography variant="h4">{Tasks.title}</Typography>
+      <Typography variant="subtitle1">{Tasks.description}</Typography>
+      <Box pb={2} />
       <Grid<Task>
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().tasks().all}
+        export={TpmClient.getInstance().tasks().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

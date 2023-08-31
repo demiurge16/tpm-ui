@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { ResponseType } from "axios";
 import { environment } from "../Environment";
 import { Observable } from "rxjs";
 import { Page } from "./types/common/Page";
@@ -39,17 +39,24 @@ export default class TpmClient {
 
   private readonly baseUrl = environment.apiUrl;
 
-  private get<TResponse>(path: string, search?: Search): Observable<TResponse> {
+  private get<TResponse>(
+    path: string,
+    search?: Partial<Search>,
+    config?: {
+      responseType?: ResponseType,
+      headers?: {}
+    }
+  ): Observable<TResponse> {
     const params = search ? {
       page: search.page,
       size: search.pageSize,
-      sort: search.sort.map((s) => `${s.field}:${s.direction}`).join("&"),
-      search: search.filters.map((f) => `${f.field}:${f.operator}:${f.value || ""}`).join("&"),
+      sort: search.sort && search.sort.map((s) => `${s.field}:${s.direction}`).join("&"),
+      search: search.filters && search.filters.map((f) => `${f.field}:${f.operator}:${f.value || ""}`).join("&")
     } : undefined;
 
     return new Observable((observer) => {
       axios
-        .get(`${this.baseUrl}/${path}`, { params: params })
+        .get(`${this.baseUrl}/${path}`, { params: params, responseType: config?.responseType, headers: config?.headers })
         .then((response) => {
           observer.next(response.data);
           observer.complete();
@@ -118,7 +125,8 @@ export default class TpmClient {
 
   projects() {
     return {
-      all: (search?: Search): Observable<Page<Project>> => this.get("project", search),
+      all: (search?: Partial<Search>): Observable<Page<Project>> => this.get("project", search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get("project/export", search, { responseType: "blob" }),
       create: (body: CreateProject): Observable<Project> => this.post("project", body),
       refdata: () => {
         return {
@@ -150,33 +158,35 @@ export default class TpmClient {
           reopen: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/reopen`),
           teamMembers: () => {
             return {
-              all: (search?: Search): Observable<Page<TeamMember>> => this.get(`project/${id}/team-member`, search),
+              all: (search?: Partial<Search>): Observable<Page<TeamMember>> => this.get(`project/${id}/team-member`, search),
               add: (body: CreateTeamMember): Observable<TeamMember> => this.post(`project/${id}/team-member`, body),
               remove: (id: string) => this.delete(`project/${id}/team-member/${id}`)
             };
           },
           tasks: () => {
             return {
-              all: (search?: Search): Observable<Page<Task>> => this.get(`project/${id}/task`, search),
+              all: (search?: Partial<Search>): Observable<Page<Task>> => this.get(`project/${id}/task`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => this.get(`project/${id}/task/export`, search, { responseType: "blob" }),
               create: (body: CreateTask): Observable<Task> => this.post(`project/${id}/task`, body),
             };
           },
           expenses: () => {
             return {
-              all: (search?: Search): Observable<Page<Expense>> => this.get(`project/${id}/expense`, search),
+              all: (search?: Partial<Search>): Observable<Page<Expense>> => this.get(`project/${id}/expense`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => this.get(`project/${id}/expense/export`, search, { responseType: "blob" }),
               create: (body: CreateExpense): Observable<Expense> => this.post(`project/${id}/expense`, body),
             };
           },
           threads: () => {
             return {
-              all: (search?: Search): Observable<Page<Thread>> => this.get(`project/${id}/thread`, search),
+              all: (search?: Partial<Search>): Observable<Page<Thread>> => this.get(`project/${id}/thread`, search),
               create: (body: CreateThread): Observable<Thread> => this.post(`project/${id}/thread`, body),
             };
           },
           files: () => {
             return {
-              all: (search?: Search): Observable<Page<File>> => this.get(`project/${id}/file`, search),
-              // TODO: add types for body and response
+              all: (search?: Partial<Search>): Observable<Page<File>> => this.get(`project/${id}/file`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => this.get(`project/${id}/file/export`, search, { responseType: "blob" }),
               create: (body: any) => this.post(`project/${id}/file`, body),
             };
           },
@@ -187,7 +197,8 @@ export default class TpmClient {
 
   clients() {
     return {
-      all: (search?: Search): Observable<Page<Client>> => this.get(`client`, search),
+      all: (search?: Partial<Search>): Observable<Page<Client>> => this.get(`client`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`client/export`, search, { responseType: "blob" }),
       create: (body: CreateClient): Observable<Client> => this.post(`client`, body),
       withId: (id: string) => {
         return {
@@ -202,7 +213,8 @@ export default class TpmClient {
 
   clientTypes() {
     return {
-      all: (search?: Search): Observable<Page<ClientType>> => this.get(`client-type`, search),
+      all: (search?: Partial<Search>): Observable<Page<ClientType>> => this.get(`client-type`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`client-type/export`, search, { responseType: "blob" }),
       create: (body: CreateClientType): Observable<ClientType> => this.post(`client-type`, body),
       withId: (id: string) => {
         return {
@@ -217,7 +229,8 @@ export default class TpmClient {
 
   accuracies() {
     return {
-      all: (search?: Search): Observable<Page<Accuracy>> => this.get(`accuracy`, search),
+      all: (search?: Partial<Search>): Observable<Page<Accuracy>> => this.get(`accuracy`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`accuracy/export`, search, { responseType: "blob" }),
       create: (body: CreateAccuracy): Observable<Accuracy> => this.post(`accuracy`, body),
       withId: (id: string) => {
         return {
@@ -232,7 +245,8 @@ export default class TpmClient {
 
   countries() {
     return {
-      all: (search?: Search): Observable<Page<Country>> => this.get(`country`, search),
+      all: (search?: Partial<Search>): Observable<Page<Country>> => this.get(`country`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`country/export`, search, { responseType: "blob" }),
       byCode: (code: string): Observable<Country> => this.get(`country/${code}`),
       byNameLike: (name: string): Observable<Page<Country>> => this.get(`country/name/${name}`)
     };
@@ -240,7 +254,8 @@ export default class TpmClient {
 
   currencies() {
     return {
-      all: (search?: Search): Observable<Page<Currency>> => this.get(`currency`, search),
+      all: (search?: Partial<Search>): Observable<Page<Currency>> => this.get(`currency`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`currency/export`, search, { responseType: "blob" }),
       byCode: (code: string): Observable<Currency> => this.get(`currency/${code}`),
       exchangeRates: (code: string, amount: number): Observable<CurrencyExchangeRates> => this.get(`currency/${code}/exchange/${amount}`),
     };
@@ -248,7 +263,8 @@ export default class TpmClient {
 
   expenseCategories() {
     return {
-      all: (search?: Search): Observable<Page<ExpenseCategory>> => this.get(`expense-category`, search),
+      all: (search?: Partial<Search>): Observable<Page<ExpenseCategory>> => this.get(`expense-category`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`expense-category/export`, search, { responseType: "blob" }),
       create: (body: CreateExpenseCategory): Observable<ExpenseCategory> => this.post(`expense-category`, body),
       withId: (id: string) => {
         return {
@@ -263,7 +279,8 @@ export default class TpmClient {
 
   industries() {
     return {
-      all: (search?: Search): Observable<Page<Industry>> => this.get(`industry`, search),
+      all: (search?: Partial<Search>): Observable<Page<Industry>> => this.get(`industry`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`industry/export`, search, { responseType: "blob" }),
       create: (body: CreateIndustry): Observable<Industry> => this.post(`industry`, body),
       withId: (id: string) => {
         return {
@@ -278,7 +295,8 @@ export default class TpmClient {
 
   languages() {
     return {
-      all: (search?: Search): Observable<Page<Language>> => this.get(`language`, search),
+      all: (search?: Partial<Search>): Observable<Page<Language>> => this.get(`language`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`language/export`, search, { responseType: "blob" }),
       byCode: (code: string): Observable<Language> => this.get(`language/${code}`),
       byNameLike: (name: string): Observable<Page<Language>> => this.get(`language/name/${name}`),
       refdata: () => {
@@ -292,7 +310,8 @@ export default class TpmClient {
 
   priorities() {
     return {
-      all: (search?: Search): Observable<Page<Priority>> => this.get(`priority`, search),
+      all: (search?: Partial<Search>): Observable<Page<Priority>> => this.get(`priority`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`priority/export`, search, { responseType: "blob" }),
       create: (body: CreatePriority): Observable<Priority> => this.post(`priority`, body),
       withId: (id: string) => {
         return {
@@ -307,7 +326,8 @@ export default class TpmClient {
 
   serviceTypes() {
     return {
-      all: (search?: Search): Observable<Page<ServiceType>> => this.get(`service-type`, search),
+      all: (search?: Partial<Search>): Observable<Page<ServiceType>> => this.get(`service-type`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`service-type/export`, search, { responseType: "blob" }),
       create: (body: CreateServiceType): Observable<ServiceType> => this.post(`service-type`, body),
       withId: (id: string) => {
         return {
@@ -322,7 +342,8 @@ export default class TpmClient {
 
   units() {
     return {
-      all: (search?: Search): Observable<Page<Unit>> => this.get(`unit`, search),
+      all: (search?: Partial<Search>): Observable<Page<Unit>> => this.get(`unit`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`unit/export`, search, { responseType: "blob" }),
       create: (body: CreateUnit): Observable<Unit> => this.post(`unit`, body),
       withId: (id: string) => {
         return {
@@ -342,7 +363,8 @@ export default class TpmClient {
 
   expenses() {
     return {
-      all: (search?: Search): Observable<Page<Expense>> => this.get(`expense`, search),
+      all: (search?: Partial<Search>): Observable<Page<Expense>> => this.get(`expense`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`expense/export`, search, { responseType: "blob" }),
       withId: (id: string) => {
         return {
           get: (): Observable<Expense> => this.get(`expense/${id}`),
@@ -354,7 +376,8 @@ export default class TpmClient {
 
   files() {
     return {
-      all: (search?: Search): Observable<Page<File>> => this.get(`file`, search),
+      all: (search?: Partial<Search>): Observable<Page<File>> => this.get(`file`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`file/export`, search, { responseType: "blob" }),
       withId: (id: string) => {
         return {
           get: (): Observable<File> => this.get(`file/${id}`),
@@ -368,7 +391,7 @@ export default class TpmClient {
 
   threads() {
     return {
-      all: (search?: Search): Observable<Page<Thread>> => this.get(`thread`, search),
+      all: (search?: Partial<Search>): Observable<Page<Thread>> => this.get(`thread`, search),
       withId: (id: string) => {
         return {
           get: (): Observable<Thread> => this.get(`thread/${id}`),
@@ -384,7 +407,7 @@ export default class TpmClient {
           delete: (): Observable<ThreadNewStatus> => this.patch(`thread/${id}/delete`),
           replies: () => {
             return {
-              all: (search?: Search): Observable<Page<Reply>> => this.get(`thread/${id}/reply`, search),
+              all: (search?: Partial<Search>): Observable<Page<Reply>> => this.get(`thread/${id}/reply`, search),
               create: (body: CreateReply): Observable<Reply> => this.post(`thread/${id}/reply`, body),
             };
           }
@@ -411,7 +434,8 @@ export default class TpmClient {
 
   tasks() {
     return {
-      all: (search?: Search): Observable<Page<Task>> => this.get(`task`, search),
+      all: (search?: Partial<Search>): Observable<Page<Task>> => this.get(`task`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`task/export`, search, { responseType: "blob" }),
       withId: (id: string) => {
         return {
           get: (): Observable<Task> => this.get(`task/${id}`),
@@ -440,7 +464,8 @@ export default class TpmClient {
 
   users() {
     return {
-      all: (search?: Search): Observable<Page<User>> => this.get(`user`),
+      all: (search?: Partial<Search>): Observable<Page<User>> => this.get(`user`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get(`user/export`, search, { responseType: "blob" }),
       withId: (id: string) => {
         return {
           get: (): Observable<User> => this.get(`user/${id}`),

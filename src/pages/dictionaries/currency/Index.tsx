@@ -31,6 +31,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().currencies().all}
+        export={TpmClient.getInstance().currencies().export}
         filters={filters}
         columnDefinitions={columnDefs}
       />

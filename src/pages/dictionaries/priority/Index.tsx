@@ -123,6 +123,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().priorities().all}
+        export={TpmClient.getInstance().priorities().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

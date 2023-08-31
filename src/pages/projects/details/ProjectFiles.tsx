@@ -96,6 +96,7 @@ export const ProjectFiles = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={TpmClient.getInstance().projects().withId(project.id).files().all}
+        export={TpmClient.getInstance().projects().withId(project.id).files().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

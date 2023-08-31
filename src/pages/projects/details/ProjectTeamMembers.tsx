@@ -143,9 +143,12 @@ export const ProjectTeamMembers = () => {
                           map(
                             (response) => {
                               return {
+                                items: response.items.map((user) => ({ key: user.id, value: user.firstName + ' ' + user.lastName })),
+                                currentPage: response.currentPage,
                                 totalPages: response.totalPages,
-                                totalElements: response.totalElements,
-                                items: response.items.map((user) => ({ key: user.id, value: user.firstName + ' ' + user.lastName }))
+                                totalItems: response.totalItems,
+                                hasNextPage: response.hasNextPage,
+                                hasPreviousPage: response.hasPreviousPage
                               };
                             }
                           )

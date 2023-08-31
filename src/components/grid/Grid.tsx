@@ -13,6 +13,7 @@ import {
   Chip,
   Popover,
   TablePagination,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -27,6 +28,9 @@ import {
 import { Page } from "../../client/types/common/Page";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import DownloadIcon from '@mui/icons-material/Download';
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import { Operation } from "./Operation";
 import { useStyles } from "./Styles";
 import { ColumnPicker } from "./ColumnPicker";
@@ -49,8 +53,11 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
 
   const [data, setData] = useState<Page<Type>>({
     items: [],
+    currentPage: 0,
     totalPages: 0,
-    totalElements: 0,
+    totalItems: 0,
+    hasNextPage: false,
+    hasPreviousPage: false
   });
 
   useEffect(() => reloadData(), []);
@@ -79,6 +86,50 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
 
     setQuery({ ...query, sort: sort || [] });
   }
+
+  const exportData = () => {
+    if (!props.export) {
+      return;
+    }
+
+    props.export(query)
+      .subscribe({
+        next: (data) => {
+          const blob = new Blob([data], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+
+          a.setAttribute('hidden', '');
+          a.setAttribute('href', url);
+          a.setAttribute('download', 'export.csv');
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+      });
+  };
+
+  const exportAllData = () => {
+    if (!props.export) {
+      return;
+    }
+
+    props.export({ sort: query.sort, filters: query.filters })
+      .subscribe({
+        next: (data) => {
+          const blob = new Blob([data], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+
+          a.setAttribute('hidden', '');
+          a.setAttribute('href', url);
+          a.setAttribute('download', 'export.csv');
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+      });
+  };
 
   const reloadData = () => {
     props
@@ -148,47 +199,75 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
 
   return (
     <div>
-      <ColumnPicker columnDefinitions={props.columnDefinitions} onColumnDefinitionsChange={handleColumnsChange}/>
-      <Button variant="text" onClick={handleOpenFilters} sx={{ mb: 1 }}>
-        <FilterListIcon sx={{ mr: 1 }} />
-        <Typography variant="button">Filters</Typography>
-        <NavigateNextIcon sx={{ ml: 1 }} />
-      </Button>
-      <Typography variant="caption" sx={{ mb: 1 }}>
-        {query.filters.map((filter) => (
-          <Chip
-            key={filter.field}
-            label={getFilterLabel(filter)}
-            onDelete={() =>
-              setQuery({
-                ...query,
-                filters: query.filters.filter((f) => f.field !== filter.field),
-              })
-            }
-            sx={{ ml: 1, mb: 1 }}
+      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+        <ColumnPicker columnDefinitions={props.columnDefinitions} onColumnDefinitionsChange={handleColumnsChange}/>
+
+        <Button variant="text" onClick={handleOpenFilters} sx={{ mb: 1 }}>
+          <FilterListIcon sx={{ mr: 1 }} />
+          <Typography variant="button">Filters</Typography>
+          <NavigateNextIcon sx={{ ml: 1 }} />
+        </Button>
+        <Typography variant="caption" sx={{ mb: 1 }}>
+          {query.filters.map((filter) => (
+            <Chip
+              key={filter.field}
+              label={getFilterLabel(filter)}
+              onDelete={() =>
+                setQuery({
+                  ...query,
+                  filters: query.filters.filter((f) => f.field !== filter.field),
+                })
+              }
+              sx={{ ml: 1, mb: 1 }}
+            />
+          ))}
+        </Typography>
+        <Popover
+          sx={{ p: 2 }}
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={handleCloseFilters}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+        >
+          <QueryBuilder
+            initialState={query.filters}
+            filters={props.filters}
+            onQueryChange={handleQueryChange}
           />
-        ))}
-      </Typography>
-      <Popover
-        sx={{ p: 2 }}
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleCloseFilters}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-      >
-        <QueryBuilder
-          initialState={query.filters}
-          filters={props.filters}
-          onQueryChange={handleQueryChange}
-        />
-      </Popover>
+        </Popover>
+
+        <Box sx={{ flexGrow: 1 }} />
+
+
+        {
+          props.export &&
+            <>
+              <Tooltip title="Export data ignoring pagination settings">
+                <Button sx={{ mb: 1 }} variant="text" onClick={() => exportAllData()}>
+                  <DownloadIcon sx={{ mr: 1 }} />
+                  <Typography variant="button">Export All</Typography>
+                </Button>
+              </Tooltip>
+              <Tooltip title="Export data visible on the grid">
+                <Button sx={{ mb: 1 }} variant="text" onClick={() => exportData()}>
+                  <DownloadOutlinedIcon sx={{ mr: 1 }} />
+                  <Typography variant="button">Export</Typography>
+                </Button>
+              </Tooltip>
+            </>
+        }
+        <Button sx={{ mb: 1 }} variant="text" onClick={() => reloadData()}>
+          <RefreshIcon sx={{ mr: 1 }} />
+          <Typography variant="button">Refresh</Typography>
+        </Button>
+      </Box>
 
       <div className={`ag-theme-alpine ${styles.grid}`}>
         <AgGridReact<Type>
@@ -205,7 +284,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
         <Box className={styles.pagination}>
           <TablePagination
             component="div"
-            count={data.totalElements}
+            count={data.totalItems}
             page={query.page}
             onPageChange={handleChangePage}
             rowsPerPage={query.pageSize}
