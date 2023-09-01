@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Avatar, Box, Card, CardActions, CardContent, CardHeader, IconButton, Link as MuiLink, List, Typography, Button } from "@mui/material";
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, IconButton, Link as MuiLink, List, Typography, Button, Chip } from "@mui/material";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { useProjectContext } from "./ProjectContext";
 import { Thread } from "../../../client/types/thread/Thread";
@@ -31,33 +31,6 @@ export const ProjectThreads = () => {
       });
   }, [project.id]);
 
-  const addThread = (note: CreateThread) =>
-    TpmClient.getInstance()
-      .projects()
-      .withId(project.id)
-      .threads()
-      .create(note)
-      .subscribe({
-        next: (response) => {
-          setNotes([...notes, response]);
-          snackbarContext.showSuccess('Success', 'Note added');
-        },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
-      });
-
-  const removeThread = (note: Thread) =>
-    TpmClient.getInstance()
-      .threads()
-      .withId(note.id)
-      .delete()
-      .subscribe({
-        next: () => {
-          setNotes(notes.filter((x) => x.id !== note.id));
-          snackbarContext.showSuccess('Success', 'Note removed');
-        },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
-      });
-
   return (
     <Box>
       <Typography variant="h5" gutterBottom>Project threads</Typography>
@@ -81,6 +54,7 @@ export const ProjectThreads = () => {
               }
               title={note.author.firstName + ' ' + note.author.lastName}
               subheader={formatDate(note.createdAt)}
+              action={note.tags.map((tag) => <Chip key={tag.id} label={tag.name} sx={{ mr: 1 }} />)}
             />
             <CardContent>
               <Typography variant="h5" component="div" gutterBottom>

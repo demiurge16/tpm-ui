@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Thread } from "../../client/types/thread/Thread";
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, List, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, List, Typography } from "@mui/material";
 import { Threads } from "./Threads";
 import { Link } from "react-router-dom";
 import TpmClient from "../../client/TpmClient";
@@ -46,6 +46,7 @@ export const Index = () => {
               }
               title={note.author.firstName + ' ' + note.author.lastName}
               subheader={formatDate(note.createdAt) + ' in project ' + note.project.title}
+              action={note.tags.map((tag) => <Chip key={tag.id} label={tag.name} sx={{ mr: 1 }} />)}
             />
             <CardContent>
               <Typography variant="h5" component="div" gutterBottom>

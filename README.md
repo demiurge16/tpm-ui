@@ -292,15 +292,17 @@ Aplikacja będzie zawierała następujące funkcje:
 
 1. Stworzyć nowy projekt, aby móc rozpocząć nad nim pracę.
 2. Edytować istniejący projekt, aby móc zaktualizować jego szczegóły.
-3. Podzielić projekt na zadania, aby móc je przydzielić tłumaczom.
-4. Przypisać zadanie do tłumacza, aby mógł zacząć nad nim pracować.
-5. Monitorować postępy w realizacji projektu, aby móc śledzić jego status.
-6. Monitorować postępy w realizacji zadania, aby móc śledzić jego status.
-7. Monitorować koszty projektu, abym mógł śledzić jego budżet.
-8. Monitorować koszty zadania, aby móc śledzić jego budżet.
-9. Zarządzać plikami projektu, aby móc je udostępniać tłumaczom.
-10. Zarządzać plikami zadania, aby móc je udostępniać tłumaczom.
-11. Zarządzać listą klientów, aby móc przypisywać im projekty.
+3. Zmienić termin realizacji projektu, aby móc go dostosować do zmieniających się wymagań.
+4. Zmienić status projektu, aby móc śledzić jego postępy.
+5. Podzielić projekt na zadania, aby móc je przydzielić tłumaczom.
+6. Przypisać zadanie do tłumacza, aby mógł zacząć nad nim pracować.
+7. Monitorować postępy w realizacji projektu, aby móc śledzić jego status.
+8. Monitorować postępy w realizacji zadania, aby móc śledzić jego status.
+9. Monitorować koszty projektu, abym mógł śledzić jego budżet.
+10. Monitorować koszty zadania, aby móc śledzić jego budżet.
+11. Zarządzać plikami projektu, aby móc je udostępniać tłumaczom.
+12. Zarządzać plikami zadania, aby móc je udostępniać tłumaczom.
+13. Zarządzać listą klientów, aby móc przypisywać im projekty.
 14. Mieć widok siatki projektów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć projekt, którego szukam.
 15. Widok siatki zadań z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć zadanie, którego szukam.
 16. Mieć możliwość eksportu danych z widoku siatki, dzięki czemu mogę je wykorzystać w innych aplikacjach.

@@ -6,9 +6,9 @@ import { Box, Button, Typography } from "@mui/material";
 import { CreateThread } from "../../client/types/project/Thread";
 import { Form } from "react-final-form";
 import TpmClient from "../../client/TpmClient";
-import { object, string } from "yup";
+import { array, object, string } from "yup";
 import { validateWithSchema } from "../../utils/validate";
-import { TextField } from "../../components/form-controls/TextField";
+import { MultivalueStringField, TextField } from "../../components/form-controls/TextField";
 import { EditorField } from "../../components/form-controls/EditorField";
 
 export const Create = () => {
@@ -61,6 +61,9 @@ export const Create = () => {
     title: string().required('Title is required')
       .min(3, 'Title must be at least 3 characters long')
       .max(512, 'Title must be at most 512 characters long'),
+    tags: array().of(string().required('Tag is required'))
+      .min(1, 'At least one tag is required')
+      .max(12, 'At most 12 tags are allowed'),
     // body: string().required('Body is required')
   });
 
@@ -74,11 +77,17 @@ export const Create = () => {
         initialValues={initialValues}
         validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, submitting, pristine, values, form }) => (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={(event) => event.preventDefault()}>
             <TextField name="title" label="Title" required/>
+            <MultivalueStringField name="tags" label="Tags" />
             <EditorField name="content" label="Content" required />
 
-            <Button type="submit" disabled={submitting || pristine}>
+            <Button type="button" disabled={submitting || pristine}
+              onClick={() => {
+                handleSubmit();
+                form.reset();
+              }}
+            >
               Submit
             </Button>
             <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
