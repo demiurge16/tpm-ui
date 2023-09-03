@@ -14,6 +14,7 @@ import { SelectField } from "../../components/form-controls/SelectField";
 import { NumberField } from "../../components/form-controls/NumberField";
 import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
 import { DateField } from "../../components/form-controls/DateField";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -27,6 +28,7 @@ export const Create = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
 
   const initialValues: CreateExpense = {
     description: '',
@@ -43,11 +45,8 @@ export const Create = () => {
     }
 
     forkJoin({
-      expenseCategories: TpmClient.getInstance()
-        .expenseCategories()
-        .all(),
-      teamMembers: TpmClient.getInstance()
-        .projects()
+      expenseCategories: tpmClient.expenseCategories().all(),
+      teamMembers: tpmClient.projects()
         .withId(projectId)
         .teamMembers()
         .all()
@@ -73,7 +72,7 @@ export const Create = () => {
       return;
     }
 
-    TpmClient.getInstance()
+    tpmClient
       .projects()
       .withId(projectId)
       .expenses()
@@ -106,7 +105,7 @@ export const Create = () => {
             <NumberField name="amount" label="Amount" required />
             <AsyncSelectField name="currency" label="Currency" required
               optionsLoader={() =>
-                TpmClient.getInstance()
+                tpmClient
                   .currencies()
                   .all({
                     page: 0,

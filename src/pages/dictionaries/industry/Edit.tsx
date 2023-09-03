@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
-import TpmClient from '../../../client/TpmClient';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -17,12 +17,12 @@ export const Edit = () => {
   const { id } = useParams();
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .industries()
+    tpmClient.industries()
       .withId(id)
       .get()
       .subscribe({
@@ -44,8 +44,7 @@ export const Edit = () => {
   const handleSubmit = (values: UpdateIndustry) => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .industries()
+    tpmClient.industries()
       .withId(id)
       .update(values)
       .subscribe({

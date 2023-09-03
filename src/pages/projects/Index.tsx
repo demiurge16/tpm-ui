@@ -7,16 +7,18 @@ import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { Projects } from "./Projects";
 import { Box, Button, Typography } from "@mui/material";
 import { Grid } from "../../components/grid/Grid";
-import TpmClient from "../../client/TpmClient";
 import { Link } from "react-router-dom";
 import { forkJoin } from "rxjs";
 import { formatDate } from "../../utils/dateFormatters";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
   const gridRef = useRef<GridHandle>(null);
+
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -30,13 +32,13 @@ export const Index = () => {
     ]);
 
     forkJoin({
-      languages: TpmClient.getInstance().languages().all(),
-      accuracies: TpmClient.getInstance().accuracies().all(),
-      industries: TpmClient.getInstance().industries().all(),
-      units: TpmClient.getInstance().units().all(),
-      currencies: TpmClient.getInstance().currencies().all(),
-      statuses: TpmClient.getInstance().projects().refdata().statuses(),
-      clients: TpmClient.getInstance().clients().all()
+      languages: tpmClient.languages().all(),
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      currencies: tpmClient.currencies().all(),
+      statuses: tpmClient.projects().refdata().statuses(),
+      clients: tpmClient.clients().all()
     }).subscribe({
       next: (response) => {
         setFilters([
@@ -176,8 +178,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().projects().all}
-        export={TpmClient.getInstance().projects().export}
+        fetch={tpmClient.projects().all}
+        export={tpmClient.projects().export}
         filters={filters}
         columnDefinitions={columnDefs}
       />

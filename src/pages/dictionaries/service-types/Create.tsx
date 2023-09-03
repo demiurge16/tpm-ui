@@ -4,14 +4,12 @@ import { useState } from "react";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "../../../components/form-controls/TextField";
-import TpmClient from "../../../client/TpmClient";
-import { NumberField } from "../../../components/form-controls/NumberField";
-import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
-import { number, object, string } from "yup";
+import { object, string } from "yup";
 import { validateWithSchema } from "../../../utils/validate";
 import { CreateServiceType } from "../../../client/types/dictionaries/ServiceType";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -19,6 +17,7 @@ export const Create = () => {
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
@@ -28,8 +27,7 @@ export const Create = () => {
   }, []);
 
   const handleSubmit = (data: CreateServiceType) => 
-    TpmClient.getInstance()
-      .serviceTypes()
+    tpmClient.serviceTypes()
       .create(data)
       .subscribe({
         next: () => {

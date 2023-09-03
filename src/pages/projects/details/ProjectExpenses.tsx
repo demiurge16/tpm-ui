@@ -6,15 +6,14 @@ import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Expense } from '../../../client/types/expense/Expense';
 import { Box, Button, Typography } from '@mui/material';
 import { Grid } from '../../../components/grid/Grid';
-import TpmClient from '../../../client/TpmClient';
 import { Link } from 'react-router-dom';
 import { ExpenseCategory } from '../../../client/types/dictionaries/ExpenseCategory';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Currency } from '../../../client/types/dictionaries/Currency';
 import { User } from '../../../client/types/user/User';
-import { Project } from '../../../client/types/project/Project';
 import { forkJoin } from 'rxjs';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const ProjectExpenses = () => {
   const startPage = 0;
@@ -28,15 +27,16 @@ export const ProjectExpenses = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
+  const tpmClient = useTpmClient();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Expense>[]>([]);
 
   useEffect(() => {
     forkJoin({
-      currencies: TpmClient.getInstance().currencies().all(),
-      expenseCategories: TpmClient.getInstance().expenseCategories().all(),
-      users: TpmClient.getInstance().users().all()
+      currencies: tpmClient.currencies().all(),
+      expenseCategories: tpmClient.expenseCategories().all(),
+      users: tpmClient.users().all()
     }).subscribe({
         next: (data) => {
           setCurrencies(data.currencies.items);
@@ -155,8 +155,8 @@ export const ProjectExpenses = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().projects().withId(project.id).expenses().all}
-        export={TpmClient.getInstance().projects().withId(project.id).expenses().export}
+        fetch={tpmClient.projects().withId(project.id).expenses().all}
+        export={tpmClient.projects().withId(project.id).expenses().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

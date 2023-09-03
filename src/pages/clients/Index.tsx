@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Grid } from "../../components/grid/Grid";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { forkJoin } from "rxjs";
-import TpmClient from "../../client/TpmClient";
 import { Client, ClientStatus } from "../../client/types/client/Client";
 import { ClientType } from "../../client/types/client/ClientType";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
@@ -14,6 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -23,12 +23,13 @@ export const Index = () => {
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
+  const tpmClient = useTpmClient();
   const gridRef = useRef<GridHandle>(null);
 
   useEffect(() => {
     forkJoin({
-      countries: TpmClient.getInstance().countries().all(),
-      types: TpmClient.getInstance().clientTypes().all(),
+      countries: tpmClient.countries().all(),
+      types: tpmClient.clientTypes().all(),
     }).subscribe({
       next: (data) => {
         setColumnDefs([
@@ -146,8 +147,7 @@ export const Index = () => {
   }, []);
 
   const activate = (id: string,refresh: (data: ClientStatus) => void) =>
-    TpmClient.getInstance()
-      .clients()
+    tpmClient.clients()
       .withId(id)
       .activate()
       .subscribe({
@@ -161,8 +161,7 @@ export const Index = () => {
       });
 
   const deactivate = (id: string, refresh: (data: ClientStatus) => void) =>
-    TpmClient.getInstance()
-      .clients()
+    tpmClient.clients()
       .withId(id)
       .deactivate()
       .subscribe({
@@ -184,8 +183,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().clients().all}
-        export={TpmClient.getInstance().clients().export}
+        fetch={tpmClient.clients().all}
+        export={tpmClient.clients().export}
         filters={filters}
         columnDefinitions={columnDefs}
       />

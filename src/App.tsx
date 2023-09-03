@@ -43,7 +43,7 @@ import { Errors } from "./pages/errors/Errors";
 import { BreadcrumbsContext } from "./contexts/BreadcrumbsContext";
 import { environment } from "./Environment";
 import { ServiceTypes } from "./pages/dictionaries/service-types/ServiceTypes";
-import { Role } from "./contexts/AuthContextProvider";
+import { Role } from "./contexts/AuthContext";
 import { MultivalueDateFilter } from "./components/grid/filters/DateFilter";
 
 function App() {
@@ -474,7 +474,6 @@ function App() {
 
   return (
     <>
-      <CssBaseline />
       <Container
         maxWidth={false}
         sx={{

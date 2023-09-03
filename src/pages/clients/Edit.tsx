@@ -9,9 +9,9 @@ import { Country } from "../../client/types/dictionaries/Country";
 import { ClientType } from "../../client/types/client/ClientType";
 import { UpdateClient } from "../../client/types/client/Client";
 import { forkJoin } from "rxjs";
-import TpmClient from "../../client/TpmClient";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export interface EditParams {
   id: string;
@@ -26,6 +26,7 @@ export const Edit = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,9 +37,9 @@ export const Edit = () => {
     }
 
     forkJoin({
-      countries: TpmClient.getInstance().countries().all(),
-      types: TpmClient.getInstance().clientTypes().all(),
-      client: TpmClient.getInstance().clients().withId(id).get()
+      countries: tpmClient.countries().all(),
+      types: tpmClient.clientTypes().all(),
+      client: tpmClient.clients().withId(id).get()
     }).subscribe({
       next: (response) => {
         const { countries, types, client } = response;
@@ -77,8 +78,7 @@ export const Edit = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .clients()
+    tpmClient.clients()
       .withId(id)
       .update(values)
       .subscribe({

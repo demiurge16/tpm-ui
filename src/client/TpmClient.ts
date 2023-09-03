@@ -27,6 +27,8 @@ import { CreateServiceType, ServiceType, ServiceTypeStatus, UpdateServiceType } 
 
 export default class TpmClient {
 
+  private constructor() { }
+
   private static instance: TpmClient;
 
   static getInstance(): TpmClient {

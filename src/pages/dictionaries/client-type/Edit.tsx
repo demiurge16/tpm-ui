@@ -5,9 +5,9 @@ import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate, useParams, } from "react-router-dom";
 import { UpdateClientType } from "../../../client/types/client/ClientType";
-import TpmClient from "../../../client/TpmClient";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -18,6 +18,7 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -25,8 +26,7 @@ export const Edit = () => {
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .clientTypes()
+    tpmClient.clientTypes()
       .withId(id)
       .get()
       .subscribe({
@@ -48,8 +48,7 @@ export const Edit = () => {
   const handleSubmit = (values: UpdateClientType) => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .clientTypes()
+    tpmClient.clientTypes()
       .withId(id)
       .update(values)
       .subscribe({

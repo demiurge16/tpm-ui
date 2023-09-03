@@ -7,10 +7,12 @@ import { BrowserRouter } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import AuthContextProvider from "./contexts/AuthContextProvider";
+import AuthContextProvider from "./contexts/AuthContext";
 import BreadcrumbsContextProvider from "./contexts/BreadcrumbsContext";
 import ThemeContextProvider, { ThemeContext } from "./contexts/ThemeContext";
 import SnackbarContextProvider from "./contexts/SnackbarContext";
+import TpmClientContextProvider from "./contexts/TpmClientContext";
+import { CssBaseline } from "@mui/material";
 
 const darkTheme = createTheme({
   palette: {
@@ -37,32 +39,33 @@ const Root = () => {
   }, [themeContext.theme]);
 
   return (
-    <React.StrictMode>
-      <BrowserRouter>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>    
-            <SnackbarContextProvider>
-              <App />
-            </SnackbarContextProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </BrowserRouter>
-    </React.StrictMode>
+    <ThemeContextProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthContextProvider>
+          <TpmClientContextProvider>
+            <BrowserRouter>
+              <LocalizationProvider dateAdapter={AdapterLuxon}>
+                <BreadcrumbsContextProvider>
+                  <SnackbarContextProvider>
+                    <React.StrictMode>
+                      <App />
+                    </React.StrictMode>
+                  </SnackbarContextProvider>
+                </BreadcrumbsContextProvider>
+              </LocalizationProvider>
+            </BrowserRouter>
+          </TpmClientContextProvider>
+        </AuthContextProvider>
+      </ThemeProvider>
+    </ThemeContextProvider>
   );
 };
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-root.render(
-  <AuthContextProvider>
-    <BreadcrumbsContextProvider>
-      <ThemeContextProvider>
-        <Root />
-      </ThemeContextProvider>
-    </BreadcrumbsContextProvider>
-  </AuthContextProvider>
-);
+root.render(<Root />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

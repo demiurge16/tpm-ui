@@ -2,11 +2,11 @@ import { useContext, useEffect, useState } from "react";
 import { UpdateExpenseCategory } from "../../../client/types/dictionaries/ExpenseCategory";
 import { useNavigate, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -16,6 +16,7 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -23,8 +24,7 @@ export const Edit = () => {
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .expenseCategories()
+    tpmClient.expenseCategories()
       .withId(id)
       .get()
       .subscribe({
@@ -46,8 +46,7 @@ export const Edit = () => {
   const handleSubmit = (values: UpdateExpenseCategory) => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .expenseCategories()
+    tpmClient.expenseCategories()
       .withId(id)
       .update(values)
       .subscribe({

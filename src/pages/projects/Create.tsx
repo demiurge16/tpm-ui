@@ -18,6 +18,7 @@ import { DateTimeField } from '../../components/form-controls/DateTimeField';
 import { object, string, array, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
 import { validateWithSchema } from '../../utils/validate';
+import { useTpmClient } from '../../contexts/TpmClientContext';
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -28,6 +29,7 @@ export const Create = () => {
   const [clients, setClients] = useState<Array<Client>>([]);
 
   const navigate = useNavigate();
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -75,10 +77,10 @@ export const Create = () => {
     ]);
 
     forkJoin({
-      accuracies: TpmClient.getInstance().accuracies().all(),
-      industries: TpmClient.getInstance().industries().all(),
-      units: TpmClient.getInstance().units().all(),
-      clients: TpmClient.getInstance().clients().all()
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      clients: tpmClient.clients().all()
     }).subscribe({
       next: (response) => {
         const { accuracies, industries, units, clients } = response;
@@ -95,8 +97,7 @@ export const Create = () => {
   }, []);
 
   const handleSubmit = async (values: CreateProject) =>
-    TpmClient.getInstance()
-      .projects()
+    tpmClient.projects()
       .create(values)
       .subscribe({
         next: (response) => {
@@ -139,8 +140,7 @@ export const Create = () => {
               <Grid item xs={6}>
                 <AsyncSelectField name="sourceLanguage" label="Source Language" required
                   optionsLoader={(search) =>
-                    TpmClient.getInstance()
-                      .languages()
+                    tpmClient.languages()
                       .all({
                         page: 0,
                         pageSize: 25,
@@ -171,8 +171,7 @@ export const Create = () => {
               <Grid item xs={6}>
                 <AsyncSelectField name="targetLanguages" label="Target Languages" required multiple
                   optionsLoader={(search) =>
-                    TpmClient.getInstance()
-                      .languages()
+                    tpmClient.languages()
                       .all({
                         page: 0,
                         pageSize: 25,
@@ -223,8 +222,7 @@ export const Create = () => {
               <Grid item xs={6}>
                 <AsyncSelectField name="currencyCode" label="Currency" required
                   optionsLoader={(search) =>
-                    TpmClient.getInstance()
-                      .currencies()
+                    tpmClient.currencies()
                       .all({
                         page: 0,
                         pageSize: 25,

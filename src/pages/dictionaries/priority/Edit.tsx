@@ -2,13 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { UpdatePriority } from "../../../client/types/dictionaries/Priority";
 import { useNavigate, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -20,6 +20,7 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
+  const tpmClient = useTpmClient();
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
@@ -27,8 +28,7 @@ export const Edit = () => {
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .priorities()
+    tpmClient.priorities()
       .withId(id)
       .get()
       .subscribe({
@@ -50,8 +50,7 @@ export const Edit = () => {
   const handleSubmit = (values: UpdatePriority) => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .priorities()
+    tpmClient.priorities()
       .withId(id)
       .update(values)
       .subscribe({

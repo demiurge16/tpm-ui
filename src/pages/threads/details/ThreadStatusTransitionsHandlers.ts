@@ -11,20 +11,18 @@ export type ThreadStatusTransition = {
   }
 };
 
-export const createStatusTransitionHandler = (threadId: string): ThreadStatusTransition => {
+export const createStatusTransitionHandler = (tpmClient: TpmClient, threadId: string): ThreadStatusTransition => {
   return {
     "DRAFT": {
       "ACTIVE": {
         name: "Activate",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .activate(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -32,22 +30,19 @@ export const createStatusTransitionHandler = (threadId: string): ThreadStatusTra
     "ACTIVE": {
       "FREEZE": {
         name: "Freeze",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .freeze(),
       },
       "CLOSED": {
         name: "Close",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .close(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -55,22 +50,19 @@ export const createStatusTransitionHandler = (threadId: string): ThreadStatusTra
     "FREEZE": {
       "ACTIVE": {
         name: "Activate",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .activate(),
       },
       "CLOSED": {
         name: "Close",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .close(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -78,22 +70,19 @@ export const createStatusTransitionHandler = (threadId: string): ThreadStatusTra
     "CLOSED": {
       "ACTIVE": {
         name: "Activate",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .activate(),
       },
       "ARCHIVED": {
         name: "Archive",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .archive(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -101,8 +90,7 @@ export const createStatusTransitionHandler = (threadId: string): ThreadStatusTra
     "ARCHIVED": {
       "DELETED": {
         name: "Delete",
-        action: () => TpmClient.getInstance()
-          .threads()
+        action: () => tpmClient.threads()
           .withId(threadId)
           .delete(),
       }

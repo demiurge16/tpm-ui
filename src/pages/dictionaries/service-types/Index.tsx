@@ -4,7 +4,6 @@ import { ServiceTypes } from "./ServiceTypes";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Priority } from "../../../client/types/dictionaries/Priority";
 import { Link } from "react-router-dom";
-import TpmClient from "../../../client/TpmClient";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
@@ -13,6 +12,7 @@ import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { ServiceType } from "../../../client/types/dictionaries/ServiceType";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -22,6 +22,8 @@ export const Index = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
+
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Service types', path: '/service-types' }
@@ -82,7 +84,7 @@ export const Index = () => {
   ]);
 
   const activate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().serviceTypes().withId(id).activate()
+    tpmClient.serviceTypes().withId(id).activate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Activated ${id}`);
@@ -95,7 +97,7 @@ export const Index = () => {
   };
 
   const deactivate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().serviceTypes().withId(id).deactivate()
+    tpmClient.serviceTypes().withId(id).deactivate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Deactivated ${id}`);
@@ -122,8 +124,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().serviceTypes().all}
-        export={TpmClient.getInstance().serviceTypes().export}
+        fetch={tpmClient.serviceTypes().all}
+        export={tpmClient.serviceTypes().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

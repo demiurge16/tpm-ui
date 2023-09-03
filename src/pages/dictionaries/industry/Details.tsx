@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from 'react';
 import { Industry } from '../../../client/types/dictionaries/Industry';
 import { Link, useParams } from 'react-router-dom';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
-import TpmClient from '../../../client/TpmClient';
 import { Box, Button, Typography } from '@mui/material';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Details = () => {
   const [industry, setIndustry] = useState<Industry>({
@@ -18,11 +18,12 @@ export const Details = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
+
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .industries()
+    tpmClient.industries()
       .withId(id)
       .get()
       .subscribe({
@@ -40,8 +41,7 @@ export const Details = () => {
   const activate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .industries()
+    tpmClient.industries()
       .withId(id)
       .activate()
       .subscribe({
@@ -56,8 +56,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .industries()
+    tpmClient.industries()
       .withId(id)
       .deactivate()
       .subscribe({

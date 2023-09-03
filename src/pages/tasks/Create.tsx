@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
-import { CreateProject } from "../../client/types/project/Project";
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { useNavigate, useParams } from 'react-router-dom';
-import TpmClient from '../../client/TpmClient';
 import { forkJoin, map } from 'rxjs';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
@@ -16,10 +14,10 @@ import { NumberField } from '../../components/form-controls/NumberField';
 import { DateTimeField } from '../../components/form-controls/DateTimeField';
 import { object, string, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
-import { ValidationErrors } from 'final-form';
 import { CreateTask } from '../../client/types/project/Task';
 import { Priority } from '../../client/types/dictionaries/Priority';
 import { validateWithSchema } from '../../utils/validate';
+import { useTpmClient } from '../../contexts/TpmClientContext';
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -30,6 +28,7 @@ export const Create = () => {
   const [priorities, setPriorities] = useState<Array<Priority>>([]);
 
   const navigate = useNavigate();
+  const tpmClient = useTpmClient();
   const { projectId } = useParams();
 
   const snackbarContext = useContext(SnackbarContext);
@@ -77,10 +76,10 @@ export const Create = () => {
     ]);
 
     forkJoin({
-      accuracies: TpmClient.getInstance().accuracies().all(),
-      industries: TpmClient.getInstance().industries().all(),
-      units: TpmClient.getInstance().units().all(),
-      priorities: TpmClient.getInstance().priorities().all()
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      priorities: tpmClient.priorities().all()
     }).subscribe({
       next: (response) => {
         const { accuracies, industries, units, priorities } = response;
@@ -101,7 +100,7 @@ export const Create = () => {
       return;
     }
 
-    TpmClient.getInstance()
+    tpmClient
       .projects()
       .withId(projectId)
       .tasks()
@@ -132,7 +131,7 @@ export const Create = () => {
             <TextField name="description" label="Description" multiline required/>
             <AsyncSelectField name="sourceLanguage" label="Source Language" required
               optionsLoader={(search) =>
-                TpmClient.getInstance()
+                tpmClient
                   .languages()
                   .all({
                     page: 0,
@@ -162,7 +161,7 @@ export const Create = () => {
             />
             <AsyncSelectField name="targetLanguage" label="Target Language" required
               optionsLoader={(search) =>
-                TpmClient.getInstance()
+                tpmClient
                   .languages()
                   .all({
                     page: 0,
@@ -205,7 +204,7 @@ export const Create = () => {
             <NumberField name="budget" label="Budget" required/>
             <AsyncSelectField name="currencyCode" label="Currency" required
               optionsLoader={(search) =>
-                TpmClient.getInstance()
+                tpmClient
                   .currencies()
                   .all({
                     page: 0,

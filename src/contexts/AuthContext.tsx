@@ -2,6 +2,7 @@ import axios from "axios";
 import Keycloak, { KeycloakConfig, KeycloakInitOptions } from "keycloak-js";
 import { createContext, useState, useEffect } from "react";
 import { environment } from "../Environment";
+import { LoadingScreen } from "../pages/utils/LoadingScreen";
 
 const keycloakConfig: KeycloakConfig = {
   realm: "tpm",
@@ -59,6 +60,8 @@ interface AuthContextProviderProps {
 }
 
 const AuthContextProvider = (props: AuthContextProviderProps) => {
+  const [initialized, setInitialized] = useState<boolean>(false);
+
   const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
   const [userId, setUserId] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -98,6 +101,8 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
             return response;
           },
           (error) => {
+            console.log(error);
+
             if (error.response === undefined) {
               return Promise.reject(error);
             }
@@ -118,9 +123,12 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
             return Promise.reject(error);
           },
         );
+
+        setInitialized(true);
       })
       .catch((error) => {
         setAuthenticated(false);
+        setInitialized(true);
       });
   }, []);
 
@@ -145,7 +153,9 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, logout, userId, username, firstName, lastName, email, roles, hasRole }}>
-      {props.children}
+      {
+        initialized ? props.children : <LoadingScreen />
+      }
     </AuthContext.Provider>
   );
 };

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Box, Button, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
-import TpmClient from '../../../client/TpmClient';
 import { Grid } from '../../../components/grid/Grid';
 import { ClientType, ClientTypeStatus } from '../../../client/types/client/ClientType';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
@@ -12,12 +11,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
   const gridRef = useRef<GridHandle>(null);
+
+  const tpmClient = useTpmClient();
 
   const [columnDefs, setColumnDefs] = useState([
     {
@@ -81,7 +83,7 @@ export const Index = () => {
   }, []);
 
   const activate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
-    TpmClient.getInstance().clientTypes().withId(id).activate()
+    tpmClient.clientTypes().withId(id).activate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess("Success", `Activated ${id}`);
@@ -93,7 +95,7 @@ export const Index = () => {
       });
 
   const deactivate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
-    TpmClient.getInstance().clientTypes().withId(id).deactivate()
+    tpmClient.clientTypes().withId(id).deactivate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess("Success", `Deactivated ${id}`);
@@ -120,8 +122,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().clientTypes().all}
-        export={TpmClient.getInstance().clientTypes().export}
+        fetch={tpmClient.clientTypes().all}
+        export={tpmClient.clientTypes().export}
         filters={filters}
         columnDefinitions={columnDefs}
       />

@@ -2,10 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { Box, Button, Divider, Popover, Typography } from "@mui/material";
 import { Reply, Thread } from "../../client/types/thread/Thread";
 import { Link, useParams } from "react-router-dom";
-import TpmClient from "../../client/TpmClient";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { AuthContext } from "../../contexts/AuthContextProvider";
+import { AuthContext } from "../../contexts/AuthContext";
 import { createStatusTransitionHandler } from "./details/ThreadStatusTransitionsHandlers";
 import { ReplyEditor } from "./details/ReplyEditor";
 import { ReplyTree } from "./details/ReplyTree";
@@ -17,6 +16,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import { HtmlPanel } from "../../components/editor/HtmlPanel";
 import { formatDate } from "../../utils/dateFormatters";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Details = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -58,8 +58,10 @@ export const Details = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [replyEditorExpanded, setReplyEditorExpanded] = useState<boolean>();
+  
+  const tpmClient = useTpmClient();
 
-  const statusTransitionHandler = createStatusTransitionHandler(id || '');
+  const statusTransitionHandler = createStatusTransitionHandler(tpmClient, id || '');
 
   const threadLiked = () => thread.likes.some((like) => like.author.userId === authContext.userId);
   const threadDisliked = () => thread.dislikes.some((dislike) => dislike.author.userId === authContext.userId);
@@ -69,8 +71,7 @@ export const Details = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(id)
       .get()
       .subscribe({
@@ -80,8 +81,7 @@ export const Details = () => {
         error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(id)
       .replies()
       .all()
@@ -104,8 +104,7 @@ export const Details = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(thread.id)
       .like()
       .subscribe({
@@ -135,8 +134,7 @@ export const Details = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(thread.id)
       .unlike()
       .subscribe({
@@ -155,8 +153,7 @@ export const Details = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(thread.id)
       .dislike()
       .subscribe({
@@ -187,8 +184,7 @@ export const Details = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(thread.id)
       .undislike()
       .subscribe({
@@ -211,8 +207,7 @@ export const Details = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(thread.id)
       .replies()
       .create({ content, parentReplyId: null })

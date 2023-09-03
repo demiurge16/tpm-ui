@@ -1,4 +1,4 @@
-import { AuthContext, Role } from "../../contexts/AuthContextProvider";
+import { AuthContext, Role } from "../../contexts/AuthContext";
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { LoadingScreen } from "../../pages/utils/LoadingScreen";

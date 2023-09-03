@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { ExpenseCategory } from "../../../client/types/dictionaries/ExpenseCategory";
 import { Link, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Details = () => {
   const [expenseCategory, setExpenseCategory] = useState<ExpenseCategory>({
@@ -15,6 +15,7 @@ export const Details = () => {
   });
 
   const { id } = useParams();
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -22,8 +23,7 @@ export const Details = () => {
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .expenseCategories()
+    tpmClient.expenseCategories()
       .withId(id)
       .get()
       .subscribe({
@@ -41,8 +41,7 @@ export const Details = () => {
   const activate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .expenseCategories()
+    tpmClient.expenseCategories()
       .withId(id)
       .activate()
       .subscribe({
@@ -57,8 +56,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .expenseCategories()
+    tpmClient.expenseCategories()
       .withId(id)
       .deactivate()
       .subscribe({

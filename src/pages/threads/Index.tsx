@@ -5,19 +5,20 @@ import { Thread } from "../../client/types/thread/Thread";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, List, Typography } from "@mui/material";
 import { Threads } from "./Threads";
 import { Link } from "react-router-dom";
-import TpmClient from "../../client/TpmClient";
 import { HtmlPanel } from "../../components/editor/HtmlPanel";
 import { formatDate } from "../../utils/dateFormatters";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Index = () => {
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
+  const tpmClient = useTpmClient();
+
   const [notes, setNotes] = useState<Thread[]>([]);
 
   useEffect(() => {
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .all()
       .subscribe({
         next: (response) => setNotes(response.items),

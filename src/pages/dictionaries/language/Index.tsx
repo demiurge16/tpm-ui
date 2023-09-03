@@ -3,11 +3,11 @@ import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { Grid } from '../../../components/grid/Grid';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
-import TpmClient from '../../../client/TpmClient';
 import { Language } from '../../../client/types/dictionaries/Language';
 import { forkJoin } from 'rxjs';
 import { ColumnDefinition } from '../../../components/grid/GridProps';
 import { Languages } from './Languages';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Index = () => {
   const startPage = 0;
@@ -16,10 +16,12 @@ export const Index = () => {
   const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Language>>>([]);
   const [filters, setFilters] = useState<Array<FilterDefinition>>([]);
 
+  const tpmClient = useTpmClient();
+
   useEffect(() => {
     forkJoin({
-      scopes: TpmClient.getInstance().languages().refdata().scopes(),
-      types: TpmClient.getInstance().languages().refdata().types()
+      scopes: tpmClient.languages().refdata().scopes(),
+      types: tpmClient.languages().refdata().types()
     }).subscribe((response) => {
       const { scopes, types } = response;
 
@@ -69,8 +71,8 @@ export const Index = () => {
       <Grid<Language>
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().languages().all}
-        export={TpmClient.getInstance().languages().export}
+        fetch={tpmClient.languages().all}
+        export={tpmClient.languages().export}
         filters={filters}
         columnDefinitions={columnDefs}
       />

@@ -1,14 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
-import { NumberField } from "../../../components/form-controls/NumberField";
-import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { UpdateServiceType } from "../../../client/types/dictionaries/ServiceType";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -21,12 +19,12 @@ export const Edit = () => {
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .serviceTypes()
+    tpmClient.serviceTypes()
       .withId(id)
       .get()
       .subscribe({
@@ -48,8 +46,7 @@ export const Edit = () => {
   const handleSubmit = (values: UpdateServiceType) => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .serviceTypes()
+    tpmClient.serviceTypes()
       .withId(id)
       .update(values)
       .subscribe({

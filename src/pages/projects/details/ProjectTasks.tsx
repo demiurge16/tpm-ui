@@ -6,12 +6,11 @@ import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Task } from '../../../client/types/task/Task';
 import { Box, Button, Typography } from '@mui/material';
 import { Grid } from '../../../components/grid/Grid';
-import TpmClient from '../../../client/TpmClient';
-import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { forkJoin } from 'rxjs';
 import { formatDate } from '../../../utils/dateFormatters';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
+import { Link } from 'react-router-dom';
 
 export const ProjectTasks = () => {
   const startPage = 0;
@@ -21,20 +20,21 @@ export const ProjectTasks = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
+  const tpmClient = useTpmClient();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
 
   useEffect(() => {
     forkJoin({
-      languages: TpmClient.getInstance().languages().all(),
-      currencies: TpmClient.getInstance().currencies().all(),
-      accuracies: TpmClient.getInstance().accuracies().all(),
-      industries: TpmClient.getInstance().industries().all(),
-      units: TpmClient.getInstance().units().all(),
-      priorities: TpmClient.getInstance().priorities().all(),
-      statuses: TpmClient.getInstance().tasks().refdata().statuses(),
-      users: TpmClient.getInstance().users().all(),
+      languages: tpmClient.languages().all(),
+      currencies: tpmClient.currencies().all(),
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      priorities: tpmClient.priorities().all(),
+      statuses: tpmClient.tasks().refdata().statuses(),
+      users: tpmClient.users().all(),
     }).subscribe({
       next: (data) => {
         const { languages, currencies, accuracies, industries, priorities, statuses, units, users } = data;
@@ -198,8 +198,8 @@ export const ProjectTasks = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().projects().withId(project.id).tasks().all}
-        export={TpmClient.getInstance().projects().withId(project.id).tasks().export}
+        fetch={tpmClient.projects().withId(project.id).tasks().all}
+        export={tpmClient.projects().withId(project.id).tasks().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

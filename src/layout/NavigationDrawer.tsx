@@ -47,7 +47,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Collapse, ListSubheader } from "@mui/material";
 import { ServiceTypes } from "../pages/dictionaries/service-types/ServiceTypes";
-import { AuthContext, Role } from "../contexts/AuthContextProvider";
+import { AuthContext, Role } from "../contexts/AuthContext";
 
 export interface NavigationDrawerProps {
   open: boolean;

@@ -5,16 +5,18 @@ import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Button, Typography } from "@mui/material";
 import { CreateThread } from "../../client/types/project/Thread";
 import { Form } from "react-final-form";
-import TpmClient from "../../client/TpmClient";
 import { array, object, string } from "yup";
 import { validateWithSchema } from "../../utils/validate";
 import { MultivalueStringField, TextField } from "../../components/form-controls/TextField";
 import { EditorField } from "../../components/form-controls/EditorField";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Create = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+
+  const tpmClient = useTpmClient();
 
   const initialValues: CreateThread = {
     title: '',
@@ -44,8 +46,7 @@ export const Create = () => {
       return;
     }
 
-    TpmClient.getInstance()
-      .projects()
+    tpmClient.projects()
       .withId(projectId)
       .threads()
       .create(thread)

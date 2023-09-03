@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { MenuItem } from "./MenuItem";
-import { AuthContext } from "../contexts/AuthContextProvider";
+import { AuthContext } from "../contexts/AuthContext";
 import Box from "@mui/material/Box/Box";
 import Typography from "@mui/material/Typography/Typography";
 import Tooltip from "@mui/material/Tooltip/Tooltip";

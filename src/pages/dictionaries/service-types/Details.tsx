@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
-import TpmClient from '../../../client/TpmClient';
 import { Box, Button, Typography } from '@mui/material';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ServiceType } from '../../../client/types/dictionaries/ServiceType';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Details = () => {
   const [serviceType, setServiceType] = useState<ServiceType>({
@@ -15,6 +15,7 @@ export const Details = () => {
   });
 
   const { id } = useParams();
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -22,8 +23,7 @@ export const Details = () => {
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .serviceTypes()
+    tpmClient.serviceTypes()
       .withId(id)
       .get()
       .subscribe({
@@ -41,8 +41,7 @@ export const Details = () => {
   const activate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .serviceTypes()
+    tpmClient.serviceTypes()
       .withId(id)
       .activate()
       .subscribe({
@@ -54,8 +53,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .serviceTypes()
+    tpmClient.serviceTypes()
       .withId(id)
       .deactivate()
       .subscribe({

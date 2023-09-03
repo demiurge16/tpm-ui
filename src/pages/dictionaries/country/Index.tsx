@@ -1,10 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Grid } from '../../../components/grid/Grid';
-import TpmClient from '../../../client/TpmClient';
 import { Country } from '../../../client/types/dictionaries/Country';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Countries } from './Countries';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Index = () => {
 
@@ -28,6 +28,8 @@ export const Index = () => {
     FilterDefinition.string('name', 'Name')
   ]);
 
+  const tpmClient = useTpmClient();
+
   return (
     <Box>
       <Typography variant="h4">{Countries.title}</Typography>
@@ -36,8 +38,8 @@ export const Index = () => {
       <Grid<Country>
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().countries().all}
-        export={TpmClient.getInstance().countries().export}
+        fetch={tpmClient.countries().all}
+        export={tpmClient.countries().export}
         filters={filters}
         columnDefinitions={columnDefs}
       />

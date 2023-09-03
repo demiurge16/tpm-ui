@@ -7,6 +7,7 @@ import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -14,6 +15,7 @@ export const Create = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
@@ -23,8 +25,7 @@ export const Create = () => {
   }, []);
 
   const handleSubmit = (data: CreateExpenseCategory) =>
-    TpmClient.getInstance()
-      .expenseCategories()
+    tpmClient.expenseCategories()
       .create(data)
       .subscribe({
         next: () => {

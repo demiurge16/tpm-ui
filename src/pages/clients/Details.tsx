@@ -1,10 +1,10 @@
 import { useEffect, useContext, useState } from "react";
 import { Client } from "../../client/types/client/Client"
 import { Link, useParams } from "react-router-dom";
-import TpmClient from "../../client/TpmClient";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Button, Typography } from "@mui/material";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Details = () => {
   const [client, setClient] = useState<Client>({
@@ -34,12 +34,12 @@ export const Details = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .clients()
+    tpmClient.clients()
       .withId(id)
       .get()
       .subscribe({
@@ -57,8 +57,7 @@ export const Details = () => {
   const activate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .clients()
+    tpmClient.clients()
       .withId(id)
       .activate()
       .subscribe({
@@ -73,8 +72,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .clients()
+    tpmClient.clients()
       .withId(id)
       .deactivate()
       .subscribe({

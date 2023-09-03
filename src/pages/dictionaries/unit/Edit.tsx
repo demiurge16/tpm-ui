@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react';
 import { Measurement, UpdateUnit } from '../../../client/types/dictionaries/Unit';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
-import TpmClient from '../../../client/TpmClient';
 import { forkJoin } from 'rxjs';
 import { Box, Button, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
@@ -10,6 +9,7 @@ import { TextField } from '../../../components/form-controls/TextField';
 import { NumberField } from '../../../components/form-controls/NumberField';
 import { SelectField } from '../../../components/form-controls/SelectField';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Edit = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
@@ -22,6 +22,7 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
+  const tpmClient = useTpmClient();
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
@@ -29,11 +30,11 @@ export const Edit = () => {
   useEffect(() => {
     if (!id) return;
 
-    forkJoin([
-      TpmClient.getInstance().units().withId(id).get(),
-      TpmClient.getInstance().units().refdata().measurements()
-    ]).subscribe({
-      next: ([unit, measurements]) => {
+    forkJoin({
+      unit: tpmClient.units().withId(id).get(),
+      measurement: tpmClient.units().refdata().measurements()
+    }).subscribe({
+      next: ({unit, measurement}) => {
         setUnit({
           name: unit.name,
           description: unit.description,
@@ -57,8 +58,7 @@ export const Edit = () => {
   const handleSubmit = (values: UpdateUnit) => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .units()
+    tpmClient.units()
       .withId(id)
       .update(values)
       .subscribe({

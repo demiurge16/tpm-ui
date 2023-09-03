@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateIndustry } from "../../../client/types/dictionaries/Industry";
-import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -14,6 +14,7 @@ export const Create = () => {
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
@@ -23,8 +24,7 @@ export const Create = () => {
   }, []);
 
   const handleSubmit = (data: CreateIndustry) =>
-    TpmClient.getInstance()
-      .industries()
+    tpmClient.industries()
       .create(data)
       .subscribe({
         next: () => {

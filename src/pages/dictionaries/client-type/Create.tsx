@@ -5,15 +5,16 @@ import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate } from "react-router-dom";
-import TpmClient from "../../../client/TpmClient";
 import { CreateClientType } from "../../../client/types/client/ClientType";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -26,8 +27,7 @@ export const Create = () => {
   }, []);
 
   const handleSubmit = async (values: CreateClientType) =>
-    TpmClient.getInstance()
-      .clientTypes()
+    tpmClient.clientTypes()
       .create(values)
       .subscribe({
         next: () => {

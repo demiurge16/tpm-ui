@@ -4,7 +4,6 @@ import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { Task } from "../../client/types/task/Task";
 import { forkJoin } from "rxjs";
-import TpmClient from "../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,6 +12,7 @@ import { Grid } from "../../components/grid/Grid";
 import { Tasks } from "./Tasks";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { formatDate } from "../../utils/dateFormatters";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -26,17 +26,19 @@ export const Index = () => {
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
 
+  const tpmClient = useTpmClient();
+
   useEffect(() => {
     forkJoin({
-      languages: TpmClient.getInstance().languages().all(),
-      currencies: TpmClient.getInstance().currencies().all(),
-      accuracies: TpmClient.getInstance().accuracies().all(),
-      industries: TpmClient.getInstance().industries().all(),
-      units: TpmClient.getInstance().units().all(),
-      priorities: TpmClient.getInstance().priorities().all(),
-      statuses: TpmClient.getInstance().tasks().refdata().statuses(),
-      users: TpmClient.getInstance().users().all(),
-      projects: TpmClient.getInstance().projects().all(),
+      languages: tpmClient.languages().all(),
+      currencies: tpmClient.currencies().all(),
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      priorities: tpmClient.priorities().all(),
+      statuses: tpmClient.tasks().refdata().statuses(),
+      users: tpmClient.users().all(),
+      projects: tpmClient.projects().all(),
     }).subscribe({
       next: (data) => {
         const { languages, currencies, accuracies, industries, priorities, statuses, units, users, projects } = data;
@@ -227,8 +229,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().tasks().all}
-        export={TpmClient.getInstance().tasks().export}
+        fetch={tpmClient.tasks().all}
+        export={tpmClient.tasks().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

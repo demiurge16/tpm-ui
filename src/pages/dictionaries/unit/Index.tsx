@@ -8,10 +8,10 @@ import { ColumnDefinition, GridHandle } from "../../../components/grid/GridProps
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import TpmClient from "../../../client/TpmClient";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -23,10 +23,10 @@ export const Index = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
-    TpmClient.getInstance()
-      .units()
+    tpmClient.units()
       .refdata()
       .measurements()
       .subscribe({
@@ -112,7 +112,7 @@ export const Index = () => {
   }, []);
 
   const activate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().priorities().withId(id).activate()
+    tpmClient.priorities().withId(id).activate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Activated ${id}`);
@@ -125,7 +125,7 @@ export const Index = () => {
   };
 
   const deactivate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().priorities().withId(id).deactivate()
+    tpmClient.priorities().withId(id).deactivate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Deactivated ${id}`);
@@ -146,8 +146,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().units().all}
-        export={TpmClient.getInstance().units().export}
+        fetch={tpmClient.units().all}
+        export={tpmClient.units().export}
         filters={filters}
         columnDefinitions={columnDefs}
       />

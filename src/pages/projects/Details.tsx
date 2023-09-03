@@ -13,6 +13,7 @@ import { ProjectFiles } from "./details/ProjectFiles";
 import { ProjectExpenses } from "./details/ProjectExpenses";
 import { ProjectTasks } from "./details/ProjectTasks";
 import { ProjectThreads } from "./details/ProjectThreads";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Details = () => {
   const [project, setProject] = useState<Project>({
@@ -82,12 +83,12 @@ export const Details = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
 
   useEffect(() => {
     if (!id) return;
 
-    TpmClient.getInstance()
-      .projects()
+    tpmClient.projects()
       .withId(id)
       .get()
       .subscribe({

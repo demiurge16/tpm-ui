@@ -3,16 +3,17 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { useProjectContext } from './ProjectContext';
 import { CreateTeamMember, Role, TeamMember } from '../../../client/types/project/TeamMember';
 import { forkJoin, map } from 'rxjs';
-import TpmClient from '../../../client/TpmClient';
 import { Avatar, Box, Button, Divider, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Form } from 'react-final-form';
 import { AsyncSelectField } from '../../../components/form-controls/AsyncSelectField';
 import { SelectField } from '../../../components/form-controls/SelectField';
+import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const ProjectTeamMembers = () => {
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
+  const tpmClient = useTpmClient();
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
@@ -21,13 +22,11 @@ export const ProjectTeamMembers = () => {
     if (!project) return;
 
     forkJoin({
-      teamMembers: TpmClient.getInstance()
-        .projects()
+      teamMembers: tpmClient.projects()
         .withId(project.id)
         .teamMembers()
         .all(),
-      roles: TpmClient.getInstance()
-        .projects()
+      roles: tpmClient.projects()
         .refdata()
         .teamMembers()
         .roles()
@@ -41,8 +40,7 @@ export const ProjectTeamMembers = () => {
   }, [project.id]);
 
   const addTeamMember = (teamMember: CreateTeamMember) =>
-    TpmClient.getInstance()
-      .projects()
+    tpmClient.projects()
       .withId(project.id)
       .teamMembers()
       .add(teamMember)
@@ -55,8 +53,7 @@ export const ProjectTeamMembers = () => {
       });
 
   const removeTeamMember = (teamMember: TeamMember) =>
-    TpmClient.getInstance()
-      .projects()
+    tpmClient.projects()
       .withId(project.id)
       .teamMembers()
       .remove(teamMember.id)
@@ -125,7 +122,7 @@ export const ProjectTeamMembers = () => {
                 <Grid item xs={12} sm={5}>
                   <AsyncSelectField name="userId" label="User" required
                     optionsLoader={(search: string) =>
-                      TpmClient.getInstance()
+                      tpmClient
                         .users()
                         .all({
                           page: 0,

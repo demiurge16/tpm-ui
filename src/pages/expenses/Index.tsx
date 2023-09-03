@@ -16,6 +16,7 @@ import { Currency } from "../../client/types/dictionaries/Currency";
 import { forkJoin } from "rxjs";
 import { User } from "../../client/types/user/User";
 import { Project } from "../../client/types/project/Project";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -30,16 +31,17 @@ export const Index = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Expense>[]>([]);
 
   useEffect(() => {
     forkJoin({
-      currencies: TpmClient.getInstance().currencies().all(),
-      expenseCategories: TpmClient.getInstance().expenseCategories().all(),
-      users: TpmClient.getInstance().users().all(),
-      projects: TpmClient.getInstance().projects().all(),
+      currencies: tpmClient.currencies().all(),
+      expenseCategories: tpmClient.expenseCategories().all(),
+      users: tpmClient.users().all(),
+      projects: tpmClient.projects().all(),
     }).subscribe({
       next: (data) => {
         setCurrencies(data.currencies.items);
@@ -188,8 +190,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().expenses().all}
-        export={TpmClient.getInstance().expenses().export}
+        fetch={tpmClient.expenses().all}
+        export={tpmClient.expenses().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

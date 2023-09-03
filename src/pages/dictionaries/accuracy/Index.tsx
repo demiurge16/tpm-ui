@@ -5,13 +5,13 @@ import { GridHandle } from "../../../components/grid/GridProps";
 import { Accuracy } from "../../../client/types/dictionaries/Accuracy";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Link } from "react-router-dom";
-import TpmClient from "../../../client/TpmClient";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Grid } from "../../../components/grid/Grid";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -21,6 +21,8 @@ export const Index = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
+
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Accuracies', path: '/accuracies' }
@@ -79,7 +81,7 @@ export const Index = () => {
   ]);
 
   const activate = (id: string, refresh: () => void) => 
-    TpmClient.getInstance().accuracies().withId(id).activate()
+    tpmClient.accuracies().withId(id).activate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess("Success", `Activated ${id}`);
@@ -91,7 +93,7 @@ export const Index = () => {
       });
 
   const deactivate = (id: string, refresh: () => void) => 
-    TpmClient.getInstance().accuracies().withId(id).deactivate()
+    tpmClient.accuracies().withId(id).deactivate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess("Success", `Deactivated ${id}`);
@@ -117,8 +119,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().accuracies().all}
-        export={TpmClient.getInstance().accuracies().export}
+        fetch={tpmClient.accuracies().all}
+        export={tpmClient.accuracies().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

@@ -9,10 +9,10 @@ import { CreateClient } from "../../client/types/client/Client";
 import { Country } from "../../client/types/dictionaries/Country";
 import { ClientType } from "../../client/types/client/ClientType";
 import { forkJoin, map } from "rxjs";
-import TpmClient from "../../client/TpmClient";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -21,6 +21,7 @@ export const Create = () => {
   const [types, setTypes] = useState<Array<ClientType>>([]);
 
   const navigate = useNavigate();
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -41,8 +42,8 @@ export const Create = () => {
 
   useEffect(() => {
     forkJoin({
-      countries: TpmClient.getInstance().countries().all(),
-      types: TpmClient.getInstance().clientTypes().all()
+      countries: tpmClient.countries().all(),
+      types: tpmClient.clientTypes().all()
     }).subscribe({
       next: (response) => {
         setCountries(response.countries.items);
@@ -61,7 +62,7 @@ export const Create = () => {
   }, []);
 
   const handleSubmit = async (values: CreateClient) =>
-    TpmClient.getInstance()
+    tpmClient
       .clients()
       .create(values)
       .subscribe({
@@ -93,7 +94,7 @@ export const Create = () => {
             <TextField name="zip" label="Zip" required />
             <AsyncSelectField name="countryCode" label="Country" required
               optionsLoader={(search) =>
-                TpmClient.getInstance()
+                tpmClient
                   .countries()
                   .all({
                     page: 0,

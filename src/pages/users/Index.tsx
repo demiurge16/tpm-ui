@@ -4,17 +4,19 @@ import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Users } from "./Users";
 import { Grid } from "../../components/grid/Grid";
-import TpmClient from "../../client/TpmClient";
+import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
   const gridRef = useRef<GridHandle>(null);
+
+  const tpmClient = useTpmClient();
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
@@ -44,7 +46,16 @@ export const Index = () => {
       },
       { headerName: "First name", field: "firstName", resizable: true },
       { headerName: "Last name", field: "lastName", resizable: true },
-      { headerName: "Email", field: "email", resizable: true }
+      { headerName: "Email", field: "email", resizable: true },
+      {
+        headerName: "Roles",
+        field: "roles",
+        resizable: true,
+        cellRenderer: (params: any) => {
+          const user = params.data as User;
+          return user.roles.map((role) => role.title).join(", ");
+        }
+      }
     ]);
 
     setFilterDefs([
@@ -64,8 +75,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().users().all}
-        export={TpmClient.getInstance().users().export}
+        fetch={tpmClient.users().all}
+        export={tpmClient.users().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

@@ -4,7 +4,6 @@ import { Priorities } from "./Priorities";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Priority } from "../../../client/types/dictionaries/Priority";
 import { Link } from "react-router-dom";
-import TpmClient from "../../../client/TpmClient";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
@@ -12,6 +11,7 @@ import { GridHandle } from "../../../components/grid/GridProps";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Index = () => {
   const startPage = 0;
@@ -21,6 +21,8 @@ export const Index = () => {
 
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const tpmClient = useTpmClient();
+
   useEffect(() => {
     breadcrumbsContext.setBreadcrumbs([
       { label: 'Priorities', path: '/priorities' }
@@ -81,7 +83,7 @@ export const Index = () => {
   ]);
 
   const activate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().priorities().withId(id).activate()
+    tpmClient.priorities().withId(id).activate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Activated ${id}`);
@@ -94,7 +96,7 @@ export const Index = () => {
   };
 
   const deactivate = (id: string, refresh: () => void) => {
-    TpmClient.getInstance().priorities().withId(id).deactivate()
+    tpmClient.priorities().withId(id).deactivate()
       .subscribe({
         next: (response) => {
           snackbarContext.showSuccess('Success', `Deactivated ${id}`);
@@ -122,8 +124,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={TpmClient.getInstance().priorities().all}
-        export={TpmClient.getInstance().priorities().export}
+        fetch={tpmClient.priorities().all}
+        export={tpmClient.priorities().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
       />

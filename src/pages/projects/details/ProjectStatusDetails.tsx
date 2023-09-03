@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { Observable } from "rxjs";
 import { ProjectNewStatus, ProjectStatus, StatusCode } from "../../../client/types/project/Project";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
-import TpmClient from "../../../client/TpmClient";
 import { Button, Grid, Typography } from "@mui/material";
 import { useProjectContext } from "./ProjectContext";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 type StatusTransition = {
   [key in StatusCode]: {
@@ -15,91 +15,76 @@ type StatusTransition = {
 export const ProjectStatusDetails = () => {
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
+  const tpmClient = useTpmClient();
 
   const [statuses, setStatuses] = useState<ProjectStatus[]>([]);
 
   const statusTransitions: StatusTransition = {
     "DRAFT": {
-      "READY_TO_START": () => TpmClient.getInstance()
-        .projects()
+      "READY_TO_START": () => tpmClient.projects()
         .withId(project.id)
         .finishDraft()
     },
     "READY_TO_START": {
-      "DRAFT": () => TpmClient.getInstance()
-        .projects()
+      "DRAFT": () => tpmClient.projects()
         .withId(project.id)
         .backToDraft(),
-      "ACTIVE": () => TpmClient.getInstance()
-        .projects()
+      "ACTIVE": () => tpmClient.projects()
         .withId(project.id)
         .startProgress(),
-      "CANCELLED": () => TpmClient.getInstance()
+      "CANCELLED": () => tpmClient
         .projects()
         .withId(project.id)
         .reopen()
     },
     "ACTIVE": {
-      "READY_TO_DELIVER": () => TpmClient.getInstance()
-        .projects()
+      "READY_TO_DELIVER": () => tpmClient.projects()
         .withId(project.id)
         .finishProgress(),
-      "ON_HOLD": () => TpmClient.getInstance()
-        .projects()
+      "ON_HOLD": () => tpmClient.projects()
         .withId(project.id)
         .putOnHold(),
-      "CANCELLED": () => TpmClient.getInstance()
-        .projects()
+      "CANCELLED": () => tpmClient.projects()
         .withId(project.id)
         .cancel()
     },
     "READY_TO_DELIVER": {
-      "ACTIVE": () => TpmClient.getInstance()
-        .projects()
+      "ACTIVE": () => tpmClient.projects()
         .withId(project.id)
         .backToProgress(),
-      "DELIVERED": () => TpmClient.getInstance()
-        .projects()
+      "DELIVERED": () => tpmClient.projects()
         .withId(project.id)
         .deliver(),
-      "CANCELLED": () => TpmClient.getInstance()
-        .projects()
+      "CANCELLED": () => tpmClient.projects()
         .withId(project.id)
         .cancel()
     },
     "DELIVERED": {
-      "INVOICED": () => TpmClient.getInstance()
-        .projects()
+      "INVOICED": () => tpmClient.projects()
         .withId(project.id)
         .invoice(),
-      "CANCELLED": () => TpmClient.getInstance()
-        .projects()
+      "CANCELLED": () => tpmClient.projects()
         .withId(project.id)
         .cancel()
     },
     "INVOICED": {
-      "PAID": () => TpmClient.getInstance()
-        .projects()
+      "PAID": () => tpmClient.projects()
         .withId(project.id)
         .pay(),
-      "CANCELLED": () => TpmClient.getInstance()
-        .projects()
+      "CANCELLED": () => tpmClient.projects()
         .withId(project.id)
         .cancel()
     },
     "ON_HOLD": {
-      "ACTIVE": () => TpmClient.getInstance()
-        .projects()
+      "ACTIVE": () => tpmClient.projects()
         .withId(project.id)
         .resume(),
-      "CANCELLED": () => TpmClient.getInstance()
-        .projects()
+      "CANCELLED": () => tpmClient.projects()
         .withId(project.id)
         .cancel()
     },
     "CANCELLED": {
-      "DRAFT": () => TpmClient.getInstance()
-        .projects()
+      "DRAFT": () => tpmClient.projects()
         .withId(project.id)
         .reopen()
     },
@@ -107,8 +92,7 @@ export const ProjectStatusDetails = () => {
   };
 
   useEffect(() => {
-    TpmClient.getInstance()
-      .projects()
+    tpmClient.projects()
       .refdata()
       .statuses()
       .subscribe({

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateUnit, Measurement } from "../../../client/types/dictionaries/Unit";
-import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
@@ -11,11 +10,13 @@ import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
 import { validateWithSchema } from "../../../utils/validate";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const tpmClient = useTpmClient();
 
   const initialValues: CreateUnit = {
     name: '',
@@ -28,8 +29,7 @@ export const Create = () => {
   const snackbarContext = useContext(SnackbarContext);
 
   useEffect(() => {
-    TpmClient.getInstance()
-      .units()
+    tpmClient.units()
       .refdata()
       .measurements()
       .subscribe({
@@ -58,8 +58,7 @@ export const Create = () => {
   });
 
   const handleSubmit = (data: CreateUnit) =>
-    TpmClient.getInstance()
-      .units()
+    tpmClient.units()
       .create(data)
       .subscribe({
         next: () => {

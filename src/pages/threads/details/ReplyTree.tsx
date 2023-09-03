@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import TpmClient from "../../../client/TpmClient";
 import { Reply } from "../../../client/types/thread/Thread";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { Accordion, AccordionDetails, AccordionSummary, Avatar, CardActions, CardContent, CardHeader, IconButton, Typography } from "@mui/material";
@@ -10,9 +9,10 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReplyIcon from '@mui/icons-material/Reply';
 import EditIcon from '@mui/icons-material/Edit';
-import { AuthContext } from "../../../contexts/AuthContextProvider";
+import { AuthContext } from "../../../contexts/AuthContext";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
 import { formatDate } from "../../../utils/dateFormatters";
+import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 interface ReplyTreeProps {
   threadId: string;
@@ -44,12 +44,13 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
   const snackbarContext = useContext(SnackbarContext);
   const authContext = useContext(AuthContext);
 
+  const tpmClient = useTpmClient();
+
   const replyLiked = (reply: Reply) => reply.likes.map((e) => e.author.userId).includes(authContext.userId);
   const replyDisliked = (reply: Reply) => reply.dislikes.map((e) => e.author.userId).includes(authContext.userId);
 
   const handleLike = (replyId: string) =>
-    TpmClient.getInstance()
-      .replies()
+    tpmClient.replies()
       .withId(replyId)
       .like()
       .subscribe({
@@ -75,8 +76,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
       });
   
   const handleUnlike = (replyId: string) =>
-    TpmClient.getInstance()
-      .replies()
+    tpmClient.replies()
       .withId(replyId)
       .unlike()
       .subscribe({
@@ -94,8 +94,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
       });
 
   const handleDislike = (replyId: string) =>
-    TpmClient.getInstance()
-      .replies()
+    tpmClient.replies()
       .withId(replyId)
       .dislike()
       .subscribe({
@@ -121,8 +120,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
       });
   
   const handleUndislike = (replyId: string) =>
-    TpmClient.getInstance()
-      .replies()
+    tpmClient.replies()
       .withId(replyId)
       .undislike()
       .subscribe({
@@ -149,8 +147,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
   };
 
   const handleReplySubmit = (parentReplyId: string, content: string) => {
-    TpmClient.getInstance()
-      .threads()
+    tpmClient.threads()
       .withId(threadId)
       .replies()
       .create({
@@ -184,8 +181,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
   };
 
   const handleEditSubmit = (replyId: string, content: string) => {
-    TpmClient.getInstance()
-      .replies()
+    tpmClient.replies()
       .withId(replyId)
       .update({
         content,
@@ -213,8 +209,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
   };
 
   const handleDelete = (replyId: string) =>
-    TpmClient.getInstance()
-      .replies()
+    tpmClient.replies()
       .withId(replyId)
       .delete()
       .subscribe({
