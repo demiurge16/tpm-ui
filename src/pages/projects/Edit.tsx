@@ -90,6 +90,8 @@ export const Edit = () => {
 
         breadcrumbsContext.setBreadcrumbs([
           { label: 'Projects', path: '/projects' },
+          { label: project.title, path: `/projects/${project.id}` },
+          { label: 'Edit', path: `/projects/${project.id}/edit` }
         ]);
       },
       error: (error) => {
@@ -99,30 +101,28 @@ export const Edit = () => {
   }, []);
 
   const handleSubmit = (values: UpdateProject) => {
-    console.log(values);
-
     if (!id) {
       return;
     }
 
-    // tpmClient.projects()
-    //   .withId(id)
-    //   .update(values)
-    //   .subscribe({
-    //     next: (response) => {
-    //       snackbarContext.showSuccess('Success', 'Project created');
-    //       navigate(`/projects/${response.id}`);
-    //     },
-    //     error: (error) => {
-    //       snackbarContext.showError('Error creating project', error.message);
-    //       setServerError(error.message);
-    //     }
-    //   });
+    tpmClient.projects()
+      .withId(id)
+      .update(values)
+      .subscribe({
+        next: (response) => {
+          snackbarContext.showSuccess('Success', 'Project created');
+          navigate(`/projects/${response.id}`);
+        },
+        error: (error) => {
+          snackbarContext.showError('Error creating project', error.message);
+          setServerError(error.message);
+        }
+      });
   }
 
   return project.title ? (
     <Box>
-      <Typography variant="h4">Create Project</Typography>
+      <Typography variant="h4">Edit {project.title}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
