@@ -4,10 +4,8 @@ import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import TpmClient from "../../client/TpmClient";
 import ProjectContextProvider from "./details/ProjectContext";
 import { ProjectDetails } from "./details/ProjectDetails";
-import { ProjectStatusDetails } from "./details/ProjectStatusDetails";
 import { ProjectTeamMembers } from "./details/ProjectTeamMembers";
 import { ProjectFiles } from "./details/ProjectFiles";
 import { ProjectExpenses } from "./details/ProjectExpenses";
@@ -125,33 +123,29 @@ export const Details = () => {
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Details" {...a11yProps(0)} />
-            <Tab label="Status" {...a11yProps(1)} />
-            <Tab label="Team members" {...a11yProps(2)} />
-            <Tab label="Tasks" {...a11yProps(3)} />
-            <Tab label="Expenses" {...a11yProps(4)} />
-            <Tab label="Threads" {...a11yProps(5)} />
-            <Tab label="Files" {...a11yProps(6)} />
+            <Tab label="Team members" {...a11yProps(1)} />
+            <Tab label="Tasks" {...a11yProps(2)} />
+            <Tab label="Expenses" {...a11yProps(3)} />
+            <Tab label="Threads" {...a11yProps(4)} />
+            <Tab label="Files" {...a11yProps(5)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
           <ProjectDetails />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <ProjectStatusDetails />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
           <ProjectTeamMembers />
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={3}>
+        <CustomTabPanel value={value} index={2}>
           <ProjectTasks />
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={4}>
+        <CustomTabPanel value={value} index={3}>
           <ProjectExpenses />
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={5}>
+        <CustomTabPanel value={value} index={4}>
           <ProjectThreads />
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={6}>
+        <CustomTabPanel value={value} index={5}>
           <ProjectFiles />
         </CustomTabPanel>
       </Box>

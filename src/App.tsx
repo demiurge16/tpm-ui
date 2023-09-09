@@ -44,7 +44,6 @@ import { BreadcrumbsContext } from "./contexts/BreadcrumbsContext";
 import { environment } from "./Environment";
 import { ServiceTypes } from "./pages/dictionaries/service-types/ServiceTypes";
 import { Role } from "./contexts/AuthContext";
-import { MultivalueDateFilter } from "./components/grid/filters/DateFilter";
 
 function App() {
   const title = "Translation Project Manager";
@@ -290,7 +289,16 @@ function App() {
     },
     {
       path: "/accuracies",
-      roles: ["admin", "project-manager"],
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer",
+      ],
       element: <Accuracies.Index />,
     },
     {
@@ -305,7 +313,16 @@ function App() {
     },
     {
       path: "/accuracies/:id",
-      roles: ["admin", "project-manager"],
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer",
+      ],
       element: <Accuracies.Details />,
     },
     {

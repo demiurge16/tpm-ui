@@ -38,7 +38,7 @@ export const DateFilter = (props: DateFilterProps) => {
     <FormControl id={id} variant="standard" size="small" fullWidth>
       <DatePicker
         label={label}
-        value={value ? DateTime.fromJSDate(value) : null}
+        value={value ? DateTime.fromJSDate(new Date(value)) : null}
         onChange={(date) => onChange(date?.toJSDate() ?? null)}
         slotProps={{
           textField: {

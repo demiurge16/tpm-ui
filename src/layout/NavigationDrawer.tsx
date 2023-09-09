@@ -173,7 +173,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: Languages.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
             {
@@ -182,7 +188,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: Countries.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
             {
@@ -191,7 +203,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: Currencies.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
           ],
@@ -205,7 +223,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: Accuracies.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
             {
@@ -214,7 +238,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: ExpenseCategories.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
             {
@@ -223,7 +253,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: Industries.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
             {
@@ -232,7 +268,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: Priorities.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
             {
@@ -241,7 +283,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: Units.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
             {
@@ -250,8 +298,14 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: ServiceTypes.path,
               roles: [
                 "admin",
-                "project-manager"
-              ],
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
+              ]
             }
           ],
         },
@@ -264,7 +318,13 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
               path: ClientTypes.path,
               roles: [
                 "admin",
-                "project-manager"
+                "project-manager",
+                "translator",
+                "editor",
+                "proofreader",
+                "subject-matter-expert",
+                "publisher",
+                "observer",
               ],
             },
           ],
@@ -307,6 +367,7 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
           {menu.map((menuItem, index) =>
             menuItem.path ? (
               <NavigationDrawerItem
+                key={index}
                 open={open}
                 index={index}
                 icon={menuItem.icon}
@@ -317,6 +378,7 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
             ) : (
               menuItem.groups && (
                 <NavigationDrawerItemGroup
+                  key={index}
                   drawerOpen={open}
                   index={index}
                   icon={menuItem.icon}
@@ -458,6 +520,7 @@ const NavigationDrawerItemGroup = (props: {
                   (item, index) =>
                     (item.path && (
                       <NavigationDrawerItem
+                        key={index}
                         open={drawerOpen}
                         index={index}
                         icon={item.icon}
@@ -467,6 +530,7 @@ const NavigationDrawerItemGroup = (props: {
                       />
                     )) || (
                       <NavigationDrawerItemGroup
+                        key={index}
                         drawerOpen={drawerOpen}
                         index={index}
                         icon={item.icon}

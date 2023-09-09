@@ -18,14 +18,14 @@ export interface MultivalueDateTimeFilterProps {
 }
 
 export const DateTimeFilter = (props: DateTimeFilterProps) => {
-
   const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
 
   return (
     <FormControl id={id} variant="standard" size="small" fullWidth>
       <DateTimePicker
         label={label}
-        value={value ? DateTime.fromJSDate(value) : null}
+        ampm={false}
+        value={value ? DateTime.fromJSDate(new Date(value)) : null}
         onChange={(date) => onChange(date?.toJSDate() ?? null)}
         slotProps={{
           textField: {

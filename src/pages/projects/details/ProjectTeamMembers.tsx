@@ -98,7 +98,7 @@ export const ProjectTeamMembers = () => {
                   </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
-              <Divider variant="inset" component="li" />
+              <Divider key={`${teamMember.id}-divider`} variant="inset" component="li" />
             </>
           ))
         }
