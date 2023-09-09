@@ -104,28 +104,22 @@ export const Create = () => {
             />
             <NumberField name="amount" label="Amount" required />
             <AsyncSelectField name="currency" label="Currency" required
-              optionsLoader={() =>
-                tpmClient
-                  .currencies()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [],
-                    filters: []
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        items: response.items.map((currency) => ({ key: currency.code, value: currency.name })),
-                        currentPage: response.currentPage,
-                        totalPages: response.totalPages,
-                        totalItems: response.totalItems,
-                        hasNextPage: response.hasNextPage,
-                        hasPreviousPage: response.hasPreviousPage
-                      }
+              searchQueryProvider={(search) => (
+                {
+                  page: 0,
+                  pageSize: 25,
+                  sort: [],
+                  filters: [
+                    {
+                      field: 'name',
+                      operator: 'contains',
+                      value: search
                     }
-                  ))
-              }
+                  ]
+                }
+              )}
+              resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
+              optionsLoader={tpmClient.currencies().all}
             />
             <DateField name="date" label="Date" required />
             <SelectField name="teamMemberId" label="Team Member" required

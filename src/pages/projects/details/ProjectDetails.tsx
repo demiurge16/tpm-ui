@@ -7,6 +7,7 @@ import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { MoveStartDialog } from "./ProjectMoveStartDialog";
 import { MoveDeadlinesDialog } from "./ProjectMoveDeadlinesDialog";
+import { Link } from "react-router-dom";
 
 export const ProjectDetails = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -81,36 +82,27 @@ export const ProjectDetails = () => {
 
       <Typography variant="h5" gutterBottom>Actions</Typography>
 
-      <Button
+      <Button variant="contained" color="primary" component={Link} to="edit"
         sx={{
           marginRight: 1
         }}
-        variant="contained"
-        color="primary"
-        onClick={() => console.log('TODO: Edit project')}
       >
         Edit
       </Button>
 
-      <Button
+      <Button variant="contained" color="primary" onClick={() => openMoveStartDialog()}
         sx={{
           marginRight: 1
         }}
-        variant="contained"
-        color="primary"
-        onClick={() => openMoveStartDialog()}
       >
         Move start date
       </Button>
       <MoveStartDialog projectId={project.id} open={moveStartDialogOpen} onClose={closeMoveStartDialog} />
 
-      <Button
+      <Button variant="contained" color="primary" onClick={() => openMoveDeadlinesDialod()}
         sx={{
           marginRight: 1
         }}
-        variant="contained"
-        color="primary"
-        onClick={() => openMoveDeadlinesDialod()}
       >
         Move deadlines
       </Button>

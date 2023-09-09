@@ -78,7 +78,7 @@ export interface Accuracy {
 
 export interface Currency {
   code: string;
-  name: String
+  name: string
 }
 
 export interface Industry {
@@ -89,7 +89,7 @@ export interface Industry {
 
 export interface Language {
   code: string;
-  name: String
+  name: string
 }
 
 export interface ProjectStatus {

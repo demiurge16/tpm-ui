@@ -3,7 +3,6 @@ import { CreateProject } from "../../client/types/project/Project";
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { useNavigate } from 'react-router-dom';
-import TpmClient from '../../client/TpmClient';
 import { forkJoin, map } from 'rxjs';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
@@ -139,64 +138,42 @@ export const Create = () => {
               </Grid>
               <Grid item xs={6}>
                 <AsyncSelectField name="sourceLanguage" label="Source Language" required
-                  optionsLoader={(search) =>
-                    tpmClient.languages()
-                      .all({
-                        page: 0,
-                        pageSize: 25,
-                        sort: [],
-                        filters: [
-                          {
-                            field: 'name',
-                            operator: 'contains',
-                            value: search
-                          }
-                        ]
-                      })
-                      .pipe(
-                        map((response) => {
-                          return {
-                            items: response.items.map((language) => ({ key: language.code, value: language.name })),
-                            currentPage: response.currentPage,
-                            totalPages: response.totalPages,
-                            totalItems: response.totalItems,
-                            hasNextPage: response.hasNextPage,
-                            hasPreviousPage: response.hasPreviousPage
-                          };
+                  searchQueryProvider={(search) => (
+                    {
+                      page: 0,
+                      pageSize: 25,
+                      sort: [],
+                      filters: [
+                        {
+                          field: 'name',
+                          operator: 'contains',
+                          value: search
                         }
-                      ))
-                  }
+                      ]
+                    }
+                  )}
+                  resultFormatter={(language) => ({ key: language.code, value: language.name })}
+                  optionsLoader={tpmClient.languages().all}
                 />
               </Grid>
               <Grid item xs={6}>
                 <AsyncSelectField name="targetLanguages" label="Target Languages" required multiple
-                  optionsLoader={(search) =>
-                    tpmClient.languages()
-                      .all({
-                        page: 0,
-                        pageSize: 25,
-                        sort: [],
-                        filters: [
-                          {
-                            field: 'name',
-                            operator: 'contains',
-                            value: search
-                          }
-                        ]
-                      })
-                      .pipe(
-                        map((response) => {
-                          return {
-                            items: response.items.map((language) => ({ key: language.code, value: language.name })),
-                            currentPage: response.currentPage,
-                            totalPages: response.totalPages,
-                            totalItems: response.totalItems,
-                            hasNextPage: response.hasNextPage,
-                            hasPreviousPage: response.hasPreviousPage
-                          }
+                  searchQueryProvider={(search) => (
+                    {
+                      page: 0,
+                      pageSize: 25,
+                      sort: [],
+                      filters: [
+                        {
+                          field: 'name',
+                          operator: 'contains',
+                          value: search
                         }
-                      ))
-                  }
+                      ]
+                    }
+                  )}
+                  resultFormatter={(language) => ({ key: language.code, value: language.name })}
+                  optionsLoader={tpmClient.languages().all}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -221,33 +198,22 @@ export const Create = () => {
               </Grid>
               <Grid item xs={6}>
                 <AsyncSelectField name="currencyCode" label="Currency" required
-                  optionsLoader={(search) =>
-                    tpmClient.currencies()
-                      .all({
-                        page: 0,
-                        pageSize: 25,
-                        sort: [],
-                        filters: [
-                          {
-                            field: 'name',
-                            operator: 'contains',
-                            value: search
-                          }
-                        ]
-                      })
-                      .pipe(
-                        map((response) => {
-                          return {
-                            items: response.items.map((currency) => ({ key: currency.code, value: currency.name })),
-                            currentPage: response.currentPage,
-                            totalPages: response.totalPages,
-                            totalItems: response.totalItems,
-                            hasNextPage: response.hasNextPage,
-                            hasPreviousPage: response.hasPreviousPage
-                          }
+                  searchQueryProvider={(search) => (
+                    {
+                      page: 0,
+                      pageSize: 25,
+                      sort: [],
+                      filters: [
+                        {
+                          field: 'name',
+                          operator: 'contains',
+                          value: search
                         }
-                      ))
-                  }
+                      ]
+                    }
+                  )}
+                  resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
+                  optionsLoader={tpmClient.currencies().all}
                 />
               </Grid>
               <Grid item xs={12}>

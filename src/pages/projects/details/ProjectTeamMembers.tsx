@@ -121,36 +121,22 @@ export const ProjectTeamMembers = () => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} sm={5}>
                   <AsyncSelectField name="userId" label="User" required
-                    optionsLoader={(search: string) =>
-                      tpmClient
-                        .users()
-                        .all({
-                          page: 0,
-                          pageSize: 25,
-                          sort: [],
-                          filters: [
-                            {
-                              field: 'name',
-                              operator: 'contains',
-                              value: search
-                            }
-                          ]
-                        })
-                        .pipe(
-                          map(
-                            (response) => {
-                              return {
-                                items: response.items.map((user) => ({ key: user.id, value: user.firstName + ' ' + user.lastName })),
-                                currentPage: response.currentPage,
-                                totalPages: response.totalPages,
-                                totalItems: response.totalItems,
-                                hasNextPage: response.hasNextPage,
-                                hasPreviousPage: response.hasPreviousPage
-                              };
-                            }
-                          )
-                        )
-                    }
+                    searchQueryProvider={(search) => (
+                      {
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      }
+                    )}
+                    resultFormatter={(user) => ({ key: user.id, value: user.firstName + ' ' + user.lastName })}
+                    optionsLoader={tpmClient.users().all}
                   />  
                 </Grid>
                 <Grid item xs={12} sm={5}>

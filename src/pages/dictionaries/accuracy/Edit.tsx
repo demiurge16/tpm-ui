@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { UpdateAccuracy } from "../../../client/types/dictionaries/Accuracy";
 import { useNavigate, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import TpmClient from "../../../client/TpmClient";
 import { Box, Button, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";

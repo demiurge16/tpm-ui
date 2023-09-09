@@ -130,64 +130,40 @@ export const Create = () => {
             <TextField name="title" label="Title" required/>
             <TextField name="description" label="Description" multiline required/>
             <AsyncSelectField name="sourceLanguage" label="Source Language" required
-              optionsLoader={(search) =>
-                tpmClient
-                  .languages()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [],
-                    filters: [
-                      {
-                        field: 'name',
-                        operator: 'contains',
-                        value: search
-                      }
-                    ]
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        items: response.items.map((language) => ({ key: language.code, value: language.name })),
-                        currentPage: response.currentPage,
-                        totalPages: response.totalPages,
-                        totalItems: response.totalItems,
-                        hasNextPage: response.hasNextPage,
-                        hasPreviousPage: response.hasPreviousPage
-                      };
+              searchQueryProvider={(search) => (
+                {
+                  page: 0,
+                  pageSize: 25,
+                  sort: [],
+                  filters: [
+                    {
+                      field: 'name',
+                      operator: 'contains',
+                      value: search
                     }
-                  ))
-              }
+                  ]
+                }
+              )}
+              resultFormatter={(language) => ({ key: language.code, value: language.name })}
+              optionsLoader={tpmClient.languages().all}
             />
             <AsyncSelectField name="targetLanguage" label="Target Language" required
-              optionsLoader={(search) =>
-                tpmClient
-                  .languages()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [],
-                    filters: [
-                      {
-                        field: 'name',
-                        operator: 'contains',
-                        value: search
-                      }
-                    ]
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        items: response.items.map((language) => ({ key: language.code, value: language.name })),
-                        currentPage: response.currentPage,
-                        totalPages: response.totalPages,
-                        totalItems: response.totalItems,
-                        hasNextPage: response.hasNextPage,
-                        hasPreviousPage: response.hasPreviousPage
-                      };
+              searchQueryProvider={(search) => (
+                {
+                  page: 0,
+                  pageSize: 25,
+                  sort: [],
+                  filters: [
+                    {
+                      field: 'name',
+                      operator: 'contains',
+                      value: search
                     }
-                  ))
-              }
+                  ]
+                }
+              )}
+              resultFormatter={(language) => ({ key: language.code, value: language.name })}
+              optionsLoader={tpmClient.languages().all}
             />
             <SelectField name="accuracyId" label="Accuracy" required
               options={accuracies.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
@@ -203,34 +179,22 @@ export const Create = () => {
             <NumberField name="amount" label="Amount" required/>
             <NumberField name="budget" label="Budget" required/>
             <AsyncSelectField name="currencyCode" label="Currency" required
-              optionsLoader={(search) =>
-                tpmClient
-                  .currencies()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [],
-                    filters: [
-                      {
-                        field: 'name',
-                        operator: 'contains',
-                        value: search
-                      }
-                    ]
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        items: response.items.map((currency) => ({ key: currency.code, value: currency.name })),
-                        currentPage: response.currentPage,
-                        totalPages: response.totalPages,
-                        totalItems: response.totalItems,
-                        hasNextPage: response.hasNextPage,
-                        hasPreviousPage: response.hasPreviousPage
-                      }
+              searchQueryProvider={(search) => (
+                {
+                  page: 0,
+                  pageSize: 25,
+                  sort: [],
+                  filters: [
+                    {
+                      field: 'name',
+                      operator: 'contains',
+                      value: search
                     }
-                  ))
-              }
+                  ]
+                }
+              )}
+              resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
+              optionsLoader={tpmClient.currencies().all}
             />
             <SelectField name="priorityId" label="Priority" required
               options={priorities.map((priority) => ({ key: priority.id, value: priority.name }))}

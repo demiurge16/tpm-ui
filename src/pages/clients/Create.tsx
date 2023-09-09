@@ -93,37 +93,27 @@ export const Create = () => {
             <TextField name="state" label="State" required />
             <TextField name="zip" label="Zip" required />
             <AsyncSelectField name="countryCode" label="Country" required
-              optionsLoader={(search) =>
-                tpmClient
-                  .countries()
-                  .all({
-                    page: 0,
-                    pageSize: 25,
-                    sort: [{
+              searchQueryProvider={(searchTerm) => (
+                {
+                  page: 0,
+                  pageSize: 25,
+                  sort: [
+                    {
                       field: 'name',
                       direction: 'asc'
-                    }],
-                    filters: [
-                      {
-                        field: 'name',
-                        operator: 'contains',
-                        value: search
-                      }
-                    ]
-                  })
-                  .pipe(
-                    map((response) => {
-                      return {
-                        items: response.items.map((language) => ({ key: language.code, value: language.name })),
-                        currentPage: response.currentPage,
-                        totalPages: response.totalPages,
-                        totalItems: response.totalItems,
-                        hasNextPage: response.hasNextPage,
-                        hasPreviousPage: response.hasPreviousPage
-                      };
                     }
-                  ))
+                  ],
+                  filters: [
+                    {
+                      field: 'name',
+                      operator: 'contains',
+                      value: searchTerm
+                    }
+                  ]
+                })
               }
+              resultFormatter={(country) => ({ key: country.code, value: country.name })}
+              optionsLoader={tpmClient.countries().all}
             />
             <TextField name="vat" label="VAT" required />
             <TextField name="notes" label="Notes" required />
