@@ -4,7 +4,7 @@ import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { Task } from "../../client/types/task/Task";
 import { forkJoin } from "rxjs";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,6 +13,7 @@ import { Tasks } from "./Tasks";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { formatDate } from "../../utils/dateFormatters";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Index = () => {
   const startPage = 0;
@@ -25,6 +26,7 @@ export const Index = () => {
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const tpmClient = useTpmClient();
 
@@ -56,7 +58,7 @@ export const Index = () => {
           FilterDefinition.datetime('deadline', 'Deadline'),
           FilterDefinition.number('budget', 'Budget'),
           FilterDefinition.select('currency', 'Currency', currencies.items.map((c) => ({ value: c.code, label: c.name }))),
-          FilterDefinition.select('status', 'Status', statuses.map((s) => ({ value: s.status, label: s.name }))),
+          FilterDefinition.select('status', 'Status', statuses.map((s) => ({ value: s.status, label: s.title }))),
           FilterDefinition.select('priority', 'Priority', priorities.items.map((p) => ({ value: p.id, label: p.name }))),
           FilterDefinition.select('assigneeId', 'Assignee', users.items.map((u) => ({ value: u.id, label: `${u.firstName} ${u.lastName}` }))),
           FilterDefinition.select('projectId', 'Project', projects.items.map((p) => ({ value: p.id, label: p.title }))),
@@ -96,7 +98,7 @@ export const Index = () => {
             resizable: true,
             cellRenderer: (params: any) => {
               const task = params.data as Task;
-              return task.status.name;
+              return task.status.title;
             }
           },
           {
@@ -175,40 +177,15 @@ export const Index = () => {
               const task = params.data as Task;
               return (
                 <Box>
-                  <Button variant="text" component={Link} to={`/projects/${task.projectId}`}>
-                    {task.projectId}
+                  <Button variant="text" component={Link} to={`/projects/${task.project.id}`}>
+                    {task.project.title}
                   </Button>
                 </Box>
               );
             }
-          },
-          { 
-            headerName: 'Actions',
-            field: 'actions',
-            resizable: true,
-            cellRenderer: (params: any) => {
-              const task = params.data as Task;
-              return (
-                <Box>
-                  <Button variant="text"
-                    component={Link}
-                    to={`${task.id}/edit`}
-                    startIcon={<EditIcon />}
-                  >
-                    Edit
-                  </Button>
-                  <Button variant="text"
-                    component={Link}
-                    to={`${task.id}/delete`}
-                    startIcon={<DeleteIcon />}  
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              );
-            }
-          },
+          }
         ]);
+        setLoading(false);
       },
       error: (error) => {
         snackbarContext.showError("Failed to load project tasks", error.message);
@@ -225,15 +202,24 @@ export const Index = () => {
       <Typography variant="h4">{Tasks.title}</Typography>
       <Typography variant="subtitle1">{Tasks.description}</Typography>
       <Box pb={2} />
-      <Grid<Task>
-        innerRef={gridRef}
-        startPage={startPage}
-        pageSize={pageSize}
-        fetch={tpmClient.tasks().all}
-        export={tpmClient.tasks().export}
-        filters={filterDefs}
-        columnDefinitions={columnDefs}
-      />
+      {
+        loading ? (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
+        ) : (
+          <Grid<Task>
+            innerRef={gridRef}
+            startPage={startPage}
+            pageSize={pageSize}
+            fetch={tpmClient.tasks().all}
+            export={tpmClient.tasks().export}
+            filters={filterDefs}
+            columnDefinitions={columnDefs}
+            elevation={2}
+          />
+        )
+      }
     </Box>
   );
 };

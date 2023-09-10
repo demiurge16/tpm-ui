@@ -3,12 +3,12 @@ import { CreateProject } from "../../client/types/project/Project";
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { useNavigate } from 'react-router-dom';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
 import { Unit } from '../../client/types/dictionaries/Unit';
 import { Client } from '../../client/types/client/Client';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
 import { TextField } from '../../components/form-controls/TextField';
 import { SelectField } from '../../components/form-controls/SelectField';
@@ -125,129 +125,173 @@ export const Create = () => {
         validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit}>
-            <Grid container columnSpacing={2}>
-              <Grid item xs={12}>
-                <TextField name="title" label="Title" required />
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Project Details</Typography>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={12}>
+                  <TextField name="title" label="Title" required />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField name="description" label="Description" multiline rows={4} required />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField name="industryId" label="Industry" required
+                    options={industries.map((industry) => ({ key: industry.id, value: industry.name }))}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField name="accuracyId" label="Accuracy" required
+                    options={accuracies.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <SelectField name="serviceTypeIds" label="Service Types" required multiple
+                    options={serviceTypes.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <TextField name="description" label="Description" multiline rows={4} required />
+            </Paper>
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Languages</Typography>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={6}>
+                  <AsyncSelectField name="sourceLanguage" label="Source Language" required
+                    searchQueryProvider={(search) => (
+                      {
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      }
+                    )}
+                    resultFormatter={(language) => ({ key: language.code, value: language.name })}
+                    optionsLoader={tpmClient.languages().all}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <AsyncSelectField name="targetLanguages" label="Target Languages" required multiple
+                    searchQueryProvider={(search) => (
+                      {
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      }
+                    )}
+                    resultFormatter={(language) => ({ key: language.code, value: language.name })}
+                    optionsLoader={tpmClient.languages().all}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <SelectField name="industryId" label="Industry" required
-                  options={industries.map((industry) => ({ key: industry.id, value: industry.name }))}
-                />
+            </Paper>
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Time frame</Typography>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={4}>
+                  <DateTimeField name="expectedStart" label="Expected Start" required/>
+                </Grid>
+                <Grid item xs={4}>
+                  <DateTimeField name="internalDeadline" label="Internal Deadline" required/>
+                </Grid>
+                <Grid item xs={4}>
+                  <DateTimeField name="externalDeadline" label="External Deadline" required/>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <SelectField name="accuracyId" label="Accuracy" required
-                  options={accuracies.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
-                />
+            </Paper>
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Project size</Typography>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={6}>
+                  <NumberField name="amount" label="Amount" required/>
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField name="unitId" label="Unit" required
+                    options={units.map((unit) => ({ key: unit.id, value: unit.name }))}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <AsyncSelectField name="sourceLanguage" label="Source Language" required
-                  searchQueryProvider={(search) => (
-                    {
-                      page: 0,
-                      pageSize: 25,
-                      sort: [],
-                      filters: [
-                        {
-                          field: 'name',
-                          operator: 'contains',
-                          value: search
-                        }
-                      ]
-                    }
-                  )}
-                  resultFormatter={(language) => ({ key: language.code, value: language.name })}
-                  optionsLoader={tpmClient.languages().all}
-                />
+            </Paper>
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Budget</Typography>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={6}>
+                  <NumberField name="budget" label="Budget" required/>
+                </Grid>
+                <Grid item xs={6}>
+                  <AsyncSelectField name="currencyCode" label="Currency" required
+                    searchQueryProvider={(search) => (
+                      {
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      }
+                    )}
+                    resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
+                    optionsLoader={tpmClient.currencies().all}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <AsyncSelectField name="targetLanguages" label="Target Languages" required multiple
-                  searchQueryProvider={(search) => (
-                    {
-                      page: 0,
-                      pageSize: 25,
-                      sort: [],
-                      filters: [
-                        {
-                          field: 'name',
-                          operator: 'contains',
-                          value: search
-                        }
-                      ]
-                    }
-                  )}
-                  resultFormatter={(language) => ({ key: language.code, value: language.name })}
-                  optionsLoader={tpmClient.languages().all}
-                />
+            </Paper>
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Client</Typography>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={12}>
+                  <SelectField name="clientId" label="Client" required
+                    options={clients.map((client) => ({ key: client.id, value: client.name }))}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={4}>
-                <DateTimeField name="expectedStart" label="Expected Start" required/>
-              </Grid>
-              <Grid item xs={4}>
-                <DateTimeField name="internalDeadline" label="Internal Deadline" required/>
-              </Grid>
-              <Grid item xs={4}>
-                <DateTimeField name="externalDeadline" label="External Deadline" required/>
-              </Grid>
-              <Grid item xs={6}>
-                <NumberField name="amount" label="Amount" required/>
-              </Grid>
-              <Grid item xs={6}>
-                <SelectField name="unitId" label="Unit" required
-                  options={units.map((unit) => ({ key: unit.id, value: unit.name }))}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <NumberField name="budget" label="Budget" required/>
-              </Grid>
-              <Grid item xs={6}>
-                <AsyncSelectField name="currencyCode" label="Currency" required
-                  searchQueryProvider={(search) => (
-                    {
-                      page: 0,
-                      pageSize: 25,
-                      sort: [],
-                      filters: [
-                        {
-                          field: 'name',
-                          operator: 'contains',
-                          value: search
-                        }
-                      ]
-                    }
-                  )}
-                  resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
-                  optionsLoader={tpmClient.currencies().all}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <SelectField name="serviceTypeIds" label="Service Types" required multiple
-                  options={serviceTypes.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <SelectField name="clientId" label="Client" required
-                  options={clients.map((client) => ({ key: client.id, value: client.name }))}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Box pb={2} />
-                {serverError && (
+            </Paper>
+            <Box pb={2} />
+
+            {serverError && (
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
                   <Typography color="error">Error: {serverError}</Typography>
-                )}
+                </Paper>
                 <Box pb={2} />
-              </Grid>
-              <Grid item xs={12}>
+              </>
+            )}
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
                 <Button type="submit" disabled={submitting || pristine}>
                   Submit
                 </Button>
                 <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
                   Reset
                 </Button>
-              </Grid>
-            </Grid>
+              </Box>
+            </Paper>
           </form>
         )}
       />

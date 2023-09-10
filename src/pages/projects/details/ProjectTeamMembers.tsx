@@ -3,12 +3,13 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { useProjectContext } from './ProjectContext';
 import { CreateTeamMember, Role, TeamMember } from '../../../client/types/project/TeamMember';
 import { forkJoin, map } from 'rxjs';
-import { Avatar, Box, Button, Divider, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
+import { Avatar, Box, Button, Divider, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Paper, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Form } from 'react-final-form';
 import { AsyncSelectField } from '../../../components/form-controls/AsyncSelectField';
 import { SelectField } from '../../../components/form-controls/SelectField';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
+import { LoadingScreen } from '../../utils/LoadingScreen';
 
 export const ProjectTeamMembers = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -17,6 +18,8 @@ export const ProjectTeamMembers = () => {
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!project) return;
@@ -34,6 +37,7 @@ export const ProjectTeamMembers = () => {
       next: (response) => {
         setTeamMembers(response.teamMembers.items);
         setRoles(response.roles);
+        setLoading(false);
       },
       error: (error) => snackbarContext.showError('Error loading reference data', error.message)
     });
@@ -65,50 +69,53 @@ export const ProjectTeamMembers = () => {
         error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen /> 
+    </Paper>
+  ) : (
     <>
-      <Typography variant="h6" gutterBottom>Current team members</Typography>
-      <List>
-        {
-          teamMembers.map((teamMember) => (
-            <>
-              <ListItem key={teamMember.id} alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar alt={`${teamMember.firstName} ${teamMember.lastName}`}/>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={`${teamMember.firstName} ${teamMember.lastName}`}
-                  secondary={
-                    <React.Fragment>
-                      <Typography
-                        sx={{ display: 'inline' }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        {teamMember.role.title}
-                      </Typography>
-                      {` — ${teamMember.email}`}
-                    </React.Fragment>
-                  }  
-                />
-                <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="delete" onClick={() => removeTeamMember(teamMember)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider key={`${teamMember.id}-divider`} variant="inset" component="li" />
-            </>
-          ))
-        }
-      </List>
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom>Current team members</Typography>
+        <List>
+          {
+            teamMembers.map((teamMember) => (
+              <>
+                <ListItem key={teamMember.id} alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar alt={`${teamMember.firstName} ${teamMember.lastName}`}/>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={`${teamMember.firstName} ${teamMember.lastName}`}
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {teamMember.role.title}
+                        </Typography>
+                        {` — ${teamMember.email}`}
+                      </React.Fragment>
+                    }  
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton edge="end" aria-label="delete" onClick={() => removeTeamMember(teamMember)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <Divider key={`${teamMember.id}-divider`} variant="inset" component="li" />
+              </>
+            ))
+          }
+        </List>
+      </Paper>
+      <Box pb={2} />
       
-      <Box 
-        sx={{
-          pb: 2,
-        }}
-      >
+      <Paper elevation={2} sx={{ p: 2 }}>
         <Typography variant="h6" gutterBottom>Add team member</Typography>
         <Form onSubmit={addTeamMember}
           keepDirtyOnReinitialize
@@ -171,8 +178,7 @@ export const ProjectTeamMembers = () => {
             </form>
           )}
         />
-      </Box>
-      
+      </Paper>
     </>
   );
 }

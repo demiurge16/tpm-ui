@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
 import { Grid } from '../../../components/grid/Grid';
 import { ClientType, ClientTypeStatus } from '../../../client/types/client/ClientType';
@@ -126,9 +126,15 @@ export const Index = () => {
         export={tpmClient.clientTypes().export}
         filters={filters}
         columnDefinitions={columnDefs}
+        elevation={2}
       />
       <Box pb={2} />
-      <Button variant="contained" component={Link} to="create">Create</Button>
+
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Button variant="contained" component={Link} to="create">
+          Create new client type
+        </Button>
+      </Paper>
     </Box>
   );
 }

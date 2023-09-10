@@ -12,6 +12,7 @@ import { ProjectExpenses } from "./details/ProjectExpenses";
 import { ProjectTasks } from "./details/ProjectTasks";
 import { ProjectThreads } from "./details/ProjectThreads";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Details = () => {
   const [project, setProject] = useState<Project>({
@@ -78,6 +79,8 @@ export const Details = () => {
     }
   });
 
+  const [loading, setLoading] = useState(true);
+
   const { id } = useParams();
 
   const snackbarContext = useContext(SnackbarContext);
@@ -97,6 +100,7 @@ export const Details = () => {
             { label: 'Project', path: '/projects' },
             { label: response.title, path: `/projects/${response.id}` },
           ]);
+          setLoading(false);
         },
         error: (error) => snackbarContext.showError(`Error loading project ${id}`, error.message)
       });
@@ -115,14 +119,14 @@ export const Details = () => {
     };
   }
 
-  return (
+  return loading ? <LoadingScreen /> : (
     <ProjectContextProvider project={project}>
       <Box>
         <Typography variant="h4" gutterBottom>{project.title}</Typography>
         <Typography variant="subtitle1" gutterBottom>{project.description}</Typography>
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tabs value={value} onChange={handleChange} aria-label="project tabs">
             <Tab label="Details" {...a11yProps(0)} />
             <Tab label="Team members" {...a11yProps(1)} />
             <Tab label="Tasks" {...a11yProps(2)} />

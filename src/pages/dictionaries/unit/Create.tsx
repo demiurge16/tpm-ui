@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateUnit, Measurement } from "../../../client/types/dictionaries/Unit";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
@@ -11,9 +11,11 @@ import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
 import { validateWithSchema } from "../../../utils/validate";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const Create = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
   const tpmClient = useTpmClient();
@@ -33,7 +35,10 @@ export const Create = () => {
       .refdata()
       .measurements()
       .subscribe({
-        next: (data) => setMeasurements(data),
+        next: (data) => {
+          setMeasurements(data);
+          setLoading(false);
+        },
         error: (error) => setServerError(error.message),
       });
 
@@ -71,7 +76,11 @@ export const Create = () => {
         }
       });
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">Create new unit</Typography>
       <Box pb={2} />
@@ -81,27 +90,38 @@ export const Create = () => {
         validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
-            <TextField name="name" label="Name" required />
-            <TextField name="description" label="Description" multiline rows={4} required />
-            <NumberField name="volume" label="Volume" required />
-            <SelectField name="measurement" label="Measurement" required
-              options={
-                measurements.map((e) => ({ key: e.code, value: e.name }))
-              }
-            />
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <TextField name="name" label="Name" required />
+              <TextField name="description" label="Description" multiline rows={4} required />
+              <NumberField name="volume" label="Volume" required />
+              <SelectField name="measurement" label="Measurement" required
+                options={
+                  measurements.map((e) => ({ key: e.code, value: e.name }))
+                }
+              />
+            </Paper>
 
             <Box pb={2} />
+
             {serverError && (
-              <Typography color="error">Error: {serverError}</Typography>
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {serverError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
             )}
-            <Box pb={2} />
 
-            <Button type="submit" disabled={submitting || pristine}>
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
           </form>
         )}
       />

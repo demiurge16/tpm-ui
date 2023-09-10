@@ -36,6 +36,7 @@ export const Index = () => {
         export={tpmClient.currencies().export}
         filters={filters}
         columnDefinitions={columnDefs}
+        elevation={2}
       />
     </Box>
   );

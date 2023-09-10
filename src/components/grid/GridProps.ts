@@ -18,4 +18,5 @@ export interface GridProps<Type> {
   fetch: (search: Search) => Observable<Page<Type>>;
   export?: (search: Partial<Search>) => Observable<any>;
   innerRef?: React.Ref<GridHandle>;
+  elevation?: number;
 }

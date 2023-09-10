@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { CreateThread } from "../../client/types/project/Thread";
 import { Form } from "react-final-form";
 import { array, object, string } from "yup";
@@ -35,8 +35,8 @@ export const Create = () => {
         path: `/projects/${projectId}`
       },
       {
-        label: 'Create Note',
-        path: `/projects/${projectId}/notes/create`
+        label: 'Create Thread',
+        path: `/projects/${projectId}/threads/create`
       }
     ]);
   }, []);
@@ -79,21 +79,34 @@ export const Create = () => {
         validate={(values) => validateWithSchema(validationSchema, values)}
         render={({ handleSubmit, submitting, pristine, values, form }) => (
           <form onSubmit={(event) => event.preventDefault()}>
-            <TextField name="title" label="Title" required/>
-            <MultivalueStringField name="tags" label="Tags" />
-            <EditorField name="content" label="Content" required />
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Title & tags</Typography>
+              <TextField name="title" label="Title" required/>
+              <MultivalueStringField name="tags" label="Tags" />
+            </Paper>
+            <Box pb={2} />
 
-            <Button type="button" disabled={submitting || pristine}
-              onClick={() => {
-                handleSubmit();
-                form.reset();
-              }}
-            >
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Content</Typography>
+              <EditorField name="content" label="Content" required />
+            </Paper>
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="button" disabled={submitting || pristine}
+                  onClick={() => {
+                    handleSubmit();
+                    form.reset();
+                  }}
+                >
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
           </form>
         )}
       />

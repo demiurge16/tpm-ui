@@ -7,7 +7,7 @@ import { CreateExpense } from "../../client/types/project/Expense";
 import { TeamMember } from "../../client/types/project/TeamMember";
 import { forkJoin, map } from "rxjs";
 import TpmClient from "../../client/TpmClient";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Grid, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../components/form-controls/TextField";
 import { SelectField } from "../../components/form-controls/SelectField";
@@ -15,12 +15,14 @@ import { NumberField } from "../../components/form-controls/NumberField";
 import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
 import { DateField } from "../../components/form-controls/DateField";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const [expenseCategories, setExpenseCategories] = useState<Array<ExpenseCategory>>([]);
   const [teamMembers, setTeamMembers] = useState<Array<TeamMember>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const { projectId } = useParams();
 
@@ -54,6 +56,7 @@ export const Create = () => {
       next: (response) => {
         setExpenseCategories(response.expenseCategories.items);
         setTeamMembers(response.teamMembers.items);
+        setLoading(false);
       },
       error: (error) => {
         snackbarContext.showError("Error loading reference data", error.message);
@@ -89,7 +92,11 @@ export const Create = () => {
       });
   };
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">Add new expense</Typography>
       <Box pb={2} />
@@ -98,46 +105,71 @@ export const Create = () => {
         initialValues={initialValues}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
-            <TextField name="description" label="Description" required />
-            <SelectField name="category" label="Category" required
-              options={expenseCategories.map((e) => ({ key: e.id, value: e.name}))}
-            />
-            <NumberField name="amount" label="Amount" required />
-            <AsyncSelectField name="currency" label="Currency" required
-              searchQueryProvider={(search) => (
-                {
-                  page: 0,
-                  pageSize: 25,
-                  sort: [],
-                  filters: [
-                    {
-                      field: 'name',
-                      operator: 'contains',
-                      value: search
-                    }
-                  ]
-                }
-              )}
-              resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
-              optionsLoader={tpmClient.currencies().all}
-            />
-            <DateField name="date" label="Date" required />
-            <SelectField name="teamMemberId" label="Team Member" required
-              options={teamMembers.map((e) => ({ key: e.id, value: e.firstName + ' ' + e.lastName }))}
-            />
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Expense details</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <DateField name="date" label="Date" required />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField name="spenderId" label="Team Member" required
+                    options={teamMembers.map((e) => ({ key: e.userId, value: e.firstName + ' ' + e.lastName }))}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField name="description" label="Description" required multiline rows={2} />
+                </Grid>
+                <Grid item xs={12}>
+                  <SelectField name="category" label="Category" required
+                    options={expenseCategories.map((e) => ({ key: e.id, value: e.name}))}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <NumberField name="amount" label="Amount" required />
+                </Grid>
+                <Grid item xs={6}>
+                  <AsyncSelectField name="currency" label="Currency" required
+                    searchQueryProvider={(search) => (
+                      {
+                        page: 0,
+                        pageSize: 25,
+                        sort: [],
+                        filters: [
+                          {
+                            field: 'name',
+                            operator: 'contains',
+                            value: search
+                          }
+                        ]
+                      }
+                    )}
+                    resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
+                    optionsLoader={tpmClient.currencies().all}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+            <Box pb={2} />
             
-            <Box pb={2} />
             {serverError && (
-              <Typography color="error">Error: {serverError}</Typography>
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {serverError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
             )}
-            <Box pb={2} />
 
-            <Button type="submit" disabled={submitting || pristine}>
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
           </form>
         )} />
     </Box>

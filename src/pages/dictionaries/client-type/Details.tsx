@@ -2,9 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { ClientType } from "../../../client/types/client/ClientType";
 import { Link, useParams } from "react-router-dom";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const Details = () => {
   const [clientType, setClientType] = useState<ClientType>({
@@ -14,6 +15,7 @@ export const Details = () => {
     corporate: false,
     active: false
   });
+  const [loading, setLoading] = useState<boolean>(true);
 
   const { id } = useParams();
   const tpmClient = useTpmClient();
@@ -34,6 +36,7 @@ export const Details = () => {
             { label: 'Client type', path: 'client-types' },
             { label: response.name, path: `client-types/${response.id}` },
           ]);
+          setLoading(false);
         },
         error: (error) => snackbarContext.showError(`Error loading client type ${id}`, error.message)
       });
@@ -69,30 +72,41 @@ export const Details = () => {
       });
   }
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4" gutterBottom>{clientType.name}</Typography>
 
-      <Typography variant="h5" gutterBottom>Description</Typography>
-      <Typography variant="body1" gutterBottom>{clientType.description}</Typography>
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h5" gutterBottom>Description</Typography>
+        <Typography variant="body1" gutterBottom>{clientType.description}</Typography>
+      </Paper>
+      <Box pb={2} />
 
-      <Typography variant="h5" gutterBottom>Details</Typography>
-      <Typography variant="body1">Id: {clientType.id}</Typography>
-      <Typography variant="body1">Corporate: {clientType.corporate ? 'Yes' : 'No'}</Typography>
-      <Typography variant="body1" gutterBottom>Active: {clientType.active ? 'Yes' : 'No'}</Typography>
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h5" gutterBottom>Details</Typography>
+        <Typography variant="body1">Id: {clientType.id}</Typography>
+        <Typography variant="body1">Corporate: {clientType.corporate ? 'Yes' : 'No'}</Typography>
+        <Typography variant="body1" gutterBottom>Active: {clientType.active ? 'Yes' : 'No'}</Typography>
+      </Paper>
+      <Box pb={2} />
 
-      <Typography variant="h5" gutterBottom>Actions</Typography>
-
-      <Box component="span" pr={2}>
-        <Button variant="contained" color="primary" component={Link} to="edit">Edit</Button>
-      </Box>
-      <Box component="span" pr={2}>
-        {
-          clientType.active ? 
-            <Button variant="contained" color="secondary" onClick={deactivate}>Deactivate</Button> :
-            <Button variant="contained" color="secondary" onClick={activate}>Activate</Button>
-        }
-      </Box>
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h5" gutterBottom>Actions</Typography>
+        <Box component="span" pr={2}>
+          <Button variant="contained" color="primary" component={Link} to="edit">Edit</Button>
+        </Box>
+        <Box component="span" pr={2}>
+          {
+            clientType.active ? 
+              <Button variant="contained" color="secondary" onClick={deactivate}>Deactivate</Button> :
+              <Button variant="contained" color="secondary" onClick={activate}>Activate</Button>
+          }
+        </Box>
+      </Paper>
     </Box>
   );
 }

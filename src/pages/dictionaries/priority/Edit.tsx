@@ -2,15 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { UpdatePriority } from "../../../client/types/dictionaries/Priority";
 import { useNavigate, useParams } from "react-router-dom";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const Edit = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [serverError, setServerError] = useState<string | null>(null);
   const [priority, setPriority] = useState<UpdatePriority>({
     name: '',
@@ -39,6 +41,7 @@ export const Edit = () => {
             { label: response.name, path: `/priorities/${response.id}` },
             { label: 'Edit', path: `/priorities/${response.id}/edit` }
           ]);
+          setLoading(false);
         },
         error: (error) => {
           snackbarContext.showError(`Error loading priority ${id}`, error.message);
@@ -65,7 +68,11 @@ export const Edit = () => {
       });
   };
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">Edit {priority.name}</Typography>
       <Box pb={2} />
@@ -79,23 +86,33 @@ export const Edit = () => {
         }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
-            <TextField name="name" label="Name" required />
-            <TextField name="description" label="Description" multiline rows={4} required />
-            <NumberField name="value" label="Value" required />
-            <EmojiPickerField name="emoji" label="Emoji" required />
-
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <TextField name="name" label="Name" required />
+              <TextField name="description" label="Description" multiline rows={4} required />
+              <NumberField name="value" label="Value" required />
+              <EmojiPickerField name="emoji" label="Emoji" required />
+            </Paper>
             <Box pb={2} />
+            
             {serverError && (
-              <Typography color="error">Error: {serverError}</Typography>
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {serverError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
             )}
-            <Box pb={2} />
 
-            <Button type="submit" disabled={submitting || pristine}>
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
           </form>
         )}
       />

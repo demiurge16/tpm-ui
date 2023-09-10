@@ -87,7 +87,7 @@ export const AsyncSelectField = (
               defaultValue={
                 defaultValue instanceof Array || defaultValue instanceof Object
                   ? defaultValue
-                  : null
+                  : (multiple ? [] : null)
               }
               multiple={multiple}
               loading={loading}

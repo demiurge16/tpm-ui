@@ -7,7 +7,6 @@ import { Countries } from './Countries';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
 
 export const Index = () => {
-
   const startPage = 0;
   const pageSize = 25;
 
@@ -112,6 +111,7 @@ export const Index = () => {
         export={tpmClient.countries().export}
         filters={filters}
         columnDefinitions={columnDefs}
+        elevation={2}
       />
     </Box>
   );

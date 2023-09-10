@@ -1,24 +1,20 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Project } from "../../client/types/project/Project";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
-import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
+import { GridHandle } from "../../components/grid/GridProps";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { Projects } from "./Projects";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Grid } from "../../components/grid/Grid";
 import { Link } from "react-router-dom";
 import { forkJoin } from "rxjs";
 import { formatDate } from "../../utils/dateFormatters";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
+import { GridConfig } from "../../components/page/GridConfig";
 
-type GridConfig = {
-  page: number;
-  pageSize: number;
-  columnDefs: Array<ColumnDefinition<Project>>;
-  filters: Array<FilterDefinition>;
-}
+
 
 export const Index = () => {
   const gridRef = useRef<GridHandle>(null);
@@ -28,7 +24,7 @@ export const Index = () => {
   const snackbarContext = useContext(SnackbarContext);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
-  const [gridConfig, setGridConfig] = useState<GridConfig>({
+  const [gridConfig, setGridConfig] = useState<GridConfig<Project>>({
     page: 0,
     pageSize: 25,
     columnDefs: [],
@@ -192,7 +188,9 @@ export const Index = () => {
       <Box pb={2} />
       {
         loading ? (
-          <LoadingScreen />
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
         ) : (
           <>
             <Grid<Project>
@@ -203,11 +201,15 @@ export const Index = () => {
               export={tpmClient.projects().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
+              elevation={2}
             />
             <Box pb={2} />
-            <Button variant="contained" component={Link} to="create">
-              Create
-            </Button>
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Button variant="contained" component={Link} to="create">
+                Create new project
+              </Button>
+            </Paper>
           </>
         )
       }

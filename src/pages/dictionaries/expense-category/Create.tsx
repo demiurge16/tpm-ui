@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateExpenseCategory } from "../../../client/types/dictionaries/ExpenseCategory";
-import TpmClient from "../../../client/TpmClient";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
@@ -47,21 +46,31 @@ export const Create = () => {
         initialValues={{ name: '', description: '' }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
-            <TextField name="name" label="Name" required />
-            <TextField name="description" label="Description" multiline rows={4} required />
-
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <TextField name="name" label="Name" required />
+              <TextField name="description" label="Description" multiline rows={4} required />
+            </Paper>
             <Box pb={2} />
+
             {serverError && (
-              <Typography color="error">Error: {serverError}</Typography>
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {serverError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
             )}
-            <Box pb={2} />
 
-            <Button type="submit" disabled={submitting || pristine}>
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
           </form>
         )}
       />

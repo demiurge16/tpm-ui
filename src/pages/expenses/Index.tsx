@@ -7,7 +7,7 @@ import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { Expense } from "../../client/types/expense/Expense";
 import TpmClient from "../../client/TpmClient";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Grid } from "../../components/grid/Grid";
 import { Expenses } from "./Expenses";
@@ -17,6 +17,7 @@ import { forkJoin } from "rxjs";
 import { User } from "../../client/types/user/User";
 import { Project } from "../../client/types/project/Project";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Index = () => {
   const startPage = 0;
@@ -35,6 +36,7 @@ export const Index = () => {
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Expense>[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     forkJoin({
@@ -54,17 +56,7 @@ export const Index = () => {
             headerName: "Id",
             field: "id",
             resizable: true,
-            lockVisible: true,
-            cellRenderer: (params: any) => {
-              const expense = params.data as Expense;
-              return (
-                <Box>
-                  <Button variant="text" component={Link} to={`${expense.id}`}>
-                    {expense.id}
-                  </Button>
-                </Box>
-              );
-            },
+            lockVisible: true
           },
           {
             headerName: "Date",
@@ -117,35 +109,7 @@ export const Index = () => {
                 </Box>
               );
             },
-          },
-          {
-            headerName: "Actions",
-            field: "actions",
-            resizable: true,
-            cellRenderer: (params: any) => {
-              const expense = params.data as Expense;
-              return (
-                <Box>
-                  <Button
-                    variant="text"
-                    component={Link}
-                    to={`${expense.id}/edit`}
-                    startIcon={<EditIcon />}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="text"
-                    component={Link}
-                    to={`${expense.id}/delete`}
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              );
-            },
-          },
+          }
         ]);
 
         setFilterDefs([
@@ -173,6 +137,8 @@ export const Index = () => {
             projects.map((p) => ({ value: p.id, label: p.title }))
           ),
         ]);
+
+        setLoading(false);
       },
       error: (error) => snackbarContext.showError(error.message, error.response.data.message)
     });
@@ -182,10 +148,15 @@ export const Index = () => {
     ]);
   }, []);
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">{Expenses.title}</Typography>
       <Typography variant="subtitle1">{Expenses.description}</Typography>
+      <Box pb={2} />
       <Grid<Expense>
         innerRef={gridRef}
         startPage={startPage}
@@ -194,6 +165,7 @@ export const Index = () => {
         export={tpmClient.expenses().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
+        elevation={2}
       />
     </Box>
   );

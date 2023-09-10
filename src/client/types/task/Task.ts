@@ -3,12 +3,13 @@ export interface UpdateTask {
   description: string;
   sourceLanguage: string;
   targetLanguage: string;
-  accuracy: string;
-  industry: string;
-  unit: string;
+  accuracyId: string;
+  industryId: string;
+  unitId: string;
+  serviceTypeId: string;
   amount: number;
   budget: number;
-  currency: string;
+  currencyCode: string;
 }
 
 export interface TaskMoveStart {
@@ -36,6 +37,7 @@ export interface Task {
   accuracy: Accuracy;
   industry: Industry;
   unit: Unit;
+  serviceType: ServiceType;
   amount: number;
   expectedStart: Date;
   deadline: Date;
@@ -44,7 +46,7 @@ export interface Task {
   status: TaskStatus;
   priority: Priority;
   assignee: Assignee | null;
-  projectId: string;
+  project: ProjectShortView;
 }
 
 export interface Accuracy {
@@ -85,16 +87,36 @@ export interface Priority {
   value: number
 }
 
+export interface ServiceType {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export type StatusCode = "DRAFT" | "ASSIGNED" | "IN_PROGRESS" | "NEEDS_REVIEW" | "REVISIONS_NEEDED" | "COMPLETED" | "CANCELLED";
 
 export interface TaskStatus {
   status: StatusCode;
-  name: string;
+  title: string;
   description: string;
 }
 
 export interface Unit {
   id: string;
+  name: string;
+  description: string;
+}
+
+export interface ProjectShortView {
+  id: string;
+  title: string;
+  status: ProjectStatus;
+}
+
+export type ProjectStatusCode = "DRAFT" | "READY_TO_START" | "ACTIVE" | "ON_HOLD" | "READY_TO_DELIVER" | "DELIVERED" | "CANCELLED" | "INVOICED" | "PAID";
+
+export interface ProjectStatus {
+  status: ProjectStatusCode;
   name: string;
   description: string;
 }

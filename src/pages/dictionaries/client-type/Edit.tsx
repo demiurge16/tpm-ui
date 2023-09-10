@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
@@ -8,9 +8,11 @@ import { UpdateClientType } from "../../../client/types/client/ClientType";
 import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [clientType, setClientType] = useState<UpdateClientType>({
     name: '',
     description: '',
@@ -37,6 +39,7 @@ export const Edit = () => {
             { label: response.name, path: `/client-types/${response.id}` },
             { label: 'Edit', path: `/client-types/${response.id}/edit` }
           ]);
+          setLoading(false);
         },
         error: (error) => {
           snackbarContext.showError("Error loading client type", error.message);
@@ -63,7 +66,11 @@ export const Edit = () => {
       });
   }
     
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">Edit {clientType.name}</Typography>
       <Box pb={2} />
@@ -72,22 +79,33 @@ export const Edit = () => {
         initialValues={{ name: clientType.name, description: clientType.description, corporate: clientType.corporate }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
-            <TextField name="name" label="Name" required />
-            <TextField name="description" label="Description" multiline rows={4} required />
-            <BooleanField name="corporate" label="Corporate" required />
-
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Client type details</Typography>
+              <TextField name="name" label="Name" required />
+              <TextField name="description" label="Description" multiline rows={4} required />
+              <BooleanField name="corporate" label="Corporate" required />
+            </Paper>
             <Box pb={2} />
+
             {serverError && (
-              <Typography color="error">Error: {serverError}</Typography>
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {serverError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
             )}
-            <Box pb={2} />
 
-            <Button type="submit" disabled={submitting || pristine}>
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
           </form>
         )}
       />

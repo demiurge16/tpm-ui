@@ -11,6 +11,7 @@ import {
   Box,
   Button,
   Chip,
+  Paper,
   Popover,
   TablePagination,
   Tooltip,
@@ -39,7 +40,7 @@ import { LoadingScreen } from "../../pages/utils/LoadingScreen";
 export const Grid = <Type,>(props: GridProps<Type>) => {
   const gridRef = useRef<AgGridReact<Type>>(null);
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles(theme, props.elevation);
 
   useImperativeHandle(props.innerRef, () => ({
     refresh: () => reloadData(query),
@@ -166,7 +167,11 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
   };
 
   const handleQueryChange = (filters: Filter[]) => {
-    setQuery({ ...query, filters: filters });
+    setQuery(prev => {
+      const newQuery = { ...prev, filters: filters };
+      reloadData(newQuery);
+      return newQuery;
+    });
   };
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -212,7 +217,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
   };
 
   return (
-    <div>
+    <Container elevation={props.elevation}>
       <Box sx={{ display: "flex", flexWrap: "wrap" }}>
         <ColumnPicker columnDefinitions={props.columnDefinitions} onColumnDefinitionsChange={handleColumnsChange}/>
 
@@ -307,6 +312,21 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
           />
         </Box>
       </div>
-    </div>
+    </Container>
   );
 };
+
+interface ContainerProps {
+  elevation?: number;
+  children: any;
+}
+
+const Container = ({ elevation, children }: ContainerProps) => {
+  return elevation ? (
+    <Paper elevation={elevation} sx={{ p: 2 }}>
+      {children}
+    </Paper>
+  ) : (
+    <Box sx={{ p: 2 }}>{children}</Box>
+  );
+}

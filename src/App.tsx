@@ -172,16 +172,6 @@ function App() {
       element: <Expenses.Create />,
     },
     {
-      path: "/expenses/:id/edit",
-      roles: ["admin", "project-manager"],
-      element: <Expenses.Edit />,
-    },
-    {
-      path: "/expenses/:id",
-      roles: ["admin", "project-manager"],
-      element: <Expenses.Details />,
-    },
-    {
       path: "/threads",
       roles: [
         "admin",
@@ -547,9 +537,9 @@ function App() {
                 })}
             </Breadcrumbs>
             <Box sx={{ flexGrow: 1 }} />
-            <Search></Search>
-            <Notifications></Notifications>
-            <Messages></Messages>
+            {/* <Search></Search> */}
+            {/* <Notifications></Notifications> */}
+            {/* <Messages></Messages> */}
             <ThemeSwitcher></ThemeSwitcher>
             <LanguageSwitcher></LanguageSwitcher>
             <SettingsMenu></SettingsMenu>

@@ -150,6 +150,7 @@ export const Index = () => {
         export={tpmClient.units().export}
         filters={filters}
         columnDefinitions={columnDefs}
+        elevation={2}
       />
       <Box pb={2} />
       <Button variant="contained" component={Link} to="create">

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Link as MuiLink, List, Typography, Button, Chip } from "@mui/material";
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Link as MuiLink, List, Typography, Button, Chip, Paper } from "@mui/material";
 import { SnackbarContext } from "../../../contexts/SnackbarContext";
 import { useProjectContext } from "./ProjectContext";
 import { Thread } from "../../../client/types/thread/Thread";
@@ -7,13 +7,15 @@ import { Link } from "react-router-dom";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
 import { formatDate } from "../../../utils/dateFormatters";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const ProjectThreads = () => {
   const snackbarContext = useContext(SnackbarContext);
   const { project, setProject } = useProjectContext();
   const tpmClient = useTpmClient();
 
-  const [notes, setNotes] = useState<Thread[]>([]);
+  const [threads, setThreads] = useState<Thread[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!project) return;
@@ -23,55 +25,78 @@ export const ProjectThreads = () => {
       .threads()
       .all()
       .subscribe({
-        next: (response) => setNotes(response.items),
+        next: (response) => {
+          setThreads(response.items);
+          setLoading(false);
+        },
         error: (error) => snackbarContext.showError('Error loading threads', error.message)
       });
   }, [project.id]);
 
-  return (
+  return ( 
     <Box>
       <Typography variant="h5" gutterBottom>Project threads</Typography>
       <Box pb={2} />
       {
-        notes.length === 0 && (
-          <Typography variant="body1" gutterBottom>
-            Project has no open discussions yet. <MuiLink component={Link} to={`threads/create`}>Be first to start one</MuiLink>
-          </Typography>
+        loading ? (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
+        ) : (
+          <>
+            {
+              threads.length === 0 && (
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography variant="body1" gutterBottom>
+                    Project has no open discussions yet. <MuiLink component={Link} to={`threads/create`}>Be first to start one</MuiLink>
+                  </Typography>
+                </Paper>
+              )
+            }
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <List>
+                {threads.map((note) => (
+                  <Card key={note.id} sx={{ mb: 2 }}>
+                    <CardHeader
+                      avatar={
+                        <Avatar sx={{ bgcolor: 'primary.main' }}
+                          aria-label="note"
+                          alt={note.author.firstName + ' ' + note.author.lastName}
+                        />
+                      }
+                      title={note.author.firstName + ' ' + note.author.lastName}
+                      subheader={formatDate(note.createdAt)}
+                      action={note.tags.map((tag) => <Chip key={tag.id} label={tag.name} sx={{ mr: 1 }} />)}
+                    />
+                    <CardContent>
+                      <Typography variant="h5" component="div" gutterBottom>
+                        {note.title}
+                      </Typography>
+                      <HtmlPanel html={note.content} />
+                    </CardContent>
+                    <CardActions disableSpacing>
+                      <Button variant="text"
+                        color="primary"
+                        component={Link}
+                        to={`/threads/${note.id}`}
+                      >
+                        Show thread
+                      </Button>
+                    </CardActions>
+                  </Card>
+                ))}
+              </List>
+            </Paper>
+            <Box pb={2} />
+
+            { threads.length !== 0 && 
+              <Paper elevation={2} sx={{ p: 2 }}>
+                <Button variant="contained" color="primary" component={Link} to="threads/create">Start new thread</Button>
+              </Paper>
+            }
+          </>
         )
       }
-      <List>
-        {notes.map((note) => (
-          <Card key={note.id} sx={{ mb: 2 }}>
-            <CardHeader
-              avatar={
-                <Avatar sx={{ bgcolor: 'primary.main' }}
-                  aria-label="note"
-                  alt={note.author.firstName + ' ' + note.author.lastName}
-                />
-              }
-              title={note.author.firstName + ' ' + note.author.lastName}
-              subheader={formatDate(note.createdAt)}
-              action={note.tags.map((tag) => <Chip key={tag.id} label={tag.name} sx={{ mr: 1 }} />)}
-            />
-            <CardContent>
-              <Typography variant="h5" component="div" gutterBottom>
-                {note.title}
-              </Typography>
-              <HtmlPanel html={note.content} />
-            </CardContent>
-            <CardActions disableSpacing>
-              <Button variant="text"
-                color="primary"
-                component={Link}
-                to={`/threads/${note.id}`}
-              >
-                Show thread
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      </List>
-      { notes.length !== 0 && <MuiLink component={Link} to={`threads/create`}>Create new thread</MuiLink> }
     </Box>
   );
 }

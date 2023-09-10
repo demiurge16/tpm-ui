@@ -4,7 +4,7 @@ import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
 import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { Box, Button, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Users } from "./Users";
 import { Grid } from "../../components/grid/Grid";
@@ -79,6 +79,7 @@ export const Index = () => {
         export={tpmClient.users().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
+        elevation={2}
       />
     </Box>
   );

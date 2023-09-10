@@ -1,18 +1,17 @@
 import { Field } from "react-final-form";
 import { Editor } from "../editor/Editor";
-import { FormControl, FormHelperText, InputBase } from "@mui/material";
+import { FormControl, FormHelperText } from "@mui/material";
 
 export interface EditorInputProps {
   name: string;
   label: string;
   required?: boolean;
-  defaultValue?: string;
 }
 
 export const EditorField = (props: EditorInputProps) => {
-  const { name, label, required, defaultValue } = props;
+  const { name, label, required } = props;
 
-  return <Field name={name} defaultValue={defaultValue}>
+  return <Field name={name}>
     {({ input, meta }) => (
       <FormControl
         fullWidth
@@ -22,7 +21,6 @@ export const EditorField = (props: EditorInputProps) => {
         required={required}
       >
         <Editor
-          initialContent={defaultValue}
           onChange={(content: string, editor: any) => {
             input.onChange(content);
           }}

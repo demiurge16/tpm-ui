@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { useContext, useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Grid } from "../../components/grid/Grid";
@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { SnackbarContext } from "../../contexts/SnackbarContext";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Index = () => {
   const startPage = 0;
@@ -21,6 +22,8 @@ export const Index = () => {
 
   const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Client>>>([]);
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
   const breadcrumbsContext = useContext(BreadcrumbsContext);
   const snackbarContext = useContext(SnackbarContext);
   const tpmClient = useTpmClient();
@@ -139,6 +142,8 @@ export const Index = () => {
         breadcrumbsContext.setBreadcrumbs([
           { label: "Clients", path: "/clients" },
         ]);
+
+        setLoading(false);
       },
       error: (error) => {
         snackbarContext.showError("Error fetching client types", error.message);
@@ -179,19 +184,34 @@ export const Index = () => {
       <Typography variant="h4">{Clients.title}</Typography>
       <Typography variant="subtitle1">{Clients.description}</Typography>
       <Box pb={2} />
-      <Grid<Client>
-        innerRef={gridRef}
-        startPage={startPage}
-        pageSize={pageSize}
-        fetch={tpmClient.clients().all}
-        export={tpmClient.clients().export}
-        filters={filters}
-        columnDefinitions={columnDefs}
-      />
-      <Box pb={2} />
-      <Button variant="contained" component={Link} to="create">
-        Create
-      </Button>
+
+      {
+        loading ? (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
+        ) : (
+          <>
+            <Grid<Client>
+              innerRef={gridRef}
+              startPage={startPage}
+              pageSize={pageSize}
+              fetch={tpmClient.clients().all}
+              export={tpmClient.clients().export}
+              filters={filters}
+              columnDefinitions={columnDefs}
+              elevation={2}
+            />
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Button variant="contained" component={Link} to="create">
+                Create new client
+              </Button>
+            </Paper>
+          </>
+        )
+      }
     </Box>
   );
 };

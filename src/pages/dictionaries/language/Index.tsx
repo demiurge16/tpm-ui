@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { Grid } from '../../../components/grid/Grid';
@@ -8,6 +8,7 @@ import { forkJoin } from 'rxjs';
 import { ColumnDefinition } from '../../../components/grid/GridProps';
 import { Languages } from './Languages';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
+import { LoadingScreen } from '../../utils/LoadingScreen';
 
 export const Index = () => {
   const startPage = 0;
@@ -15,6 +16,7 @@ export const Index = () => {
 
   const [columnDefs, setColumnDefs] = useState<Array<ColumnDefinition<Language>>>([]);
   const [filters, setFilters] = useState<Array<FilterDefinition>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const tpmClient = useTpmClient();
 
@@ -60,6 +62,7 @@ export const Index = () => {
         FilterDefinition.select('scope', 'Scope', scopes.map(scope => ({ value: scope.code, label: scope.name }))),
         FilterDefinition.select('type', 'Type', types.map(type => ({ value: type.code, label: type.name }))),
       ]);
+      setLoading(false);
     });
   }, []);
 
@@ -68,14 +71,25 @@ export const Index = () => {
       <Typography variant="h4">{Languages.title}</Typography>
       <Typography variant="subtitle1">{Languages.description}</Typography>
       <Box pb={2} />
-      <Grid<Language>
-        startPage={startPage}
-        pageSize={pageSize}
-        fetch={tpmClient.languages().all}
-        export={tpmClient.languages().export}
-        filters={filters}
-        columnDefinitions={columnDefs}
-      />
+      {
+        loading ? (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
+        ) : (
+          <>
+            <Grid<Language>
+              startPage={startPage}
+              pageSize={pageSize}
+              fetch={tpmClient.languages().all}
+              export={tpmClient.languages().export}
+              filters={filters}
+              columnDefinitions={columnDefs}
+              elevation={2}
+            />
+          </>
+        )
+      }
     </Box>
   );
 }

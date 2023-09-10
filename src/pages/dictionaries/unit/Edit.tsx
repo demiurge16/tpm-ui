@@ -3,16 +3,18 @@ import { Measurement, UpdateUnit } from '../../../client/types/dictionaries/Unit
 import { useNavigate, useParams } from 'react-router-dom';
 import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { forkJoin } from 'rxjs';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
 import { TextField } from '../../../components/form-controls/TextField';
 import { NumberField } from '../../../components/form-controls/NumberField';
 import { SelectField } from '../../../components/form-controls/SelectField';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
+import { LoadingScreen } from '../../utils/LoadingScreen';
 
 export const Edit = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [serverError, setServerError] = useState<string | null>(null);
   const [unit, setUnit] = useState<UpdateUnit>({
     name: '',
@@ -47,6 +49,7 @@ export const Edit = () => {
           { label: unit.name, path: `/units/${unit.id}` },
           { label: 'Edit', path: `/units/${unit.id}/edit` }
         ]);
+        setLoading(false);
       },
       error: (error) => {
         snackbarContext.showError('Error loading unit', error.message);
@@ -67,7 +70,11 @@ export const Edit = () => {
       });
   };
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">Edit {unit.name}</Typography>
       <Box pb={2} />
@@ -81,27 +88,37 @@ export const Edit = () => {
         }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
-            <TextField name="name" label="Name" required />
-            <TextField name="description" label="Description" multiline rows={4} required />
-            <NumberField name="volume" label="Volume" required />
-            <SelectField name="measurement" label="Measurement" required
-              options={
-                measurements.map((e) => ({ key: e.code as string, value: e.name,}))
-              }
-            />
-
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <TextField name="name" label="Name" required />
+              <TextField name="description" label="Description" multiline rows={4} required />
+              <NumberField name="volume" label="Volume" required />
+              <SelectField name="measurement" label="Measurement" required
+                options={
+                  measurements.map((e) => ({ key: e.code as string, value: e.name,}))
+                }
+              />
+            </Paper>
             <Box pb={2} />
+
             {serverError && (
-              <Typography color="error">Error: {serverError}</Typography>
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {serverError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
             )}
-            <Box pb={2} />
 
-            <Button type="submit" disabled={submitting || pristine}>
-              Submit
-            </Button>
-            <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-              Reset
-            </Button>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
           </form>
         )}
       />

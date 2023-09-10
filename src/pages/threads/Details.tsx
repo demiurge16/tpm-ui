@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Box, Button, Divider, Popover, Typography } from "@mui/material";
+import { Box, Button, Divider, Paper, Popover, Typography } from "@mui/material";
 import { Reply, Thread } from "../../client/types/thread/Thread";
 import { Link, useParams } from "react-router-dom";
 import { SnackbarContext } from "../../contexts/SnackbarContext";
@@ -17,6 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { HtmlPanel } from "../../components/editor/HtmlPanel";
 import { formatDate } from "../../utils/dateFormatters";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Details = () => {
   const snackbarContext = useContext(SnackbarContext);
@@ -56,6 +57,9 @@ export const Details = () => {
   });
   const [replies, setReplies] = useState<Reply[]>([]);
 
+  const [loadingThread, setLoadingThread] = useState<boolean>(true);
+  const [loadingReplies, setLoadingReplies] = useState<boolean>(true);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [replyEditorExpanded, setReplyEditorExpanded] = useState<boolean>();
   
@@ -77,6 +81,11 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setThread(response);
+          breadcrumbsContext.setBreadcrumbs([
+            { label: 'Threads', path: '/threads' },
+            { label: response.title ?? "Thread", path: `/threads/${response.id}` },
+          ]);
+          setLoadingThread(false);
         },
         error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
@@ -88,15 +97,12 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setReplies(response.items);
+          setLoadingReplies(false);
         },
         error: (error) => snackbarContext.showError(error.message, error.response.data.message)
       });
 
-    breadcrumbsContext.setBreadcrumbs([
-      { label: 'Home', path: '/' },
-      { label: 'Threads', path: '/threads' },
-      { label: thread?.title ?? "Thread", path: `/threads/${thread?.id}` },
-    ]);
+    
   }, []);
 
   const handleLike = () => {
@@ -238,99 +244,127 @@ export const Details = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>{thread.title}</Typography>
-      <Typography variant="body1" gutterBottom component="div">
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-          In Project:
-          <Button variant="text" component={Link} to={`/projects/${thread.project.id}`}>
-            {thread.project.title}
-          </Button>
-          <Divider orientation="vertical" flexItem sx={{ mr: 1 }}/>
-          By:
-          <Button variant="text" component={Link} to={`/users/${thread.author.userId}`}>
-            {thread.author.firstName} {thread.author.lastName}
-          </Button>
-          at {formatDate(thread.createdAt)}
-        </Box>
-      </Typography>
-      <HtmlPanel html={thread.content}/>
+      {
+        loadingThread ? (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
+        ) : (
+          <>
+            <Typography variant="h4" gutterBottom>{thread.title}</Typography>
+            <Typography variant="body1" gutterBottom component="div">
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                In Project:
+                <Button variant="text" component={Link} to={`/projects/${thread.project.id}`}>
+                  {thread.project.title}
+                </Button>
+                <Divider orientation="vertical" flexItem sx={{ mr: 1 }}/>
+                By:
+                <Button variant="text" component={Link} to={`/users/${thread.author.userId}`}>
+                  {thread.author.firstName} {thread.author.lastName}
+                </Button>
+                at {formatDate(thread.createdAt)}
+              </Box>
+            </Typography>
+            <Box pb={2} />
 
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <Button variant="text"
-          color={threadLiked() ? 'success' : 'inherit'}
-          startIcon={<ThumbUpIcon />}
-          onClick={() => threadLiked() ? handleUnlike() : handleLike()}
-        >
-          {thread.likes.length} {thread.likes.length === 1 ? 'Like' : 'Likes'}
-        </Button>
-        <Button variant="text"
-          color={threadDisliked() ? 'error' : 'inherit'}
-          startIcon={<ThumbDownIcon />}
-          onClick={() => threadDisliked() ? handleUndislike() : handleDislike()}
-        >
-          {thread.dislikes.length} {thread.dislikes.length === 1 ? 'Dislike' : 'Dislikes'}
-        </Button>
-        <Button variant="text"
-          color={replyEditorExpanded ? 'primary' : 'inherit'}
-          startIcon={replyEditorExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          onClick={handleExpandReplyEditorClick}
-        >
-          Reply
-        </Button>
-        <Button variant="text"
-          startIcon={<EditIcon />}
-          component={Link}
-          to="edit"
-          color="inherit"
-        >
-          Edit
-        </Button>
-        <Button variant="text" startIcon={<MoreVertIcon />} onClick={handleOpen} color="inherit">
-          More
-        </Button>
-        <Popover
-          open={Boolean(anchorEl)}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'flex-start', flexDirection: 'column', p: 2 }}>
-            {
-              Object.entries(statusTransitionHandler[thread.status.status]).map(([status, handler]) => (
-                <Button key={status}
-                  variant="text"
-                  onClick={() => {
-                    handler.action()
-                      .subscribe({
-                        next: (response) => {
-                          setThread((thread) => {
-                            return {
-                              ...thread,
-                              status: response.status
-                            };
-                          });
-                          snackbarContext.showSuccess('Success', 'Thread status changed');
-                        }
-                      });
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <HtmlPanel html={thread.content}/>
+            </Paper>
+            <Box pb={2} />
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                <Button variant="text"
+                  color={threadLiked() ? 'success' : 'inherit'}
+                  startIcon={<ThumbUpIcon />}
+                  onClick={() => threadLiked() ? handleUnlike() : handleLike()}
+                >
+                  {thread.likes.length} {thread.likes.length === 1 ? 'Like' : 'Likes'}
+                </Button>
+                <Button variant="text"
+                  color={threadDisliked() ? 'error' : 'inherit'}
+                  startIcon={<ThumbDownIcon />}
+                  onClick={() => threadDisliked() ? handleUndislike() : handleDislike()}
+                >
+                  {thread.dislikes.length} {thread.dislikes.length === 1 ? 'Dislike' : 'Dislikes'}
+                </Button>
+                <Button variant="text"
+                  color={replyEditorExpanded ? 'primary' : 'inherit'}
+                  startIcon={replyEditorExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  onClick={handleExpandReplyEditorClick}
+                >
+                  Reply
+                </Button>
+                <Button variant="text"
+                  startIcon={<EditIcon />}
+                  component={Link}
+                  to="edit"
+                  color="inherit"
+                >
+                  Edit
+                </Button>
+                <Button variant="text" startIcon={<MoreVertIcon />} onClick={handleOpen} color="inherit">
+                  More
+                </Button>
+                <Popover
+                  open={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
                   }}
                 >
-                  {handler.name}
-                </Button>
-              ))
-            }
-          </Box>
-        </Popover>
-      </Box>
-      {replyEditorExpanded && <ReplyEditor onSend={handleReplySubmit} onCancel={handleReplyCancel}/>}
+                  <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'flex-start', flexDirection: 'column', p: 2 }}>
+                    {
+                      Object.entries(statusTransitionHandler[thread.status.status]).map(([status, handler]) => (
+                        <Button key={status}
+                          variant="text"
+                          onClick={() => {
+                            handler.action()
+                              .subscribe({
+                                next: (response) => {
+                                  setThread((thread) => {
+                                    return {
+                                      ...thread,
+                                      status: response.status
+                                    };
+                                  });
+                                  snackbarContext.showSuccess('Success', 'Thread status changed');
+                                }
+                              });
+                          }}
+                        >
+                          {handler.name}
+                        </Button>
+                      ))
+                    }
+                  </Box>
+                </Popover>
+              </Box>
+              {replyEditorExpanded && <ReplyEditor onSend={handleReplySubmit} onCancel={handleReplyCancel}/>}
+            </Paper>
+          </>
+        )
+      }
+      
       <Divider sx={{ my: 2 }} />
 
-      <Typography variant="h5" gutterBottom>
-        {replies.length} {replies.length === 1 ? 'Reply' : 'Replies'}
-      </Typography>
-      <ReplyTree threadId={thread.id} replies={replies} />
+      {
+        loadingReplies ? (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
+        ) : (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <Typography variant="h5" gutterBottom>
+              {replies.length} {replies.length === 1 ? 'Reply' : 'Replies'}
+            </Typography>
+            <ReplyTree threadId={thread.id} replies={replies} />
+          </Paper>
+        )
+      }
     </Box>
   );
 };
