@@ -18,6 +18,7 @@ import { object, string, array, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
 import { validateWithSchema } from '../../utils/validate';
 import { useTpmClient } from '../../contexts/TpmClientContext';
+import { ServiceType } from '../../client/types/dictionaries/ServiceType';
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -25,6 +26,7 @@ export const Create = () => {
   const [accuracies, setAccuracies] = useState<Array<Accuracy>>([]);
   const [industries, setIndustries] = useState<Array<Industry>>([]);
   const [units, setUnits] = useState<Array<Unit>>([]);
+  const [serviceTypes, setServiceTypes] = useState<Array<ServiceType>>([]);
   const [clients, setClients] = useState<Array<Client>>([]);
 
   const navigate = useNavigate();
@@ -41,6 +43,7 @@ export const Create = () => {
     accuracyId: '',
     industryId: '',
     unitId: '',
+    serviceTypeIds: [],
     amount: 0,
     expectedStart: new Date(),
     internalDeadline: new Date(),
@@ -58,6 +61,7 @@ export const Create = () => {
     accuracyId: string().required('Accuracy is required'),
     industryId: string().required('Industry is required'),
     unitId: string().required('Unit is required'),
+    serviceTypeIds: array().min(1, 'At least one service type is required'),
     amount: number().required('Amount is required')
       .min(1, 'Amount must be greater than or equal to 1'),
     expectedStart: date().required('Expected start date is required'),
@@ -79,14 +83,16 @@ export const Create = () => {
       accuracies: tpmClient.accuracies().all(),
       industries: tpmClient.industries().all(),
       units: tpmClient.units().all(),
+      serviceTypes: tpmClient.serviceTypes().all(),
       clients: tpmClient.clients().all()
     }).subscribe({
       next: (response) => {
-        const { accuracies, industries, units, clients } = response;
+        const { accuracies, industries, units, serviceTypes, clients } = response;
 
         setAccuracies(accuracies.items);
         setIndustries(industries.items);
         setUnits(units.items);
+        setServiceTypes(serviceTypes.items);
         setClients(clients.items);
       },
       error: (error) => {
@@ -214,6 +220,11 @@ export const Create = () => {
                   )}
                   resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
                   optionsLoader={tpmClient.currencies().all}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <SelectField name="serviceTypeIds" label="Service Types" required multiple
+                  options={serviceTypes.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
                 />
               </Grid>
               <Grid item xs={12}>

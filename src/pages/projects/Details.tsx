@@ -38,6 +38,7 @@ export const Details = () => {
       name: '',
       description: ''
     },
+    serviceTypes: [],
     amount: 0,
     expectedStart: new Date(),
     internalDeadline: new Date(),

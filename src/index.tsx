@@ -42,9 +42,9 @@ const Root = () => {
     <ThemeContextProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AuthContextProvider>
-          <TpmClientContextProvider>
-            <BrowserRouter>
+        <BrowserRouter>
+          <AuthContextProvider>
+            <TpmClientContextProvider>
               <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <BreadcrumbsContextProvider>
                   <SnackbarContextProvider>
@@ -54,9 +54,9 @@ const Root = () => {
                   </SnackbarContextProvider>
                 </BreadcrumbsContextProvider>
               </LocalizationProvider>
-            </BrowserRouter>
-          </TpmClientContextProvider>
-        </AuthContextProvider>
+            </TpmClientContextProvider>
+          </AuthContextProvider>
+        </BrowserRouter>
       </ThemeProvider>
     </ThemeContextProvider>
   );

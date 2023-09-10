@@ -31,6 +31,7 @@ const defaultProjectContextValues: ProjectContextValues = {
       name: '',
       description: ''
     },
+    serviceTypes: [],
     amount: 0,
     expectedStart: new Date(),
     internalDeadline: new Date(),

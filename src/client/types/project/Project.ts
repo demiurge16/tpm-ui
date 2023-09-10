@@ -8,6 +8,7 @@ export interface CreateProject {
   accuracyId: string;
   industryId: string;
   unitId: string;
+  serviceTypeIds: string[];
   amount: number;
   expectedStart: Date;
   internalDeadline: Date;
@@ -25,6 +26,7 @@ export interface UpdateProject {
   accuracyId: string;
   industryId: string;
   unitId: string;
+  serviceTypeIds: string[];
   amount: number;
   budget: number;
   currencyCode: string;
@@ -49,6 +51,7 @@ export interface Project {
   accuracy: Accuracy;
   industry: Industry;
   unit: Unit;
+  serviceTypes: ServiceType[];
   amount: number;
   expectedStart: Date;
   internalDeadline: Date;
@@ -99,6 +102,12 @@ export interface ProjectStatus {
 }
 
 export type StatusCode = "DRAFT" | "READY_TO_START" | "ACTIVE" | "ON_HOLD" | "REVIEW" | "READY_TO_DELIVER" | "DELIVERED" | "CANCELLED" | "INVOICED" | "PAID";
+
+export interface ServiceType {
+  id: string;
+  name: string;
+  description: string;
+}
 
 export interface Unit {
   id: string;

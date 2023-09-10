@@ -78,6 +78,7 @@ export const Edit = () => {
           accuracyId: project.accuracy.id,
           industryId: project.industry.id,
           unitId: project.unit.id,
+          serviceTypeIds: project.serviceTypes.map((serviceType) => serviceType.id),
           amount: project.amount,
           budget: project.budget,
           currencyCode: project.currency.code,

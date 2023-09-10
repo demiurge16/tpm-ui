@@ -34,6 +34,7 @@ import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import { Operation } from "./Operation";
 import { useStyles } from "./Styles";
 import { ColumnPicker } from "./ColumnPicker";
+import { LoadingScreen } from "../../pages/utils/LoadingScreen";
 
 export const Grid = <Type,>(props: GridProps<Type>) => {
   const gridRef = useRef<AgGridReact<Type>>(null);
@@ -41,7 +42,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
   const styles = useStyles(theme);
 
   useImperativeHandle(props.innerRef, () => ({
-    refresh: () => reloadData(),
+    refresh: () => reloadData(query),
   }));
 
   const [query, setQuery] = useState<Search>({
@@ -60,16 +61,23 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
     hasPreviousPage: false
   });
 
-  useEffect(() => reloadData(), []);
-  useEffect(() => reloadData(), [query]);
+  useEffect(() => reloadData(query), []);
   useEffect(() => resizeGrid(), [props.columnDefinitions]);
 
   function handleChangePage(event: unknown, newPage: number) {
-    setQuery({ ...query, page: newPage });
+    setQuery(prev => {
+      const newQuery = { ...prev, page: newPage };
+      reloadData(newQuery);
+      return { ...prev, page: newPage };
+    });
   }
 
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement>) {
-    setQuery({ ...query, pageSize: parseInt(event.target.value, 10) });
+    setQuery(prev => {
+      const newQuery = { ...prev, page: 0, pageSize: parseInt(event.target.value, 10) };
+      reloadData(newQuery);
+      return newQuery;
+    });
   }
 
   function handleSortChange(event: SortChangedEvent<Type>) {
@@ -84,7 +92,11 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
           };
         }) || [];
 
-    setQuery({ ...query, sort: sort || [] });
+    setQuery(prev => {
+      const newQuery = { ...prev, sort: sort || [] };
+      reloadData(newQuery);
+      return newQuery;
+    });
   }
 
   const exportData = () => {
@@ -131,7 +143,8 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
       });
   };
 
-  const reloadData = () => {
+  const reloadData = (query: Search) => {
+    gridRef.current?.api?.showLoadingOverlay();
     props
       .fetch({
         page: query.page,
@@ -143,6 +156,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
         next: (data) => {
           setData(data);
           resizeGrid();
+          gridRef.current?.api?.hideOverlay();
         },
       });
   };
@@ -245,7 +259,6 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-
         {
           props.export &&
             <>
@@ -263,7 +276,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
               </Tooltip>
             </>
         }
-        <Button sx={{ mb: 1 }} variant="text" onClick={() => reloadData()}>
+        <Button sx={{ mb: 1 }} variant="text" onClick={() => reloadData(query)}>
           <RefreshIcon sx={{ mr: 1 }} />
           <Typography variant="button">Refresh</Typography>
         </Button>
@@ -280,6 +293,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
           multiSortKey="ctrl"
           suppressDragLeaveHidesColumns={true}
           onSortChanged={(event) => handleSortChange(event)}
+          loadingOverlayComponent={LoadingScreen}
         />
         <Box className={styles.pagination}>
           <TablePagination

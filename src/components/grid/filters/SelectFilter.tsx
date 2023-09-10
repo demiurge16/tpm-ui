@@ -39,7 +39,7 @@ export const SelectFilter = (props: SelectFilterProps) => {
         {
           options.map(option => (
             <MenuItem key={option.value} value={option.value}>
-              <Checkbox checked={value.indexOf(option.value) > -1} />
+              <Checkbox checked={!!value && value.indexOf(option.value) > -1} />
               <ListItemText primary={option.label} />
             </MenuItem>
           ))

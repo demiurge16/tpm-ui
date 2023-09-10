@@ -84,11 +84,15 @@ export const AsyncSelectField = (
             margin="normal"
           >
             <Autocomplete
-              defaultValue={defaultValue ? defaultValue : null}
+              defaultValue={
+                defaultValue instanceof Array || defaultValue instanceof Object
+                  ? defaultValue
+                  : null
+              }
               multiple={multiple}
               loading={loading}
               options={options}
-              getOptionLabel={(option) => option.value}
+              getOptionLabel={(option) => option && option.value}
               onChange={(event, value) => {
                 if (value instanceof Array) {
                   input.onChange(value.map((item) => item.key));

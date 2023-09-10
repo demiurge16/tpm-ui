@@ -125,7 +125,7 @@ export const Index = () => {
           FilterDefinition.select(
             "countryCode",
             "Country",
-            countries.items.map((c) => ({ value: c.code, label: c.name }))
+            countries.items.map((c) => ({ value: c.code, label: c.name.official }))
           ),
           FilterDefinition.string("vat", "VAT"),
           FilterDefinition.select(

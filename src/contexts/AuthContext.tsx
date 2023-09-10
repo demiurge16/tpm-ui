@@ -97,12 +97,8 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
         );
 
         axios.interceptors.response.use(
-          (response) => {
-            return response;
-          },
+          (response) => response,
           (error) => {
-            console.log(error);
-
             if (error.response === undefined) {
               return Promise.reject(error);
             }
@@ -153,9 +149,7 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, logout, userId, username, firstName, lastName, email, roles, hasRole }}>
-      {
-        initialized ? props.children : <LoadingScreen />
-      }
+      { initialized ? props.children : <LoadingScreen /> }
     </AuthContext.Provider>
   );
 };

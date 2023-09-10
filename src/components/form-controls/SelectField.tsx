@@ -15,7 +15,7 @@ export const SelectField = (props: SelectFieldProps) => {
   const labelId = `${name}-label`;
 
   return (
-    <Field name={name} defaultValue={defaultValue}>
+    <Field name={name}>
       {({ input, meta }) => (
         <FormControl variant="outlined" fullWidth margin="normal" error={meta.error && meta.touched}>
           <InputLabel id={labelId}>{label}</InputLabel>
@@ -30,7 +30,9 @@ export const SelectField = (props: SelectFieldProps) => {
           >
             {
               options.map(option => (
-                <MenuItem key={option.key} value={option.key}>{option.value}</MenuItem>
+                <MenuItem key={option.key} value={option.key}>
+                  {option.value}
+                </MenuItem>
               ))
             }
           </Select>

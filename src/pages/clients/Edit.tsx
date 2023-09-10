@@ -110,7 +110,7 @@ export const Edit = () => {
             <TextField name="state" label="State" required />
             <TextField name="zip" label="Zip" required />
             <SelectField name="countryCode" label="Country" required
-              options={countries.map((e) => ({ key: e.code, value: e.name}))} />
+              options={countries.map((e) => ({ key: e.code, value: e.name.official }))} />
             <TextField name="vat" label="VAT" required />
             <TextField name="notes" label="Notes" required />
             <SelectField name="clientTypeId" label="Client type" required
