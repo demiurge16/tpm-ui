@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface Breadcrumb {
   label: string;
@@ -41,3 +41,13 @@ const BreadcrumbsContextProvider = (
 }
 
 export default BreadcrumbsContextProvider;
+
+export const useBreadcrumbsContext = () => {
+  const context = useContext(BreadcrumbsContext);
+
+  if (!context) {
+    throw new Error("useBreadcrumbsContext must be used within a BreadcrumbsContextProvider");
+  }
+
+  return context;
+}

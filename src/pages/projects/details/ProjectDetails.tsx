@@ -1,16 +1,16 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useProjectContext } from "./ProjectContext";
 import { formatDate } from "../../../utils/dateFormatters";
 import { createStatusTransitionHandler } from "./ProjectStatusTransitionHandlers";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { MoveStartDialog } from "./ProjectMoveStartDialog";
 import { MoveDeadlinesDialog } from "./ProjectMoveDeadlinesDialog";
 import { Link } from "react-router-dom";
 
 export const ProjectDetails = () => {
-  const snackbarContext = useContext(SnackbarContext);
+  const { showSuccess, showError } = useSnackbarContext();
   const { project, setProject } = useProjectContext();
   const tpmClient = useTpmClient();
   const statusTransitionHandlers = createStatusTransitionHandler(tpmClient, project.id);
@@ -147,10 +147,10 @@ export const ProjectDetails = () => {
                               status: status.status
                             });
                             
-                            snackbarContext.showSuccess('Success', 'Project status changed');
+                            showSuccess('Success', 'Project status changed');
                           },
                           error: (error) => {
-                            snackbarContext.showError('Failed to change project status', error.message);
+                            showError('Failed to change project status', error.message);
                           }
                         });
                     }}

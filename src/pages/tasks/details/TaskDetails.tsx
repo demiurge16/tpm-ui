@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTaskContext } from "./TaskContext";
 import { Box, Button, Link, Paper, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
@@ -13,10 +13,8 @@ import { createStatusTransitionHandler } from "./TaskStatusTransitionHandlers";
 export const TaskDetails = () => {
   const { task, setTask } = useTaskContext();
   const tpmClient = useTpmClient();
-  const snackbarContext = useContext(SnackbarContext);
+  const { showSuccess, showError } = useSnackbarContext();
   const statusTransitionHandlers = createStatusTransitionHandler(tpmClient, task.id);
-
-  const [loading, setLoading] = useState<boolean>(true);
 
   const [moveStartDialogOpen, setMoveStartDialogOpen] = useState(false);
   const [moveDeadlinesDialogOpen, setMoveDeadlinesDialogOpen] = useState(false);
@@ -54,23 +52,6 @@ export const TaskDetails = () => {
   const closeChangePriorityDialog = () => {
     setChangePriorityDialogOpen(false);
   };
-
-  useEffect(() => {
-    tpmClient
-      .tasks()
-      .withId(task.id)
-      .get()
-      .subscribe({
-        next: (task) => {
-          setTask(task);
-          setLoading(false);
-        },
-        error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
-          setLoading(false);
-        },
-      });
-  }, []);
 
   return (
     <Box>
@@ -212,10 +193,10 @@ export const TaskDetails = () => {
                               status: status.status
                             });
                             
-                            snackbarContext.showSuccess('Success', 'Task status changed');
+                            showSuccess('Success', 'Task status changed');
                           },
                           error: (error) => {
-                            snackbarContext.showError('Failed to change task status', error.message);
+                            showError('Failed to change task status', error.message);
                           }
                         });
                     }}

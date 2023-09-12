@@ -1,9 +1,9 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Project } from "../../client/types/project/Project";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { GridHandle } from "../../components/grid/GridProps";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { Projects } from "./Projects";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Grid } from "../../components/grid/Grid";
@@ -21,8 +21,8 @@ export const Index = () => {
 
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const [gridConfig, setGridConfig] = useState<GridConfig<Project>>({
     page: 0,
@@ -33,7 +33,7 @@ export const Index = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Projects', path: '/projects' }
     ]);
 
@@ -176,10 +176,10 @@ export const Index = () => {
         });
       },
       error: (error) => {
-        snackbarContext.showError("Error loading reference data", error.message);
+        showError("Error loading reference data", error.message);
       }
     });
-  }, []);
+  }, [setBreadcrumbs, showError, tpmClient]);
 
   return (
     <Box>
@@ -198,7 +198,7 @@ export const Index = () => {
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
               fetch={tpmClient.projects().all}
-              export={tpmClient.projects().export}
+              exportData={tpmClient.projects().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

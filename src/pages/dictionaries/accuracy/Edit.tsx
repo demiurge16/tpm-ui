@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { UpdateAccuracy } from "../../../client/types/dictionaries/Accuracy";
 import { useNavigate, useParams } from "react-router-dom";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
@@ -20,8 +20,8 @@ export const Edit = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
 
   useEffect(() => {
     if (!id) return;
@@ -32,7 +32,7 @@ export const Edit = () => {
       .subscribe({
         next: (response) => {
           setAccuracy(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Accuracy', path: '/accuracy' },
             { label: response.name, path: `/accuracy/${response.id}` },
             { label: 'Edit', path: `/accuracy/${response.id}/edit` }
@@ -40,11 +40,11 @@ export const Edit = () => {
           setLoading(false);
         },
         error: (error) => {
-          snackbarContext.showError("Error loading accuracy", error.message);
+          showError("Error loading accuracy", error.message);
           setServerError(error.message);
         }
       });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdateAccuracy) => {
     if (!id) return;
@@ -54,11 +54,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Accuracy updated");
+          showSuccess("Success", "Accuracy updated");
           navigate("/accuracies");
         },
         error: (error) => {
-          snackbarContext.showError("Error updating accuracy", error.message);
+          showError("Error updating accuracy", error.message);
           setServerError(error.message);
         }
       });

@@ -1,6 +1,6 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Editor as TinyMceEditor } from '@tinymce/tinymce-react';
-import { ThemeContext } from '../../contexts/ThemeContext';
+import { useThemeContext } from '../../contexts/ThemeContext';
 
 export interface EditorProps {
   initialContent?: string;
@@ -8,7 +8,7 @@ export interface EditorProps {
 }
 
 export const Editor = (props: EditorProps) => {
-  const themeContext = useContext(ThemeContext);
+  const { theme } = useThemeContext();
   const { initialContent, onChange } = props;
 
   const [content, setContent] = useState(initialContent);
@@ -68,8 +68,8 @@ export const Editor = (props: EditorProps) => {
           noneditable_noneditable_class: 'mceNonEditable',
           toolbar_mode: 'sliding',
           contextmenu: 'link image imagetools table',
-          skin: themeContext.theme === 'dark' ? 'oxide-dark' : 'oxide',
-          content_css: themeContext.theme === 'dark' ? 'dark' : 'default',
+          skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
+          content_css: theme === 'dark' ? 'dark' : 'default',
           promotion: false
         }}
         initialValue={initialContent}

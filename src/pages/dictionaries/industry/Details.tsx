@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Industry } from '../../../client/types/dictionaries/Industry';
 import { Link, useParams } from 'react-router-dom';
-import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, Typography } from '@mui/material';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
@@ -13,8 +13,8 @@ export const Details = () => {
 
   const { id } = useParams();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   useEffect(() => {
@@ -26,15 +26,15 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setIndustry(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Industry', path: 'industry' },
             { label: response.name, path: `industry/${response.id}` },
           ]);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError(`Error loading industry ${id}`, error.message)
+        error: (error) => showError(`Error loading industry ${id}`, error.message)
       });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const activate = () => {
     if (!id) return;
@@ -44,10 +44,10 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Industry ${id} activated`);
+          showSuccess("Success", `Industry ${id} activated`);
           setIndustry({ ...industry, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error activating industry ${id}`, error.message)
+        error: (error) => showError(`Error activating industry ${id}`, error.message)
       });
   }
 
@@ -59,10 +59,10 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Industry ${id} deactivated`);
+          showSuccess("Success", `Industry ${id} deactivated`);
           setIndustry({ ...industry, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error deactivating industry ${id}`, error.message)
+        error: (error) => showError(`Error deactivating industry ${id}`, error.message)
       });
   }
 

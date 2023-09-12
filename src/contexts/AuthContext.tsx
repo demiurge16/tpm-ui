@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useContext } from "react";
 import Keycloak, { KeycloakConfig, KeycloakInitOptions } from "keycloak-js";
 import { createContext, useState, useEffect } from "react";
 import { environment } from "../Environment";
@@ -155,3 +156,13 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
 };
 
 export default AuthContextProvider;
+
+export const useAuth = () => {
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    throw new Error("useAuth must be used within an AuthContextProvider");
+  }
+
+  return authContext;
+}

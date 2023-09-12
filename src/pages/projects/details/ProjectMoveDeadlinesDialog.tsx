@@ -1,10 +1,10 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { Form } from "react-final-form";
 import { DateTimeField } from "../../../components/form-controls/DateTimeField";
 import { ProjectMoveDeadline } from "../../../client/types/project/Project";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useProjectContext } from "./ProjectContext";
 
 export interface MoveDeadlinesDialogProps {
@@ -16,7 +16,7 @@ export interface MoveDeadlinesDialogProps {
 export const MoveDeadlinesDialog = ({ projectId, open, onClose }: MoveDeadlinesDialogProps) => {
   const { project, setProject } = useProjectContext();
   const tpmClient = useTpmClient();
-  const snackbarContext = useContext(SnackbarContext);
+  const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -26,7 +26,7 @@ export const MoveDeadlinesDialog = ({ projectId, open, onClose }: MoveDeadlinesD
       .moveDeadline(data)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Deadlines moved");
+          showSuccess("Success", "Deadlines moved");
           setProject({
             ...project,
             internalDeadline: data.internalDeadline,
@@ -35,7 +35,7 @@ export const MoveDeadlinesDialog = ({ projectId, open, onClose }: MoveDeadlinesD
           onClose();
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.response.data.message || error.message);
         }
       });

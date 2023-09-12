@@ -64,7 +64,7 @@ export const Index = () => {
       ]);
       setLoading(false);
     });
-  }, []);
+  }, [tpmClient]);
 
   return (
     <Box>
@@ -82,7 +82,7 @@ export const Index = () => {
               startPage={startPage}
               pageSize={pageSize}
               fetch={tpmClient.languages().all}
-              export={tpmClient.languages().export}
+              exportData={tpmClient.languages().export}
               filters={filters}
               columnDefinitions={columnDefs}
               elevation={2}

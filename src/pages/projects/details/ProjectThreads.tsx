@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Link as MuiLink, List, Typography, Button, Chip, Paper } from "@mui/material";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useProjectContext } from "./ProjectContext";
 import { Thread } from "../../../client/types/thread/Thread";
 import { Link } from "react-router-dom";
@@ -10,8 +10,8 @@ import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const ProjectThreads = () => {
-  const snackbarContext = useContext(SnackbarContext);
-  const { project, setProject } = useProjectContext();
+  const { showError } = useSnackbarContext();
+  const { project } = useProjectContext();
   const tpmClient = useTpmClient();
 
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -29,9 +29,9 @@ export const ProjectThreads = () => {
           setThreads(response.items);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError('Error loading threads', error.message)
+        error: (error) => showError('Error loading threads', error.message)
       });
-  }, [project.id]);
+  }, [project, project.id, showError, tpmClient]);
 
   return ( 
     <Box>

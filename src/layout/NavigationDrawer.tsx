@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { ElementType, Fragment, useState, useEffect } from "react";
 import { Languages } from "../pages/dictionaries/language/Languages";
 import { Countries } from "../pages/dictionaries/country/Countries";
 import { Currencies } from "../pages/dictionaries/currency/Currencies";
@@ -47,7 +47,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Collapse, ListSubheader } from "@mui/material";
 import { ServiceTypes } from "../pages/dictionaries/service-types/ServiceTypes";
-import { AuthContext, Role } from "../contexts/AuthContext";
+import { Role, useAuth } from "../contexts/AuthContext";
 
 export interface NavigationDrawerProps {
   open: boolean;
@@ -397,7 +397,7 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
 const NavigationDrawerItem = (props: {
   open: boolean;
   index: number;
-  icon: React.ElementType;
+  icon: ElementType;
   label: string;
   path: string;
   roles: Role[];
@@ -405,11 +405,11 @@ const NavigationDrawerItem = (props: {
   const [open, setOpen] = useState(props.open);
   const { index, icon, label, path, roles } = props;
   const location = useLocation();
-  const authContext = useContext(AuthContext);
+  const { hasRole } = useAuth();
 
   useEffect(() => setOpen(props.open), [props.open]);
 
-  return roles.some(authContext.hasRole) ? (
+  return roles.some(hasRole) ? (
     <Link
       key={index}
       component={RouterLink}
@@ -454,7 +454,7 @@ const NavigationDrawerItemGroup = (props: {
   drawerOpen: boolean;
   index: number;
   label: string;
-  icon: React.ElementType;
+  icon: ElementType;
   groups: {
     label?: string;
     items: MenuItem[];
@@ -471,7 +471,7 @@ const NavigationDrawerItemGroup = (props: {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <ListItem disablePadding>
         <ListItemButton
           sx={{
@@ -503,7 +503,7 @@ const NavigationDrawerItemGroup = (props: {
       <Collapse key={index} in={open} timeout="auto" unmountOnExit>
         <List>
           {groups.map((group, groupIndex) => (
-            <React.Fragment key={groupIndex}>
+            <Fragment key={groupIndex}>
               {
                 group.label && (
                   <ListSubheader
@@ -540,10 +540,10 @@ const NavigationDrawerItemGroup = (props: {
                     )
                 )
               }
-            </React.Fragment>
+            </Fragment>
           ))}
         </List>
       </Collapse>
-    </React.Fragment>
+    </Fragment>
   );
 };

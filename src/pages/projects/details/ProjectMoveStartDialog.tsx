@@ -1,12 +1,11 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { Form } from "react-final-form";
 import { DateTimeField } from "../../../components/form-controls/DateTimeField";
 import { ProjectMoveStart } from "../../../client/types/project/Project";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useProjectContext } from "./ProjectContext";
-import { DateTime } from "luxon";
 
 export interface MoveStartDialogProps {
   projectId: string;
@@ -17,7 +16,7 @@ export interface MoveStartDialogProps {
 export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogProps) => {
   const { project, setProject } = useProjectContext();
   const tpmClient = useTpmClient();
-  const snackbarContext = useContext(SnackbarContext);
+  const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -27,7 +26,7 @@ export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogPro
       .moveStart(data)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Start date moved");
+          showSuccess("Success", "Start date moved");
           setProject({
             ...project,
             expectedStart: data.expectedStart
@@ -35,7 +34,7 @@ export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogPro
           onClose();
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.response.data.message || error.message);
         }
       });

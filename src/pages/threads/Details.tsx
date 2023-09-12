@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Divider, Paper, Popover, Typography } from "@mui/material";
 import { Reply, Thread } from "../../client/types/thread/Thread";
 import { Link, useParams } from "react-router-dom";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { AuthContext } from "../../contexts/AuthContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { createStatusTransitionHandler } from "./details/ThreadStatusTransitionsHandlers";
 import { ReplyEditor } from "./details/ReplyEditor";
 import { ReplyTree } from "./details/ReplyTree";
@@ -20,9 +20,9 @@ import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Details = () => {
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const authContext = useContext(AuthContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { userId } = useAuth();
 
   const { id } = useParams();
 
@@ -67,8 +67,8 @@ export const Details = () => {
 
   const statusTransitionHandler = createStatusTransitionHandler(tpmClient, id || '');
 
-  const threadLiked = () => thread.likes.some((like) => like.author.userId === authContext.userId);
-  const threadDisliked = () => thread.dislikes.some((dislike) => dislike.author.userId === authContext.userId);
+  const threadLiked = () => thread.likes.some((like) => like.author.userId === userId);
+  const threadDisliked = () => thread.dislikes.some((dislike) => dislike.author.userId === userId);
 
   useEffect(() => {
     if (!id) {
@@ -81,13 +81,13 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setThread(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Threads', path: '/threads' },
             { label: response.title ?? "Thread", path: `/threads/${response.id}` },
           ]);
           setLoadingThread(false);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
     tpmClient.threads()
@@ -99,11 +99,11 @@ export const Details = () => {
           setReplies(response.items);
           setLoadingReplies(false);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
     
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleLike = () => {
     if (!thread) {
@@ -131,7 +131,7 @@ export const Details = () => {
             ]
           });
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 
@@ -150,7 +150,7 @@ export const Details = () => {
             likes: thread.likes.filter((like) => like.author.userId !== response.author.userId)
           });
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 
@@ -181,7 +181,7 @@ export const Details = () => {
             ]
           });
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 
@@ -200,7 +200,7 @@ export const Details = () => {
             dislikes: thread.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId)
           });
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 
@@ -223,10 +223,10 @@ export const Details = () => {
             ...replies,
             response
           ]);
-          snackbarContext.showSuccess('Success', 'Reply added');
+          showSuccess('Success', 'Reply added');
           setReplyEditorExpanded(false);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 
@@ -331,7 +331,7 @@ export const Details = () => {
                                       status: response.status
                                     };
                                   });
-                                  snackbarContext.showSuccess('Success', 'Thread status changed');
+                                  showSuccess('Success', 'Thread status changed');
                                 }
                               });
                           }}

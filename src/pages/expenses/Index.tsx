@@ -1,17 +1,14 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { useEffect, useRef, useState } from "react";
 import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
 import { ExpenseCategory } from "../../client/types/dictionaries/ExpenseCategory";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { Expense } from "../../client/types/expense/Expense";
-import TpmClient from "../../client/TpmClient";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Grid } from "../../components/grid/Grid";
 import { Expenses } from "./Expenses";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Currency } from "../../client/types/dictionaries/Currency";
 import { forkJoin } from "rxjs";
 import { User } from "../../client/types/user/User";
@@ -30,8 +27,8 @@ export const Index = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
@@ -140,13 +137,13 @@ export const Index = () => {
 
         setLoading(false);
       },
-      error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+      error: (error) => showError(error.message, error.response.data.message)
     });
 
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: "Expenses", path: "/expenses" },
     ]);
-  }, []);
+  }, [currencies, expenseCategories, projects, setBreadcrumbs, showError, tpmClient, users]);
 
   return loading ? (
     <Paper elevation={2} sx={{ p: 2 }}>
@@ -163,7 +160,7 @@ export const Index = () => {
           startPage={startPage}
           pageSize={pageSize}
           fetch={tpmClient.expenses().all}
-          export={tpmClient.expenses().export}
+          exportData={tpmClient.expenses().export}
           filters={filterDefs}
           columnDefinitions={columnDefs}
           elevation={2}

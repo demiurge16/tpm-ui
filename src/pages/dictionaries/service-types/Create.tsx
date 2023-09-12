@@ -1,11 +1,11 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "../../../components/form-controls/TextField";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { object, string } from "yup";
 import { validateWithSchema } from "../../../utils/validate";
 import { CreateServiceType } from "../../../client/types/dictionaries/ServiceType";
@@ -15,27 +15,27 @@ export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
   const tpmClient = useTpmClient();
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: "Service types", path: "/service-types" },
       { label: "Create", path: "/service-types/create" },
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
   const handleSubmit = (data: CreateServiceType) => 
     tpmClient.serviceTypes()
       .create(data)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Priority created");
+          showSuccess("Success", "Priority created");
           navigate("/service-types");
         },
         error: (error) => {
-          snackbarContext.showError("Error creating priority", error.message);
+          showError("Error creating priority", error.message);
           setServerError(error.message);
         }
       });

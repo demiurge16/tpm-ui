@@ -1,18 +1,15 @@
-import { useContext, useState } from "react";
-import {
-  IconButton,
-  Tooltip
-} from "@mui/material";
+import { useState } from "react";
+import { IconButton, Tooltip } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
-import { ThemeContext } from "../contexts/ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 export const ThemeSwitcher = () => {
-  const themeContext = useContext(ThemeContext);
-  const [darkTheme, setDarkTheme] = useState<boolean>(themeContext.theme === "dark"); 
+  const { theme, setTheme } = useThemeContext();
+  const [darkTheme, setDarkTheme] = useState<boolean>(theme === "dark"); 
 
   const handleThemeChange = () => {
     setDarkTheme(prevDarkTheme => {
-      themeContext.setTheme(prevDarkTheme ? "light" : "dark");
+      setTheme(prevDarkTheme ? "light" : "dark");
       return !prevDarkTheme;
     });
   };

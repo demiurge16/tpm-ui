@@ -1,13 +1,12 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
 import { Unit } from '../../client/types/dictionaries/Unit';
-import { Priority } from '../../client/types/dictionaries/Priority';
 import { ServiceType } from '../../client/types/dictionaries/ServiceType';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTpmClient } from '../../contexts/TpmClientContext';
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
+import { useSnackbarContext } from '../../contexts/SnackbarContext';
+import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { Task, UpdateTask } from '../../client/types/task/Task';
 import {  number, object, string } from 'yup';
 import { forkJoin } from 'rxjs';
@@ -34,8 +33,8 @@ export const Edit = () => {
   const tpmClient = useTpmClient();
   const { id } = useParams();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const [initialValues, setInitialValues] = useState<UpdateTask>({
     title: '',
@@ -102,17 +101,17 @@ export const Edit = () => {
         setServiceTypes(serviceTypes.items);
         setLoading(false);
 
-        breadcrumbsContext.setBreadcrumbs([
+        setBreadcrumbs([
           { label: 'Tasks', path: '/tasks' },
           { label: task.title, path: `/tasks/${task.id}` },
           { label: 'Edit', path: `/tasks/${task.id}/edit` }
         ]);
       },
       error: (error) => {
-        snackbarContext.showError('Error loading reference data', error.message);
+        showError('Error loading reference data', error.message);
       }
     });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = async (values: UpdateTask) => {
     if (!id) {
@@ -124,11 +123,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', 'Task updated successfully');
+          showSuccess('Success', 'Task updated successfully');
           navigate(`/tasks/${response.id}`);
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.message);
         }
       });

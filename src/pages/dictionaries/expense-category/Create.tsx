@@ -1,38 +1,38 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateExpenseCategory } from "../../../client/types/dictionaries/ExpenseCategory";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Expense category', path: '/expense-category' },
       { label: 'Create', path: '/expense-category/create' }
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
   const handleSubmit = (data: CreateExpenseCategory) =>
     tpmClient.expenseCategories()
       .create(data)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Expense category created");
+          showSuccess("Success", "Expense category created");
           navigate("/expense-categories");
         },
         error: (error) => {
-          snackbarContext.showError("Error creating expense category", error.message);
+          showError("Error creating expense category", error.message);
           setServerError(error.message);
         }
       });

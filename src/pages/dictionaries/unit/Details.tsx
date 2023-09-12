@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Unit } from "../../../client/types/dictionaries/Unit";
 import { Link, useParams } from "react-router-dom";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
@@ -14,8 +14,8 @@ export const Details = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   useEffect(() => {
     if (!id) return;
 
@@ -25,15 +25,15 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setUnit(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Units', path: 'units' },
             { label: response.name, path: `units/${response.id}` },
           ]);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError(`Error loading unit ${id}`, error.message)
+        error: (error) => showError(`Error loading unit ${id}`, error.message)
       });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const activate = () => {
     if (!id) return;
@@ -43,10 +43,10 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Unit ${id} activated`);
+          showSuccess("Success", `Unit ${id} activated`);
           setUnit({ ...unit, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error activating unit ${id}`, error.message)
+        error: (error) => showError(`Error activating unit ${id}`, error.message)
       });
   }
 
@@ -58,10 +58,10 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Unit ${id} deactivated`);
+          showSuccess("Success", `Unit ${id} deactivated`);
           setUnit({ ...unit, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error deactivating unit ${id}`, error.message)
+        error: (error) => showError(`Error deactivating unit ${id}`, error.message)
       });
   }
 

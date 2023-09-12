@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
@@ -9,8 +9,8 @@ import { Country } from "../../client/types/dictionaries/Country";
 import { ClientType } from "../../client/types/client/ClientType";
 import { UpdateClient } from "../../client/types/client/Client";
 import { forkJoin } from "rxjs";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export interface EditParams {
@@ -24,8 +24,8 @@ export const Edit = () => {
   const [types, setTypes] = useState<Array<ClientType>>([]);
   const [initialValues, setInitialValues] = useState<UpdateClient>({} as UpdateClient);
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ export const Edit = () => {
           clientTypeId: client.type.id
         });
 
-        breadcrumbsContext.setBreadcrumbs([
+        setBreadcrumbs([
           { label: "Clients", path: "/clients" },
           { label: client.name, path: `/clients/${id}` },
           { label: "Edit", path: `/clients/${id}/edit` }
@@ -68,10 +68,10 @@ export const Edit = () => {
       },
       error: (error) => {
         setServerError(error.message);
-        snackbarContext.showError(`Error loading client ${id}`, error.message);
+        showError(`Error loading client ${id}`, error.message);
       }
     });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = async (values: UpdateClient) => {
     if (!id) {
@@ -83,11 +83,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Client updated successfully");
+          showSuccess("Success", "Client updated successfully");
           navigate("/clients");
         },
         error: (error) =>{
-          snackbarContext.showError("Error updating client", error.message);
+          showError("Error updating client", error.message);
           setServerError(error.message);
         }
       });

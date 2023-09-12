@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { ExpenseCategories } from "./ExpenseCategories";
 import { GridHandle } from "../../../components/grid/GridProps";
@@ -8,9 +8,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Grid } from "../../../components/grid/Grid";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Index = () => {
@@ -19,17 +19,17 @@ export const Index = () => {
 
   const gridRef = useRef<GridHandle>(null);
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Expense categories', path: '/expense-categories' }
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
-  const [columnDefs, setColumnDefs] = useState([
+  const columnDefs = [
     {
       headerName: "Id",
       field: "id",
@@ -78,17 +78,17 @@ export const Index = () => {
         );
       }
     }
-  ]);
+  ];
 
   const activate = (id: string, refresh: () => void) => {
     tpmClient.expenseCategories().withId(id).activate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Activated ${id}`);
+          showSuccess("Success", `Activated ${id}`);
           refresh();
         },
         error: (error) => {
-          snackbarContext.showError(`Error activating ${id}`, error.message);
+          showError(`Error activating ${id}`, error.message);
         }
       });
   };
@@ -97,20 +97,20 @@ export const Index = () => {
     tpmClient.expenseCategories().withId(id).deactivate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Deactivated ${id}`);
+          showSuccess("Success", `Deactivated ${id}`);
           refresh();
         },
         error: (error) => {
-          snackbarContext.showError(`Error deactivating ${id}`, error.message);
+          showError(`Error deactivating ${id}`, error.message);
         }
       });
   };
 
-  const [filterDefs, setFilterDefs] = useState([
+  const filterDefs = [
     FilterDefinition.uniqueToken("id", "Id"),
     FilterDefinition.string("name", "Name"),
     FilterDefinition.boolean("active", "Active")
-  ]);
+  ];
 
   return (
     <Box>
@@ -122,7 +122,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={tpmClient.expenseCategories().all}
-        export={tpmClient.expenseCategories().export}
+        exportData={tpmClient.expenseCategories().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
         elevation={2}

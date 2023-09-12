@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GridHandle } from '../../../components/grid/GridProps';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useProjectContext } from './ProjectContext';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Task } from '../../../client/types/task/Task';
@@ -24,8 +24,8 @@ export const ProjectTasks = () => {
     filters: []
   });
 
-  const snackbarContext = useContext(SnackbarContext);
-  const { project, setProject } = useProjectContext();
+  const { showError } = useSnackbarContext();
+  const { project } = useProjectContext();
   const tpmClient = useTpmClient();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -196,10 +196,10 @@ export const ProjectTasks = () => {
         });
       },
       error: (error) => {
-        snackbarContext.showError("Failed to load project tasks", error.message);
+        showError("Failed to load project tasks", error.message);
       }
     });
-  }, []);
+  }, [showError, tpmClient]);
 
   return (
     <Box>
@@ -217,7 +217,7 @@ export const ProjectTasks = () => {
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
               fetch={tpmClient.projects().withId(project.id).tasks().all}
-              export={tpmClient.projects().withId(project.id).tasks().export}
+              exportData={tpmClient.projects().withId(project.id).tasks().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

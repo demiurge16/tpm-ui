@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { Box, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
@@ -10,7 +10,7 @@ interface ReplyEditorProps {
   onCancel?: () => void;
 }
 
-export const ReplyEditor: React.FC<ReplyEditorProps> = (props: ReplyEditorProps) => {
+export const ReplyEditor: FC<ReplyEditorProps> = (props: ReplyEditorProps) => {
   const { initialContent, onSend, onCancel } = props;
   const [content, setContent] = useState<string>(initialContent ?? '');
 

@@ -1,5 +1,6 @@
 import { AgGridReact } from "ag-grid-react";
 import {
+  ChangeEvent,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -37,18 +38,20 @@ import { useStyles } from "./Styles";
 import { ColumnPicker } from "./ColumnPicker";
 import { LoadingScreen } from "../../pages/utils/LoadingScreen";
 
-export const Grid = <Type,>(props: GridProps<Type>) => {
+export const Grid = <Type,>(
+  { startPage, pageSize, columnDefinitions, filters, fetch, exportData, innerRef, elevation }: GridProps<Type>
+) => {
   const gridRef = useRef<AgGridReact<Type>>(null);
   const theme = useTheme();
-  const styles = useStyles(theme, props.elevation);
+  const styles = useStyles(theme, elevation);
 
-  useImperativeHandle(props.innerRef, () => ({
+  useImperativeHandle(innerRef, () => ({
     refresh: () => reloadData(query),
   }));
 
   const [query, setQuery] = useState<Search>({
-    page: props.startPage,
-    pageSize: props.pageSize,
+    page: startPage,
+    pageSize: pageSize,
     sort: new Array<Sort>(),
     filters: new Array<Filter>(),
   });
@@ -63,7 +66,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
   });
 
   useEffect(() => reloadData(query), []);
-  useEffect(() => resizeGrid(), [props.columnDefinitions]);
+  useEffect(() => resizeGrid(), [columnDefinitions]);
 
   function handleChangePage(event: unknown, newPage: number) {
     setQuery(prev => {
@@ -73,7 +76,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
     });
   }
 
-  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleChangeRowsPerPage(event: ChangeEvent<HTMLInputElement>) {
     setQuery(prev => {
       const newQuery = { ...prev, page: 0, pageSize: parseInt(event.target.value, 10) };
       reloadData(newQuery);
@@ -100,12 +103,12 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
     });
   }
 
-  const exportData = () => {
-    if (!props.export) {
+  const exportCurrentPage = () => {
+    if (!exportData) {
       return;
     }
 
-    props.export(query)
+    exportData(query)
       .subscribe({
         next: (data) => {
           const blob = new Blob([data], { type: 'text/csv' });
@@ -123,11 +126,11 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
   };
 
   const exportAllData = () => {
-    if (!props.export) {
+    if (!exportData) {
       return;
     }
 
-    props.export({ sort: query.sort, filters: query.filters })
+    exportData({ sort: query.sort, filters: query.filters })
       .subscribe({
         next: (data) => {
           const blob = new Blob([data], { type: 'text/csv' });
@@ -146,14 +149,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
 
   const reloadData = (query: Search) => {
     gridRef.current?.api?.showLoadingOverlay();
-    props
-      .fetch({
-        page: query.page,
-        pageSize: query.pageSize,
-        sort: query.sort,
-        filters: query.filters,
-      })
-      .subscribe({
+      fetch(query).subscribe({
         next: (data) => {
           setData(data);
           resizeGrid();
@@ -186,13 +182,13 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
 
   const getFilterLabel = (filter: Filter) => {
     const column =
-      props.filters.find((column) => column.id === filter.field)?.name ||
+      filters.find((column) => column.id === filter.field)?.name ||
       filter.field;
     const operator = Operation.getOperationForSymbol(filter.operator).name.toLowerCase();
 
     if (filter.value instanceof Array) {
       const options =
-        props.filters.find((column) => column.id === filter.field)?.options ||
+        filters.find((column) => column.id === filter.field)?.options ||
         [];
       const values = filter.value.map(
         (value) =>
@@ -217,9 +213,9 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
   };
 
   return (
-    <Container elevation={props.elevation}>
+    <Container elevation={elevation}>
       <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-        <ColumnPicker columnDefinitions={props.columnDefinitions} onColumnDefinitionsChange={handleColumnsChange}/>
+        <ColumnPicker columnDefinitions={columnDefinitions} onColumnDefinitionsChange={handleColumnsChange}/>
 
         <Button variant="text" onClick={handleOpenFilters} sx={{ mb: 1 }}>
           <FilterListIcon sx={{ mr: 1 }} />
@@ -257,7 +253,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
         >
           <QueryBuilder
             initialState={query.filters}
-            filters={props.filters}
+            filters={filters}
             onQueryChange={handleQueryChange}
           />
         </Popover>
@@ -265,7 +261,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
         <Box sx={{ flexGrow: 1 }} />
 
         {
-          props.export &&
+          exportData &&
             <>
               <Tooltip title="Export data ignoring pagination settings">
                 <Button sx={{ mb: 1 }} variant="text" onClick={() => exportAllData()}>
@@ -274,7 +270,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
                 </Button>
               </Tooltip>
               <Tooltip title="Export data visible on the grid">
-                <Button sx={{ mb: 1 }} variant="text" onClick={() => exportData()}>
+                <Button sx={{ mb: 1 }} variant="text" onClick={() => exportCurrentPage()}>
                   <DownloadOutlinedIcon sx={{ mr: 1 }} />
                   <Typography variant="button">Export</Typography>
                 </Button>
@@ -292,7 +288,7 @@ export const Grid = <Type,>(props: GridProps<Type>) => {
           domLayout="autoHeight"
           ref={gridRef}
           rowData={data.items}
-          columnDefs={props.columnDefinitions}
+          columnDefs={columnDefinitions}
           animateRows={true}
           rowSelection="multiple"
           multiSortKey="ctrl"

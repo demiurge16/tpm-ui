@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { Chip, TextField as MuiTextField } from '@mui/material';
 import { Field } from 'react-final-form';
 
@@ -47,11 +47,11 @@ export const MultivalueStringField = (props: MultivalueStringInputProps) => {
   const [values, setValues] = useState<Array<string>>(defaultValue ?? []);
   const [inputValue, setInputValue] = useState('');
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, callback: (values: string[]) => void) => {
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLDivElement>, callback: (values: string[]) => void) => {
     if (event.key === 'Enter' && inputValue.trim() !== '') {
       if (values.find((value) => value === inputValue)) {
         setInputValue('');
@@ -80,7 +80,7 @@ export const MultivalueStringField = (props: MultivalueStringInputProps) => {
       {({ input, meta }) => (
         <>
           <MuiTextField
-            label={label}
+            label={required ? `${label} *` : label}
             variant="outlined"
             fullWidth
             value={inputValue}

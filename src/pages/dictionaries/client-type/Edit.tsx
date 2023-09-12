@@ -1,12 +1,12 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate, useParams, } from "react-router-dom";
 import { UpdateClientType } from "../../../client/types/client/ClientType";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
@@ -22,8 +22,8 @@ export const Edit = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   useEffect(() => {
     if (!id) return;
@@ -34,7 +34,7 @@ export const Edit = () => {
       .subscribe({
         next: (response) => {
           setClientType(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Client types', path: '/client-types' },
             { label: response.name, path: `/client-types/${response.id}` },
             { label: 'Edit', path: `/client-types/${response.id}/edit` }
@@ -42,11 +42,11 @@ export const Edit = () => {
           setLoading(false);
         },
         error: (error) => {
-          snackbarContext.showError("Error loading client type", error.message);
+          showError("Error loading client type", error.message);
           setServerError(error.message);
         }
       });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdateClientType) => {
     if (!id) return;
@@ -56,11 +56,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Client type updated");
+          showSuccess("Success", "Client type updated");
           navigate("/client-types");
         },
         error: (error) => {
-          snackbarContext.showError("Error updating client type", error.message);
+          showError("Error updating client type", error.message);
           setServerError(error.message);
         }
       });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { MouseEvent, useState } from "react";
 import { Box, Button, Chip, FormControl, IconButton, InputAdornment, Popover, TextField } from "@mui/material";
 import { CalendarIcon, DateTimePicker, StaticDateTimePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
@@ -50,7 +50,7 @@ export const MultivalueDateTimeFilter = (props: MultivalueDateTimeFilterProps) =
   const [pickerValue, setPickerValue] = useState<Date | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleOpenPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenPicker = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

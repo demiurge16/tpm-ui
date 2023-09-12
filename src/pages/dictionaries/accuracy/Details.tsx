@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Accuracy } from '../../../client/types/dictionaries/Accuracy';
 import { Link, useParams } from 'react-router-dom';
-import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, Typography } from '@mui/material';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
@@ -14,8 +14,8 @@ export const Details = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   useEffect(() => {
     if (!id) return;
@@ -26,15 +26,15 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setAccuracy(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Accuracy', path: '/accuracy' },
             { label: response.name, path: `/accuracy/${response.id}` },
           ]);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError(`Error loading accuracy ${id}`, error.message)
+        error: (error) => showError(`Error loading accuracy ${id}`, error.message)
       });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const activate = () => {
     if (!id) return;
@@ -44,7 +44,7 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => setAccuracy({ ...accuracy, active: response.active }),
-        error: (error) => snackbarContext.showError(`Error activating accuracy ${id}`, error.message)
+        error: (error) => showError(`Error activating accuracy ${id}`, error.message)
       });
   }
 
@@ -56,7 +56,7 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => setAccuracy({ ...accuracy, active: response.active }),
-        error: (error) => snackbarContext.showError(`Error deactivating accuracy ${id}`, error.message)
+        error: (error) => showError(`Error deactivating accuracy ${id}`, error.message)
       });
   }
 

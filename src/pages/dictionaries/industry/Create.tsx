@@ -1,38 +1,38 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateIndustry } from "../../../client/types/dictionaries/Industry";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
   const tpmClient = useTpmClient();
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Industries', path: '/industries' },
       { label: 'Create', path: '/industries/create' }
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
   const handleSubmit = (data: CreateIndustry) =>
     tpmClient.industries()
       .create(data)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Industry created");
+          showSuccess("Success", "Industry created");
           navigate("/industries");
         },
         error: (error) => {
-          snackbarContext.showError("Error creating industry", error.message);
+          showError("Error creating industry", error.message);
           setServerError(error.message);
         }
       });

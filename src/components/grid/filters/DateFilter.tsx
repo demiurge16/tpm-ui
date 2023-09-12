@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { MouseEvent, useState } from "react";
 import {
   Box,
   Button,
@@ -63,7 +63,7 @@ export const MultivalueDateFilter = (props: MultivalueDateFilterProps) => {
   const [pickerValue, setPickerValue] = useState<Date | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleOpenPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenPicker = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { UpdateServiceType } from "../../../client/types/dictionaries/ServiceType";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
@@ -19,8 +19,8 @@ export const Edit = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
   const tpmClient = useTpmClient();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export const Edit = () => {
       .subscribe({
         next: (response) => {
           setPriority(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Service type', path: '/service-types' },
             { label: response.name, path: `/service-types/${response.id}` },
             { label: 'Edit', path: `/service-types/${response.id}/edit` }
@@ -40,11 +40,11 @@ export const Edit = () => {
           setLoading(false);
         },
         error: (error) => {
-          snackbarContext.showError(`Error loading priority ${id}`, error.message);
+          showError(`Error loading priority ${id}`, error.message);
           setServerError(error.message);
         }
       });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdateServiceType) => {
     if (!id) return;
@@ -54,11 +54,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess('Success', 'Service type updated');
+          showSuccess('Success', 'Service type updated');
           navigate('/service-types');
         },
         error: (error) => {
-          snackbarContext.showError("Error updating service type", error.message);
+          showError("Error updating service type", error.message);
           setServerError(error);
         }
       });

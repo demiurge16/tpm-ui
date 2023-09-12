@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GridHandle } from '../../../components/grid/GridProps';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useProjectContext } from './ProjectContext';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Expense } from '../../../client/types/expense/Expense';
@@ -24,8 +24,8 @@ export const ProjectExpenses = () => {
     filters: []
   });
 
-  const snackbarContext = useContext(SnackbarContext);
-  const { project, setProject } = useProjectContext();
+  const { showError } = useSnackbarContext();
+  const { project } = useProjectContext();
   const tpmClient = useTpmClient();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -144,9 +144,9 @@ export const ProjectExpenses = () => {
             };
           });
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
-    }, []);
+    }, [showError, tpmClient]);
 
   return (
     <Box>
@@ -164,7 +164,7 @@ export const ProjectExpenses = () => {
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
               fetch={tpmClient.projects().withId(project.id).expenses().all}
-              export={tpmClient.projects().withId(project.id).expenses().export}
+              exportData={tpmClient.projects().withId(project.id).expenses().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

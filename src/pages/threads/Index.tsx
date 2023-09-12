@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useEffect, useState } from "react";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Thread } from "../../client/types/thread/Thread";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, List, Paper, Typography } from "@mui/material";
 import { Threads } from "./Threads";
@@ -11,8 +11,8 @@ import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Index = () => {
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const tpmClient = useTpmClient();
 
@@ -27,13 +27,13 @@ export const Index = () => {
           setThreads(response.items);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError('Error loading threads', error.message)
+        error: (error) => showError('Error loading threads', error.message)
       });
 
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Threads', path: '/threads' }
     ]);
-  }, []);
+  }, [setBreadcrumbs, tpmClient, showError]);
 
   return (
     <Box>

@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { Thread, UpdateThread } from "../../client/types/thread/Thread";
 import { array, object, string } from "yup";
@@ -14,8 +14,8 @@ import { EditorField } from "../../components/form-controls/EditorField";
 
 export const Edit = () => {
   const { id } = useParams<{ id: string }>();
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
   const navigate = useNavigate();
 
@@ -53,15 +53,15 @@ export const Edit = () => {
             tags: response.tags.map((tag) => tag.name)
           });
 
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Threads', path: '/threads' },
             { label: response.title, path: `/threads/${id}` },
             { label: 'Edit', path: `/threads/${id}/edit` }
           ]);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (thread: UpdateThread) => {
     if (!id) {
@@ -73,10 +73,10 @@ export const Edit = () => {
       .update(thread)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', 'Note updated');
+          showSuccess('Success', 'Note updated');
           navigate(`/threads/${id}`);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 

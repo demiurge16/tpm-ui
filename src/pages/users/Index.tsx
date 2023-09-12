@@ -1,9 +1,8 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { User } from "../../client/types/user/User";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Users } from "./Users";
@@ -18,14 +17,13 @@ export const Index = () => {
 
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<User>[]>([]);
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Users', path: '/users' }
     ]);
 
@@ -64,7 +62,7 @@ export const Index = () => {
       FilterDefinition.string("lastName", "Last name"),
       FilterDefinition.string("email", "Email")
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
   return (
     <Box>
@@ -76,7 +74,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={tpmClient.users().all}
-        export={tpmClient.users().export}
+        exportData={tpmClient.users().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
         elevation={2}

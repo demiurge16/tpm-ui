@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { FormControl, InputLabel, Input, TextField, Chip } from "@mui/material";
 
 export interface StringFilterProps {
@@ -36,11 +36,11 @@ export const MultivalueStringFilter = (props: MultivalueStringFilterProps) => {
   const [values, setValues] = useState<Array<string>>(value ?? []);
   const [inputValue, setInputValue] = useState('');
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' && inputValue.trim() !== '') {
       if (values.find((value) => value === inputValue)) {
         setInputValue('');

@@ -1,14 +1,14 @@
-import { useContext, useEffect } from 'react';
-import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import { useEffect } from 'react';
+import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 
 export const Details = () => {
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Country', path: '/countries' },
       { label: 'Details', path: '/countries/details' },
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
   return (
     <div>

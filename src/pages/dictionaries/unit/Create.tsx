@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateUnit, Measurement } from "../../../client/types/dictionaries/Unit";
 import { Box, Button, Paper, Typography } from "@mui/material";
@@ -6,8 +6,8 @@ import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { SelectField } from "../../../components/form-controls/SelectField";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
 import { validateWithSchema } from "../../../utils/validate";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
@@ -27,8 +27,8 @@ export const Create = () => {
     measurement: 'CHARACTERS'
   };
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
 
   useEffect(() => {
     tpmClient.units()
@@ -42,11 +42,11 @@ export const Create = () => {
         error: (error) => setServerError(error.message),
       });
 
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: "Units", path: "/units" },
       { label: "Create", path: "/units/create" },
     ]);
-  }, []);
+  }, [setBreadcrumbs, tpmClient]);
 
   const validationSchema = object({
     name: string().required("Name is required")
@@ -67,11 +67,11 @@ export const Create = () => {
       .create(data)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Unit created");
+          showSuccess("Success", "Unit created");
           navigate("/units");
         },
         error: (error) => {
-          snackbarContext.showError("Error creating unit", error.message);
+          showError("Error creating unit", error.message);
           setServerError(error.message);
         }
       });

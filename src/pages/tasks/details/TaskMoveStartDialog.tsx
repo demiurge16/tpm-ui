@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { useTaskContext } from "./TaskContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { TaskMoveStart } from "../../../client/types/task/Task";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { Form } from "react-final-form";
@@ -15,7 +15,7 @@ export interface MoveStartDialogProps {
 export const MoveStartDialog = ({ open, onClose }: MoveStartDialogProps) => {
   const { task, setTask } = useTaskContext();
   const tpmClient = useTpmClient();
-  const snackbarContext = useContext(SnackbarContext);
+  const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -25,7 +25,7 @@ export const MoveStartDialog = ({ open, onClose }: MoveStartDialogProps) => {
       .moveStart(data)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", "Start date moved");
+          showSuccess("Success", "Start date moved");
           setTask({
             ...task,
             expectedStart: response.start
@@ -33,7 +33,7 @@ export const MoveStartDialog = ({ open, onClose }: MoveStartDialogProps) => {
           onClose();
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.response.data.message || error.message);
         }
       });

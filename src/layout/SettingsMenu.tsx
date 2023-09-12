@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import { MouseEvent, useState } from "react";
 import { MenuItem } from "./MenuItem";
-import { AuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import Box from "@mui/material/Box/Box";
 import Typography from "@mui/material/Typography/Typography";
 import Tooltip from "@mui/material/Tooltip/Tooltip";
@@ -12,10 +12,10 @@ import Link from "@mui/material/Link/Link";
 import { environment } from "../Environment";
 
 export const SettingsMenu = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const authContext = useContext(AuthContext);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { firstName, lastName, email, logout } = useAuth();
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -24,7 +24,7 @@ export const SettingsMenu = () => {
   };
 
   const handleLogout = () => {
-    authContext?.logout();
+    logout();
     setAnchorEl(null);
   };
 
@@ -32,15 +32,15 @@ export const SettingsMenu = () => {
     <>
       <Box mr={2}>
         <Typography variant="body1" color="inherit">
-          {`${authContext?.firstName} ${authContext?.lastName}`}
+          {`${firstName} ${lastName}`}
         </Typography>
         <Typography variant="body1" color="inherit">
-          {authContext?.email}
+          {email}
         </Typography>
       </Box>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
-          <Avatar alt={`${authContext?.firstName} ${authContext?.lastName}`} src="/static/images/avatar/2.jpg" />
+          <Avatar alt={`${firstName} ${lastName}`} src="/static/images/avatar/2.jpg" />
         </IconButton>
       </Tooltip>
       <Menu id="menu-appbar"

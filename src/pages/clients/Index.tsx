@@ -1,18 +1,18 @@
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { useContext, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Grid } from "../../components/grid/Grid";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { forkJoin } from "rxjs";
 import { Client, ClientStatus } from "../../client/types/client/Client";
 import { ClientType } from "../../client/types/client/ClientType";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
 import { Clients } from "./Clients";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
@@ -24,8 +24,8 @@ export const Index = () => {
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
   const tpmClient = useTpmClient();
   const gridRef = useRef<GridHandle>(null);
 
@@ -35,6 +35,34 @@ export const Index = () => {
       types: tpmClient.clientTypes().all(),
     }).subscribe({
       next: (data) => {
+        const activate = (id: string,refresh: (data: ClientStatus) => void) =>
+          tpmClient.clients()
+            .withId(id)
+            .activate()
+            .subscribe({
+              next: (response) => {
+                showSuccess("Success", `Activated ${id}`);
+                refresh(response);
+              },
+              error: (error) => {
+                showError(`Error activating ${id}`, error.message);
+              },
+            });
+
+        const deactivate = (id: string, refresh: (data: ClientStatus) => void) =>
+          tpmClient.clients()
+            .withId(id)
+            .deactivate()
+            .subscribe({
+              next: (response) => {
+                showSuccess("Success", `Deactivated ${id}`);
+                refresh(response);
+              },
+              error: (error) => {
+                showError(`Error deactivating ${id}`, error.message);
+              },
+            });
+
         setColumnDefs([
           {
             headerName: "Id",
@@ -139,45 +167,17 @@ export const Index = () => {
           FilterDefinition.boolean("active", "Active"),
         ]);
 
-        breadcrumbsContext.setBreadcrumbs([
+        setBreadcrumbs([
           { label: "Clients", path: "/clients" },
         ]);
 
         setLoading(false);
       },
       error: (error) => {
-        snackbarContext.showError("Error fetching client types", error.message);
+        showError("Error fetching client types", error.message);
       },
     });
-  }, []);
-
-  const activate = (id: string,refresh: (data: ClientStatus) => void) =>
-    tpmClient.clients()
-      .withId(id)
-      .activate()
-      .subscribe({
-        next: (response) => {
-          snackbarContext.showSuccess("Success", `Activated ${id}`);
-          refresh(response);
-        },
-        error: (error) => {
-          snackbarContext.showError(`Error activating ${id}`, error.message);
-        },
-      });
-
-  const deactivate = (id: string, refresh: (data: ClientStatus) => void) =>
-    tpmClient.clients()
-      .withId(id)
-      .deactivate()
-      .subscribe({
-        next: (response) => {
-          snackbarContext.showSuccess("Success", `Deactivated ${id}`);
-          refresh(response);
-        },
-        error: (error) => {
-          snackbarContext.showError(`Error deactivating ${id}`, error.message);
-        },
-      });
+  }, [setBreadcrumbs, showError, showSuccess, tpmClient]);
 
   return (
     <Box>
@@ -197,7 +197,7 @@ export const Index = () => {
               startPage={startPage}
               pageSize={pageSize}
               fetch={tpmClient.clients().all}
-              export={tpmClient.clients().export}
+              exportData={tpmClient.clients().export}
               filters={filters}
               columnDefinitions={columnDefs}
               elevation={2}

@@ -1,3 +1,4 @@
+import { Ref } from "react";
 import { ColDef } from "ag-grid-community";
 import { FilterDefinition } from "./FilterDefinition";
 import { Observable } from "rxjs";
@@ -16,7 +17,7 @@ export interface GridProps<Type> {
   columnDefinitions: ColumnDefinition<Type>[];
   filters: FilterDefinition[];
   fetch: (search: Search) => Observable<Page<Type>>;
-  export?: (search: Partial<Search>) => Observable<any>;
-  innerRef?: React.Ref<GridHandle>;
+  exportData?: (search: Partial<Search>) => Observable<any>;
+  innerRef?: Ref<GridHandle>;
   elevation?: number;
 }

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import { Form } from "react-final-form";
@@ -7,8 +7,8 @@ import { TextField } from "../../../components/form-controls/TextField";
 import { CreatePriority } from "../../../client/types/dictionaries/Priority";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
 import { validateWithSchema } from "../../../utils/validate";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
@@ -17,27 +17,27 @@ export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
   const tpmClient = useTpmClient();
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: "Priority", path: "/priorities" },
       { label: "Create", path: "/priorities/create" },
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
   const handleSubmit = (data: CreatePriority) => 
     tpmClient.priorities()
       .create(data)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Priority created");
+          showSuccess("Success", "Priority created");
           navigate("/priorities");
         },
         error: (error) => {
-          snackbarContext.showError("Error creating priority", error.message);
+          showError("Error creating priority", error.message);
           setServerError(error.message);
         }
       });

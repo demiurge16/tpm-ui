@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Paper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
@@ -6,8 +6,8 @@ import { TextField } from "../../../components/form-controls/TextField";
 import { BooleanField } from "../../../components/form-controls/BooleanField";
 import { useNavigate } from "react-router-dom";
 import { CreateClientType } from "../../../client/types/client/ClientType";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 
 
@@ -16,26 +16,26 @@ export const Create = () => {
   const navigate = useNavigate();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Client types', path: '/client-types' },
       { label: 'Create', path: '/client-types/create' }
     ]);
-  }, []);
+  }, [setBreadcrumbs]);
 
   const handleSubmit = async (values: CreateClientType) =>
     tpmClient.clientTypes()
       .create(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess('Success', 'Client type created');
+          showSuccess('Success', 'Client type created');
           navigate("/client-types");
         },
         error: (error) => {
-          snackbarContext.showError('Error creating client type', error.message);
+          showError('Error creating client type', error.message);
           setServerError(error.message);
         }
       });

@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
 import { Unit } from '../../client/types/dictionaries/Unit';
 import { Client } from '../../client/types/client/Client';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTpmClient } from '../../contexts/TpmClientContext';
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
+import { useSnackbarContext } from '../../contexts/SnackbarContext';
+import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { Project, UpdateProject } from '../../client/types/project/Project';
 import { array, number, object, string } from 'yup';
 import { forkJoin } from 'rxjs';
@@ -34,8 +34,8 @@ export const Edit = () => {
   const navigate = useNavigate();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const { id } = useParams();
 
@@ -93,17 +93,17 @@ export const Edit = () => {
         setServiceTypes(serviceTypes.items);
         setClients(clients.items);
 
-        breadcrumbsContext.setBreadcrumbs([
+        setBreadcrumbs([
           { label: 'Projects', path: '/projects' },
           { label: project.title, path: `/projects/${project.id}` },
           { label: 'Edit', path: `/projects/${project.id}/edit` }
         ]);
       },
       error: (error) => {
-        snackbarContext.showError('Error loading reference data', error.message);
+        showError('Error loading reference data', error.message);
       }
     });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdateProject) => {
     if (!id) {
@@ -115,11 +115,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', 'Project updated');
+          showSuccess('Success', 'Project updated');
           navigate(`/projects/${response.id}`);
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.message);
         }
       });

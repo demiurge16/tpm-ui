@@ -1,9 +1,8 @@
 import "./App.scss";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Route, Link as RouterLink, Navigate, Routes } from "react-router-dom";
 import {
   Container,
-  CssBaseline,
   Typography,
   Box,
   IconButton,
@@ -33,14 +32,11 @@ import { SecuredRoute } from "./components/routing/SecuredRoute";
 import MenuIcon from "@mui/icons-material/Menu";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { SettingsMenu } from "./layout/SettingsMenu";
-import { Search } from "./layout/Search";
-import { Notifications } from "./layout/Notifications";
-import { Messages } from "./layout/Messages";
 import { LanguageSwitcher } from "./layout/LanguageSwitcher";
 import { ThemeSwitcher } from "./layout/ThemeSwitcher";
 import { NavigationDrawer } from "./layout/NavigationDrawer";
 import { Errors } from "./pages/errors/Errors";
-import { BreadcrumbsContext } from "./contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "./contexts/BreadcrumbsContext";
 import { environment } from "./Environment";
 import { ServiceTypes } from "./pages/dictionaries/service-types/ServiceTypes";
 import { Role } from "./contexts/AuthContext";
@@ -460,8 +456,8 @@ function App() {
       );
     });
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const currentBreadcrumb = breadcrumbsContext.breadcrumbs;
+  const { breadcrumbs } = useBreadcrumbsContext();;
+  const currentBreadcrumb = breadcrumbs;
 
   const [drawerOpen, setDrawerOpen] = useState(true);
   const toggleDrawer = () => {

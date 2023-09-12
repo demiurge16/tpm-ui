@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Page } from "../../client/types/common/Page";
 import { Autocomplete, CircularProgress, FormControl, TextField } from "@mui/material";
 import { Observable, Subject, debounceTime, map, switchMap } from "rxjs";
 import { Field } from "react-final-form";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { Search } from "../../client/types/common/Search";
 
 type Option = {
@@ -34,7 +34,7 @@ export const AsyncSelectField = (
     defaultValue && defaultValue instanceof Array ? defaultValue : [defaultValue as Option]
   );
 
-  const snackbarContext = useContext(SnackbarContext);
+  const { showError } = useSnackbarContext();
 
   const searchSubject = useRef(new Subject<string>());
 
@@ -64,7 +64,7 @@ export const AsyncSelectField = (
           setLoading(false);
         },
         error: (error) => {
-          snackbarContext.showError("Error", error.message);
+          showError("Error", error.message);
           setLoading(false);
         },
       });

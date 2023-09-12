@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { useTaskContext } from "./TaskContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { Assign } from "../../../client/types/task/Task";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { Form } from "react-final-form";
@@ -16,7 +16,7 @@ export interface ChangeAssigneeDialogProps {
 export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProps) => {
   const { task, setTask } = useTaskContext();
   const tpmClient = useTpmClient();
-  const snackbarContext = useContext(SnackbarContext);
+  const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -32,11 +32,11 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
           setTeamMembers(response.items);
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.response.data.message || error.message);
         }
       });
-  }, []);
+  }, [showError, task.project.id, tpmClient]);
 
   const handleSubmit = (data: Assign) =>
     tpmClient.tasks()
@@ -44,7 +44,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
       .assignTeamMember(data)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", "Assignee changed");
+          showSuccess("Success", "Assignee changed");
           setTask({
             ...task,
             assignee: response.newAssignee
@@ -52,7 +52,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
           onClose();
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.response.data.message || error.message);
         }
       });
@@ -63,7 +63,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
       .unassignTeamMember()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", "Assignee removed");
+          showSuccess("Success", "Assignee removed");
           setTask({
             ...task,
             assignee: null
@@ -71,7 +71,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
           onClose();
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.response.data.message || error.message);
         }
       });

@@ -1,13 +1,13 @@
-import { useContext, useEffect } from "react";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useEffect } from "react";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Paper, Typography } from "@mui/material";
 
 export const Dashboard = () => {
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([]);
-  }, []);
+    setBreadcrumbs([]);
+  }, [setBreadcrumbs]);
 
   return (
     <Paper elevation={2} sx={{ p: 2 }}>

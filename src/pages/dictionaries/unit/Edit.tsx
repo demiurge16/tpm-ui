@@ -1,14 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Measurement, UpdateUnit } from '../../../client/types/dictionaries/Unit';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { forkJoin } from 'rxjs';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
 import { TextField } from '../../../components/form-controls/TextField';
 import { NumberField } from '../../../components/form-controls/NumberField';
 import { SelectField } from '../../../components/form-controls/SelectField';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
@@ -26,17 +26,17 @@ export const Edit = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showError } = useSnackbarContext();
 
   useEffect(() => {
     if (!id) return;
 
     forkJoin({
       unit: tpmClient.units().withId(id).get(),
-      measurement: tpmClient.units().refdata().measurements()
+      measurements: tpmClient.units().refdata().measurements()
     }).subscribe({
-      next: ({unit, measurement}) => {
+      next: ({unit, measurements}) => {
         setUnit({
           name: unit.name,
           description: unit.description,
@@ -44,7 +44,7 @@ export const Edit = () => {
           measurement: unit.measurement.code
         });
         setMeasurements(measurements);
-        breadcrumbsContext.setBreadcrumbs([
+        setBreadcrumbs([
           { label: 'Units', path: '/units' },
           { label: unit.name, path: `/units/${unit.id}` },
           { label: 'Edit', path: `/units/${unit.id}/edit` }
@@ -52,11 +52,11 @@ export const Edit = () => {
         setLoading(false);
       },
       error: (error) => {
-        snackbarContext.showError('Error loading unit', error.message);
+        showError('Error loading unit', error.message);
         setServerError(error.message);
       }
     });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdateUnit) => {
     if (!id) return;

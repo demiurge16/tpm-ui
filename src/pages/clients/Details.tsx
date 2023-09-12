@@ -1,17 +1,17 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { Client } from "../../client/types/client/Client"
 import { Link, useParams } from "react-router-dom";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Details = () => {
   const { id } = useParams();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   const [client, setClient] = useState<Client>({} as Client);
@@ -26,15 +26,15 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setClient(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Client', path: '/clients' },
             { label: response.name, path: `/clients/${response.id}` },
           ]);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError(`Error loading client ${id}`, error.message)
+        error: (error) => showError(`Error loading client ${id}`, error.message)
       });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const activate = () => {
     if (!id) return;
@@ -44,10 +44,10 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', `Client ${id} activated`);
+          showSuccess('Success', `Client ${id} activated`);
           setClient({ ...client, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error activating client ${id}`, error.message),
+        error: (error) => showError(`Error activating client ${id}`, error.message),
       });
   }
 
@@ -59,10 +59,10 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', `Client ${id} deactivated`);
+          showSuccess('Success', `Client ${id} deactivated`);
           setClient({ ...client, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error deactivating client ${id}`, error.message),
+        error: (error) => showError(`Error deactivating client ${id}`, error.message),
       });
   }
 

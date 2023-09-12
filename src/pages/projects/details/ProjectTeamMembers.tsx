@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useEffect, useState } from 'react';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useProjectContext } from './ProjectContext';
 import { CreateTeamMember, Role, TeamMember } from '../../../client/types/project/TeamMember';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { Avatar, Box, Button, Divider, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Paper, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Form } from 'react-final-form';
@@ -12,8 +12,8 @@ import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
 export const ProjectTeamMembers = () => {
-  const snackbarContext = useContext(SnackbarContext);
-  const { project, setProject } = useProjectContext();
+  const { showSuccess, showError } = useSnackbarContext();
+  const { project } = useProjectContext();
   const tpmClient = useTpmClient();
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -39,9 +39,9 @@ export const ProjectTeamMembers = () => {
         setRoles(response.roles);
         setLoading(false);
       },
-      error: (error) => snackbarContext.showError('Error loading reference data', error.message)
+      error: (error) => showError('Error loading reference data', error.message)
     });
-  }, [project.id]);
+  }, [project, project.id, showError, tpmClient]);
 
   const addTeamMember = (teamMember: CreateTeamMember) =>
     tpmClient.projects()
@@ -51,9 +51,9 @@ export const ProjectTeamMembers = () => {
       .subscribe({
         next: (response) => {
           setTeamMembers([...teamMembers, response]);
-          snackbarContext.showSuccess('Success', 'Team member added');
+          showSuccess('Success', 'Team member added');
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
   const removeTeamMember = (teamMember: TeamMember) =>
@@ -64,9 +64,9 @@ export const ProjectTeamMembers = () => {
       .subscribe({
         next: () => {
           setTeamMembers(teamMembers.filter((tm) => tm.id !== teamMember.id));
-          snackbarContext.showSuccess('Success', 'Team member removed');
+          showSuccess('Success', 'Team member removed');
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
   return loading ? (
@@ -88,7 +88,7 @@ export const ProjectTeamMembers = () => {
                   <ListItemText
                     primary={`${teamMember.firstName} ${teamMember.lastName}`}
                     secondary={
-                      <React.Fragment>
+                      <>
                         <Typography
                           sx={{ display: 'inline' }}
                           component="span"
@@ -98,7 +98,7 @@ export const ProjectTeamMembers = () => {
                           {teamMember.role.title}
                         </Typography>
                         {` — ${teamMember.email}`}
-                      </React.Fragment>
+                      </>
                     }  
                   />
                   <ListItemSecondaryAction>

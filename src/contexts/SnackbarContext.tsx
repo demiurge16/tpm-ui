@@ -1,5 +1,5 @@
 import { Alert, AlertTitle, Snackbar } from "@mui/material";
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 type Severity = "success" | "info" | "warning" | "error";
 
@@ -89,3 +89,13 @@ const SnackbarContextProvider = (
 }
 
 export default SnackbarContextProvider;
+
+export const useSnackbarContext = () => {
+  const context = useContext(SnackbarContext);
+
+  if (!context) {
+    throw new Error("useSnackbarContext must be used within a SnackbarContextProvider");
+  }
+
+  return context;
+}

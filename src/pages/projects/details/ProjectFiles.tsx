@@ -1,6 +1,6 @@
-import { useContext, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { GridHandle } from '../../../components/grid/GridProps';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useProjectContext } from './ProjectContext';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Box, Button, Paper, Typography } from '@mui/material';
@@ -24,8 +24,8 @@ export const ProjectFiles = () => {
   });
   const [loading, setLoading] = useState<boolean>(true);
 
-  const snackbarContext = useContext(SnackbarContext);
-  const { project, setProject } = useProjectContext();
+  const { showError } = useSnackbarContext();
+  const { project } = useProjectContext();
   const tpmClient = useTpmClient();
 
   useEffect(() => {
@@ -94,9 +94,9 @@ export const ProjectFiles = () => {
           };
         });
       },
-      error: (error) => snackbarContext.showError(error.message, error.response.data.message),
+      error: (error) => showError(error.message, error.response.data.message),
     });
-  }, []);
+  }, [showError, tpmClient]);
 
   return (
     <Box>
@@ -114,7 +114,7 @@ export const ProjectFiles = () => {
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
               fetch={tpmClient.projects().withId(project.id).files().all}
-              export={tpmClient.projects().withId(project.id).files().export}
+              exportData={tpmClient.projects().withId(project.id).files().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

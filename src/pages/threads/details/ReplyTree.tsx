@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
+import { FC, useState } from "react";
 import { Reply } from "../../../client/types/thread/Thread";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { Accordion, AccordionDetails, AccordionSummary, Avatar, CardActions, CardContent, CardHeader, IconButton, Typography } from "@mui/material";
 import { ReplyEditor } from "./ReplyEditor";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,7 +9,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReplyIcon from '@mui/icons-material/Reply';
 import EditIcon from '@mui/icons-material/Edit';
-import { AuthContext } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
 import { formatDate } from "../../../utils/dateFormatters";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
@@ -35,19 +35,19 @@ const transformToTree = (replies: Reply[]): ReplyMap => {
   return replyMap;
 };
 
-export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
+export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
   const replyMap = transformToTree(replies);
   const [openedReplyEditor, setOpenedReplyEditor] = useState<string | null>(null);
   const [openedEditEditor, setOpenedEditEditor] = useState<string | null>(null);
   const [rerenderCounter, setRerenderCounter] = useState<number>(0); // I hate this, but this is simple
 
-  const snackbarContext = useContext(SnackbarContext);
-  const authContext = useContext(AuthContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { userId } = useAuth();
 
   const tpmClient = useTpmClient();
 
-  const replyLiked = (reply: Reply) => reply.likes.map((e) => e.author.userId).includes(authContext.userId);
-  const replyDisliked = (reply: Reply) => reply.dislikes.map((e) => e.author.userId).includes(authContext.userId);
+  const replyLiked = (reply: Reply) => reply.likes.map((e) => e.author.userId).includes(userId);
+  const replyDisliked = (reply: Reply) => reply.dislikes.map((e) => e.author.userId).includes(userId);
 
   const handleLike = (replyId: string) =>
     tpmClient.replies()
@@ -72,7 +72,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
           reply.likes.push(response);
           setRerenderCounter(rerenderCounter + 1);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   
   const handleUnlike = (replyId: string) =>
@@ -90,7 +90,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
           reply.likes = reply.likes.filter((like) => like.author.userId !== response.author.userId);
           setRerenderCounter(rerenderCounter + 1);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
   const handleDislike = (replyId: string) =>
@@ -116,7 +116,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
           reply.dislikes.push(response);
           setRerenderCounter(rerenderCounter + 1);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   
   const handleUndislike = (replyId: string) =>
@@ -134,7 +134,7 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
           reply.dislikes = reply.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId);
           setRerenderCounter(rerenderCounter + 1);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
   const toggleReplyEditor = (replyId: string) => {
@@ -158,10 +158,10 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
         next: (response) => {
           replies.push(response);
           setRerenderCounter(rerenderCounter + 1);
-          snackbarContext.showSuccess('Success', 'Reply added');
+          showSuccess('Success', 'Reply added');
           setOpenedReplyEditor(null);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
     setOpenedReplyEditor(null);
@@ -197,10 +197,10 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
           reply.content = response.content;
           setRerenderCounter(rerenderCounter + 1);
 
-          snackbarContext.showSuccess('Success', 'Reply updated');
+          showSuccess('Success', 'Reply updated');
           setOpenedEditEditor(null);
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 
@@ -217,9 +217,9 @@ export const ReplyTree: React.FC<ReplyTreeProps> = ({ threadId, replies }) => {
           replies = replies.filter((e) => e.id !== replyId);
           setRerenderCounter(rerenderCounter + 1);
 
-          snackbarContext.showSuccess('Success', 'Reply deleted');
+          showSuccess('Success', 'Reply deleted');
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
 
   const renderReplies = (replyId: string): JSX.Element[] => {

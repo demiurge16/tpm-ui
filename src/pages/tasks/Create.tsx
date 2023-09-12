@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
+import { useEffect, useState } from 'react';
+import { useSnackbarContext } from '../../contexts/SnackbarContext';
+import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { useNavigate, useParams } from 'react-router-dom';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
 import { Industry } from '../../client/types/dictionaries/Industry';
 import { Unit } from '../../client/types/dictionaries/Unit';
@@ -35,8 +35,8 @@ export const Create = () => {
   const tpmClient = useTpmClient();
   const { projectId } = useParams();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const initialValues: CreateTask = {
     title: '',
@@ -74,7 +74,7 @@ export const Create = () => {
   });
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Projects', path: '/projects' },
       { label: 'Project', path: `/projects/${projectId}` },
       { label: 'Create Task', path: '/projects/tasks/create' }
@@ -98,10 +98,10 @@ export const Create = () => {
         setLoading(false);
       },
       error: (error) => {
-        snackbarContext.showError('Error loading reference data', error.message);
+        showError('Error loading reference data', error.message);
       }
     });
-  }, []);
+  }, [projectId, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = async (values: CreateTask) => {
     if (!projectId) {
@@ -115,11 +115,11 @@ export const Create = () => {
       .create(values)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', 'Task created');
+          showSuccess('Success', 'Task created');
           navigate(`/tasks/${response.id}`);
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.message);
         }
       });

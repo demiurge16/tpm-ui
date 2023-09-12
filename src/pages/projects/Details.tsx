@@ -1,9 +1,9 @@
-import React, { SyntheticEvent, useEffect, useState, useContext } from "react";
+import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { Project } from "../../client/types/project/Project"
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import ProjectContextProvider from "./details/ProjectContext";
 import { ProjectDetails } from "./details/ProjectDetails";
 import { ProjectTeamMembers } from "./details/ProjectTeamMembers";
@@ -83,8 +83,8 @@ export const Details = () => {
 
   const { id } = useParams();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   useEffect(() => {
@@ -96,15 +96,15 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setProject(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Project', path: '/projects' },
             { label: response.title, path: `/projects/${response.id}` },
           ]);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError(`Error loading project ${id}`, error.message)
+        error: (error) => showError(`Error loading project ${id}`, error.message)
       });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
 
   const [value, setValue] = useState(0);
@@ -159,7 +159,7 @@ export const Details = () => {
 };
 
 interface TabPanelProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }

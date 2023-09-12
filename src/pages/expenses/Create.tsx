@@ -1,12 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ExpenseCategory } from "../../client/types/expense/Expense";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { CreateExpense } from "../../client/types/project/Expense";
 import { TeamMember } from "../../client/types/project/TeamMember";
-import { forkJoin, map } from "rxjs";
-import TpmClient from "../../client/TpmClient";
+import { forkJoin } from "rxjs";
 import { Box, Button, Grid, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../components/form-controls/TextField";
@@ -28,8 +27,8 @@ export const Create = () => {
 
   const navigate = useNavigate();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
   const initialValues: CreateExpense = {
@@ -59,16 +58,16 @@ export const Create = () => {
         setLoading(false);
       },
       error: (error) => {
-        snackbarContext.showError("Error loading reference data", error.message);
+        showError("Error loading reference data", error.message);
         setServerError(error.message);
       }
     });
 
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: "Expenses", path: "/expenses" },
       { label: "Create", path: "/expenses/create" },
     ]);
-  }, [projectId]);
+  }, [projectId, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: CreateExpense) => {
     if (!projectId) {
@@ -82,11 +81,11 @@ export const Create = () => {
       .create(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Expense created");
+          showSuccess("Success", "Expense created");
           navigate(`/projects/${projectId}`);
         },
         error: (error) => {
-          snackbarContext.showError("Error creating expense", error.message);
+          showError("Error creating expense", error.message);
           setServerError(error.message);
         }
       });

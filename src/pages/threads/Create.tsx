@@ -1,7 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { CreateThread } from "../../client/types/project/Thread";
 import { Form } from "react-final-form";
@@ -13,8 +13,8 @@ import { useTpmClient } from "../../contexts/TpmClientContext";
 
 export const Create = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const tpmClient = useTpmClient();
 
@@ -25,7 +25,7 @@ export const Create = () => {
   };
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       {
         label: 'Projects',
         path: '/projects'
@@ -39,7 +39,7 @@ export const Create = () => {
         path: `/projects/${projectId}/threads/create`
       }
     ]);
-  }, []);
+  }, [projectId, setBreadcrumbs]);
 
   const handleSubmit = (thread: CreateThread) => {
     if (!projectId) {
@@ -52,9 +52,9 @@ export const Create = () => {
       .create(thread)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', 'Note added');
+          showSuccess('Success', 'Note added');
         },
-        error: (error) => snackbarContext.showError(error.message, error.response.data.message)
+        error: (error) => showError(error.message, error.response.data.message)
       });
   };
 

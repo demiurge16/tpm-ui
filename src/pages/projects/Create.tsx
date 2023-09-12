@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CreateProject } from "../../client/types/project/Project";
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { BreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
+import { useSnackbarContext } from '../../contexts/SnackbarContext';
+import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { useNavigate } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
 import { Accuracy } from '../../client/types/dictionaries/Accuracy';
@@ -32,8 +32,8 @@ export const Create = () => {
   const navigate = useNavigate();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const initialValues: CreateProject = {
     title: '',
@@ -74,7 +74,7 @@ export const Create = () => {
   });
 
   useEffect(() => {
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Projects', path: '/projects' },
       { label: 'Create Project', path: '/projects/create' }
     ]);
@@ -96,21 +96,21 @@ export const Create = () => {
         setClients(clients.items);
       },
       error: (error) => {
-        snackbarContext.showError('Error loading reference data', error.message);
+        showError('Error loading reference data', error.message);
       }
     });
-  }, []);
+  }, [setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = async (values: CreateProject) =>
     tpmClient.projects()
       .create(values)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess('Success', 'Project created');
+          showSuccess('Success', 'Project created');
           navigate(`/projects/${response.id}`);
         },
         error: (error) => {
-          snackbarContext.showError('Error creating project', error.message);
+          showError('Error creating project', error.message);
           setServerError(error.message);
         }
       });

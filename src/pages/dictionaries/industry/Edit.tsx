@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UpdateIndustry } from '../../../client/types/dictionaries/Industry';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, TextField, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
@@ -17,8 +17,8 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const {  setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
   const tpmClient = useTpmClient();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export const Edit = () => {
       .subscribe({
         next: (response) => {
           setIndustry(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Industry', path: '/industry' },
             { label: response.name, path: `/industry/${response.id}` },
             { label: 'Edit', path: `/industry/${response.id}/edit` }
@@ -38,11 +38,11 @@ export const Edit = () => {
           setLoading(false);
         },
         error: (error) => {
-          snackbarContext.showError("Error loading industry", error.message);
+          showError("Error loading industry", error.message);
           setServerError(error.message);
         }
       });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdateIndustry) => {
     if (!id) return;
@@ -52,11 +52,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess('Success', 'Industry updated');
+          showSuccess('Success', 'Industry updated');
           navigate('/industries')
         },
         error: (error) => {
-          snackbarContext.showError("Error updating industry", error.message);
+          showError("Error updating industry", error.message);
           setServerError(error.message);
         }
       });

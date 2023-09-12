@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Priority } from '../../../client/types/dictionaries/Priority';
 import { Link, useParams } from 'react-router-dom';
-import { BreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
+import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, Typography } from '@mui/material';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
@@ -13,8 +13,8 @@ export const Details = () => {
 
   const { id } = useParams();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
   
   useEffect(() => {
@@ -26,15 +26,15 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setPriority(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Priority', path: 'priority' },
             { label: response.name, path: `priority/${response.id}` },
           ]);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError(`Error loading priority ${id}`, error.message)
+        error: (error) => showError(`Error loading priority ${id}`, error.message)
       });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const activate = () => {
     if (!id) return;
@@ -44,7 +44,7 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => setPriority({ ...priority, active: response.active }),
-        error: (error) => snackbarContext.showError(`Error activating priority ${id}`, error.message)
+        error: (error) => showError(`Error activating priority ${id}`, error.message)
       });
   }
 
@@ -56,7 +56,7 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => setPriority({ ...priority, active: response.active }),
-        error: (error) => snackbarContext.showError(`Error deactivating priority ${id}`, error.message)
+        error: (error) => showError(`Error deactivating priority ${id}`, error.message)
       });
   }
 

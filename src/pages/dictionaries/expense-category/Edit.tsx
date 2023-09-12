@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { UpdateExpenseCategory } from "../../../client/types/dictionaries/ExpenseCategory";
 import { useNavigate, useParams } from "react-router-dom";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
@@ -20,8 +20,8 @@ export const Edit = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   useEffect(() => {
     if (!id) return;
@@ -32,7 +32,7 @@ export const Edit = () => {
       .subscribe({
         next: (response) => {
           setExpenseCategory(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Expense category', path: '/expense-category' },
             { label: response.name, path: `/expense-category/${response.id}` },
             { label: 'Edit', path: `/expense-category/${response.id}/edit` }
@@ -40,11 +40,11 @@ export const Edit = () => {
           setLoading(false);
         },
         error: (error) => {
-          snackbarContext.showError("Success", "Error loading expense category");
+          showError("Success", "Error loading expense category");
           setServerError(error);
         }
       });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdateExpenseCategory) => {
     if (!id) return;
@@ -54,11 +54,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess("Success", "Expense category updated");
+          showSuccess("Success", "Expense category updated");
           navigate("/expense-categories");
         },
         error: (error) => {
-          snackbarContext.showError("Error updating expense category", error.message);
+          showError("Error updating expense category", error.message);
           setServerError(error);
         }
       });

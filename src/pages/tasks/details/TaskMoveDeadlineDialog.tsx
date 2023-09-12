@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { useTaskContext } from "./TaskContext";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { TaskMoveDeadline } from "../../../client/types/task/Task";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { Form } from "react-final-form";
@@ -15,7 +15,7 @@ export interface MoveDeadlineDialogProps {
 export const MoveDeadlineDialog = ({ open, onClose }: MoveDeadlineDialogProps) => {
   const { task, setTask } = useTaskContext();
   const tpmClient = useTpmClient();
-  const snackbarContext = useContext(SnackbarContext);
+  const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -25,7 +25,7 @@ export const MoveDeadlineDialog = ({ open, onClose }: MoveDeadlineDialogProps) =
       .moveDeadline(data)
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", "Deadline moved");
+          showSuccess("Success", "Deadline moved");
           setTask({
             ...task,
             deadline: response.deadline
@@ -33,7 +33,7 @@ export const MoveDeadlineDialog = ({ open, onClose }: MoveDeadlineDialogProps) =
           onClose();
         },
         error: (error) => {
-          snackbarContext.showError(error.message, error.response.data.message);
+          showError(error.message, error.response.data.message);
           setServerError(error.response.data.message || error.message);
         }
       });

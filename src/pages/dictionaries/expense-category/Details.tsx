@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ExpenseCategory } from "../../../client/types/dictionaries/ExpenseCategory";
 import { Link, useParams } from "react-router-dom";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
@@ -14,8 +14,8 @@ export const Details = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
   
   useEffect(() => {
     if (!id) return;
@@ -26,15 +26,15 @@ export const Details = () => {
       .subscribe({
         next: (response) => {
           setExpenseCategory(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Expense category', path: 'expense-category' },
             { label: response.name, path: `expense-category/${response.id}` },
           ]);
           setLoading(false);
         },
-        error: (error) => snackbarContext.showError(`Error loading expense category ${id}`, error.message)
+        error: (error) => showError(`Error loading expense category ${id}`, error.message)
       });
-  }, []);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const activate = () => {
     if (!id) return;
@@ -44,10 +44,10 @@ export const Details = () => {
       .activate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Expense category ${id} activated`);
+          showSuccess("Success", `Expense category ${id} activated`);
           setExpenseCategory({ ...expenseCategory, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error activating expense category ${id}`, error.message)
+        error: (error) => showError(`Error activating expense category ${id}`, error.message)
       });
   }
 
@@ -59,10 +59,10 @@ export const Details = () => {
       .deactivate()
       .subscribe({
         next: (response) => {
-          snackbarContext.showSuccess("Success", `Expense category ${id} deactivated`);
+          showSuccess("Success", `Expense category ${id} deactivated`);
           setExpenseCategory({ ...expenseCategory, active: response.active });
         },
-        error: (error) => snackbarContext.showError(`Error deactivating expense category ${id}`, error.message)
+        error: (error) => showError(`Error deactivating expense category ${id}`, error.message)
       });
   }
 

@@ -1,13 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { UpdatePriority } from "../../../client/types/dictionaries/Priority";
 import { useNavigate, useParams } from "react-router-dom";
-import { BreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
@@ -24,8 +24,8 @@ export const Edit = () => {
   const { id } = useParams();
   const tpmClient = useTpmClient();
 
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-  const snackbarContext = useContext(SnackbarContext);
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { showSuccess, showError } = useSnackbarContext();
 
   useEffect(() => {
     if (!id) return;
@@ -36,7 +36,7 @@ export const Edit = () => {
       .subscribe({
         next: (response) => {
           setPriority(response);
-          breadcrumbsContext.setBreadcrumbs([
+          setBreadcrumbs([
             { label: 'Priority', path: '/priorities' },
             { label: response.name, path: `/priorities/${response.id}` },
             { label: 'Edit', path: `/priorities/${response.id}/edit` }
@@ -44,11 +44,11 @@ export const Edit = () => {
           setLoading(false);
         },
         error: (error) => {
-          snackbarContext.showError(`Error loading priority ${id}`, error.message);
+          showError(`Error loading priority ${id}`, error.message);
           setServerError(error.message);
         }
       });
-  }, [id]);
+  }, [id, setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = (values: UpdatePriority) => {
     if (!id) return;
@@ -58,11 +58,11 @@ export const Edit = () => {
       .update(values)
       .subscribe({
         next: () => {
-          snackbarContext.showSuccess('Success', 'Priority updated');
+          showSuccess('Success', 'Priority updated');
           navigate('/priorities');
         },
         error: (error) => {
-          snackbarContext.showError("Error updating priority", error.message);
+          showError("Error updating priority", error.message);
           setServerError(error);
         }
       });

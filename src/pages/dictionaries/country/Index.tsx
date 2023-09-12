@@ -1,5 +1,4 @@
 import { Box, Typography } from '@mui/material';
-import { useState } from 'react';
 import { Grid } from '../../../components/grid/Grid';
 import { Country } from '../../../client/types/dictionaries/Country';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
@@ -10,7 +9,7 @@ export const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
-  const [columnDefs, setColumnDefs] = useState([
+  const columnDefs = [
     {
       headerName: 'Code',
       field: 'code',
@@ -90,12 +89,12 @@ export const Index = () => {
         );
       }
     }
-  ]);
+  ];
 
-  const [filters, setFilters] = useState<FilterDefinition[]>([
+  const filters = [
     FilterDefinition.string('id.value', 'Code'),
     FilterDefinition.string('name', 'Name')
-  ]);
+  ];
 
   const tpmClient = useTpmClient();
 
@@ -108,7 +107,7 @@ export const Index = () => {
         startPage={startPage}
         pageSize={pageSize}
         fetch={tpmClient.countries().all}
-        export={tpmClient.countries().export}
+        exportData={tpmClient.countries().export}
         filters={filters}
         columnDefinitions={columnDefs}
         elevation={2}

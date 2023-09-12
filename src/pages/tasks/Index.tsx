@@ -1,16 +1,14 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ColumnDefinition, GridHandle } from "../../components/grid/GridProps";
-import { SnackbarContext } from "../../contexts/SnackbarContext";
+import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { Task } from "../../client/types/task/Task";
 import { forkJoin } from "rxjs";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { Grid } from "../../components/grid/Grid";
 import { Tasks } from "./Tasks";
-import { BreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { formatDate } from "../../utils/dateFormatters";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
@@ -21,8 +19,8 @@ export const Index = () => {
 
   const gridRef = useRef<GridHandle>(null);
 
-  const snackbarContext = useContext(SnackbarContext);
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
@@ -188,14 +186,14 @@ export const Index = () => {
         setLoading(false);
       },
       error: (error) => {
-        snackbarContext.showError("Failed to load project tasks", error.message);
+        showError("Failed to load project tasks", error.message);
       }
     });
 
-    breadcrumbsContext.setBreadcrumbs([
+    setBreadcrumbs([
       { label: 'Tasks', path: '/tasks' }
     ]);
-  }, []);
+  }, [setBreadcrumbs, showError, tpmClient]);
 
   return (
     <Box>
@@ -213,7 +211,7 @@ export const Index = () => {
             startPage={startPage}
             pageSize={pageSize}
             fetch={tpmClient.tasks().all}
-            export={tpmClient.tasks().export}
+            exportData={tpmClient.tasks().export}
             filters={filterDefs}
             columnDefinitions={columnDefs}
             elevation={2}
