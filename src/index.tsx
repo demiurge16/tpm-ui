@@ -16,7 +16,7 @@ import { CssBaseline } from "@mui/material";
 
 const darkTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "dark"
   },
   typography: {
     fontFamily: `"Roboto", "Helvetica Neue", "Arial", "Noto Color Emoji", "sans-serif"`,

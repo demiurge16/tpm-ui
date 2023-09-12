@@ -11,7 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { forkJoin } from 'rxjs';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
-import { GridConfig } from '../../../components/page/GridConfig';
+import { GridConfig } from '../../../components/grid/GridConfig';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
 export const ProjectExpenses = () => {

@@ -1,5 +1,5 @@
-import { FilterDefinition } from "../grid/FilterDefinition";
-import { ColumnDefinition } from "../grid/GridProps";
+import { FilterDefinition } from "./FilterDefinition";
+import { ColumnDefinition } from "./GridProps";
 
 export interface GridConfig<Type> {
   page: number;

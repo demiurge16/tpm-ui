@@ -153,20 +153,22 @@ export const Index = () => {
       <LoadingScreen />
     </Paper>
   ) : (
-    <Box>
+    <>
       <Typography variant="h4">{Expenses.title}</Typography>
       <Typography variant="subtitle1">{Expenses.description}</Typography>
-      <Box pb={2} />
-      <Grid<Expense>
-        innerRef={gridRef}
-        startPage={startPage}
-        pageSize={pageSize}
-        fetch={tpmClient.expenses().all}
-        export={tpmClient.expenses().export}
-        filters={filterDefs}
-        columnDefinitions={columnDefs}
-        elevation={2}
-      />
-    </Box>
+      <Box>
+        <Box pb={2} />
+        <Grid<Expense>
+          innerRef={gridRef}
+          startPage={startPage}
+          pageSize={pageSize}
+          fetch={tpmClient.expenses().all}
+          export={tpmClient.expenses().export}
+          filters={filterDefs}
+          columnDefinitions={columnDefs}
+          elevation={2}
+        />
+      </Box>
+    </>
   );
 };

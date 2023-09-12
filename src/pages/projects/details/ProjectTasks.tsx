@@ -11,7 +11,7 @@ import { forkJoin } from 'rxjs';
 import { formatDate } from '../../../utils/dateFormatters';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { Link } from 'react-router-dom';
-import { GridConfig } from '../../../components/page/GridConfig';
+import { GridConfig } from '../../../components/grid/GridConfig';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 
 export const ProjectTasks = () => {

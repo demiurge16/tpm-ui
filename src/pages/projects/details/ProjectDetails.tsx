@@ -48,6 +48,11 @@ export const ProjectDetails = () => {
           Industry: {`${project.industry.name} (${project.industry.description})`}
         </Typography>
         <Typography variant="body1">
+          Service types: {
+            project.serviceTypes.map((serviceType) => `${serviceType.name} (${serviceType.description})`).join(', ')
+          }
+        </Typography>
+        <Typography variant="body1">
           Project size: {`${project.amount} ${project.unit.name}`}
         </Typography>
         <Typography variant="body1" gutterBottom>

@@ -69,9 +69,6 @@ export const MoveDeadlinesDialog = ({ projectId, open, onClose }: MoveDeadlinesD
               <Box pb={2} />
             </DialogContent>
             <DialogActions>
-              <Button type="submit" disabled={submitting || pristine}>
-                Move deadlines
-              </Button>
               <Button type="button"
                 disabled={submitting}
                 onClick={() => {
@@ -80,6 +77,9 @@ export const MoveDeadlinesDialog = ({ projectId, open, onClose }: MoveDeadlinesD
                 }}
               >
                 Cancel
+              </Button>
+              <Button type="submit" variant="contained" color="primary" disabled={submitting || pristine}>
+                Move deadlines
               </Button>
             </DialogActions>
           </form>

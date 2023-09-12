@@ -1,36 +1,34 @@
 import { useContext, useState } from "react";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { useTaskContext } from "./TaskContext";
+import { SnackbarContext } from "../../../contexts/SnackbarContext";
+import { TaskMoveStart } from "../../../client/types/task/Task";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { DateTimeField } from "../../../components/form-controls/DateTimeField";
-import { ProjectMoveStart } from "../../../client/types/project/Project";
-import { SnackbarContext } from "../../../contexts/SnackbarContext";
-import { useProjectContext } from "./ProjectContext";
-import { DateTime } from "luxon";
 
 export interface MoveStartDialogProps {
-  projectId: string;
   open: boolean;
   onClose: () => void;
 }
 
-export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogProps) => {
-  const { project, setProject } = useProjectContext();
+export const MoveStartDialog = ({ open, onClose }: MoveStartDialogProps) => {
+  const { task, setTask } = useTaskContext();
   const tpmClient = useTpmClient();
   const snackbarContext = useContext(SnackbarContext);
 
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const handleSubmit = (data: ProjectMoveStart) =>
-    tpmClient.projects()
-      .withId(projectId)
+  const handleSubmit = (data: TaskMoveStart) =>
+    tpmClient.tasks()
+      .withId(task.id)
       .moveStart(data)
       .subscribe({
-        next: () => {
+        next: (response) => {
           snackbarContext.showSuccess("Success", "Start date moved");
-          setProject({
-            ...project,
-            expectedStart: data.expectedStart
+          setTask({
+            ...task,
+            expectedStart: response.start
           });
           onClose();
         },
@@ -40,7 +38,7 @@ export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogPro
         }
       });
 
-  return project.expectedStart && (
+  return task.expectedStart && (
     <Dialog
       open={open}
       onClose={onClose}
@@ -52,13 +50,13 @@ export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogPro
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={{
-          expectedStart: project.expectedStart
+          expectedStart: task.expectedStart
         }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogTitle id="move-start-dialog-title">Move start date</DialogTitle>
             <DialogContent>
-              <DateTimeField name="expectedStart" label="Expected Start" required />
+              <DateTimeField name="expectedStart" label="Expected start" required />
 
               <Box pb={2} />
               {serverError && (
@@ -67,18 +65,8 @@ export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogPro
               <Box pb={2} />
             </DialogContent>
             <DialogActions>
-              <Button type="button"
-                disabled={submitting}
-                onClick={() => {
-                  form.reset();
-                  onClose();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" variant="contained" color="primary" disabled={submitting || pristine}>
-                Move start date
-              </Button>
+              <Button onClick={onClose}>Cancel</Button>
+              <Button variant="contained" color="primary" type="submit" disabled={submitting || pristine}>Move</Button>
             </DialogActions>
           </form>
         )}

@@ -21,7 +21,7 @@ export interface TaskMoveDeadline {
 }
 
 export interface Assign {
-  teamMemberId: string;
+  userId: string;
 }
 
 export interface ChangePriority {
@@ -56,7 +56,6 @@ export interface Accuracy {
 }
 
 export interface Assignee {
-  teamMemberId: string;
   userId: string;
   firstName: string;
   lastName: string;
@@ -93,7 +92,7 @@ export interface ServiceType {
   description: string;
 }
 
-export type StatusCode = "DRAFT" | "ASSIGNED" | "IN_PROGRESS" | "NEEDS_REVIEW" | "REVISIONS_NEEDED" | "COMPLETED" | "CANCELLED";
+export type StatusCode = "DRAFT" | "ASSIGNED" | "IN_PROGRESS" | "IN_REVIEW" | "ON_HOLD" | "READY_TO_DELIVER" | "COMPLETED" | "CANCELLED";
 
 export interface TaskStatus {
   status: StatusCode;
@@ -133,7 +132,7 @@ export interface TaskDeadlineMoved {
 
 export interface Assigned {
   id: string;
-  assignee: Assignee;
+  newAssignee: Assignee;
 }
 
 export interface PriorityChanged {

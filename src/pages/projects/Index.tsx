@@ -12,7 +12,7 @@ import { forkJoin } from "rxjs";
 import { formatDate } from "../../utils/dateFormatters";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
-import { GridConfig } from "../../components/page/GridConfig";
+import { GridConfig } from "../../components/grid/GridConfig";
 
 
 
