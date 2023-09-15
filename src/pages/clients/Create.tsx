@@ -64,8 +64,7 @@ export const Create = () => {
   }, [setBreadcrumbs, showError, tpmClient]);
 
   const handleSubmit = async (values: CreateClient) =>
-    tpmClient
-      .clients()
+    tpmClient.clients()
       .create(values)
       .subscribe({
         next: () => {

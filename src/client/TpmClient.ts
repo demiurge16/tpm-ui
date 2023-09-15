@@ -71,8 +71,20 @@ export default class TpmClient {
 
   private post<TRequest, TResponse>(path: string, body: TRequest): Observable<TResponse> {
     return new Observable((observer) => {
-      axios
-        .post(`${this.baseUrl}/${path}`, body)
+      axios.post(`${this.baseUrl}/${path}`, body)
+        .then((response) => {
+          observer.next(response.data);
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error(error);
+        });
+    });
+  }
+
+  private postMultipart<TResponse>(path: string, body: FormData): Observable<TResponse> {
+    return new Observable((observer) => {
+      axios.post(`${this.baseUrl}/${path}`, body, { headers: { "Content-Type": "multipart/form-data" } })
         .then((response) => {
           observer.next(response.data);
           observer.complete();
@@ -190,7 +202,7 @@ export default class TpmClient {
             return {
               all: (search?: Partial<Search>): Observable<Page<File>> => this.get(`project/${id}/file`, search),
               export: (search?: Partial<Search>): Observable<unknown> => this.get(`project/${id}/file/export`, search, { responseType: "blob" }),
-              create: (body: any) => this.post(`project/${id}/file`, body),
+              create: (body: any) => this.postMultipart(`project/${id}/file`, body),
             };
           },
         };
@@ -384,8 +396,7 @@ export default class TpmClient {
       withId: (id: string) => {
         return {
           get: (): Observable<File> => this.get(`file/${id}`),
-          // TODO handle file download
-          download: () => this.get(`file/${id}/download`),
+          download: () => this.get(`file/${id}/download`, {}, { responseType: "blob" }),
           delete: () => this.delete(`file/${id}`),
         };
       },

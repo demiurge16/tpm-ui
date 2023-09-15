@@ -153,7 +153,12 @@ export const Grid = <Type,>(
         next: (data) => {
           setData(data);
           resizeGrid();
-          gridRef.current?.api?.hideOverlay();
+
+          if (data.items.length === 0) {
+            gridRef.current?.api?.showNoRowsOverlay();
+          } else {
+            gridRef.current?.api?.hideOverlay();
+          }
         },
       });
   };
