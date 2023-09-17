@@ -21,7 +21,6 @@
   * [Diagramy stanów](#diagramy-stanów)
   * [Diagram infrastruktury](#diagram-infrastruktury)
   * [Zasady projektowania systemu](#zasady-projektowania-systemu)
-    * [Filozofia projektu](#filozofia-projektu)
     * [Domain-driven design (DDD)](#domain-driven-design-ddd)
     * [Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)](#architektura-heksagonalna-czyli-wzorzec-porty-i-adaptery-ha)
     * [Wstrzykiwanie zależności (DI)](#wstrzykiwanie-zależności-di)
@@ -279,7 +278,7 @@ Cele i założenia koncepcji aplikacji systemu zarządzania projektami tłumacze
 2. **Ułatwienie komunikacji i współpracy**: Aplikacja zapewni kierownikom projektów i tłumaczom narzędzia do komunikacji i współpracy nad projektami, co pomoże zwiększyć efektywność procesu tłumaczenia.
 3. **Usprawnienie zarządzania zasobami**: Poprzez dostarczenie narzędzi do śledzenia i raportowania czasu i budżetu, aplikacja pomoże kierownikom projektów w bardziej efektywnym zarządzaniu zasobami.
 4. **Zapewnienie widoczności i kontroli**: Aplikacja zapewni zautomatyzowane raportowanie i analitykę, aby pomóc kierownikom projektów w śledzeniu postępów projektu, alokacji zasobów i budżetu, co pomoże poprawić widoczność i kontrolę nad projektem.
-5. **Zapewnienie przyjazności dla użytkownika**: aplikacja będzie miała łatwy w użyciu interfejs, dzięki czemu będzie dostępna dla użytkowników o każdym poziomie umiejętności.
+5. **Zapewnienie przyjazności dla użytkownika**: Aplikacja będzie miała łatwy w użyciu interfejs, dzięki czemu będzie dostępna dla użytkowników o każdym poziomie umiejętności.
 6. **Zapewnienie bezpeiczeństwa**: Aplikacja będzie posiadała solidne zabezpieczenia chroniące dane projektu oraz dane użytkowników.
 7. **Aspekty techniczne**: Aplikacja będzie elastyczna i skalowalna, aby dostosować się do rosnących potrzeb i wymagań klienta.
 
@@ -291,11 +290,11 @@ Aplikacja będzie zawierała następujące funkcje:
 
 1. **Zarządzanie projektami**: Aplikacja zapewni narzędzia do zarządzania projektami tłumaczeniowymi, takie jak tworzenie i edytowanie projektów, przydzielanie zadań oraz śledzenie postępów projektu. Jest to podstawowa funkcja aplikacji, która pomoże usprawnić przepływ pracy tłumaczeniowej. Dla każdego projektu mozna będzie zdefiniować nazwę, opis, szczegóły realizacji, powiązanie z klientem, języki, terminy, oraz budżet. Powstanie też funkcjonalność zarządzania zespołem projektowym oraz centralne repozytorium plików projektu.
 2. **Komunikacja i współpraca**: W celach komunikacji w ramach każdego projektu powstanie funkcjonalność tworzenia wątków komunikacyjnych, które będą zawierały temat wątku, treść, oraz możliwość zostawienia komentarzy i reakcji. Każdy wątek będzie miał możliwość zamrożenia, zamknięcia i ponownego otwarcia, co pozwoli na lepszą organizację komunikacji.
-3. **Zarządzanie zasobami**: Aplikacja zapewni narzędzia do śledzenia i raportowania kosztów i czasu, poświęconego na realizacje projektu, co pomoże kierownikom projektów skuteczniej zarządzać zasobami.
-4. **Raportowanie i analityka**: Aplikacja zapewni widoki siątki z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu będzie można łatwo znaleźć szukane dane. Powstanie również funkcjonalność eksportu danych z widoków siatek, tak aby można było je wykorzystać w innych aplikacjach w celach raportowania i analizy, takich jak Excel czy Power BI.
+3. **Zarządzanie zasobami**: Powstaną narzędzia do śledzenia i raportowania kosztów i czasu, poświęconego na realizacje projektu, co pomoże kierownikom projektów skuteczniej zarządzać zasobami.
+4. **Raportowanie i analityka**: Zostanie zaimplementowany widoki siątki z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu będzie można łatwo znaleźć szukane dane. Powstanie również funkcjonalność eksportu danych z widoków siatek, tak aby można było je wykorzystać w innych aplikacjach w celach raportowania i analizy, takich jak Excel czy Power BI.
 5. **Zarządzanie użytkownikami**: Aplikacja zapewni narzędzia do zarządzania użytkownikami, takie jak tworzenie i edycja użytkowników, przypisywanie ról i zarządzanie uprawnieniami.
-6. **Bezpieczeństwo**: Aplikacja zapewni mechanizmy autentykacji i autoryzacji, takie jak logowanie, wylogowanie, resetowanie hasła, zmiana adresu e-mail, oraz resetowanie adresu e-mail. System autentykacji i autoryzacji zapewni konfigurowalność, tak aby można było włączyć lub wyłączyć niektóre z tych mechanizmów.
-7. **Aspekty techniczne**: Aplikacja zapewni monitorowalność w postaci rozbudowanego systemu logowania i narzędzi analizy logów, co pomoże w szybkim rozwiązywaniu problemów.
+6. **Bezpieczeństwo**: Powstaną mechanizmy autentykacji i autoryzacji, takie jak logowanie, wylogowanie, resetowanie hasła, zmiana adresu e-mail, oraz resetowanie adresu e-mail. System autentykacji i autoryzacji zapewni konfigurowalność, tak aby można było włączyć lub wyłączyć niektóre z tych mechanizmów.
+7. **Aspekty techniczne**: Zostanie zapewniona monitorowalność w postaci rozbudowanego systemu logowania i narzędzi analizy logów, co pomoże w szybkim rozwiązywaniu problemów.
 
 ## Projekt aplikacji
  
@@ -363,29 +362,16 @@ Aplikacja będzie zawierała następujące funkcje:
 
 ### Wzorce i zasady projektowe
 
-#### Filozofia projektowania
+Domain-driven design (DDD)
+Domain Driven Design (DDD) to podejście do projektowania oprogramowania, które koncentruje się na modelowaniu biznesowych dziedzin (domen) poprzez głębokie zrozumienie ich reguł, procesów i relacji między nimi. W ramach DDD, dziedziny są uważane za centralny punkt projektowania i są reprezentowane za pomocą obiektów w kodzie źródłowym, które odzwierciedlają ich charakterystyczne cechy [1].
 
-* Nie wymyślaj koła na nowo. Użyj istniejących bibliotek i frameworków, gdy tylko jest to możliwe. Staraj się pisać jak najmniej kodu.
-* Zachowaj prostotę. Nie komplikuj zbytnio rzeczy.
-* Zachowaj czystość. Nie pisz niechlujnego kodu.
-* Zachowaj spójność. Nie pisz kodu w różnych stylach. 
-* Dbaj o bezpieczeństwo. Nie zostawiaj dziur bezpieczeństwa w aplikacji. Zawsze używaj najnowszych wersji bibliotek i frameworków. Zastanów się dziesięć razy zanim dodasz backdoora.
-* Zapewnij testowalność. Nie pisz kodu, który jest trudny do przetestowania. Używaj czystych funkcji, kiedy tylko to możliwe. Ogranicz mutacje. Nie używaj zmiennych globalnych.
-* Zapewnij obserwowalność. Nie pisz kodu, który jest trudny do debugowania. Używaj logowania. Używaj śledzenia. Używaj metryk. Używaj profilowania.
-* Korzystaj z istniejących standardów. Nie wymyślaj nowych.
-* Używaj znanych i sprawdzonych praktyk.
+Jednym z kluczowych celów DDD jest stworzenie tzw. "języka ogólnego" (ang. ubiquitous language) w projektach oprogramowania. Język ogólny to zestaw terminów i pojęć używanych w danym obszarze, które powinny być używane konsekwentnie przez wszystkich uczestników projektu - zarówno w biznesie, jak i w IT [2]. DDD promuje budowanie modelu dziedziny opartego na tym języku ogólnym, co prowadzi do lepszej komunikacji między różnymi zespołami i ekspertami dziedzinowymi.
 
-#### Domain-driven design (DDD)
+DDD wyróżnia się wieloma konceptami, takimi jak agregaty, encje, wartości, fabryki, repozytoria, czy usługi domenowe. Każdy z tych konceptów pełni swoją specyficzną rolę w modelowaniu dziedziny, ale razem tworzą one całość, która odzwierciedla rzeczywistość biznesową [3].
 
-Domain Driven Design (DDD) to podejście do projektowania oprogramowania, które skupia się na modelowaniu biznesowych dziedzin (domen) poprzez dokładne zrozumienie ich reguł, procesów i relacji między nimi. W DDD, dziedziny są uważane za centralny punkt projektowania i są reprezentowane za pomocą obiektów w kodzie źródłowym, które odzwierciedlają ich charakterystyczne cechy [1].
+W ostatnich latach DDD zdobyło dużą popularność wśród programistów i architektów oprogramowania pragnących lepiej zrozumieć dziedziny biznesowe oraz tworzyć oprogramowanie, które dokładnie je odzwierciedla. Stosowanie DDD może przyczynić się do tworzenia bardziej elastycznych, skalowalnych i łatwych do utrzymania systemów, które odpowiadają rzeczywistym potrzebom biznesowym [4].
 
-Jednym z głównych celów DDD jest rozwiązanie problemu tzw. "języka ogólnego" (ang. ubiquitous language) w projektach oprogramowania. Język ogólny to zbiór terminów i pojęć używanych w dziedzinie, które powinny być używane konsekwentnie przez wszystkich uczestników projektu - zarówno w biznesie, jak i w IT [2]. DDD zachęca do budowania modelu dziedziny, który odzwierciedla język ogólny i umożliwia lepszą komunikację między różnymi zespołami i ekspertami dziedzinowymi.
-
-DDD składa się z wielu konceptów, takich jak agregaty, encje, wartości, fabryki, repozytoria, usługi domenowe i wiele innych. Każdy z tych konceptów ma swoje unikalne cechy i rolę w modelowaniu dziedziny, ale łączą się one w całość, która odzwierciedla rzeczywistość biznesową [3].
-
-DDD zyskało popularność wśród programistów i architektów oprogramowania, którzy chcą lepiej zrozumieć dziedziny biznesowe i tworzyć oprogramowanie, które dokładnie je odzwierciedla. DDD może pomóc w tworzeniu bardziej elastycznych, skalowalnych i łatwych do utrzymania systemów, które są bardziej dostosowane do rzeczywistych potrzeb biznesowych [4].
-
-W sumie, DDD to podejście projektowania oprogramowania, które koncentruje się na modelowaniu biznesowych dziedzin i wykorzystuje język ogólny, aby zapewnić lepszą komunikację i zrozumienie między różnymi uczestnikami projektu. DDD składa się z wielu konceptów, które są ze sobą powiązane i tworzą spójny model dziedziny. DDD może pomóc w tworzeniu bardziej elastycznych i skalowalnych systemów, które są dokładnie dopasowane do potrzeb biznesowych.
+Podsumowując, DDD to podejście projektowania oprogramowania, które skupia się na modelowaniu biznesowych dziedzin. Wykorzystuje język ogólny, co sprzyja lepszej komunikacji i zrozumieniu między różnymi uczestnikami projektu. DDD integruje wiele konceptów, które razem tworzą spójny model dziedziny. Dzięki niemu możliwe jest tworzenie bardziej elastycznych i skalowalnych systemów, które w pełni odpowiadają na potrzeby biznesowe.
 
 1. Evans, E. (2004). Domain-driven design: Tackling complexity in the heart of software. Addison-Wesley Professional.
 2. Fowler, M. (2013). Domain-specific languages. Addison-Wesley.
@@ -394,15 +380,15 @@ W sumie, DDD to podejście projektowania oprogramowania, które koncentruje się
 
 #### Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)
 
-Architektura Heksagonalna, znana również jako Ports and Adapters Architecture, to wzorzec projektowy, który staje się coraz bardziej popularny w świecie tworzenia oprogramowania. HA skupia się na rozdzieleniu warstwy aplikacji od logiki biznesowej, co pozwala na zmniejszenie zależności między nimi i ułatwia testowanie [1].
+Architektura Heksagonalna, często nazywana Architekturą Portów i Adapterów, to wzorzec projektowy, który zdobywa na popularności w świecie tworzenia oprogramowania. HA skupia się na oddzieleniu warstwy aplikacji od logiki biznesowej, co redukuje zależności między nimi i ułatwia proces testowania [1].
 
-Architektura Heksagonalna opiera się na trzech głównych elementach: portach, adapterach i rdzeniu. Porty to interfejsy, które określają sposób komunikacji między warstwą logiki biznesowej a resztą systemu. Są to punkty wejścia i wyjścia do rdzenia systemu, które zapewniają elastyczność i łatwość wprowadzania zmian. Adaptery to implementacje portów, które pozwalają na integrację warstwy logiki biznesowej z resztą systemu [2].
+Architektura Heksagonalna bazuje na trzech kluczowych elementach: portach, adapterach i rdzeniu. Porty to interfejsy definiujące komunikację między warstwą logiki biznesowej a pozostałymi częściami systemu. Działają jako punkty wejścia i wyjścia do rdzenia systemu, co zwiększa jego elastyczność oraz umożliwia łatwość wprowadzania zmian. Adaptery są natomiast implementacjami tych portów, co pozwala na sprawną integrację warstwy logiki biznesowej z resztą systemu [2].
 
-Rdzeń to centrum systemu, gdzie znajduje się cała logika biznesowa. To tutaj są realizowane wszystkie operacje związane z funkcjonalnościami systemu. Dzięki rozdzieleniu warstwy biznesowej od reszty systemu, HA umożliwia łatwe testowanie i rozwijanie aplikacji [3]. HA jest szczególnie przydatna w przypadku dużych i skomplikowanych systemów, gdzie łatwe wprowadzanie zmian w logice biznesowej jest kluczowe dla utrzymania elastyczności systemu.
+Rdzeń jest sercem systemu i zawiera całą logikę biznesową. Właśnie tam realizowane są wszystkie operacje powiązane z funkcjonalnościami systemu. Dzięki oddzieleniu warstwy biznesowej od reszty systemu, HA ułatwia testowanie i rozwijanie aplikacji [3]. Ten wzorzec jest szczególnie wartościowy w dużych i skomplikowanych systemach, gdzie elastyczność i łatwość modyfikacji logiki biznesowej są niezbędne.
 
-Przykłady zastosowania architektury Heksagonalnej można znaleźć w wielu aplikacjach, w tym w systemach bankowych, systemach e-commerce i w wielu innych projektach biznesowych, gdzie kluczowe jest zapewnienie elastyczności i łatwości wprowadzania zmian w logice biznesowej [1]. Dzięki temu podejściu programiści mogą skupić się na rozwoju warstwy biznesowej bez konieczności przejmowania się resztą systemu.
+Zastosowania architektury Heksagonalnej można zaobserwować w wielu aplikacjach, w tym w systemach bankowych czy e-commerce. Jest ona wykorzystywana w projektach, gdzie priorytetem jest elastyczność oraz łatwość wprowadzania zmian w logice biznesowej [1]. Umożliwia to programistom skupienie się na kluczowej warstwie biznesowej bez konieczności martwienia się o resztę systemu.
 
-Wniosek? Architektura Heksagonalna to narzędzie, które pozwala na łatwe wprowadzanie zmian w logice biznesowej bez wpływu na pozostałe części systemu. Dzięki temu programiści mogą skupić się na rozwoju warstwy biznesowej, co przekłada się na elastyczność i łatwość wprowadzania zmian w systemie [2].
+Podsumowując, Architektura Heksagonalna to efektywne narzędzie umożliwiające wprowadzanie zmian w logice biznesowej bez negatywnego wpływu na inne segmenty systemu. Ułatwia to programistom prace nad warstwą biznesową, co bezpośrednio przekłada się na większą elastyczność oraz łatwość adaptacji systemu [2].
 
 1. A. Włodarczyk, "Hexagonal Architecture w praktyce", https://bulldogjob.pl/articles/806-hexagonal-architecture-w-praktyce, [dostęp: 21.02.2023].
 2. A. Roca, "Hexagonal Architecture: Three principles and an implementation example", https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/Hexagonal-Architecture-Three-principles-and-an-implementation-example, [dostęp: 21.02.2023].
@@ -410,15 +396,15 @@ Wniosek? Architektura Heksagonalna to narzędzie, które pozwala na łatwe wprow
 
 #### Wstrzykiwanie zależności (DI)
 
-Wstrzykiwanie zależności (Dependency Injection, DI) to wzorzec projektowy, który umożliwia oddzielenie tworzenia obiektów od ich używania. Zamiast tworzenia obiektów wewnątrz innych obiektów, co prowadzi do silnego sprzęgnięcia między nimi, obiekty są wstrzykiwane z zewnątrz.
+Wstrzykiwanie zależności (ang. Dependency Injection, DI) to wzorzec projektowy umożliwiający oddzielenie procesu tworzenia obiektów od ich użytkowania. Zamiast inicjowania obiektów bezpośrednio wewnątrz innych obiektów, co może prowadzić do silnego sprzęgnięcia, obiekty są dostarczane z zewnątrz.
 
-W praktyce oznacza to, że obiekt nie tworzy innych obiektów, których potrzebuje, ale otrzymuje je z zewnątrz, poprzez konstruktor, metody lub właściwości [1]. Dzięki temu obiekt jest bardziej elastyczny i łatwiej go testować, ponieważ można go testować oddzielnie od obiektów, z którymi współpracuje.
+W praktyce oznacza to, że dany obiekt nie jest odpowiedzialny za inicjowanie innych obiektów, których potrzebuje. Zamiast tego otrzymuje je z zewnątrz, za pośrednictwem konstruktora, metod czy właściwości [1]. Takie podejście czyni obiekt bardziej elastycznym oraz ułatwia jego testowanie, umożliwiając badanie jego funkcji niezależnie od innych obiektów, z którymi współpracuje.
 
-DI może być realizowane na wiele sposobów, takich jak konstruktor, metoda lub właściwość. W każdym przypadku wstrzykiwane są obiekty, które są potrzebne do działania klasy, a nie są one tworzone wewnątrz klasy. Dzięki temu łatwiej jest zmieniać obiekty w klasie, ponieważ nie ma potrzeby zmiany kodu klasy, a jedynie podmienienia wstrzykiwanych obiektów [2].
+Wstrzykiwanie zależności można realizować na różne sposoby, między innymi poprzez konstruktor, metody czy właściwości. W każdym z tych przypadków obiekty potrzebne do działania klasy dostarczane są z zewnątrz, nie są tworzone bezpośrednio w jej wnętrzu. Dzięki temu, w sytuacji gdy zachodzi potrzeba zmiany obiektów w klasie, nie musimy modyfikować samej klasy – wystarczy podmienić dostarczane obiekty [2].
 
-DI jest szczególnie przydatne w przypadku dużych projektów, gdzie liczba klas i zależności między nimi może być bardzo duża. Wtedy DI umożliwia lepsze zarządzanie zależnościami i pozwala na łatwiejsze testowanie i rozwijanie aplikacji.
+DI sprawdza się zwłaszcza w skomplikowanych projektach, gdzie liczba klas i ich wzajemne zależności są duże. Umożliwia ono efektywne zarządzanie tymi zależnościami, co prowadzi do łatwiejszego testowania i rozwijania aplikacji.
 
-Warto zauważyć, że DI nie jest jedynym sposobem na uniknięcie silnego sprzęgnięcia między klasami. Innym podejściem może być użycie wzorca fabryki (Factory), który umożliwia tworzenie obiektów w jednym miejscu, a następnie ich przekazywanie do innych klas. W porównaniu z DI jednak, wzorzec fabryki jest bardziej skomplikowany i mniej elastyczny [3].
+Chociaż wstrzykiwanie zależności jest skutecznym sposobem na eliminację silnego sprzęgnięcia, nie jest jedyną metodą osiągnięcia tego celu. Alternatywnym podejściem jest wzorzec fabryki (Factory), który centralizuje tworzenie obiektów i ich dostarczanie do innych klas. W porównaniu jednak z DI, wzorzec fabryki może być bardziej skomplikowany i mniej elastyczny [3].
 
 Źródła:
 
@@ -428,13 +414,13 @@ Warto zauważyć, że DI nie jest jedynym sposobem na uniknięcie silnego sprzę
 
 #### Logowanie i monitorowanie
 
-Logging i monitoring to ważne aspekty każdej aplikacji. Logging pozwala na zbieranie informacji o tym, co dzieje się w aplikacji, a monitoring na na bieżąco monitorować działanie systemu i reagować na problemy. Odpowiednio skonfigurowany logging i monitoring to kluczowe elementy w utrzymaniu jakości i niezawodności aplikacji.
+Logowanie i monitorowanie to nieodzowne elementy każdej nowoczesnej aplikacji. Poprzez logowanie zbieramy szczegółowe informacje o tym, co dzieje się wewnątrz aplikacji, podczas gdy monitorowanie pozwala śledzić jej działanie w czasie rzeczywistym oraz szybko reagować na ewentualne problemy. Odpowiednie narzędzia i techniki w tych obszarach są kluczem do zapewnienia wysokiej jakości i niezawodności działania systemu.
 
-Logging to proces zapisywania informacji o wydarzeniach zachodzących w aplikacji [1]. Zazwyczaj logowanie skupia się na tym, co może pomóc w zrozumieniu problemów związanych z działaniem aplikacji. Zapisywane są informacje na temat błędów, ostrzeżeń, informacji diagnostycznych, a także o żądaniach i odpowiedziach HTTP. W aplikacjach w chmurze, logowanie jest szczególnie ważne, ponieważ pozwala na śledzenie błędów w rozproszonym systemie.
+Logowanie, inaczej "logging", polega na rejestrowaniu informacji dotyczących różnych wydarzeń zachodzących w aplikacji [1]. Zwykle koncentruje się ono na danych, które pomogą zdiagnozować i rozwiązać problemy. Do logów trafiają informacje o błędach, ostrzeżeniach, danych diagnostycznych oraz żądaniach i odpowiedziach HTTP. W środowiskach chmurowych, logowanie nabiera szczególnego znaczenia, ponieważ umożliwia śledzenie problemów w skomplikowanych, rozproszonych systemach.
 
-Monitoring to proces zbierania i analizowania informacji na temat działania aplikacji, infrastruktury i zasobów sieciowych [2]. Narzędzia do monitorowania pozwalają na śledzenie metryk związanych z wydajnością, zużyciem pamięci, zużyciem procesora, obciążeniem sieci i wieloma innymi. Dzięki temu administratorzy systemów mogą na bieżąco monitorować system i podejmować odpowiednie działania w celu zapewnienia jego niezawodności i wydajności.
+Monitoring, z kolei, polega na zbieraniu, analizie i prezentacji danych dotyczących działania aplikacji oraz zasobów na której jest ona uruchomiona, takich jak infrastruktura czy sieć [2]. Dzięki narzędziom monitorującym, jesteśmy w stanie obserwować takie metryki jak wydajność, zużycie pamięci RAM, obciążenie procesora czy przepustowość sieci. Pozwala to administratorom na ciągłą kontrolę nad systemem i szybką interwencję, zapewniając nieprzerwaną pracę aplikacji i satysfakcję użytkowników.
 
-Warto zwrócić uwagę na to, że odpowiednio skonfigurowany logging i monitoring to kluczowe elementy w utrzymaniu jakości i niezawodności aplikacji. Dobrze zaprojektowane mechanizmy logowania pomagają w identyfikacji problemów, a odpowiednio skonfigurowane narzędzia do monitorowania pozwalają na reagowanie na problemy zanim wpłyną one na działanie aplikacji i użytkowników.
+W skrócie, odpowiednie logowanie i monitorowanie są niezbędne do utrzymania jakości i niezawodności aplikacji. Dobrze zaplanowane i skonfigurowane mechanizmy w obu tych obszarach umożliwiają szybką identyfikację oraz rozwiązanie problemów, zanim wpłyną one negatywnie na doświadczenia użytkowników.
 
 Źródła:
 
@@ -443,57 +429,44 @@ Warto zwrócić uwagę na to, że odpowiednio skonfigurowany logging i monitorin
 
 #### Kombinacja DDD, HA, DI i logowania/monitorowania
 
-Kombinacja Domain-Driven Design (DDD), Architektury Heksagonalnej (HA), Wstrzykiwania Zależności (DI) i Logging/Monitoringu to podejście, które stało się bardzo popularne w dzisiejszych czasach. Zastosowanie DDD pomaga w tworzeniu lepszego modelu biznesowego, a także w identyfikacji kluczowych koncepcji biznesowych, które są potrzebne w trakcie tworzenia aplikacji [1]. HA pozwala na oddzielenie logiki biznesowej od technologii, co umożliwia łatwe wprowadzanie zmian bez konieczności wprowadzania zmian w całej aplikacji [2]. DI pozwala na elastyczne zarządzanie zależnościami między modułami, umożliwiając łatwe testowanie i łatwe wprowadzanie zmian [3]. Natomiast Logging/Monitoring pomaga w monitorowaniu i diagnostyce działania aplikacji, co pozwala na wykrywanie błędów w trakcie działania aplikacji, a także umożliwia ich szybkie usuwanie.
+Połączenie podejść Domain-Driven Design (DDD), Architektury Heksagonalnej (HA), Wstrzykiwania Zależności (DI) oraz logowania i monitorowania to koncepcja, która zdobyła duże uznanie we współczesnym programowaniu. DDD skupia się na tworzeniu precyzyjnego modelu biznesowego, pomagając jednocześnie zidentyfikować kluczowe koncepcje biznesowe niezbędne podczas tworzenia aplikacji [1]. HA, z kolei, umożliwia izolację logiki biznesowej od specyfik technologicznych, co sprzyja łatwości wprowadzania zmian [2]. DI sprzyja elastyczności w zarządzaniu zależnościami, co ułatwia testowanie i implementację zmian [3]. Tymczasem systemy logowania i monitorowania odgrywają kluczową rolę w obserwacji i diagnostyce aplikacji, szybkim wykrywaniu oraz rozwiązywaniu problemów.
 
-Kombinacja tych podejść jest szczególnie skuteczna w przypadku projektów, które wymagają dużej skalowalności oraz elastyczności. Zastosowanie tych narzędzi pomaga w utrzymaniu czystej i spójnej architektury aplikacji, ułatwia testowanie i diagnostykę, co z kolei pomaga w szybszym wdrażaniu zmian w trakcie rozwoju aplikacji. DI jest szczególnie ważne w tym procesie, ponieważ pozwala na łatwe zmienianie zależności między modułami bez konieczności wprowadzania zmian w kodzie, co może znacznie usprawnić proces tworzenia i utrzymania aplikacji.
+Integracja tych metodologii jest szczególnie wartościowa dla projektów o dużej skali i potrzebie elastyczności. Pomaga to utrzymać klarowną i spójną architekturę aplikacji, ułatwia testowanie, diagnostykę oraz efektywne wprowadzanie zmian. DI w tym kontekście jest niezwykle ważne, ponieważ umożliwia dynamiczną modyfikację zależności między modułami bez konieczności interwencji w istniejący kod, co znacząco usprawnia zarządzanie projektem.
 
-Jednym z głównych wyzwań, które można napotkać przy korzystaniu z tych narzędzi, jest potrzeba wiedzy i doświadczenia w dziedzinie programowania. Każde z tych podejść ma swoje własne zasady i praktyki najlepszych praktyk, co oznacza, że wymagają od programistów dużej wiedzy i doświadczenia. Jednak zastosowanie tych narzędzi jest bardzo korzystne dla projektów o dużej skali i złożoności [4].
+Pomimo wielu korzyści, warto podkreślić pewne wyzwania związane z zastosowaniem tych podejść. Wymagają one od programistów głębokiej wiedzy i doświadczenia, ponieważ każda z tych metodologii posiada własne zalecenia i najlepsze praktyki. Jednak, przy prawidłowym zastosowaniu, korzyści z ich wykorzystania w projektach o dużej skali i złożoności są nie do przecenienia [4].
 
-Podsumowując, zastosowanie DDD, HA, DI i Logging/Monitoringu jest bardzo korzystne w projektowaniu i tworzeniu aplikacji. Kombinacja tych podejść pozwala na utrzymanie czystej i spójnej architektury aplikacji, ułatwia testowanie i diagnostykę, a także pomaga w szybszym wdrażaniu zmian. Jednakże wymaga od programistów dużej wiedzy i doświadczenia w dziedzinie programowania.
+Podsumowując, integracja DDD, HA, DI oraz logowania i monitorowania jest niezwykle efektywna w projektowaniu aplikacji. Umożliwia tworzenie spójnych, elastycznych i łatwych w utrzymaniu systemów, choć wymaga od programistów zaawansowanej wiedzy i umiejętności.
+
+Źródła:
 
 1. Evans, Eric. "Domain-driven design: tackling complexity in the heart of software." Pearson Education, 2004.
 2. "Hexagonal architecture." Port on Patterns, 2013, https://www.innoq.com/en/portals/hexagonal-architecture/.
 3. Freeman, Adam, and James Turnbull. "Building microservices: designing fine-grained systems." O'Reilly Media, Inc., 2015.
 4. Szewczyk, Paweł. "Combining Domain-Driven Design and Hexagonal Architecture to develop robust and maintainable web applications." Procedia Computer Science 126 (2018): 1191-1200.
 
-#### Architektura wielowarstwowa
-
-Architektura wielowarstwowa, znana również jako architektura trójwarstwowa lub architektura n-warstwowa, to podejście do tworzenia aplikacji, w którym aplikacja jest podzielona na kilka warstw lub poziomów [1]. Każda z tych warstw wykonuje określone zadania, a ich komunikacja odbywa się za pomocą ściśle określonych protokołów i interfejsów. Najczęściej w architekturze wielowarstwowej wyróżnia się warstwy prezentacji, logiki biznesowej i warstwę danych, ale nie jest to konieczne. Architektura wielowarstwowa jest szczególnie przydatna w przypadku aplikacji, które wymagają dużej skalowalności i elastyczności, ponieważ pozwala na łatwe dodawanie nowych warstw, a także na łatwe usuwanie istniejących [2]. 
-
-Architektura wielowarstwowa jest bardzo popularna w projektowaniu aplikacji, ponieważ pozwala na łatwe skalowanie aplikacji oraz zmniejszenie skomplikowania kodu. Pozwala również na łatwe testowanie każdej z warstw niezależnie od pozostałych, co ułatwia proces testowania i utrzymania aplikacji [3].
-
-Źródła:
-
-1. Martin Fowler, Patterns of Enterprise Application Architecture, Addison-Wesley, 2002.
-2. Sandro Mancuso, The Software Craftsman: Professionalism, Pragmatism, Pride, Prentice Hall, 2014.
-3. Eric Evans, Domain-Driven Design: Tackling Complexity in the Heart of Software, Addison-Wesley Professional, 2003.
-
-
 ## Stos technologiczny
 
 ### Postanowienia ogólne w wyborze technologii
 
-Wybierając stos technologiczny dla systemu organizacji pracy w biurze tłumaczeń, istnieje wiele ogólnych postanowień, które warto wziąć pod uwagę. Stos technologiczny to zestaw narzędzi, frameworków, języków programowania i infrastruktury, które zostaną wykorzystane do budowy i zarządzania systemem. Oto kilka kluczowych aspektów, które postanowiono rozważyć przy wyborze stosu technologicznego:
+Wybierając stos technologiczny dla systemu organizacji pracy w biurze tłumaczeń, istnieje wiele ogólnych postanowień, które warto wziąć pod uwagę. Stos technologiczny to zestaw narzędzi, frameworków, języków programowania i infrastruktury, które zostaną wykorzystane do budowy i zarządzania systemem. Oto kilka kluczowych aspektów, które postanowiono rozważyć przy wyborze stosu technologicznego[1]:
 
 1. **Cel i wymagania systemu**: Jakie funkcje i możliwości ma zapewnić system? Jakie problemy ma rozwiązywać? To pomoże w określeniu, jakie technologie najlepiej spełnią te cele.
 
-2. **Skalowalność**: Biuro tłumaczeń może rosnąć, więc system musi być w stanie obsłużyć większą liczbę użytkowników i danych w przyszłości.
+2. **Skalowalność**: System musi być elastyczny, umożliwiający nie tylko obsługę większej liczby użytkowników, ale też łatwą adaptację do nowych funkcji i wymagań.
 
-3. **Bezpieczeństwo**: Bezpieczeństwo jest kluczowym aspektem w biurze tłumaczeń, gdzie dane klientów mogą być poufne. Wybierz technologie, które zapewnią odpowiednie mechanizmy ochrony danych, uwzględniając kwestie takie jak szyfrowanie i autoryzacja.
+3. **Bezpieczeństwo**: Bezpieczeństwo jest kluczowym aspektem w biurze tłumaczeń, gdzie dane klientów mogą być poufne. Należy wybierać technologie, które zapewnią odpowiednie mechanizmy ochrony danych, uwzględniając kwestie takie jak szyfrowanie i autoryzacja, zarządzanie dostępem oraz obrona przed atakami z zewnątrz.
 
-4. **Integracje**: Wybrane technologie powinne pozwalać na łatwe integrowanie się z innymi narzędziami i systemami, które biuro tłumaczeń już używa, na przykład z narzędziami do zarządzania projektami, systemami CRM czy narzędziami do tłumaczeń.
+4. **Integracje**: Wybrane technologie powinne pozwalać na łatwe integrowanie się z innymi narzędziami i systemami, które biuro tłumaczeń już używa, na przykład z narzędziami do zarządzania projektami, systemami CRM, API zewnętrznych dostawców czy narzędziami do tłumaczeń.
 
 5. **Wspieranie języków**: Specyfika pracy biura tłumaczeń często ma za sobą obsługę wielu języków, ważne jest, aby stos technologiczny obsługiwał różne zestawy znaków i mógł być dostosowany do specyfiki różnych języków.
 
 6. **Łatwość utrzymania i rozwoju**: Należy wybierać technologie, które są stosunkowo łatwe do utrzymania i rozwijania. To pomoże zminimalizować koszty eksploatacji i zapewnić, że system będzie gotowy na przyszłe zmiany i ulepszenia.
 
-7. **Wsparcie społeczności i dokumentacja**: Ważne jest też sprawdzić, czy wybrane technologie cieszą się wsparciem społeczności programistycznej, co ułatwi rozwiązywanie problemów i znajdowanie odpowiedzi na pytania. Również dostępność do dobrej dokumentacji jest kluczowa. W przyszłości, wybór popularnych i lubianych technologii może ułatwić znalezienie nowych pracowników do zespołu utrzymania i rozwoju systemu.
+7. **Wsparcie społeczności i dokumentacja**: Ważne jest też sprawdzić, czy wybrane technologie cieszą się wsparciem społeczności programistycznej, co ułatwi rozwiązywanie problemów i znajdowanie odpowiedzi na pytania. Również dostępność do dobrej dokumentacji jest kluczowa. W przyszłości, wybór popularnych i lubianych technologii może ułatwić znalezienie nowych pracowników do zespołu utrzymania i rozwoju systemu. Narzędzia, lubiane przez społeczność, są zwykle dłużej utrzymywane i rozwijane, co jest ważne w przypadku długoterminowego projektu.
 
-8. **Koszty**: Koszty są istotnym czynnikiem. Każde biuro tłumaczeń ma inne możliwości finansowe, ale wszystkie chcą zapewnić że koszt utrzymania i rozwoju systemu będzie jak najniższy.
+8. **Koszty**: Koszty są istotnym czynnikiem. Każde biuro tłumaczeń ma inne możliwości finansowe, ale wszystkie chcą zapewnić że koszt utrzymania i rozwoju systemu będzie jak najniższy. Dla tego ważne jest, aby wybierać technologie, które oferują najlepszy stosunek ceny do wartości, uwzględniając zarówno darmowe, jak i płatne opcje.
 
 9. **Zgodność z przepisami prawno-regulacyjnymi**: Jeśli biuro tłumaczeń obsługuje tłumaczenia o charakterze prawnym, medycznym lub innym specjalistycznym, należy upewnić się, że wybrane technologie pomogą w spełnieniu wymogów prawnych i regulacyjnych.
-
-Przed dokonaniem wyboru stosu technologicznego, zalecam przeprowadzenie dokładnej analizy i konsultację z profesjonalistami ds. IT lub inżynierami oprogramowania. To pomoże uniknąć potencjalnych problemów i dostosować technologie do konkretnych potrzeb biura tłumaczeń.
 
 Żródła:
 
@@ -501,47 +474,178 @@ Przed dokonaniem wyboru stosu technologicznego, zalecam przeprowadzenie dokładn
 
 ### Interfejs użytkownika
 
-Interfejs użytkownika (UI), znany również jako interfejs graficzny użytkownika (GUI), to część oprogramowania, która umożliwia interakcję między użytkownikiem a programem lub systemem komputerowym. Jest to to, co widzi i z czym pracuje użytkownik, w tym wszystkie elementy, takie jak przyciski, pola tekstowe, menu, ikony itp., które pozwalają użytkownikowi nawigować po aplikacji lub systemie, wykonywać operacje i korzystać z jego funkcji.
+Interfejs użytkownika (UI), czasem nazywany interfejsem graficznym użytkownika (GUI), stanowi kluczową część oprogramowania, umożliwiającą interakcję między użytkownikiem a systemem komputerowym. To właśnie dzięki UI użytkownik obcuje z aplikacją; zawiera on przyciski, pola tekstowe, menu, ikony i inne elementy nawigacyjne. Istotą dobrze zaprojektowanego interfejsu jest jego intuicyjność i użyteczność, co jest szczególnie ważne w systemach służących do organizacji pracy, gdyż są one używane przez użytkowników na co dzień.
 
-Biorąc pod uwagę zalożenia projektowe systemu organizacji pracy biura tłumaczeń, postanoiwiono, że interfejs użytkownika powinien być aplikacją webową. Aplikacje webowe posiadają wiele zalet, które mogą sprawić, że będą idealne do tego celu, takich jak:
+W kontekście tworzonego systemu do organizacji pracy biura tłumaczeń, postanowiono, aby interfejs użytkownika przybrał formę aplikacji webowej. Wybór ten podyktowany jest wieloma zaletami aplikacji internetowych, wśród których warto wymienić:
 
-1. **Dostępność z dowolnego miejsca i urządzenia**: Aplikacje webowe są dostępne za pośrednictwem przeglądarek internetowych, co oznacza, że użytkownicy mogą korzystać z systemu z dowolnego miejsca i na różnych urządzeniach, takich jak komputery, tablety czy smartfony. To szczególnie przydatne w organizacji pracy biura tłumaczeń, która może wymagać mobilności i zdalnego dostępu.
-2. **Łatwa aktualizacja i utrzymanie**: Aktualizacja aplikacji webowej może być zarządzana centralnie przez zespół IT, co ułatwia wprowadzanie poprawek i dodawanie nowych funkcji. Nie ma potrzeby instalowania aktualizacji na każdym urządzeniu użytkownika.
-3. **Skalowalność**: Aplikacje webowe mogą być łatwo skalowane, aby obsługiwać zarówno małe biura tłumaczeń, jak i duże przedsiębiorstwa. Można dostosować zasoby serwerowe do bieżących potrzeb.
-4. **Bezpieczeństwo**: Właściciele biura tłumaczeń mogą zadbać o odpowiednie zabezpieczenia aplikacji webowej, takie jak szyfrowanie danych, autoryzacja i uwierzytelnianie, co jest kluczowe w przypadku pracy z poufnymi informacjami.
+1. **Dostępność z różnych lokalizacji i urządzeń**: Aplikacje webowe są dostępne poprzez przeglądarki internetowe. Umożliwia to korzystanie z systemu z dowolnego miejsca świata oraz na różnorodnych urządzeniach - od komputerów po smartfony. Taka elastyczność jest kluczowa dla biura tłumaczeń, gdzie mobilność i zdalna praca są na porządku dziennym.
+2. **Prostota aktualizacji i konserwacji**: Aplikacje webowe są łatwe do aktualizacji. Zmiany są wprowadzane centralnie i natychmiast dostępne dla wszystkich użytkowników, eliminując potrzebę indywidualnych aktualizacji na poszczególnych urządzeniach.
+3. **Skalowalność**: Aplikacje te mogą być dostosowane do potrzeb zarówno małych biur tłumaczeń, jak i dużych korporacji. W miarę wzrostu firmy, system może być odpowiednio rozbudowywany.
+4. **Bezpieczeństwo**: Poprzez zastosowanie odpowiednich protokołów i mechanizmów, takich jak szyfrowanie danych czy uwierzytelnienie, aplikacje webowe mogą zapewnić wysoki poziom bezpieczeństwa.
 
-Po wyborzę aplikacji webowej jako interfejsu użytkownika, następnym krokiem jest wybór technologii, które zostaną wykorzystane do stworzenia interfejsu użytkownika. Wspominając o przyjętych wyżej zasadach w wyborze technologii, zdecydowano się na następujące technologie do stworzenia interfejsu użytkownika systemu organizacji pracy biura tłumaczeń:
+Po wyborze formy aplikacji internetowej na interfejs użytkownika, kluczowym stało się określenie technologii niezbędnych do jego realizacji. W świetle przyjętych założeń projektowych, postanowiono wykorzystać:
 
-1. **React**: React to popularna biblioteka JavaScript do tworzenia interaktywnych interfejsów użytkownika. Jest rozwijana przez korporację Meta i jest szeroko wykorzystywana w branży. React pozwala na tworzenie komponentów interfejsu, które są łatwe w zarządzaniu i ponownym użyciu, co jest szczególnie przydatne przy projektowaniu skomplikowanych interfejsów. Należy też zwrócić uwagę na fakt, że React jest biblioteką, a nie frameworkiem, i pozostawia wiele innych aspektów tworzenia aplikacji, takich jak zarządzanie stanem, zarządzanie zależnościami, routing itp., do wyboru programisty. Mając to na uwadzę postanowiono dodać do projektu różne dodatkowe narzędzia, o których bardziej szczegółowo poniżej w sekcji [Instalacja dodatkowych bibliotek](#instalacja-dodatkowych-bibliotek). 
-2. **Język Typescript**: Typescript to język programowania, który jest rozszerzeniem Javascript. Jest on kompilowany do Javascript, co oznacza, że można go używać w dowolnym środowisku, w którym używany jest Javascript. Jednak Typescript dodaje wiele funkcji, takich jak typowanie statyczne, interfejsy, klasy, moduły i wiele innych, które mogą pomóc w tworzeniu bardziej wydajnego i bezpiecznego kodu, eliminując wiele błędów w trakcie kompilacji - takich jak znany "undefined is not a function".
-3. **Material Design**: Material Design jest metodologią projektowania stworzoną przez Google. Jest to zestaw zasad, wytycznych i komponentów interfejsu użytkownika, które pomagają projektantom i deweloperom tworzyć spójne, estetyczne i intuicyjne aplikacje i strony internetowe. Material Design skupia się na przyjaznym dla użytkownika interfejsie, który wykorzystuje trójwymiarowe efekty, cienie, animacje i jednolity język wzrokowy. Ta metodologia projektowania jest bardzo szeroko stosowana w branży w projektowaniu aplikacji mobilnych, stron internetowych i aplikacji webowych. Google dostarcza dokumentację i narzędzia, które pomagają projektantom i deweloperom w implementacji zasad Material Design. Istnieje również wiele bibliotek, które implementują komponenty zgodnie z zasadami Material Design, takich jak MUI (dawniej Material-UI), które zostało wybrane do tego projektu.
+1. **React**: To dynamicznie rozwijana biblioteka JavaScript, przeznaczona do tworzenia interfejsów użytkownika[1]. React pozwala na budowę modułowych, łatwych do zarządzania komponentów, które można wielokrotnie wykorzystywać w różnych częściach aplikacji. Ważne jest, że React, jako biblioteka, skupia się głównie na interfejsie użytkownika, pozostawiając programiście swobodę w wyborze innych narzędzi do zarządzania stanem aplikacji czy nawigacją.
+2. **Typescript**: To rozszerzenie języka JavaScript, które wprowadza m.in. statyczne typowanie[2]. Dzięki temu pozwala wyłapać wiele błędów jeszcze przed uruchomieniem kodu, co przekłada się na większą stabilność i bezpieczeństwo aplikacji.
+3. **Material Design**: Zestaw wytycznych i zasad projektowania interfejsów, stworzony przez Google[3]. Skupia się na tworzeniu spójnych, intuicyjnych i nowoczesnych aplikacji. Wykorzystanie gotowych komponentów zgodnych z Material Design, takich jak te dostarczane przez MUI[4], przyspiesza proces tworzenia aplikacji i gwarantuje estetyczny oraz ujednolicony wygląd.
+
+Kombinacja React z TypeScriptem zapewnia solidne podstawy do tworzenia stabilnych i wydajnych aplikacji. Material Design, z kolei, gwarantuje intuicyjny i estetyczny interfejs, co przekłada się na lepsze doświadczenie użytkownika.
+
+Źródła:
+
+1. React - [https://react.dev/](https://react.dev/)
+2. Typescript - [https://www.typescriptlang.org/](https://www.typescriptlang.org/)
+3. Material Design - [https://m3.material.io/](https://m3.material.io/)
+4. MUI - [https://mui.com/](https://mui.com/)
 
 ### Serwer aplikacji
 
-Serwer aplikacji jest miejscem, w którym odbywa się przetwarzanie danych i wykonywanie operacji biznesowych. Serwer aplikacji powinien być wydajny, skalowalny i łatwy w utrzymaniu. 
+Serwer aplikacji służy jako centralne miejsce przetwarzania danych oraz zarządzania operacjami biznesowymi. Musi być on wydajny, skalowalny oraz łatwy w utrzymaniu. 
 
-Zwracająć się do zasad, zdefiniowanych w sekcji [Postanowienia ogólne w wyborze technologii](#postanowienia-ogólne-w-wyborze-technologii), postanowiono, że serwer aplikacji powinien być zaimplementowany w postaci usługa sieciowa w oparciu w architekturę REST. Usługa sieciowa to aplikacja, która udostępnia interfejs programistyczny (API) do komunikacji z innymi aplikacjami, a architektura REST (Representational State Transfer), jest obecnie najpopularniejszym sposobem tworzenia API. REST jest architekturą opartą na zasobach, która definiuje zasady komunikacji między klientem a serwerem. REST jest również niezależny od protokołu, co oznacza, że może być używany z dowolnym protokołem, takim jak HTTP, HTTPS, TCP, UDP itp.
+Kierując się zasadami określonymi w sekcji [Postanowienia ogólne w wyborze technologii](#postanowienia-ogólne-w-wyborze-technologii), podjęto decyzję o implementacji serwera aplikacji w formie usługi sieciowej bazującej na architekturze REST. Usługa sieciowa to aplikacja oferująca interfejs programistyczny (API), umożliwiający komunikację z innymi aplikacjami. Architektura REST (Representational State Transfer) stanowi obecnie dominujący standard tworzenia API. Charakteryzuje się ona oparciem o zasoby i definiuje sposób komunikacji między klientem a serwerem. Warto również podkreślić, że REST jest niezależny od protokołu, co pozwala na jego zastosowanie z różnymi protokołami, takimi jak HTTP, HTTPS, TCP, UDP i inne.
 
-Istnieję mnóstwo technologii, które mogą być użyte do implementacji usługi REST-owej. W tym projekcie postanowiono użyć następujących technologii:
+Do realizacji tego projektu wybrano następujące technologie:
 
-1. **Spring Framework**: Spring Framework to szkielet budowania aplikacji z bogatą historią, jest dojrzały i powszechnie stosowany w praktyce. Korzystanie ze Spring Framework ułatwia tworzenie aplikacji, ponieważ dostarcza on wiele gotowych rozwiązań, takich jak wstrzykiwanie zależności, bezpieczeństwo, obsługa błędów, obsługa transakcji, obsługa baz danych, obsługa żądań HTTP i wiele innych, co sprawia, że jest idealnym wyborem dla budowania usług REST-owych. 
+1. **Spring Framework**: Jest to sprawdzony w praktyce szkielet do tworzenia aplikacji[1]. Dzięki niemu łatwiej jest budować zaawansowane systemy, ponieważ oferuje on gotowe rozwiązania dla wielu aspektów rozwoju oprogramowania, takich jak wstrzykiwanie zależności, bezpieczeństwo, obsługa błędów, a także obsługa baz danych. Jego elastyczność czyni go doskonałym wyborem do tworzenia usług REST-owych.
+2. **Spring Boot**: Uproszczony start z Spring[2]. Dzięki Spring Boot możemy ominąć wiele kroków konfiguracyjnych wymaganych przy tradycyjnym podejściu do Springa, przyspieszając tym samym rozwój aplikacji.
+3. **Spring Cloud**: Zestaw narzędzi zoptymalizowany do tworzenia aplikacji rozproszonych[3]. Dzięki niemu łatwiej jest zarządzać problemami typowymi dla systemów rozproszonych, takimi jak odkrywanie usług czy obsługa obciążenia.
+4. **Spring Data**: Ułatwia interakcję z bazami danych poprzez abstrakcję na poziomie repozytorium[4], eliminując potrzebę ręcznego pisania zapytań do bazy. Zintegrowane rozwiązania dla różnych baz danych pozwalają na łatwe zarządzanie i manipulację danymi.
+5. **Spring Security**: Framework skoncentrowany na zapewnieniu szerokiego zakresu funkcji autentykacji i autoryzacji[5]. Oferuje wsparcie dla różnych mechanizmów bezpieczeństwa, takich jak uwierzytelnianie oparte na formularzach, OAuth2 czy JWT.
+6. **Język Kotlin**: Chociaż Kotlin[6] jest często kojarzony z programowaniem aplikacji mobilnych, znalazł on również szerokie zastosowanie w środowisku backendowym. Jego ekspresywna składnia oraz silne wsparcie dla bezpieczeństwa typów czynią go atrakcyjnym wyborem dla wielu programistów. Kotlin jest kompatybilny z Java, co umożliwia korzystanie z bogatego ekosystemu tej technologii, w tym z frameworku Spring.
 
-1. Język Kotlin zamiast Java: Kotlin jest również często używany na backendzie, szczególnie w aplikacjach webowych i mikroserwisach. Dzięki swoim zaletom, takim jak bezpieczeństwo typów i ekspresywna składnia, Kotlin staje się coraz bardziej popularnym wyborem dla programistów tworzących serwery i aplikacje serwerowe. Język Kotlin, mimo że jest jeżykiem multiplatformowym, często jest postrzegany jako następca Javy, ponieważ jest on kompilowany do kodu bajtowego Javy i może być używany w dowolnym środowisku, w którym używana jest Java. A to sprawia, że dla programistów Kotlina jest dostępny cały ekosystem Javy, w tym Spring Framework.
-2. 
-3. Spring Boot zapewnia szybki start w tworzeniu aplikacji Spring. Spring Boot pozwala pominąć wiele kroków konfiguracyjnych, które są potrzebne do uruchomienia aplikacji Spring, co pozwala na szybsze tworzenie aplikacji. Spring Boot jest również łatwy do rozszerzenia, co oznacza, że można go dostosować do konkretnych potrzeb projektu. 
+Kluczową zaletą skorzystania z technologii Spring oraz jej podprojektów jest ich dojrzałość, wsparcie społeczności oraz bogactwo funkcjonalności. Spring Framework stał się de facto standardem w świecie aplikacji Java. Jego modułowość, szeroki zakres funkcji i elastyczność stanowią silne podstawy do tworzenia niezawodnych i wydajnych aplikacji. Kotlin, jako język programowania, dodaje wartość dzięki swojej ekspresywności, bezpieczeństwu i kompatybilności z technologią Java. W połączeniu z frameworkiem Spring, Kotlin może naprawdę przyspieszyć rozwój projektu, jednocześnie zapewniając wysoką jakość kodu.
+
+Źródła:
+
+1. Spring Framework - [https://spring.io/projects/spring-framework](https://spring.io/projects/spring-framework)
+2. Spring Boot - [https://spring.io/projects/spring-boot](https://spring.io/projects/spring-boot)
+3. Spring Cloud - [https://spring.io/projects/spring-cloud](https://spring.io/projects/spring-cloud)
+4. Spring Data - [https://spring.io/projects/spring-data](https://spring.io/projects/spring-data)
+5. Spring Security - [https://spring.io/projects/spring-security](https://spring.io/projects/spring-security)
+6. Kotlin - [https://kotlinlang.org/](https://kotlinlang.org/)
 
 ### Przechowywanie danych
 
+### Przechowywanie danych
+
+Przechowywanie danych to kluczowy aspekt każdej aplikacji. Wybór odpowiednich technologii do przechowywania, zarządzania i odzyskiwania danych jest niezbędny dla zapewnienia wydajności, niezawodności i elastyczności systemu.
+
+Opierając się na wcześniej ustalonych zasadach, zdefiniowanych w sekcji [Postanowienia ogólne w wyborze technologii](#postanowienia-ogólne-w-wyborze-technologii), dokonano wyboru technologii przechowywania danych w następujący sposób:
+
+1. **Postgres**: Jest to jedna z najbardziej zaawansowanych baz danych typu open-source na świecie. Postgres oferuje wsparcie dla transakcji, zaawansowane funkcje indeksowania, możliwość przechowywania różnorodnych typów danych i wiele innych funkcji niezbędnych do skutecznego zarządzania danymi w skali dużych aplikacji. Jego niezawodność, skalowalność oraz wsparcie dla procedur składowanych i wyzwalaczy czynią go idealnym wyborem dla przechowywania głównych danych aplikacyjnych.
+2. **Redis**: To bardzo wydajna, in-memory baza danych, która często jest wykorzystywana jako system cache. Dzięki przechowywaniu danych w pamięci RAM, Redis oferuje błyskawiczny czas dostępu do danych, co jest niezwykle przydatne dla operacji wymagających szybkiego odczytu. Redis jest nie tylko systemem pamięci podręcznej, ale również oferuje struktury danych, takie jak listy, zestawy, mapy i kolejki, co sprawia, że jest wszechstronnym narzędziem do różnorodnych zastosowań w aplikacji.
+3. **MinIO**: MinIO to wysokiej wydajności, rozproszony magazyn plików i obiektów. Dzięki swojej skalowalności i wydajności jest idealny do przechowywania dużych ilości plików, takich jak obrazy, filmy czy dokumenty. MinIO zapewnia też funkcje takie jak szyfrowanie, replikacja czy wersjonowanie obiektów. Jego architektura API jest kompatybilna z Amazon S3, co czyni go łatwym w integracji z wieloma aplikacjami i narzędziami dostępnymi na rynku.
+
+Wspólnie, te technologie tworzą kompleksowy ekosystem przechowywania danych, który może sprostać różnorodnym wymaganiom aplikacji, zarówno pod względem wydajności, jak i bezpieczeństwa. Poprzez połączenie relacyjnej bazy danych (Postgres) z szybką pamięcią podręczną (Redis) oraz skalowalnym magazynem plików (MinIO), aplikacja jest w stanie efektywnie zarządzać danymi w różnorodnych scenariuszach użycia.
+
 ### Zewnętrzne API
+
+W erze cyfrowej wiele aplikacji polega na zewnętrznych źródłach danych, które oferują specyficzne informacje lub funkcje. Zewnętrzne API (Application Programming Interface) umożliwiają aplikacjom dostęp do takich danych w sposób ustrukturyzowany i automatyczny. W projekcie zdecydowano się skorzystać z trzech kluczowych zewnętrznych API, aby uzyskać dostęp do różnych zestawów danych i funkcji:
+
+1. **Restcountries**
+    - **Opis**: Restcountries to publiczne API dostarczające informacji na temat różnych krajów na świecie. Umożliwia użytkownikom dostęp do szczegółów takich jak nazwa kraju, stolica, populacja, waluta, język, flaga i wiele innych.
+    - **Zastosowanie**: Wykorzystanie tego API pozwala na bieżące informacje dotyczące krajów, co może być przydatne w wielu aplikacjach, zwłaszcza tych o charakterze międzynarodowym.
+    - **Link**: [https://restcountries.com/](https://restcountries.com/)
+
+2. **SIL International Code Tables**
+    - **Opis**: SIL International Code Tables oferują kody dla różnych języków, krajów oraz skryptów. Są one szeroko używane w międzynarodowych projektach oraz w badaniach lingwistycznych.
+    - **Zastosowanie**: Dzięki temu API aplikacja może identyfikować języki, kraje i skrypty za pomocą standardowych kodów, co zapewnia spójność danych i ułatwia integrację z innymi systemami.
+    - **Link**: [https://iso639-3.sil.org/code_tables](https://iso639-3.sil.org/code_tables)
+
+3. **Exchangerate.host**
+    - **Opis**: Exchangerate.host to bezpłatne API umożliwiające dostęp do aktualnych kursów walut oraz historycznych danych. API korzysta z różnych źródeł, aby zapewnić dokładne i aktualne informacje.
+    - **Zastosowanie**: W aplikacjach biznesowych, zwłaszcza w tych, które obsługują różne waluty, aktualne kursy walut są niezbędne. Exchangerate.host jest nieocenionym narzędziem w takich przypadkach, umożliwiając łatwą konwersję walut oraz analizę historycznych trendów kursów walut.
+    - **Link**: [https://exchangerate.host/](https://exchangerate.host/)
+
+Współczesne aplikacje często opierają się na zewnętrznych źródłach danych, które wzbogacają ich funkcjonalność i zapewniają wartość dodaną dla użytkowników. Wybór odpowiednich API jest kluczowy dla funkcjonalności i niezawodności aplikacji. Restcountries, SIL International Code Tables i Exchangerate.host zostały wybrane ze względu na ich niezawodność, dokładność danych oraz łatwość integracji. Korzystanie z tych API umożliwi aplikacji dostarczanie dokładnych i aktualnych danych w różnych kontekstach, od informacji geograficznych i lingwistycznych po finansowe.
 
 ### Monitorowanie i analiza pracy aplikacji
 
+Monitorowanie i analiza działania aplikacji są kluczowymi elementami w procesie zarządzania i utrzymania oprogramowania. Umożliwiają one identyfikację i rozwiązywanie problemów, a także dostarczają cennych informacji na temat wydajności i zachowania użytkowników. Jednym z najbardziej popularnych rozwiązań na rynku, które pozwala na kompleksową analizę danych operacyjnych z aplikacji, jest stos ELK, składający się z trzech głównych komponentów: Elasticsearch, Logstash i Kibana.
+
+1. **Elasticsearch**: Jest to silnik wyszukiwania i analizy w czasie rzeczywistym oparty na Lucene. Pozwala na przechowywanie, indeksowanie i analizę dużych ilości danych. Jest wysoce skalowalny i może przetwarzać terabajty danych w ciągu sekund. Elasticsearch zapewnia możliwość szybkiego wyszukiwania i agregacji danych, co jest kluczowe dla monitorowania i analizy w czasie rzeczywistym.
+
+2. **Logstash**: To narzędzie służące do zbierania, przetwarzania i przesyłania logów i danych operacyjnych do różnych miejsc przechowywania, w tym do Elasticsearch. Logstash jest niezwykle elastyczny i pozwala na zbieranie danych z różnych źródeł, ich przetwarzanie (np. filtracja, wzbogacanie) oraz przesyłanie do wielu różnych celów.
+
+3. **Kibana**: Jest to narzędzie do wizualizacji danych przechowywanych w Elasticsearch. Umożliwia tworzenie różnorodnych dashboardów, map cieplnych, wykresów i tabel, które pozwalają na dogłębną analizę zgromadzonych danych. Dzięki Kibanie, zespoły IT mogą w łatwy sposób monitorować wydajność aplikacji, identyfikować problemy oraz analizować zachowanie użytkowników.
+
+Korzystanie z ELK w kontekście monitorowania aplikacji daje wiele korzyści:
+
+- **Szybkość reakcji**: Dzięki analizie w czasie rzeczywistym możliwe jest szybkie wykrywanie i rozwiązywanie problemów związanych z wydajnością, błędami czy awariami.
+  
+- **Elastyczność**: Stos ELK pozwala na integrację z wieloma źródłami danych, co umożliwia zbieranie i analizę informacji z różnych części systemu.
+  
+- **Skalowalność**: ELK jest w stanie obsłużyć bardzo duże ilości danych, dzięki czemu nadaje się do monitorowania zarówno małych aplikacji, jak i dużych systemów enterprise.
+  
+- **Personalizacja**: Możliwość dostosowywania dashboardów w Kibana do indywidualnych potrzeb pozwala na tworzenie spersonalizowanych widoków dla różnych użytkowników i zespołów.
+
+Podsumowując, stos ELK jest potężnym narzędziem, które pozwala na kompleksowe monitorowanie i analizę działania aplikacji. Jego modułowa budowa oraz integracja z wieloma źródłami danych sprawiają, że jest to jedno z najlepszych rozwiązań dostępnych na rynku w zakresie analizy operacyjnej.
+
 ### Testowanie
+
+W dzisiejszym świecie programistycznym nie można podważać znaczenia testowania. Właściwie przetestowane oprogramowanie nie tylko zwiększa zaufanie do kodu, ale również pozwala deweloperom na szybkie wprowadzanie zmian, mając pewność, że nie wprowadzają regresji. W ekosystemie Java dwa najpopularniejsze narzędzia używane do testowania jednostkowego to JUnit i Mockito.
+
+1. **JUnit**: Jest to ramka do testowania jednostkowego dla języka Java. JUnit umożliwia szybkie i skuteczne testowanie fragmentów kodu, zwanych jednostkami, w izolowanym środowisku. Nowa wersja, JUnit 5, wprowadza wiele ulepszeń, takich jak możliwość grupowania testów czy parametryzowania, co sprawia, że testowanie staje się jeszcze bardziej elastyczne i wydajne.
+
+2. **Mockito**: To biblioteka do tworzenia atrap (ang. mock) obiektów w testach jednostkowych w Javie. Mockito pozwala na symulowanie zachowania zewnętrznych zależności w testowanych jednostkach, dzięki czemu testy są naprawdę niezależne od zewnętrznego środowiska. Dzięki temu deweloperzy mogą skupić się na testowaniu konkretnego zachowania, a nie całego systemu.
+
+Aby w pełni korzystać z możliwości JUnit i Mockito, ważne jest, aby pisać kod, który jest łatwy do testowania. Oto kilka wskazówek, jak to osiągnąć:
+
+- **Modularyzacja**: Kod powinien być podzielony na mniejsze, niezależne moduły lub klasy. Dzięki temu można testować każdy fragment osobno, co ułatwia identyfikację i naprawę błędów.
+
+- **Unikanie zbyt wielu zależności**: Im mniej zależności ma dana klasa, tym łatwiej jest ją przetestować. Gdzie to możliwe, należy korzystać z wstrzykiwania zależności, co pozwala na łatwą zamianę rzeczywistych komponentów na atrapy w testach.
+
+- **Przejrzystość funkcji**: Każda funkcja lub metoda powinna wykonywać jedno konkretne zadanie. Nie tylko ułatwia to testowanie, ale również sprawia, że kod jest czytelniejszy i łatwiejszy do utrzymania.
+
+- **Korzystanie z interfejsów**: W Javie korzystanie z interfejsów pozwala na tworzenie bardziej elastycznego i łatwego do testowania kodu. Mockito doskonale radzi sobie z naśladowaniem interfejsów, co ułatwia symulację zachowań w testach.
+
+- **Unikanie kodu statycznego i singletonów**: Są one trudne do testowania i mogą prowadzić do problemów z izolacją w testach. Zamiast tego lepiej korzystać z wzorców projektowych, które umożliwiają lepszą kontrolę nad zależnościami.
+
+Podsumowując, testowanie jest kluczowym elementem cyklu życia oprogramowania. Korzystając z narzędzi takich jak JUnit i Mockito oraz pisząc kod z myślą o testowalności, deweloperzy mogą znacznie zwiększyć jakość swojego oprogramowania, zredukować liczbę błędów i usprawnić proces wdrażania zmian.
 
 ### Wdrożenie
 
+Wdrożenie oprogramowania to kluczowy etap w cyklu życia projektu, który ma na celu umożliwienie użytkownikom dostępu do aplikacji w środowisku produkcyjnym. Współczesne praktyki w zakresie wdrażania skupiają się na automatyzacji, reprodukowalności i skalowalności rozwiązań. Jednym z narzędzi, które odmieniło podejście do wdrażania i zarządzania aplikacjami, jest Docker. Docker to platforma, która pozwala na tworzenie, wdrażanie i uruchamianie aplikacji w kontenerach. Konteneryzacja, czyli izolowanie aplikacji w kontenerach, przypomina działanie maszyn wirtualnych, ale jest bardziej lekka i elastyczna.
+
+Kluczowe korzyści wynikające z użycia Dockera w procesie wdrożenia:
+
+- **Reprodukowalność**: Dzięki Dockerowi, aplikacja działa identycznie w każdym środowisku, od deweloperskiego po produkcyjne. Kontenery zawierają wszystko, co potrzebne do działania aplikacji, co eliminuje problem "u mnie działa".
+
+- **Izolacja**: Każdy kontener działa niezależnie, co oznacza, że jedna aplikacja nie wpływa na działanie innych. To idealne rozwiązanie dla mikrousług lub gdy kilka aplikacji działa na jednym serwerze.
+
+- **Skalowalność**: Docker współpracuje z narzędziami do orkiestracji, takimi jak Kubernetes, co umożliwia automatyczne skalowanie aplikacji w zależności od obciążenia.
+
+- **Szybkość**: Kontenery Dockera są lżejsze niż tradycyjne maszyny wirtualne i uruchamiają się szybciej. Pozwala to na błyskawiczne wdrożenia i aktualizacje.
+
+- **Integracja z CI/CD**: Docker może być zintegrowany z narzędziami do ciągłej integracji i dostarczania (CI/CD), co automatyzuje proces budowania, testowania i wdrażania aplikacji.
+
+**Proces wdrożenia z Dockerem**:
+
+1. **Tworzenie obrazu**: Pierwszym krokiem jest stworzenie obrazu Dockera na podstawie pliku `Dockerfile`, który opisuje, jak skonfigurować środowisko dla aplikacji. Obraz ten zawiera wszystkie zależności potrzebne do działania aplikacji.
+
+2. **Przechowywanie obrazów**: Po utworzeniu obraz można go przechowywać w repozytorium, takim jak Docker Hub lub prywatne repozytorium. Umożliwia to łatwe rozpowszechnianie obrazu wśród członków zespołu lub w różnych środowiskach.
+
+3. **Uruchamianie kontenera**: Z obrazu można uruchomić kontener, który działa na docelowej maszynie lub klastrze. Kontener uruchamia aplikację w izolowanym środowisku, które zostało wcześniej zdefiniowane w `Dockerfile`.
+
+Podsumowując, Docker odmienił sposób, w jaki myślimy o wdrożeniach, oferując rozwiązania, które są jednocześnie szybkie, niezawodne i skalowalne. Dzięki niemu zespoły mogą skupić się na tworzeniu świetnych aplikacji, mając pewność, że będą one działać tak samo w każdym środowisku.
+
 ### Uwierzytelnianie i autoryzacja
 
+Uwierzytelnianie i autoryzacja to dwie kluczowe kwestie w zakresie bezpieczeństwa każdej aplikacji. Uwierzytelnianie polega na weryfikacji tożsamości użytkownika, podczas gdy autoryzacja określa, jakie zasoby są dostępne dla uwierzytelnionego użytkownika. W tym rozdziale przedstawimy technologie, które wspomagają te procesy: Keycloak, SSO, OIDC, OAuth2 i JWT.
+
+1. **Keycloak**: Keycloak to otwarte oprogramowanie do zarządzania tożsamością i dostępem. Umożliwia uwierzytelnianie, autoryzację oraz centralne zarządzanie użytkownikami. Zapewnia wsparcie dla wielu protokołów uwierzytelniania, w tym SSO, OIDC i OAuth2, zarządzanie sesjami użytkowników, integrację z różnymi bazami danych użytkowników, takimi jak LDAP czy Active Directory, oraz rozbudowę poprzez dodatki.
+
+2. **SSO (Single Sign-On)**: SSO to metoda jednokrotnego logowania, która pozwala użytkownikom na dostęp do wielu aplikacji i systemów po jednorazowym uwierzytelnieniu. Zamiast wielokrotnego logowania do różnych aplikacji, użytkownik loguje się tylko raz, a jego tożsamość jest automatycznie rozpoznawana w innych systemach.
+
+3. **OIDC (OpenID Connect)**: OIDC to rozszerzenie protokołu OAuth2, które dodaje funkcje uwierzytelniania. Umożliwia klientom zdobycie informacji o tożsamości uwierzytelnionego użytkownika.
+
+4. **OAuth2**: OAuth2 to protokół autoryzacji, umożliwiający aplikacjom ograniczony dostęp do kont użytkowników w innych usługach. Na przykład, użytkownik może pozwolić aplikacji A na dostęp do jego danych w usłudze B, nie udostępniając swojego hasła do usługi B.
+
+5. **JWT (JSON Web Token)**: JWT to standard kodowania informacji o użytkowniku w postaci tokena. Jest on cyfrowo podpisany, co gwarantuje jego autentyczność i integralność. Może być używany do przesyłania informacji o tożsamości użytkownika między systemami.
+
+Korzystając z tych technologii, możemy stworzyć zaawansowany system uwierzytelniania i autoryzacji. Dzięki Keycloak, który może służyć jako centralny serwer uwierzytelniania, możemy wdrożyć SSO we wszystkich naszych aplikacjach. Gdy użytkownik loguje się po raz pierwszy, Keycloak generuje token JWT, który jest przekazywany do aplikacji. Token ten potwierdza tożsamość użytkownika i może zawierać informacje o jego uprawnieniach, bazując na protokołach takich jak OIDC i OAuth2.
+
+Odpowiednia konfiguracja uwierzytelniania i autoryzacji jest kluczem do ochrony danych i zasobów przed nieuprawnionym dostępem, jednocześnie gwarantując użytkownikom łatwy dostęp do potrzebnych zasobów. Wspomniane technologie pozwalają zbudować bezpieczny i wydajny system uwierzytelniania.
 
 ## Implementacja
 
@@ -551,6 +655,7 @@ Istnieję mnóstwo technologii, które mogą być użyte do implementacji usług
 #### Instalacja Visual Studio Code
 #### Instalacja IntelliJ IDEA
 #### Instalacja Git
+
 ### Interfejs użytkownika
 #### Tworzenie projektu za pomocą Create React App
 #### Instalacja dodatkowych bibliotek
@@ -561,6 +666,7 @@ Istnieję mnóstwo technologii, które mogą być użyte do implementacji usług
 #### Implementacja pojedynczych widoków
 #### Utylity
 #### Plik Dockerfile i konfiguracja Nginx
+
 ### Serwer aplikacji
 #### Tworzenie projektu za pomocą Spring Initializr
 #### Gradle i instalacja dodatkowych bibliotek
@@ -572,6 +678,7 @@ Istnieję mnóstwo technologii, które mogą być użyte do implementacji usług
 #### Plik konfiguracyjny aplikacji Spring Boot
 #### Plik Dockerfile
 #### Testy za pomocą JUnit i Mockito
+
 ### Infrastruktura
 #### Docker Compose
 #### Konfiguracja instancji Keycloak
