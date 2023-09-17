@@ -1,28 +1,26 @@
-# System organizacji prace dla biura tłumaczeń
+# System organizacji pracy dla biura tłumaczeń
 
 ## Spis treści
 
 * [Wprowadzenie](#wprowadzenie)
-  * [Wspóczesne zarządzanie projektami](#wspóczesne-zarządzanie-projektami)
-  * [Systemy zarządzania projektami](#systemy-zarządzania-projektami)
   * [Biznes tłumaczeń w dzisiejszych czasach](#biznes-tłumaczeń-w-dzisiejszych-czasach)
-  * [Czemu SI jeszcze nie zastąpiła człowieka w tłumaczeniach?](#czemu-si-jeszcze-nie-zastąpiła-człowieka-w-tłumaczeniach)
-  * [Czemu warto używać specjalistycznego narzędzia](#czemu-warto-używać-specjalistycznego-narzędzia)
-  * [Kto jest docelowym odbiorcą](#kto-jest-docelowym-odbiorcą)
-  * [Geneza projektu i inspiracje](#geneza-projektu-i-inspiracje)
+  * [Wspóczesne zarządzanie projektami](#wspóczesne-zarządzanie-projektami)
+  * [Systemy zarządzania projektami i ich rola w branży tłumaczeniowej](#systemy-zarządzania-projektami-i-ich-rola-w-branży-tłumaczeniowej)
 * [Koncepcja aplikacji](#koncepcja-aplikacji)
+  * [Geneza projektu i inspiracje](#geneza-projektu-i-inspiracje)
   * [Założenia i cele projektu](#założenia-i-cele-projektu)
   * [Funkcjonalności aplikacji](#funkcjonalności-aplikacji)
 * [Projekt aplikacji](#projekt-aplikacji)
   * [Przypadki użycia i historyjki użytkownika](#przypadki-użycia-i-historyjki-użytkownika)
     * [Jako użytkownik, chcę:](#jako-użytkownik-chcę)
-    * [Jako kierownik projektu, chcę:](#jako-kierownik-projektu-chcę)
-    * [Jako tłumacz, chcę:](#jako-tłumacz-chcę)
     * [Jako administrator systemu, chcę:](#jako-administrator-systemu-chcę)
+    * [Jako kierownik projektu, chcę:](#jako-kierownik-projektu-chcę)
+    * [Jako tłumacz, redaktor, korektor, ekspert merytoryczny czy edytor chcę:](#jako-tłumacz-redaktor-korektor-ekspert-merytoryczny-czy-edytor-chcę)
     * [Jako inżynier wsparcia, chcę:](#jako-inżynier-wsparcia-chcę)
   * [Diagram klas](#diagram-klas)
   * [Diagramy stanów](#diagramy-stanów)
-  * [Wzorce i zasady projektowe](#wzorce-i-zasady-projektowe)
+  * [Diagram infrastruktury](#diagram-infrastruktury)
+  * [Zasady projektowania systemu](#zasady-projektowania-systemu)
     * [Filozofia projektu](#filozofia-projektu)
     * [Domain-driven design (DDD)](#domain-driven-design-ddd)
     * [Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)](#architektura-heksagonalna-czyli-wzorzec-porty-i-adaptery-ha)
@@ -30,93 +28,181 @@
     * [Logowanie i monitorowanie](#logowanie-i-monitorowanie)
     * [Kombinacja DDD, HA, DI i logowania/monitorowania](#kombinacja-ddd-ha-di-i-logowaniamonitorowania)
     * [Architektura wielowarstwowa](#architektura-wielowarstwowa)
-* [Wybrany stos technologiczny](#wybrany-stos-technologiczny)
+* [Stos technologiczny](#stos-technologiczny)
+  * [Postanowienia ogólne w wyborze technologii](#postanowienia-ogólne-w-wyborze-technologii)
   * [Interfejs użytkownika](#interfejs-użytkownika)
-    * [React](#react)
-    * [React Router DOM](#react-router-dom)
-    * [Redux](#redux)
-    * [RxJS](#rxjs)
-    * [SCSS](#scss)
-    * [Material UI (React)](#material-ui-react)
-    * [TypeScript](#typescript)
-    * [npm](#npm)
-  * [Logika biznesowa](#logika-biznesowa)
-    * [Kotlin](#kotlin)
-    * [Spring Framework](#spring-framework)
-    * [Spring Boot](#spring-boot)
-    * [Spring Web](#spring-web)
-    * [Spring WebFlux](#spring-webflux)
-    * [Spring Data](#spring-data)
-    * [Spring Security](#spring-security)
-    * [Spring Cloud](#spring-cloud)
-    * [Gradle](#gradle)
-    * [REST](#rest)
-  * [API](#api)
-    * [RestCountries](#restcountries)
-    * [SIL International](#sil-international)
-    * [exchangerate.host](#exchangeratehost)
-  * [Testy](#testy)
-    * [JUnit](#junit)
-    * [Mockito](#mockito)
-  * [Baza danych](#baza-danych)
-    * [PostgreSQL](#postgresql)
-    * [Redis](#redis)
+  * [Serwer aplikacji](#serwer-aplikacji)
+  * [Przechowywanie danych](#przechowywanie-danych)
+  * [Zewnętrzne API](#zewnętrzne-api)
+  * [Monitorowanie i analiza pracy aplikacji](#monitorowanie-i-analiza-pracy-aplikacji)
+  * [Testowanie](#testowanie)
   * [Wdrożenie](#wdrożenie)
-    * [Docker](#docker)
-    * [Kubernetes](#kubernetes)
-  * [Magazyn plików](#magazyn-plików)
-    * [Minio](#minio)
-  * [Monitoring i Logowanie](#monitoring-i-logowanie)
-    * [Elasticsearch](#elasticsearch)
-    * [Kibana](#kibana)
-    * [Logstash](#logstash)
-    * [Filebeat](#filebeat)
-    * [Metricbeat](#metricbeat)
-    * [Heartbeat](#heartbeat)
-  * [Narzędzia dodatkowe](#narzędzia-dodatkowe)
-    * [Swagger](#swagger)
-    * [PgAdmin](#pgadmin)
-    * [RedisInsight](#redisinsight)
-  * [Uwierzytelnianie](#uwierzytelnianie)
-    * [OAuth2](#oauth2)
-    * [OpenID Connect](#openid-connect)
-    * [JWT](#jwt)
-    * [Keycloak](#keycloak)
+  * [Uwierzytelnianie i autoryzacja](#uwierzytelnianie-i-autoryzacja)
+* [Implementacja](#implementacja)
+  * [Przygotowanie środowiska](#przygotowanie-środowiska)
+    * [Instalacja Node.js](#instalacja-nodejs)
+    * [Instalacja Docker](#instalacja-docker)
+    * [Instalacja Visual Studio Code](#instalacja-visual-studio-code)
+    * [Instalacja IntelliJ IDEA](#instalacja-intellij-idea)
+    * [Instalacja Git](#instalacja-git)
+  * [Interfejs użytkownika](#interfejs-użytkownika-1)
+    * [Tworzenie projektu za pomocą Create React App](#tworzenie-projektu-za-pomocą-create-react-app)
+    * [Instalacja dodatkowych bibliotek](#instalacja-dodatkowych-bibliotek)
+    * [Implementacja klienta serwera aplikacji](#implementacja-klienta-serwera-aplikacji)
+    * [Implementacja komponentów](#implementacja-komponentów)
+    * [Implementacja kontekstów](#implementacja-kontekstów)
+    * [Implementacja układu strony](#implementacja-układu-strony)
+    * [Implementacja pojedynczych widoków](#implementacja-pojedynczych-widoków)
+    * [Utylity](#utylity)
+    * [Plik Dockerfile i konfiguracja Nginx](#plik-dockerfile-i-konfiguracja-nginx)
+  * [Serwer aplikacji](#serwer-aplikacji-1)
+    * [Tworzenie projektu za pomocą Spring Initializr](#tworzenie-projektu-za-pomocą-spring-initializr)
+    * [Gradle i instalacja dodatkowych bibliotek](#gradle-i-instalacja-dodatkowych-bibliotek)
+    * [Implementacja domeny aplikacji](#implementacja-domeny-aplikacji)
+    * [Implementacja portów i adapterów](#implementacja-portów-i-adapterów)
+    * [Integracja domeny z portami i adapterami](#integracja-domeny-z-portami-i-adapterami)
+    * [Integracja z zewnętrznymi API](#integracja-z-zewnętrznymi-api)
+    * [Konfiguracja Spring Security](#konfiguracja-spring-security)
+    * [Plik konfiguracyjny aplikacji Spring Boot](#plik-konfiguracyjny-aplikacji-spring-boot)
+    * [Plik Dockerfile](#plik-dockerfile)
+    * [Testy za pomocą JUnit i Mockito](#testy-za-pomocą-junit-i-mockito)
+  * [Infrastruktura](#infrastruktura)
+    * [Docker Compose](#docker-compose)
+    * [Konfiguracja instancji Keycloak](#konfiguracja-instancji-keycloak)
+    * [Konfiguracja instancji PostgreSQL](#konfiguracja-instancji-postgresql)
+    * [Konfiguracja instancji Redis](#konfiguracja-instancji-elasticsearch)
+    * [Konfiguracja instancji MinIO](#konfiguracja-instancji-minio)
+    * [Konfiguracja stosu ELK](#konfiguracja-stosu-elk)
 * [Prezentacja](#prezentacja)
-  * [Zarządzanie projektem](#zarządzanie-projektem)
-  * [Zapewnienie jakości](#zapewnienie-jakości)
-  * [Komunikacja i współpraca](#komunikacja-i-współpraca)
-  * [Zarządzanie zasobami](#zarządzanie-zasobami)
-  * [Raportowanie i analiza](#raportowanie-i-analiza)
-  * [Bezpieczeństwo](#bezpieczeństwo)
-  * [Logowanie i monitoring](#logowanie-i-monitoring)
-* [Przyszłość i rozwój aplikacji](#przyszłość-i-rozwój-aplikacji)
+  * [Rejestracja nowego użytkownika](#rejestracja-nowego-użytkownika)
+  * [Logowanie się do systemu](#logowanie-się-do-systemu)
+  * [Zarządzanie słownikami](#zarządzanie-słownikami)
+  * [Zarządzanie bazą klientów](#zarządzanie-bazą-klientów)
+  * [Zarządzanie projektami](#zarządzanie-projektami)
+    * [Przegląd projektów](#przegląd-projektów)
+    * [Tworzenie i edycja projektu](#tworzenie-i-edytowanie-projektu)
+    * [Zmiana statusu projektu](#zmiana-statusu-projektu)
+    * [Zmiana terminu realizacji projektu](#zmiana-terminu-realizacji-projektu)
+    * [Podział projektu na zadania](#podział-projektu-na-zadania)
+    * [Zarządzanie zadaniami](#zarządzanie-zadaniami)
+    * [Zarządzanie kosztami realizacji projektu](#zarządzanie-kosztami-realizacji-projektu)
+    * [Zarządzanie dokumentami projektu](#zarządzanie-dokumentami-projektu)
+    * [Komunikacja w ramach projektu](#komunikacja-w-ramach-projektu)
+  * [Monitorowanie pracy systemu](#monitorowanie-pracy-systemu)
+* [Przyszłość systemu](#przyszłość-systemu)
   * [Integracja z narzędziami maszynowego tłumaczenia](#integracja-z-narzędziami-maszynowego-tłumaczenia)
   * [Integracja z narzędziami do analizy tekstu](#integracja-z-narzędziami-do-analizy-tekstu)
   * [Integracja ze słownikami terminologicznymi](#integracja-ze-słownikami-terminologicznymi)
   * [Glosariusze](#glosariusze)
   * [Rozbudowanie możliwości raportowania](#rozbudowanie-możliwości-raportowania)
-* [Podsumowanie](#podsumowanie)
+  * [Usprawnienia monitorowania pracy systemu](#podalsze-usprawnienia-monitorowania-pracy-systemu)
 
 ## Wprowadzenie
 
+### Biznes tłumaczeń w dzisiejszych czasach
+
+W dzisiejszych czasach, wraz z globalizacją i rosnącym handlem międzynarodowym, rola tłumaczeń biznesowych staje się niezwykle ważna. Przedsiębiorstwa, dążąc do ekspansji na rynkach zagranicznych, muszą dostosowywać swoje materiały, takie jak umowy, dokumenty finansowe, strategie marketingowe, raporty, prezentacje czy strony internetowe, do języka i kultury docelowej. Tłumaczenia biznesowe, ze względu na specyfikę, wymagają nie tylko doskonałej znajomości języka, ale także specjalistycznej wiedzy w danej branży. Błędy w tłumaczeniu mogą prowadzić do poważnych nieporozumień, które mogą mieć negatywne konsekwencje dla firmy.
+W związku z tym wiele firm decyduje się na współpracę z profesjonalnymi biurami tłumaczeń, które oferują usługi dostosowane do specyficznych potrzeb biznesu. Tłumacze specjalizujący się w danych dziedzinach zapewniają wysoką jakość i precyzję tłumaczeń, co jest kluczem do budowania zaufania i pozytywnego wizerunku na rynkach międzynarodowych[1][2][4].
+
+Globalizacja rynków prowadzi do zwiększenia znaczenia kultury w komunikacji biznesowej. Tłumaczenie tekstu to jedno, ale dostosowanie go do specyfiki kulturowej docelowego kraju to zadanie o wiele bardziej złożone, a jednocześnie kluczowe dla skuteczności przekazu. To właśnie proces nazywamy lokalizacją.
+Lokalizacja to proces adaptacji produktu lub treści do specyfiki kulturowej, językowej, prawnej i innych aspektów konkretnego rynku docelowego. Chodzi tu nie tylko o tłumaczenie językowe, ale także o uwzględnienie różnic kulturowych, norm społecznych, zwyczajów, wartości oraz oczekiwań docelowej grupy odbiorców.
+
+**Dlaczego lokalizacja jest ważna?**:
+1. **Zrozumienie rynku**: Lokalizacja pozwala firmom na lepsze zrozumienie potrzeb i oczekiwań lokalnych konsumentów, co przekłada się na skuteczniejszą komunikację i większe zaufanie do marki.
+2. **Budowanie relacji**: Dostosowanie treści do lokalnych realiów pozwala na nawiązanie głębszej relacji z klientem, co z kolei prowadzi do lojalności i większego zaangażowania.
+3. **Unikanie wpadek kulturowych**: Niedostosowanie treści do kultury docelowej może prowadzić do nieporozumień, a w skrajnych przypadkach nawet do skandalów. Lokalizacja minimalizuje ryzyko nieświadomego popełnienia kulturowych faux pas.
+
+**Przykłady lokalizacji**:
+1. **Reklama**: Słynny przykład dotyczy Chevroleta, który wprowadził na rynek latynoamerykański model o nazwie Nova. W języku hiszpańskim "no va" oznacza "nie jedzie", co nie było najlepszym wyborem dla samochodu.
+2. **Strony internetowe**: Wiele firm dostosowuje design, treści i funkcje swoich stron do lokalnych oczekiwań, np. różne metody płatności czy odmienne grafiki związane z lokalnymi świętami.
+3. **Gry komputerowe**: Lokalizacja gier to nie tylko tłumaczenie dialogów, ale także dostosowywanie postaci, scenariuszy czy nawet mechaniki gry do lokalnych oczekiwań.
+
+**Wykorzystanie technologii**: Lokalizacja korzysta z zaawansowanych narzędzi technologicznych, które pozwalają na efektywną adaptację treści. Przykładowo, systemy zarządzania tłumaczeniami (TMS) mogą automatycznie identyfikować elementy do lokalizacji, a także dbać o spójność terminologiczną.
+
+Lokalizacja to kluczowy element strategii międzynarodowej każdej firmy, która dąży do skutecznej komunikacji z klientami na różnych rynkach. W erze globalizacji nie wystarczy już tylko tłumaczyć - trzeba "mówić" językiem kultury.
+
+W świecie, gdzie interakcje międzynarodowe stały się codziennością, tłumaczenia ustne odgrywają kluczową rolę w wielu aspektach komunikacji. Od spotkań biznesowych, przez konferencje naukowe, po wydarzenia kulturalne - profesjonalne tłumaczenia ustne są niezbędne, by zapewnić płynny przepływ informacji między ludźmi różnych narodowości i kultur.
+
+**Rodzaje tłumaczeń ustnych**:
+1. **Tłumaczenie konsekutywne**: Tłumacz przekazuje treść po tym, jak mówca skończy wypowiedź. Jest to często stosowane w małych grupach lub w trakcie spotkań biznesowych.
+2. **Tłumaczenie symultaniczne**: Tłumacz przekazuje treść niemal jednocześnie z mówcą, zwykle pracując w kabinie dźwiękoszczelnej. Jest to typ tłumaczenia popularny na dużych konferencjach czy wydarzeniach międzynarodowych.
+3. **Tłumaczenie szeptane**: Tłumacz siedzi obok osoby, która potrzebuje tłumaczenia, i szeptem przekazuje jej treść wypowiedzi.
+
+**Kluczowe znaczenie tłumaczeń ustnych**:
+1. **Przekroczenie barier językowych**: Tłumaczenia ustne umożliwiają płynną komunikację między osobami, które nie mówią tym samym językiem, eliminując jednocześnie ryzyko nieporozumień.
+2. **Kulturowa adaptacja**: Profesjonalni tłumacze ustni nie tylko przekładają słowa, ale również dostosowują komunikat do specyfiki kulturowej odbiorców, uwzględniając niuanse, zwyczaje i kontekst.
+3. **Dostępność informacji**: Na dużych konferencjach czy seminarium tłumaczenia ustne gwarantują, że każdy uczestnik, niezależnie od jego języka ojczystego, ma dostęp do tej samej wiedzy i informacji.
+4. **Profesjonalizm w biznesie**: W kontekście biznesowym tłumaczenia ustne są często kluczem do sukcesu, umożliwiając precyzyjne negocjacje, budowanie zaufania i rozwijanie relacji z partnerami międzynarodowymi.
+
+**Wyzwania związane z tłumaczeniami ustnymi**:
+- **Wysoki poziom stresu**: Tłumaczenie symultaniczne wymaga niezwykle wysokiej koncentracji i jest bardzo wymagające psychicznie.
+- **Potrzeba ciągłego doskonalenia**: Świat jest w ciągłym ruchu, a wraz z nim ewoluują języki i terminologia. Dlatego tłumacze muszą nieustannie podnosić swoje kwalifikacje.
+- **Różnorodność tematyczna**: Tłumacze często muszą radzić sobie z tematyką, która jest dla nich nowa, co wymaga szybkiego przyswajania informacji.
+
+Z kolei technologia, w tym sztuczna inteligencja, rewolucjonizuje branżę tłumaczeń. Narzędzia tłumaczeniowe oparte na AI pozwalają na szybsze i bardziej efektywne tłumaczenia, co z kolei przyczynia się do zwiększenia konkurencyjności firmy na globalnym rynku. Niemniej jednak, niezależnie od technologii, ludzki dotyk i ekspertyza w tłumaczeniu pozostają niezastąpione [3]. Istnieje kilka powodów, dla których SI nie jest jeszcze w stanie zastąpić tłumaczy[6][7]:
+
+1. **Brak kontekstu**: W przetwarzaniu języka naturalnego kontekst jest kluczowy dla zrozumienia tekstu. SI może mieć trudności w zrozumieniu kontekstu, co prowadzi do błędów tłumaczeniowych.
+2. **Złożoność języka naturalnego**: Język naturalny jest bardzo złożony i ma wiele niuansów i subtelnych znaczeń. SI może mieć trudności w przeniesieniu tych niuansów i znaczeń na inny język.
+3. **Złożoność tłumaczenia**: Tłumaczenie to nie tylko przekładanie słów z jednego języka na drugi. To proces interpretacji i przekazywania znaczenia tekstu, co wymaga wiedzy i doświadczenia, którego SI nie posiada.
+4. **Jakość tłumaczenia**: Mimo postępu w rozwoju SI, wciąż nie jest w stanie osiągnąć jakości tłumaczenia, która byłaby wystarczająca do zastąpienia tłumaczy. Żywi tłumacze posiadają wiedzę i doświadczenie, które pozwala im na tworzenie dokładnych i precyzyjnych tłumaczeń.
+
+Pomimo tych ograniczeń, SI może nadal odgrywać ważną rolę w procesie tłumaczenia. Może pomóc w automatyzacji procesów tłumaczeniowych, takich jak tłumaczenie dokumentów lub stron internetowych, ale wciąż potrzebuje wsparcia żywych tłumaczy, którzy sprawdzą i poprawią jakość tłumaczeń [5].
+
+Podsumowując, w dobie globalizacji i rosnącego znaczenia międzynarodowego handlu oraz komunikacji, tłumaczenia - zarówno pisemne, jak i ustne - odgrywają kluczową rolę w budowaniu relacji, prowadzeniu biznesu i wymianie informacji między różnymi kulturami i narodami. Chociaż technologia, w tym sztuczna inteligencja, wnosi ważny wkład w usprawnienie i przyspieszenie procesów tłumaczeniowych, niezastąpionym elementem tłumaczenia pozostaje człowiek, który jest w stanie zrozumieć kontekst, niuanse i subtelności języka. Współpraca między ludźmi a technologią to przyszłość branży tłumaczeniowej, łącząca najlepsze z obu światów.
+
+Źródła:
+
+1. "Business Translation Services for Global Enterprises" - TransPerfect - https://www.transperfect.com/services/business-translation-services [dostęp: 21.02.2023]
+2. "What is Business Translation?" - SDL - https://www.sdl.com/solutions/translation/what-is-business-translation/ [dostęp: 21.02.2023]
+3. "The Role of Translation in Global Business" - Multilingua Blog - https://www.multilingua.com/blog/the-role-of-translation-in-global-business/ [dostęp: 21.02.2023]
+4. "Business Translation Services" - LingvoHouse - https://lingvohouse.com/services/business-translation/ [dostęp: 21.02.2023]
+5. "Can AI Replace Human Translators?" - TAUS - https://www.taus.net/think-tank/articles/can-ai-replace-human-translators [dostęp: 21.02.2023]
+6. "The Pros and Cons of Artificial Intelligence in Translation" - Memsource - https://www.memsource.com/blog/2018/01/18/the-pros-and-cons-of-artificial-intelligence-in-translation/ [dostęp: 21.02.2023]
+7. "Why AI will never replace human translators" - LanguageWire - https://www.languagewire.com/en/blog/why-ai-will-never-replace-human-translators [dostęp: 21.02.2023]
+
 ###	Wspóczesne zarządzanie projektami
 
-Wykonanie każdego zadania, nieważne jak skomplikowane i wielkie - czy ż by to była budowa nowego wieżowca czy otwarcie małego osiedlowego sklepu - może być nazwane projektem. Większość z nas dokładnie wie, jak tego rodzaju dzieła kształtują nasz życiu osobistym i/lub zawodowym. Niestety, nie wszystkie projekty kończą się pełnym sukcesem. Zdarzają się prekroczenia budżetów i terminów realizacji, mogą nie spełniać wymagań stawianych przez klientów lub przez nas samych. Część projektów zostaje porzucona.
+Wykonanie każdego zadania, nieważne jak skomplikowane i wielkie - czy była by to budowa nowego wieżowca czy otwarcie małego osiedlowego sklepu - może być nazwane projektem. Większość z nas dokładnie wie, jak tego rodzaju dzieła kształtują nasz życiu osobistym i/lub zawodowym. Niestety, nie wszystkie projekty kończą się pełnym sukcesem. Zdarzają się prekroczenia budżetów i terminów realizacji, mogą nie spełniać wymagań stawianych przez klientów lub przez nas samych. Część projektów zostaje porzucona.
 
-Umiejętne zarżądzanie jest ważnym czynnikiem, mającym znaczący wpływ na sukces w realizacji projektu. Skuteczne zarządzanie opiera się na wysokim poziomie kompetencji w kilku obszarach. Potrzebne są umiejętności optymalnego planowania, podtrzymania motywacji zespołu, komunikacji interpersonalnej oraz często szeroka wiedza techniczna i dziedzinowa. Wszystkie te elementy są istotne podczas realizacji różnorodnych typu projektów i maja olbrzymi wpływ na ich końcowy sukces [1]. Zarządzanie projektami dzisiaj zajmuje się zbieraniem wiedzy i poszerzaniem wiedzy oraz budowaniem narzędzi, metodyk i technik, które pomagają w efektywnej realizacji projektów. Zarządzanie projektami jest bardzo bogatą i szeroką dyscypliną zawiera w sobie tysiące lat doświadczenia w realizacji różnej skali projektów i stanowi jedną z najbardziej dynamicznie rozwijających się dziedzin zarządzania. Wiele organizacji, w tym także te związane z tłumaczeniami, zaczyna dostrzegać korzyści płynące z zastosowania narzędzi i technik zarządzania projektami.
+Umiejętne zarządzanie jest ważnym czynnikiem, mającym znaczący wpływ na sukces w przeprowadzaniu projektu. Skuteczne zarządzanie opiera się na wysokim poziomie kompetencji w kilku obszarach. Potrzebne są umiejętności optymalnego planowania, podtrzymania motywacji zespołu, komunikacji interpersonalnej oraz często szeroka wiedza techniczna i dziedzinowa. Wszystkie te elementy są istotne podczas realizacji różnorodnych typów projektów i maja olbrzymi wpływ na ich końcowy sukces [1]. Zarządzanie projektami dzisiaj zajmuje się zbieraniem wiedzy i poszerzaniem wiedzy oraz budowaniem narzędzi, metodyk i technik, które pomagają w efektywnej realizacji projektów. Zarządzanie projektami jest bardzo bogatą i szeroką dyscypliną zawiera w sobie tysiące lat doświadczenia w realizacji różnej skali projektów i stanowi jedną z najbardziej dynamicznie rozwijających się dziedzin zarządzania. Wiele organizacji, w tym także te związane z tłumaczeniami, zaczyna dostrzegać korzyści płynące z zastosowania narzędzi i technik zarządzania projektami.
 
-Pierwsza połowa XX wieku stała się początkiem ery szerokiego użycia nowych technologii i narzędzi. Upowszechnienie samolotów i samochodów poskutkowało zwiększeniem mobilności zasobów i pozwoliło na dużo bardziej efektywną ich alokację. Rozwój środków telekomunikacji w postaci telegrafów i telefonów spowodował zanczące uproszenia w komunikacji na duże odłegłosći. Pojawiały się pierwsze komputery i bazy danych, co z kolei uprościło różnolakie obliczenia i procesy administracyjne. Kolejnym ważnym w tym okresie wydarzeniem było pojawienie się pierwszych koncepcji zarządzania projektami. W 1917 roku Henry Gantt opracował diagram, który pozwalał na wizualizację harmonogramu projektu. Jednym z pierwszych zastosowań wykresu Gantta w dużych projektach było planowanie i realizacja budowy Zapory Hoovera w latach 1931-1936[2]. 
+Pierwsza połowa XX wieku stała się początkiem ery szerokiego użycia nowych technologii i narzędzi. Upowszechnienie samolotów i samochodów poskutkowało zwiększeniem mobilności zasobów i pozwoliło na dużo bardziej efektywną ich alokację. Rozwój środków telekomunikacji w postaci telegrafów i telefonów spowodował zanczące uproszenia w komunikacji na duże odłegłosći. Pojawiały się pierwsze komputery i bazy danych, co z kolei uprościło różnolakie obliczenia i procesy administracyjne. Kolejnym ważnym w tym okresie wydarzeniem było pojawienie się pierwszych koncepcji zarządzania projektami. W 1917 roku Henry Gantt opracował jeden ze swoich najważniejszych wkładów w dziedzinę zarządzania projektami: diagram Gantta, który pozwalał na wizualizację harmonogramu projektu. Jednym z pierwszych zastosowań wykresu Gantta w dużych projektach było planowanie i realizacja budowy Zapory Hoovera w latach 1931-1936[2]. 
 
-Za początek współczesnego zarządzania projektami można uznać założenie Amerykańskiego Stowarzyszenia Inżynierów Kosztów (ang. The American Association of Cost Engineers, dzisiaj AACE International) w roku 1956, które do dzisiaj pozostaje wiodącym stowarzyszeniem zawodowym dla kosztorysantów, inżynierów kosztów, planistów, kierowników projektów i specjalistów ds. kontroli projektów. W kolejnych latach zaczęły pojawiać się pierwsze metodyki zarządzania projektami, takie jak CPM/PERT. W roku 1969 powstał Project Management Institute (PMI), który jest największą organizacją na świecie zrzeszającą specjalistów z zakresu zarządzania projektami. W kolejnych latach zaczęły pojawiać się kolejne metodyki zarządzania projektami, takie jak PRINCE2, PMBOK, Scrum, Kanban, Lean, itd.
+Za początek współczesnego zarządzania projektami można uznać założenie w 1956 roku Amerykańskiego Stowarzyszenia Inżynierów Kosztów (ang. The American Association of Cost Engineers, dzisiaj znane jako AACE International). Jest to wiodące stowarzyszenie zawodowe skupiające kosztorysantów, inżynierów kosztów, planistów, kierowników projektów i specjalistów ds. kontroli projektów. W kolejnych latach zaczęły pojawiać się pierwsze metodyki zarządzania projektami, takie jak CPM/PERT. W roku 1969 powstał Project Management Institute (PMI), który jest największą organizacją na świecie zrzeszającą specjalistów z zakresu zarządzania projektami. W kolejnych latach zaczęły pojawiać się kolejne metodyki zarządzania projektami, takie jak PRINCE2, PMBOK, Scrum, Kanban, Lean, itd.
 
-Na przesztrzeni lat możemy zauważyć jak podejście do zarządzania projektami zmieniało się od bardziej "sztywnego" sekwencyjnego podejścia, które zakładało że wszystkie wymagania projektówe są znane na początku realizacji do "reaktywnego" zwinnego podejścia, które pozwalało lepiej przystosować się do ciągle zmieniających sie potrzeb. Zmiany te wynikały ze wzrostem skali i złożoności projektów oraz potrzebą reagować na coraz bardziej dynamicznie rozwijający się świat.
+Na przestrzeni lat możemy zauważyć jak podejście do zarządzania projektami zmieniało się od bardziej "sztywnego" sekwencyjnego podejścia, które zakładało że wszystkie wymagania projektówe są znane na początku realizacji do "reaktywnego" zwinnego podejścia, które pozwalało lepiej przystosować się do ciągle zmieniających sie potrzeb. Zmiany te wynikały ze wzrostem skali i złożoności projektów oraz potrzebą reagować na coraz bardziej dynamicznie rozwijający się świat.
 
-Najbardziej znaną sekwencyjną metodyką jest Waterfall. W dniu dzisiejszym najczęściej Waterfall jest wykorzystywany w małych projektach, termin realizacji których jest za mały żeby zaszła możliwość zmiany wymagań lub w projektach, które są bardzo dobrze zdefiniowane i nie ulegają zmianie w trakcie realizacji, np. grach wideo czy projektach budowlanych.
+Najbardziej znaną sekwencyjną metodyką jest Waterfall. Obecnie metodyka Waterfall jest najczęściej wykorzystywana w projektach, które są bardzo dobrze zdefiniowane i nie ulegają zmianie w trakcie realizacji, np. w grach wideo czy projektach budowlanych. Można ją stosować zarówno w dużych przedsięwzięciach, jak i w mniejszych projektach - dla każdego projektu, który od początku ma dobrze zdefiniowane wymagania. Przykładem sukcesu takiego podejścia do realizacji projektu może być misja Apollo 11, celem której było wysłanie pierwszego człowieka na Księżyc. Projekt ten był bardzo dobrze zdefiniowany, miał mierzalny cel i był realny do osiągnięcia w określonym czasie [8].
 
-W większości innych przypadków są stosowane podejścia zwinne, często określanie jako podejścia Agile. Agile sam w sobie nie jest metodyką, a raczej zbiorem wartości i zasad, które są opisane w Agile Manifesto. Metody, które spełniają wartości Agile, to np. Scrum, Kanban, FDD, RAD, XP, itd. Metodyki Agile pozwalają na szybkie dostosowanie się do potrzeb klięnta czy zmian rynku[2][3][5]. Według tego podejścia, sukces projektu zależy od ciągłej komunikacji między zespołem projektowym a klientem oraz od częstych wersji prototypowych, które pozwalają na szybką reakcję na zmieniające się potrzeby klienta [2]. Chociaż najczęściej podejście Agile stosowane jest w projektach informatycznych, to jednak może być również wykorzystywane w innych projektach, które wymagają częstych zmian i dostosowywania się do zmieniających się potrzeb klienta [6], czy też w projektach, które wymagają częstego testowania i weryfikacji.
+Agile (czyli "zwinnność") jest to zbiorcze określenie dla metod i praktyk zarządzania projektami, które kładą nacisk na elastyczność, adaptację do zmieniających się wymagań i skupienie na dostarczaniu wartości dla klienta w jak najkrótszym czasie [2][3][5]. Jest to odpowiedź na tradycyjne metody zarządzania projektami, które często były uznawane za zbyt sztywne i nieefektywne w szybko zmieniających się środowiskach, takich jak rozwój oprogramowania.
 
-Innym ważnym elementem współczesnego zarządzania projektami jest wykorzystanie narzędzi informatycznych, takich jak oprogramowanie do zarządzania projektami, które umożliwiają prowadzenie projektów na wysokim poziomie i ułatwiają koordynację pracy zespołu [1]. Dodatkowo, analiza danych i wykorzystanie narzędzi Business Intelligence pozwala na wgląd w efektywność projektów oraz umożliwia podejmowanie szybkich i trafnych decyzji [1].
+Podstawowe cechy podejścia Agile:
+
+1. **Iteracyjność i przyrostowość**: Projekty są dzielone na małe części, nazywane iteracjami lub sprintami, które trwają zazwyczaj od dwóch do czterech tygodni. Każda iteracja ma na celu dostarczenie pewnej funkcjonalności lub wartości dla klienta.
+
+2. **Komunikacja**: Regularne spotkania (tzw. stand-upy) pomagają zespołowi porozumieć się, wyznaczyć priorytety i rozwiązać bieżące problemy.
+
+3. **Feedback**: Klient jest stale angażowany w proces tworzenia produktu, dzięki czemu może na bieżąco dostarczać informacji zwrotnych, które pozwalają na dostosowywanie produktu do jego potrzeb.
+
+4. **Autoorganizacja zespołu**: Zespoły Agile są często samodzielne i mają pełne uprawnienia do podejmowania decyzji dotyczących tego, jak najlepiej osiągnąć cel sprintu.
+
+5. **Ciągłe doskonalenie**: Po każdej iteracji zespoły przeprowadzają retrospekcje, podczas których analizują, co poszło dobrze, a co można poprawić.
+
+Ważne jest również zrozumienie, że Agile to nie tylko metodyki (takie jak Scrum czy Kanban), ale również kultura i zestaw wartości. Te wartości zostały zdefiniowane w "Agile Manifesto" i obejmują między innymi:
+
+- Wartość ludzi i interakcji ponad procesy i narzędzia.
+- Współpracę z klientem ponad negocjowanie umów.
+- Reagowanie na zmiany ponad śledzenie planu.
+
+Mimo że początki Agile są związane głównie z branżą IT i rozwijaniem oprogramowania, zasady te są obecnie stosowane w wielu różnych branżach i kontekstach [6].
+
+Omawiająć tematykę zarządzania projektami, warto też zawsze pamiętać, że nie wszystko kończy się na narzędziach i metodach. Wiele projektów kończy się niepowodzeniem, a jednym z głównych powodów jest brak odpowiedniego przygotowania i planowania. Przykładami takich projektów są:
+
+1. **Budowa Eurotunelu** - początkowo oszacowano, że projekt będzie kosztować około 5 miliardów funtów, ale ostateczny koszt wyniósł prawie 10 miliardów funtów. Znaczenie dokładnego budżetowania i monitorowania kosztów jest tutaj kluczowe.
+2. **Festiwal Fyre** - brak odpowiedniego planowania i zarządzania ryzykiem doprowadził do katastrofalnej imprezy, która zakończyła się fiaskiem i wieloma skargami.
+3. **Kryzys BlackBerry w 2011 roku**, kiedy usługi firmy na całym świecie przestały działać na trzy dni. Firma została skrytykowana za słabą komunikację z klientami podczas awarii.
+
+Ważnym elementem współczesnego zarządzania projektami jest wykorzystanie narzędzi informatycznych, takich jak oprogramowanie do zarządzania projektami, które umożliwiają prowadzenie projektów na wysokim poziomie i ułatwiają koordynację pracy zespołu. Dodatkowo, analiza danych i wykorzystanie narzędzi Business Intelligence pozwala na wgląd w efektywność projektów oraz umożliwia podejmowanie szybkich i trafnych decyzji [1].
 
 Ważnym elementem współczesnego zarządzania projektami jest również zwrócenie uwagi na aspekty związane z etyką i zrównoważonym rozwojem [1][4]. Zgodność z przepisami i normami, a także zasadami etycznymi i społecznymi, to kluczowe elementy dla długoterminowego sukcesu projektu i organizacji [1].
 
@@ -129,86 +215,33 @@ Ważnym elementem współczesnego zarządzania projektami jest również zwróce
 5. "The Project Manager's Guide to Mastering Agile" - Charles G. Cobb
 6. Waterfall vs Agile - https://www.atlassian.com/agile/project-management/waterfall-vs-agile
 7. Waterfall Model a Complete Guide - 2019 Edition - Gerardus Blokdyk
+8. How Project Apollo Shaped the Project Management Landscape for any Organization? - https://www.saviom.com/blog/project-apollo-shaped-the-project-management-landscape/
 
-### Systemy zarządzania projektami
+### Systemy zarządzania projektami i ich rola w branży tłumaczeniowej
 
 System zarządzania projektami (Project Management System, PMS) to narzędzie informatyczne, które pozwala na kompleksowe zarządzanie projektem poprzez koordynację pracy zespołu, planowanie zadań, monitorowanie postępów i raportowanie wyników. Często PMS wspierają różne współczesne metody zarządznia projektami, w tym z rodziny Agile. [8][9]
 
-Przykładowe PMS to:
+Przykładowe PMS i ich funkcjonalności:
 
-* Asana
-* Trello
-* Jira (często w połączeniu z Confluence)
-* Monday
-* Basecamp
-* Microsoft Project
-* Smartsheet
-* Wrike
-* Notion
-* Redmine
+1. **Asana** - Asana jest elastycznym narzędziem do zarządzania projektami, które pozwala na planowanie, śledzenie i komunikację w projekcie. Zawiera listy zadań, harmonogramy, panele i funkcje automatyzacji.
+2. **Trello** - Trello bazuje na metodologii Kanban i pozwala użytkownikom tworzyć tablice z kartami reprezentującymi zadania. Jest intuicyjne, wizualne i można je dostosować poprzez różne dodatki.
+3. **Jira** - Stworzony głównie dla zespołów programistycznych, Jira oferuje zaawansowane narzędzia do śledzenia błędów i zadań. Często jest używany z Confluence, narzędziem do zarządzania dokumentacją.
+4. **Monday** - Monday.com to wizualna platforma zarządzania pracą, która pozwala zespołom planować i śledzić projekty w kolorowych i dostosowywalnych tablicach.
+5. **Basecamp** - Basecamp jest narzędziem do zarządzania projektami i komunikacji zespołowej, które oferuje czaty, listy zadań, dokumenty i harmonogramy w jednym miejscu.
+6. **Microsoft Project** - Jest to jedno z najbardziej zaawansowanych narzędzi do zarządzania projektami, które oferuje szczegółowe harmonogramowanie, alokację zasobów i analizę postępów.
+7. **Smartsheet** - Smartsheet to platforma do zarządzania i automatyzacji pracy, która łączy wygląd arkusza kalkulacyjnego z funkcjami zarządzania projektami.
+8. **Wrike** - Wrike to narzędzie do zarządzania pracą z funkcjami takimi jak listy zadań, śledzenie czasu, raportowanie i integracja z innymi narzędziami.
+9. **Notion** - Notion to wszechstronne narzędzie, które łączy notatki, bazy danych, tablice Kanban, wikis i kalendarze, pozwalając zespołom na organizację i zarządzanie projektami.
+10. **Redmine** - Redmine to otwarte oprogramowanie do zarządzania projektami, które oferuje śledzenie błędów, harmonogramowanie i wsparcie dla wielu projektów.
+11. **Jama Connect** - Jama Connect to narzędzie do zarządzania wymaganiami, które pozwala zespołom na śledzenie wymagań, testowanie i zarządzanie zmianami.
 
-Systemy PMS oferują szereg funkcji, takich jak harmonogramowanie projektu, przydział zadań i zasobów, monitorowanie postępu, śledzenie kosztów, tworzenie raportów, zarządzanie ryzykiem, komunikacja i współpraca między członkami zespołu projektowego, zarządzanie dokumentacją projektową oraz udostępnianie informacji zewnętrznym interesariuszom.
+Systemy PMS zwiększają efektywność zarządzania projektem poprzez łatwe planowanie zadań, monitorowanie postępów oraz komunikację w zespole. Umożliwiają oni również klarowne określenie celów, ocenę ryzyka i identyfikację problemów. Dzięki nim projekt staje się bardziej transparentny, ułatwiając wymianę informacji wśród członków zespołu oraz komunikację z interesariuszami zewnętrznymi. Systemy te przyczyniają się do oszczędności czasu, adaptacji do zmieniających się wymagań oraz korzystają z narzędzi analitycznych i sztucznej inteligencji. Służą zarządzaniu różnymi projektami, takimi jak oprogramowanie, budowa czy kampanie marketingowe, pomagając dostarczyć je na czas i w ramach budżetu[8][10][11][12].
 
-Jedną z głównych zalet systemów PMS jest zwiększenie efektywności zarządzania projektem. Dzięki temu narzędziu można w łatwy sposób zaplanować zadania, przydzielić je do odpowiednich członków zespołu i monitorować postępy ich realizacji. Systemy te umożliwiają również zdefiniowanie celów, weryfikację osiągnięć, ocenę ryzyka oraz identyfikację potencjalnych problemów. [10]
+Kontynuując temat, co raz więcej firm decyduje się na tworzenie takich narzędzi od zera, co pozwoli im dostać system w pełni odpowiadający potrzebom organizacji. Jednakże, systemy PMS nie są tylko dla tradycyjnych sektorów biznesu. Biura tłumaczeń również odnajdują w nich wielkie korzyści.
 
-Kolejną korzyścią wynikającą z zastosowania PMS jest zwiększenie transparentności działań w projekcie. Wszyscy członkowie zespołu mają dostęp do aktualnych informacji na temat postępów i wyników projektu, a także mogą w prosty sposób wymieniać się informacjami i uwagami na temat pracy. Systemy PMS pozwalają również na zwiększenie komunikacji z zewnętrznymi interesariuszami, co jest szczególnie ważne w przypadku dużych i złożonych projektów. [11]
+Biura tłumaczeń zajmują się przetwarzaniem ogromnej ilości informacji, co może stanowić wyzwanie dla zarządzania projektami tłumaczeniowymi. W celu poprawy jakości zarządzania takimi projektami i zwiększenia efektywności pracy biuro tłumaczeń powinno rozważyć użycie specjalistycznego narzędzia PMS.
 
-Korzyści wynikające z wykorzystania systemów PMS dotyczą również oszczędności czasu i zwiększenia efektywności pracy. Dzięki temu narzędziu można w prosty i szybki sposób reagować na zmieniające się wymagania projektu, a także przeprowadzać analizy i prognozy dotyczące postępów i kosztów. [12]
-
-Systemy PMS wykorzystują również narzędzia analityczne i sztuczną inteligencję w celu poprawy efektywności zarządzania projektem. [8]
-
-Systemy te mogą być wykorzystywane do zarządzania różnymi projektami, takimi jak tworzenie oprogramowania, budowa, kampanie marketingowe i inne. Są one zaprojektowane tak, aby pomóc kierownikom projektów i zespołom pozostać zorganizowanym, efektywnie współpracować i dostarczać projekty na czas i w ramach budżetu. [8]
-
-Źródła:
-
-8. Project Management Institute (PMI) - https://www.pmi.org/
-9. "Project Management Systems: A Technology Review" - Alok Mishra and Neeraj Mishra, International Journal of Computer Applications Technology and Research, Volume 5– Issue 1, 2016
-10. "The Benefits of Project Management Software" - Derek Huether, ProjectManager.com - https://www.projectmanager.com/blog/the-benefits-of-project-management-software
-11. "The Advantages of Project Management Software" - Workzone - https://www.workzone.com/blog/the-advantages-of-project-management-software/
-12. "Why Use Project Management Software?" - Zoho - https://www.zoho.com/projects/blog/
-
-### Biznes tłumaczeń w dzisiejszych czasach
-
-W dzisiejszych czasach coraz więcej firm angażuje się w handel międzynarodowy, co z kolei wymaga znajomości języków obcych. Wiele przedsiębiorstw korzysta z usług tłumaczeniowych, aby móc skutecznie komunikować się z klientami zagranicznymi i przekazywać informacje na różnych rynkach.
-
-Tłumaczenia biznesowe to rodzaj tłumaczeń, które dotyczą dokumentów biznesowych, takich jak umowy, dokumenty finansowe, strategie marketingowe, raporty, a także prezentacje i strony internetowe. Wymagają one specjalistycznej wiedzy oraz znajomości terminologii branżowej, a także precyzyjnego tłumaczenia treści, które nie pozostawiają wątpliwości.
-
-Wiele firm decyduje się na współpracę z biurem tłumaczeń, które oferuje usługi tłumaczenia biznesowego. Taka współpraca pozwala na skuteczne i profesjonalne przekładanie dokumentów, co z kolei przyczynia się do budowania pozytywnego wizerunku firmy na rynkach zagranicznych. Profesjonalne biuro tłumaczeń zatrudnia tłumaczy z doświadczeniem w danej branży, co zapewnia wysoką jakość tłumaczeń. [1][2][4]
-
-Jednym z trendów w biznesie tłumaczeń jest wykorzystanie narzędzi tłumaczeniowych opartych na sztucznej inteligencji. Dzięki nim tłumaczenia stają się szybsze i bardziej efektywne, co z kolei przyczynia się do zwiększenia konkurencyjności firmy na rynkach międzynarodowych. [3]
-
-Źródła:
-
-1. "Business Translation Services for Global Enterprises" - TransPerfect - https://www.transperfect.com/services/business-translation-services [dostęp: 21.02.2023]
-2. "What is Business Translation?" - SDL - https://www.sdl.com/solutions/translation/what-is-business-translation/ [dostęp: 21.02.2023]
-3. "The Role of Translation in Global Business" - Multilingua Blog - https://www.multilingua.com/blog/the-role-of-translation-in-global-business/ [dostęp: 21.02.2023]
-4. "Business Translation Services" - LingvoHouse - https://lingvohouse.com/services/business-translation/ [dostęp: 21.02.2023]
-
-### Czemu SI jeszcze nie zastąpiła człowieka w tłumaczeniach?
-
-Sztuczna inteligencja (SI) odgrywa coraz większą rolę w przetwarzaniu języka naturalnego i tłumaczeniu, ale mimo postępującej automatyzacji, wciąż nie zastępuje żywych tłumaczy [1]. Istnieje kilka powodów, dla których SI nie jest jeszcze w stanie zastąpić tłumaczy:
-
-Brak kontekstu: W przetwarzaniu języka naturalnego kontekst jest kluczowy dla zrozumienia tekstu. SI może mieć trudności w zrozumieniu kontekstu, co prowadzi do błędów tłumaczeniowych [2].
-
-Złożoność języka naturalnego: Język naturalny jest bardzo złożony i ma wiele niuansów i subtelnych znaczeń. SI może mieć trudności w przeniesieniu tych niuansów i znaczeń na inny język [2].
-
-Złożoność tłumaczenia: Tłumaczenie to nie tylko przekładanie słów z jednego języka na drugi. To proces interpretacji i przekazywania znaczenia tekstu, co wymaga wiedzy i doświadczenia, którego SI nie posiada [1].
-
-Jakość tłumaczenia: Mimo postępu w rozwoju SI, wciąż nie jest w stanie osiągnąć jakości tłumaczenia, która byłaby wystarczająca do zastąpienia tłumaczy. Żywi tłumacze posiadają wiedzę i doświadczenie, które pozwala im na tworzenie dokładnych i precyzyjnych tłumaczeń [3].
-
-Pomimo tych ograniczeń, SI może nadal odgrywać ważną rolę w procesie tłumaczenia. Może pomóc w automatyzacji procesów tłumaczeniowych, takich jak tłumaczenie dokumentów lub stron internetowych, ale wciąż potrzebuje wsparcia żywych tłumaczy, którzy sprawdzą i poprawią jakość tłumaczeń [1].
-
-Źródła:
-
-1. "Can AI Replace Human Translators?" - TAUS - https://www.taus.net/think-tank/articles/can-ai-replace-human-translators [dostęp: 21.02.2023]
-2. "The Pros and Cons of Artificial Intelligence in Translation" - Memsource - https://www.memsource.com/blog/2018/01/18/the-pros-and-cons-of-artificial-intelligence-in-translation/ [dostęp: 21.02.2023]
-3. "Why AI will never replace human translators" - LanguageWire - https://www.languagewire.com/en/blog/why-ai-will-never-replace-human-translators [dostęp: 21.02.2023]
-
-### Czemu biuro tłumaczeń powinno użyć specjastycznego narzędzia PMS?
-
-Biura tłumaczeń zajmują się przetwarzaniem ogromnej ilości informacji, co może stanowić wyzwanie dla zarządzania projektami tłumaczeniowymi. W celu poprawy jakości zarządzania takimi projektami i zwiększenia efektywności pracy biuro tłumaczeń powinno rozważyć użycie specjalistycznego narzędzia PMS (Project Management Software).
-
-Według raportu opublikowanego na stronie Language Industry Hires, zastosowanie PMS pozwala na lepsze zarządzanie projektami tłumaczeniowymi, ponieważ umożliwia łatwe przypisywanie zadań, śledzenie postępów prac i dzielenie się plikami między członkami zespołu. PMS ułatwia także współpracę w zespole, co przyczynia się do zwiększenia skuteczności i efektywności projektów tłumaczeniowych.
+Według raportu opublikowanego na stronie Language Industry Hires [14], zastosowanie PMS pozwala na lepsze zarządzanie projektami tłumaczeniowymi, ponieważ umożliwia łatwe przypisywanie zadań, śledzenie postępów prac i dzielenie się plikami między członkami zespołu. PMS ułatwia także współpracę w zespole, co przyczynia się do zwiększenia skuteczności i efektywności projektów tłumaczeniowych.
 
 Innym istotnym aspektem jest możliwość analizowania danych, które pozwala na dokładniejsze monitorowanie postępów projektów i dokonywanie zmian w planie projektowym. Według badania przeprowadzonego przez Common Sense Advisory, firmy, które korzystają z narzędzi analitycznych w procesie tłumaczenia, są bardziej skuteczne i efektywne. Dzięki analizie danych biuro tłumaczeń może zidentyfikować słabe punkty w procesie tłumaczenia i wprowadzić odpowiednie zmiany, aby poprawić jego jakość i zwiększyć zyski.
 
@@ -218,48 +251,37 @@ Warto podkreślić, że specjalistyczne narzędzie PMS jest dostosowane do potrz
 
 Źródła:
 
-1. "5 Reasons Why Your Translation Agency Needs Project Management Software" - Language Industry Hires - https://www.languageindustryhires.com/single-post/2017/03/13/5-Reasons-Why-Your-Translation-Agency-Needs-Project-Management-Software [dostęp: 21.02.2023]
-2. "Translation Management Technology for LSPs" - Common Sense Advisory - https://csa-research.com/Insights/ArticleID/46/Translation-Management-Technology-for-LSPs [dostęp: 21.02.2023]
-
-### Kto jest docelowym odbiorcą
-
-Specjalistyczne narzędzia PMS (Project Management Software) dedykowane tłumaczom mogą być używane przez różnych odbiorców, w zależności od ich potrzeb i wymagań. Najczęstszymi użytkownikami takiego systemu są biura tłumaczeń, freelancerzy, tłumacze pracujący w firmach, a także korporacje i instytucje rządowe [1][2][3].
-
-Biura tłumaczeń, które zajmują się tłumaczeniem tekstów na różne języki dla różnych klientów, mogą korzystać z PMS do zarządzania projektami tłumaczeniowymi. Dzięki temu narzędziu mogą przypisywać zadania poszczególnym tłumaczom, monitorować postępy prac oraz koszty związane z projektem [1][2].
-
-Freelancerzy, czyli osoby pracujące jako niezależni tłumacze, także mogą korzystać z PMS. Dzięki niemu mogą zarządzać swoimi projektami, planować czas, przypisywać sobie zadania i monitorować postępy prac. Taki system ułatwia pracę, ponieważ tłumacz ma w jednym miejscu dostęp do wszystkich swoich projektów [1][3].
-
-Korporacje i instytucje rządowe, które zajmują się tłumaczeniem tekstów na wiele języków, także mogą skorzystać z PMS. Dzięki temu narzędziu mogą łatwo koordynować prace między zespołami tłumaczy, monitorować postępy prac oraz koszty projektów [2].
-
-Lista źródeł:
-
-1. Roman, A. (2021). Project management for translators: Introduction. Retrieved from https://atasavvynewcomer.org/2021/01/12/project-management-for-translators-introduction/
-2. Folguera, A. (2020). Project management for translation: How to get started. Retrieved from https://www.translated.net/en/blog/project-management-for-translation-how-to-get-started
-3. Karpowicz, M. (2019). Why Freelance Translators Need a Project Management Tool. Retrieved from https://blog.tomedes.com/why-freelance-translators-need-a-project-management-tool/
-
-### Geneza projektu i inspiracje
-
-Wraz z rosnącym zapotrzebowaniem na profesjonalne usługi tłumaczeniowe dostrzegłem potrzebę stworzenia specjalistycznego narzędzia do zarządzania unikalnymi wyzwaniami związanymi z projektami tłumaczeniowymi. Tradycyjne narzędzia do zarządzania projektami często nie radzą sobie z obsługą wielu języków, zarządzaniem wieloma tłumaczami i obsługą różnych formatów plików. Dlatego też postanowiłem stworzyć specjalistyczny system zarządzania projektami tłumaczeniowymi.
-
-Nasz system usprawnia przepływ pracy nad tłumaczeniami, poprawia ich jakość oraz ułatwia komunikację i współpracę między kierownikami projektów, tłumaczami i innymi członkami zespołu. Zawiera on również funkcje takie jak zapewnienie jakości, zarządzanie terminologią oraz integrację z tłumaczeniami maszynowymi, co pozwala zapewnić najwyższą jakość tłumaczeń.
-
-Dodatkowo, nasz system zapewnia ulepszone zarządzanie zasobami, pozwalając kierownikom na bardziej efektywne zarządzanie czasem i budżetem, a także zautomatyzowane raporty i analizy umożliwiające śledzenie postępów projektu, alokacji zasobów i budżetu.
-
-Podsumowując, poprzez stworzenie specjalistycznego systemu zarządzania projektami tłumaczeniowymi, dążymy do poprawy wydajności, jakości i ogólnego sukcesu projektów tłumaczeniowych, pomagając firmom i organizacjom w skutecznej komunikacji z klientami, partnerami i innymi interesariuszami w różnych językach.
+9. Project Management Institute (PMI) - https://www.pmi.org/
+10. "Project Management Systems: A Technology Review" - Alok Mishra and Neeraj Mishra, International Journal of Computer Applications Technology and Research, Volume 5– Issue 1, 2016
+11. "The Benefits of Project Management Software" - Derek Huether, ProjectManager.com - https://www.projectmanager.com/blog/the-benefits-of-project-management-software
+12. "The Advantages of Project Management Software" - Workzone - https://www.workzone.com/blog/the-advantages-of-project-management-software/
+13. "Why Use Project Management Software?" - Zoho - https://www.zoho.com/projects/blog/
+14. "5 Reasons Why Your Translation Agency Needs Project Management Software" - Language Industry Hires - https://www.languageindustryhires.com/single-post/2017/03/13/5-Reasons-Why-Your-Translation-Agency-Needs-Project-Management-Software [dostęp: 21.02.2023]
+15. "Translation Management Technology for LSPs" - Common Sense Advisory - https://csa-research.com/Insights/ArticleID/46/Translation-Management-Technology-for-LSPs [dostęp: 21.02.2023]
 
 ## Koncepcja aplikacji
 
+### Geneza projektu i inspiracje
+
+Wraz z rosnącym zapotrzebowaniem na profesjonalne usługi tłumaczeniowe dostrzegłem potrzebę stworzenia specjalistycznego narzędzia do zarządzania unikalnymi wyzwaniami związanymi z projektami tłumaczeniowymi. Tradycyjne narzędzia do zarządzania projektami często nie radzą sobie z obsługą wielu języków, zarządzaniem wieloma tłumaczami i obsługą różnych formatów plików. Dlatego też postanowino stworzyć specjalistyczny system zarządzania projektami tłumaczeniowymi.
+
+Zadaniem systemu jest usprawnienie przepływu pracy nad tłumaczeniami, poprawienie ich jakości oraz ułatwienie komunikacji i współpracy między kierownikami projektów, tłumaczami i innymi członkami zespołu. Zawiera on również funkcje takie jak zapewnienie jakości, zarządzanie terminologią oraz integrację z tłumaczeniami maszynowymi, co pozwala zapewnić najwyższą jakość tłumaczeń.
+
+Dodatkowo, system zapewni ulepszone zarządzanie zasobami, pozwalając kierownikom na bardziej efektywne zarządzanie czasem i budżetem, a także zautomatyzowane raporty i analizy umożliwiające śledzenie postępów projektu, alokacji zasobów i budżetu.
+
+Podsumowując, poprzez stworzenie specjalistycznego systemu zarządzania projektami tłumaczeniowymi, dążymy do poprawy wydajności, jakości i ogólnego sukcesu projektów tłumaczeniowych, pomagając firmom i organizacjom w skutecznej komunikacji z klientami, partnerami i innymi interesariuszami w różnych językach.
+
 ### Założenia i cele projektu
 
-Cele i założenia koncepcji aplikacji systemu zarządzani a projektami tłumaczeniowymi obejmują:
+Cele i założenia koncepcji aplikacji systemu zarządzania projektami tłumaczeniowymi obejmują:
 
-1. Usprawnienie przepływu pracy tłumaczeniowej: Poprzez zapewnienie scentralizowanej platformy do zarządzania projektami tłumaczeniowymi, aplikacja pomoże kierownikom projektów i tłumaczom pracować wydajniej i efektywniej.
-3. Ułatwienie komunikacji i współpracy: Aplikacja zapewni kierownikom projektów i tłumaczom narzędzia do komunikacji i współpracy nad projektami, co pomoże zwiększyć efektywność procesu tłumaczenia.
-4. Usprawnienie zarządzania zasobami: Poprzez dostarczenie narzędzi do śledzenia i raportowania czasu i budżetu, aplikacja pomoże kierownikom projektów w bardziej efektywnym zarządzaniu zasobami.
-5. Zapewnienie widoczności i kontroli: Aplikacja zapewni zautomatyzowane raportowanie i analitykę, aby pomóc kierownikom projektów w śledzeniu postępów projektu, alokacji zasobów i budżetu, co pomoże poprawić widoczność i kontrolę nad projektem.
-6. Być przyjaznym dla użytkownika: aplikacja będzie miała łatwy w użyciu interfejs, dzięki czemu będzie dostępna dla użytkowników o każdym poziomie umiejętności.
-7. Być bezpieczna: Aplikacja będzie posiadała solidne zabezpieczenia chroniące dane projektu oraz dane użytkowników.
-8. Być adaptowalna: Aplikacja będzie elastyczna i skalowalna, aby dostosować się do rosnących potrzeb i wymagań klienta.
+1. **Usprawnienie przepływu pracy tłumaczeniowej**: Poprzez zapewnienie scentralizowanej platformy do zarządzania projektami tłumaczeniowymi, aplikacja pomoże kierownikom projektów i tłumaczom pracować wydajniej i efektywniej.
+2. **Ułatwienie komunikacji i współpracy**: Aplikacja zapewni kierownikom projektów i tłumaczom narzędzia do komunikacji i współpracy nad projektami, co pomoże zwiększyć efektywność procesu tłumaczenia.
+3. **Usprawnienie zarządzania zasobami**: Poprzez dostarczenie narzędzi do śledzenia i raportowania czasu i budżetu, aplikacja pomoże kierownikom projektów w bardziej efektywnym zarządzaniu zasobami.
+4. **Zapewnienie widoczności i kontroli**: Aplikacja zapewni zautomatyzowane raportowanie i analitykę, aby pomóc kierownikom projektów w śledzeniu postępów projektu, alokacji zasobów i budżetu, co pomoże poprawić widoczność i kontrolę nad projektem.
+5. **Zapewnienie przyjazności dla użytkownika**: aplikacja będzie miała łatwy w użyciu interfejs, dzięki czemu będzie dostępna dla użytkowników o każdym poziomie umiejętności.
+6. **Zapewnienie bezpeiczeństwa**: Aplikacja będzie posiadała solidne zabezpieczenia chroniące dane projektu oraz dane użytkowników.
+7. **Aspekty techniczne**: Aplikacja będzie elastyczna i skalowalna, aby dostosować się do rosnących potrzeb i wymagań klienta.
 
 Podsumowując, cele i założenia koncepcji aplikacji systemu zarządzania projektami tłumaczeniowymi to usprawnienie i poprawa procesu tłumaczenia poprzez zapewnienie scentralizowanej platformy do zarządzania projektami tłumaczeniowymi, poprawa jakości tłumaczeń, ułatwienie komunikacji i współpracy, poprawa zarządzania zasobami, zapewnienie widoczności i kontroli nad projektem, bycie przyjaznym dla użytkownika, bycie bezpiecznym i możliwość dostosowania do potrzeb klientów.
 
@@ -267,69 +289,67 @@ Podsumowując, cele i założenia koncepcji aplikacji systemu zarządzania proje
 
 Aplikacja będzie zawierała następujące funkcje:
 
-1. Zarządzanie projektami: Aplikacja zapewni narzędzia do zarządzania projektami tłumaczeniowymi, takie jak tworzenie i edytowanie projektów, przydzielanie zadań oraz śledzenie postępów projektu. Jest to podstawowa funkcja aplikacji, która pomoże usprawnić przepływ pracy tłumaczeniowej.
-3. Komunikacja i współpraca: Aplikacja zapewni kierownikom projektów i tłumaczom narzędzia do komunikacji i współpracy nad projektami, co pomoże zwiększyć efektywność procesu tłumaczenia.
-4. Zarządzanie zasobami: Aplikacja zapewni narzędzia do śledzenia i raportowania czasu i budżetu, co pomoże kierownikom projektów skuteczniej zarządzać zasobami.
-5. Raportowanie i analityka: Aplikacja zapewni zautomatyzowane raportowanie i analitykę, aby pomóc kierownikom projektów w śledzeniu postępów projektu, alokacji zasobów i budżetu, co pomoże poprawić widoczność i kontrolę nad projektem.
-6. Zarządzanie użytkownikami: Aplikacja zapewni narzędzia do zarządzania użytkownikami, takie jak tworzenie i edycja użytkowników, przypisywanie ról i zarządzanie uprawnieniami.
-7. Bezpieczeństwo: Aplikacja będzie posiadała solidne zabezpieczenia chroniące dane projektu oraz dane użytkowników.
+1. **Zarządzanie projektami**: Aplikacja zapewni narzędzia do zarządzania projektami tłumaczeniowymi, takie jak tworzenie i edytowanie projektów, przydzielanie zadań oraz śledzenie postępów projektu. Jest to podstawowa funkcja aplikacji, która pomoże usprawnić przepływ pracy tłumaczeniowej. Dla każdego projektu mozna będzie zdefiniować nazwę, opis, szczegóły realizacji, powiązanie z klientem, języki, terminy, oraz budżet. Powstanie też funkcjonalność zarządzania zespołem projektowym oraz centralne repozytorium plików projektu.
+2. **Komunikacja i współpraca**: W celach komunikacji w ramach każdego projektu powstanie funkcjonalność tworzenia wątków komunikacyjnych, które będą zawierały temat wątku, treść, oraz możliwość zostawienia komentarzy i reakcji. Każdy wątek będzie miał możliwość zamrożenia, zamknięcia i ponownego otwarcia, co pozwoli na lepszą organizację komunikacji.
+3. **Zarządzanie zasobami**: Aplikacja zapewni narzędzia do śledzenia i raportowania kosztów i czasu, poświęconego na realizacje projektu, co pomoże kierownikom projektów skuteczniej zarządzać zasobami.
+4. **Raportowanie i analityka**: Aplikacja zapewni widoki siątki z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu będzie można łatwo znaleźć szukane dane. Powstanie również funkcjonalność eksportu danych z widoków siatek, tak aby można było je wykorzystać w innych aplikacjach w celach raportowania i analizy, takich jak Excel czy Power BI.
+5. **Zarządzanie użytkownikami**: Aplikacja zapewni narzędzia do zarządzania użytkownikami, takie jak tworzenie i edycja użytkowników, przypisywanie ról i zarządzanie uprawnieniami.
+6. **Bezpieczeństwo**: Aplikacja zapewni mechanizmy autentykacji i autoryzacji, takie jak logowanie, wylogowanie, resetowanie hasła, zmiana adresu e-mail, oraz resetowanie adresu e-mail. System autentykacji i autoryzacji zapewni konfigurowalność, tak aby można było włączyć lub wyłączyć niektóre z tych mechanizmów.
+7. **Aspekty techniczne**: Aplikacja zapewni monitorowalność w postaci rozbudowanego systemu logowania i narzędzi analizy logów, co pomoże w szybkim rozwiązywaniu problemów.
 
 ## Projekt aplikacji
  
 ### Przypadki użycia i historyjki użytkownika
 
-#### Jako użytkownik chcę:
+#### Jako użytkownik, chcę:
 
-1. Mieć możliwość rejestracji, dzięki której będę mógł zacząć korzystać z aplikacji.
-2. Mieć możliwość zalogowania się, aby móc zacząć korzystać z aplikacji.
-3. Posiadać możliwość wylogowania się, dzięki czemu mogę przestać korzystać z aplikacji.
-4. Mieć możliwość zmiany hasła, dzięki czemu będę mógł zachować bezpieczeństwo swojego konta.
-5. Mieć możliwość zresetowania hasła, dzięki czemu będę mógł odzyskać dostęp do swojego konta, jeśli je zapomnę.
-6. Mieć możliwość zmiany adresu e-mail, tak aby moje konto było bezpieczne.
-7. Mieć możliwość zresetowania adresu e-mail, tak aby odzyskać dostęp do konta, jeśli go zapomnę.
-
-#### Jako kierownik projektu, chcę:
-
-1. Stworzyć nowy projekt, aby móc rozpocząć nad nim pracę.
-2. Edytować istniejący projekt, aby móc zaktualizować jego szczegóły.
-3. Zmienić termin realizacji projektu, aby móc go dostosować do zmieniających się wymagań.
-4. Zmienić status projektu, aby móc śledzić jego postępy.
-5. Podzielić projekt na zadania, aby móc je przydzielić tłumaczom.
-6. Przypisać zadanie do tłumacza, aby mógł zacząć nad nim pracować.
-7. Monitorować postępy w realizacji projektu, aby móc śledzić jego status.
-8. Monitorować postępy w realizacji zadania, aby móc śledzić jego status.
-9. Monitorować koszty projektu, abym mógł śledzić jego budżet.
-10. Monitorować koszty zadania, aby móc śledzić jego budżet.
-11. Zarządzać plikami projektu, aby móc je udostępniać tłumaczom.
-12. Zarządzać plikami zadania, aby móc je udostępniać tłumaczom.
-13. Zarządzać listą klientów, aby móc przypisywać im projekty.
-14. Mieć widok siatki projektów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć projekt, którego szukam.
-15. Widok siatki zadań z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć zadanie, którego szukam.
-16. Mieć możliwość eksportu danych z widoku siatki, dzięki czemu mogę je wykorzystać w innych aplikacjach.
-17. Mieć możliwość komentowania projektu, dzięki czemu mogę komunikować się z innymi kierownikami projektów.
-18. Mieć możliwość komentowania zadania, aby móc komunikować się z innymi kierownikami projektów i tłumaczami.
-
-#### Jako tłumacz, chcę:
-
-1. Mieć widok siatki przydzielonych mi zadań z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć szukane zadanie.
-2. Mieć możliwość eksportowania danych z widoku siatki, tak aby móc je wykorzystać w innych aplikacjach.
-3. Zaakceptować zadanie, dzięki czemu mogę zacząć nad nim pracować.
-4. Odrzucić zadanie, aby móc je zwrócić do kierownika projektu.
-5. Monitorować postępy w realizacji zadania, aby móc śledzić jego status.
-6. Dodać komentarz do zadania, aby móc komunikować się z innymi kierownikami projektu i tłumaczami.
-7. Uzyskać dostęp do plików zadania, aby móc nad nimi pracować.
-8. Przesłać pliki do zadania, aby móc je udostępnić innym kierownikom projektów i tłumaczom.
-9. Aktualizować status zadania, aby móc śledzić jego postępy.
-10. Posiadać narzędzia do zapewniania jakości, dzięki którym mogę mieć pewność, że tłumaczenia są dokładne i wysokiej jakości.
+1. Zalogować się do systemu, aby móc zacząć korzystać z aplikacji.
+2. Wylogować się z systemu, dzięki czemu mogę skończyć pracę z aplikacją.
+3. Zmienić hasło, dzięki czemu będę mógł zachować bezpieczeństwo swojego konta.
+4. Zresetować hasło, dzięki czemu będę mógł odzyskać dostęp do swojego konta, jeśli je zapomnę.
+5. Zmienić adres e-mail, tak aby moje konto było bezpieczne.
+6. Zresetować adresu e-mail, tak aby odzyskać dostęp do konta, jeśli go zapomnę.
 
 #### Jako administrator, chcę:
 
-1. Stworzyć nowego użytkownika, aby móc rozpocząć pracę z aplikacją.
-2. Edytować istniejącego użytkownika, aby móc zaktualizować jego dane.
-3. Przypisać role do użytkownika, dzięki czemu mogę kontrolować, co może on robić.
-4. Zarządzać uprawnieniami roli, aby móc kontrolować, co mogą robić użytkownicy z daną rolą.
-5. Posiadać widok siatki użytkowników z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć użytkownika, którego szukam.
-6. Mieć możliwość eksportowania danych z widoku siatki, dzięki czemu mogę je wykorzystać w innych aplikacjach.
+1. Pełny dostęp do aplikacji, aby móc zarządzać wszystkimi jej funkcjonalnościami.
+2. Dodać nowego użytkownika, aby mógł rozpocząć pracę z aplikacją.
+3. Edytować istniejącego użytkownika, aby móc zaktualizować jego dane.
+4. Mieć mozliwość zarządzania dostępem użytkowników, by móc kontrolować jego uprawnienia.
+
+#### Jako kierownik projektu, chcę:
+
+1. Mieć widok siatki dostępnych projektów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć szukany projekt.
+2. Wyeskporotwać dane z widoku siatki, tak aby móc je wykorzystać w innych aplikacjach w celach raportowania i analizy.
+3. Stworzyć nowy projekt, aby móc rozpocząć nad nim pracę.
+4. Mieć pełną kontrolę nad cyklem życia projektu którym zarządzam, aby móc śledzić jego postępy i zidentyfikować problemy.
+5. Zarządzać zespołem projektowym, aby móc kontrolować dostęp do projektu dla poszczególnych użytkowników oraz wiedzieć, kto jaką rolę pełni w projekcie.
+6. Podzielić projekt na zadania, aby móc odpowiednio podzielić pracę między członków zespołu.
+7. Prypisać zadania do członków zespołu, aby wiedzieć, kto jest odpowiedzialny za wykonanie danego zadania.
+8. Monitorować postępy w realizacji zadań, aby móc śledzić postępy projektu.
+9. Zarzadzać plikami projektu, aby móc łatwo udostępniać je innym członkom zespołu.
+10. Śledzić koszty realizacji projektu, aby móc kontrolować budżet.
+11. Komunikować z zespołem projektowym, aby wszyscy członkowie zespołu mogli być na bieżąco z postępami projektu.
+12. Mieć widoki siatek zadań, kosztów realizacji, komunikacji i plików projektu, dzięki czemu mogę łatwo znaleźć szukane dane.
+13. Wyeskporotwać dane z widoków siatek zadań i kosztów realizacji, tak aby móc je wykorzystać w innych aplikacjach w celach raportowania i analizy.
+14. Zarządzać listą klientów, aby móc dodawać nowych klientów i edytować istniejących.
+
+#### Jako tłumacz, redaktor, korektor, ekspert merytoryczny czy edytor chcę:
+
+1. Mieć widok siatki projektów, do których jestem przypisany, dzięki czemu mogę łatwo znaleźć projekt, nad którym pracuję.
+2. Mieć widok siatki zadań, do których jestem przypisany, dzięki czemu mogę łatwo znaleźć zadanie, nad którym pracuję.
+3. Kontolować cykl życia zadania, nad którym pracuję, aby móc odpowiednio zarządzać jego postępami.
+4. Mieć widok siatki plików projektu, do którego jestem przypisany, dzięki czemu mogę łatwo znaleźć plik, nad którym pracuję.
+5. Pobrać pliki niezbędne do pracy, aby móc rozpocząć pracę nad zadaniem.
+6. Wgrać pliki z tłumaczeniami, aby móc zakończyć pracę nad zadaniem.
+7. Brać udział w komunikacji zespołu projektowego, aby wszyscy członkowie zespołu mogli być na bieżąco z postępami projektu.
+8. Zaraportować czas poświęcony na realizację zadania, aby móc śledzić postępy projektu.
+
+#### Jako obserwator, chcę:
+
+1. Mieć widok siatki projektów, do których mam dostęp, dzięki czemu mogę łatwo znaleźć projekt, który mnie interesuje.
+2. Mieć pełny wgląd w projekty, do których mam dostęp, aby móc śledzić ich postępy.
+3. Brać udział w komunikacji zespołu projektowego, aby wszyscy członkowie zespołu mogli być na bieżąco z postępami projektu.
 
 #### Jako inżynier wsparcia, chcę:
 
@@ -448,453 +468,138 @@ Architektura wielowarstwowa jest bardzo popularna w projektowaniu aplikacji, pon
 2. Sandro Mancuso, The Software Craftsman: Professionalism, Pragmatism, Pride, Prentice Hall, 2014.
 3. Eric Evans, Domain-Driven Design: Tackling Complexity in the Heart of Software, Addison-Wesley Professional, 2003.
 
-## Wybrany stos technologiczny
+
+## Stos technologiczny
+
+### Postanowienia ogólne w wyborze technologii
+
+Wybierając stos technologiczny dla systemu organizacji pracy w biurze tłumaczeń, istnieje wiele ogólnych postanowień, które warto wziąć pod uwagę. Stos technologiczny to zestaw narzędzi, frameworków, języków programowania i infrastruktury, które zostaną wykorzystane do budowy i zarządzania systemem. Oto kilka kluczowych aspektów, które postanowiono rozważyć przy wyborze stosu technologicznego:
+
+1. **Cel i wymagania systemu**: Jakie funkcje i możliwości ma zapewnić system? Jakie problemy ma rozwiązywać? To pomoże w określeniu, jakie technologie najlepiej spełnią te cele.
+
+2. **Skalowalność**: Biuro tłumaczeń może rosnąć, więc system musi być w stanie obsłużyć większą liczbę użytkowników i danych w przyszłości.
+
+3. **Bezpieczeństwo**: Bezpieczeństwo jest kluczowym aspektem w biurze tłumaczeń, gdzie dane klientów mogą być poufne. Wybierz technologie, które zapewnią odpowiednie mechanizmy ochrony danych, uwzględniając kwestie takie jak szyfrowanie i autoryzacja.
+
+4. **Integracje**: Wybrane technologie powinne pozwalać na łatwe integrowanie się z innymi narzędziami i systemami, które biuro tłumaczeń już używa, na przykład z narzędziami do zarządzania projektami, systemami CRM czy narzędziami do tłumaczeń.
+
+5. **Wspieranie języków**: Specyfika pracy biura tłumaczeń często ma za sobą obsługę wielu języków, ważne jest, aby stos technologiczny obsługiwał różne zestawy znaków i mógł być dostosowany do specyfiki różnych języków.
+
+6. **Łatwość utrzymania i rozwoju**: Należy wybierać technologie, które są stosunkowo łatwe do utrzymania i rozwijania. To pomoże zminimalizować koszty eksploatacji i zapewnić, że system będzie gotowy na przyszłe zmiany i ulepszenia.
+
+7. **Wsparcie społeczności i dokumentacja**: Ważne jest też sprawdzić, czy wybrane technologie cieszą się wsparciem społeczności programistycznej, co ułatwi rozwiązywanie problemów i znajdowanie odpowiedzi na pytania. Również dostępność do dobrej dokumentacji jest kluczowa. W przyszłości, wybór popularnych i lubianych technologii może ułatwić znalezienie nowych pracowników do zespołu utrzymania i rozwoju systemu.
+
+8. **Koszty**: Koszty są istotnym czynnikiem. Każde biuro tłumaczeń ma inne możliwości finansowe, ale wszystkie chcą zapewnić że koszt utrzymania i rozwoju systemu będzie jak najniższy.
+
+9. **Zgodność z przepisami prawno-regulacyjnymi**: Jeśli biuro tłumaczeń obsługuje tłumaczenia o charakterze prawnym, medycznym lub innym specjalistycznym, należy upewnić się, że wybrane technologie pomogą w spełnieniu wymogów prawnych i regulacyjnych.
+
+Przed dokonaniem wyboru stosu technologicznego, zalecam przeprowadzenie dokładnej analizy i konsultację z profesjonalistami ds. IT lub inżynierami oprogramowania. To pomoże uniknąć potencjalnych problemów i dostosować technologie do konkretnych potrzeb biura tłumaczeń.
+
+Żródła:
+
+1. https://www.softermii.com/blog/10-tips-in-choosing-the-best-tech-stack-for-your-web-application
 
 ### Interfejs użytkownika
 
-#### React
+Interfejs użytkownika (UI), znany również jako interfejs graficzny użytkownika (GUI), to część oprogramowania, która umożliwia interakcję między użytkownikiem a programem lub systemem komputerowym. Jest to to, co widzi i z czym pracuje użytkownik, w tym wszystkie elementy, takie jak przyciski, pola tekstowe, menu, ikony itp., które pozwalają użytkownikowi nawigować po aplikacji lub systemie, wykonywać operacje i korzystać z jego funkcji.
 
-React to biblioteka JavaScript, która jest często wykorzystywana do tworzenia interfejsów użytkownika dla stron internetowych i aplikacji webowych. Jest to popularne narzędzie, które umożliwia programistom tworzenie wielokrotnego użytku komponentów i dynamicznie aktualizujących się interfejsów użytkownika [1].
+Biorąc pod uwagę zalożenia projektowe systemu organizacji pracy biura tłumaczeń, postanoiwiono, że interfejs użytkownika powinien być aplikacją webową. Aplikacje webowe posiadają wiele zalet, które mogą sprawić, że będą idealne do tego celu, takich jak:
 
-Jednym z głównych założeń React jest deklaratywność. Oznacza to, że w kodzie określamy, jakie są oczekiwane efekty, a React sam dba o to, aby odpowiednio zaktualizować interfejs użytkownika. React umożliwia również korzystanie z tzw. JSX, czyli składni, która łączy w sobie elementy języka JavaScript i HTML, co ułatwia tworzenie struktury interfejsu użytkownika w kodzie JavaScript [2].
+1. **Dostępność z dowolnego miejsca i urządzenia**: Aplikacje webowe są dostępne za pośrednictwem przeglądarek internetowych, co oznacza, że użytkownicy mogą korzystać z systemu z dowolnego miejsca i na różnych urządzeniach, takich jak komputery, tablety czy smartfony. To szczególnie przydatne w organizacji pracy biura tłumaczeń, która może wymagać mobilności i zdalnego dostępu.
+2. **Łatwa aktualizacja i utrzymanie**: Aktualizacja aplikacji webowej może być zarządzana centralnie przez zespół IT, co ułatwia wprowadzanie poprawek i dodawanie nowych funkcji. Nie ma potrzeby instalowania aktualizacji na każdym urządzeniu użytkownika.
+3. **Skalowalność**: Aplikacje webowe mogą być łatwo skalowane, aby obsługiwać zarówno małe biura tłumaczeń, jak i duże przedsiębiorstwa. Można dostosować zasoby serwerowe do bieżących potrzeb.
+4. **Bezpieczeństwo**: Właściciele biura tłumaczeń mogą zadbać o odpowiednie zabezpieczenia aplikacji webowej, takie jak szyfrowanie danych, autoryzacja i uwierzytelnianie, co jest kluczowe w przypadku pracy z poufnymi informacjami.
 
-React jest często wykorzystywany wraz z innymi narzędziami, takimi jak Redux czy React Router, aby tworzyć bardziej zaawansowane aplikacje internetowe [3]. Jest to narzędzie, które jest stosunkowo łatwe do nauczenia i stosowania, a jednocześnie pozwala na tworzenie zaawansowanych i wydajnych interfejsów użytkownika.
+Po wyborzę aplikacji webowej jako interfejsu użytkownika, następnym krokiem jest wybór technologii, które zostaną wykorzystane do stworzenia interfejsu użytkownika. Wspominając o przyjętych wyżej zasadach w wyborze technologii, zdecydowano się na następujące technologie do stworzenia interfejsu użytkownika systemu organizacji pracy biura tłumaczeń:
 
-Źródła:
+1. **React**: React to popularna biblioteka JavaScript do tworzenia interaktywnych interfejsów użytkownika. Jest rozwijana przez korporację Meta i jest szeroko wykorzystywana w branży. React pozwala na tworzenie komponentów interfejsu, które są łatwe w zarządzaniu i ponownym użyciu, co jest szczególnie przydatne przy projektowaniu skomplikowanych interfejsów. Należy też zwrócić uwagę na fakt, że React jest biblioteką, a nie frameworkiem, i pozostawia wiele innych aspektów tworzenia aplikacji, takich jak zarządzanie stanem, zarządzanie zależnościami, routing itp., do wyboru programisty. Mając to na uwadzę postanowiono dodać do projektu różne dodatkowe narzędzia, o których bardziej szczegółowo poniżej w sekcji [Instalacja dodatkowych bibliotek](#instalacja-dodatkowych-bibliotek). 
+2. **Język Typescript**: Typescript to język programowania, który jest rozszerzeniem Javascript. Jest on kompilowany do Javascript, co oznacza, że można go używać w dowolnym środowisku, w którym używany jest Javascript. Jednak Typescript dodaje wiele funkcji, takich jak typowanie statyczne, interfejsy, klasy, moduły i wiele innych, które mogą pomóc w tworzeniu bardziej wydajnego i bezpiecznego kodu, eliminując wiele błędów w trakcie kompilacji - takich jak znany "undefined is not a function".
+3. **Material Design**: Material Design jest metodologią projektowania stworzoną przez Google. Jest to zestaw zasad, wytycznych i komponentów interfejsu użytkownika, które pomagają projektantom i deweloperom tworzyć spójne, estetyczne i intuicyjne aplikacje i strony internetowe. Material Design skupia się na przyjaznym dla użytkownika interfejsie, który wykorzystuje trójwymiarowe efekty, cienie, animacje i jednolity język wzrokowy. Ta metodologia projektowania jest bardzo szeroko stosowana w branży w projektowaniu aplikacji mobilnych, stron internetowych i aplikacji webowych. Google dostarcza dokumentację i narzędzia, które pomagają projektantom i deweloperom w implementacji zasad Material Design. Istnieje również wiele bibliotek, które implementują komponenty zgodnie z zasadami Material Design, takich jak MUI (dawniej Material-UI), które zostało wybrane do tego projektu.
 
-1. Facebook, "React – A JavaScript library for building user interfaces," [online] Available: https://reactjs.org/.
-2. E. Chinnathambi, "Learning React, 2nd Edition", O'Reilly Media, Inc., 2020.
-3. M. West, "Full-Stack React Projects", Packt Publishing, 2020.
+### Serwer aplikacji
 
-#### React Router DOM
+Serwer aplikacji jest miejscem, w którym odbywa się przetwarzanie danych i wykonywanie operacji biznesowych. Serwer aplikacji powinien być wydajny, skalowalny i łatwy w utrzymaniu. 
 
-#### Redux
+Zwracająć się do zasad, zdefiniowanych w sekcji [Postanowienia ogólne w wyborze technologii](#postanowienia-ogólne-w-wyborze-technologii), postanowiono, że serwer aplikacji powinien być zaimplementowany w postaci usługa sieciowa w oparciu w architekturę REST. Usługa sieciowa to aplikacja, która udostępnia interfejs programistyczny (API) do komunikacji z innymi aplikacjami, a architektura REST (Representational State Transfer), jest obecnie najpopularniejszym sposobem tworzenia API. REST jest architekturą opartą na zasobach, która definiuje zasady komunikacji między klientem a serwerem. REST jest również niezależny od protokołu, co oznacza, że może być używany z dowolnym protokołem, takim jak HTTP, HTTPS, TCP, UDP itp.
 
-Redux to biblioteka do zarządzania stanem aplikacji w architekturze Flux [1]. Głównym celem Redux jest zapewnienie jednoznaczności źródła informacji w aplikacji poprzez utworzenie globalnego drzewa stanu. W Redux stan aplikacji jest przechowywany w magazynie (store), który zawiera wszystkie informacje na temat stanu aplikacji. Akcje (actions) są używane do zmiany stanu magazynu, a reducer'y są funkcjami, które wykonują logikę związaną ze zmianą stanu [1]. W Redux dane są przesyłane w jednym kierunku, co ułatwia debugowanie aplikacji i zarządzanie jej stanem.
+Istnieję mnóstwo technologii, które mogą być użyte do implementacji usługi REST-owej. W tym projekcie postanowiono użyć następujących technologii:
 
-Redux jest bardzo popularny w świecie aplikacji webowych i mobilnych, ponieważ pozwala na łatwe zarządzanie stanem aplikacji. Korzystając z Redux, możemy uniknąć problemów związanych z przekazywaniem stanu między komponentami i mieć łatwiejszy dostęp do danych w całej aplikacji. Redux jest szczególnie przydatny w aplikacjach z dużą ilością danych lub w przypadku, gdy stan aplikacji jest skomplikowany [2].
+1. **Spring Framework**: Spring Framework to szkielet budowania aplikacji z bogatą historią, jest dojrzały i powszechnie stosowany w praktyce. Korzystanie ze Spring Framework ułatwia tworzenie aplikacji, ponieważ dostarcza on wiele gotowych rozwiązań, takich jak wstrzykiwanie zależności, bezpieczeństwo, obsługa błędów, obsługa transakcji, obsługa baz danych, obsługa żądań HTTP i wiele innych, co sprawia, że jest idealnym wyborem dla budowania usług REST-owych. 
 
-Źródła:
+1. Język Kotlin zamiast Java: Kotlin jest również często używany na backendzie, szczególnie w aplikacjach webowych i mikroserwisach. Dzięki swoim zaletom, takim jak bezpieczeństwo typów i ekspresywna składnia, Kotlin staje się coraz bardziej popularnym wyborem dla programistów tworzących serwery i aplikacje serwerowe. Język Kotlin, mimo że jest jeżykiem multiplatformowym, często jest postrzegany jako następca Javy, ponieważ jest on kompilowany do kodu bajtowego Javy i może być używany w dowolnym środowisku, w którym używana jest Java. A to sprawia, że dla programistów Kotlina jest dostępny cały ekosystem Javy, w tym Spring Framework.
+2. 
+3. Spring Boot zapewnia szybki start w tworzeniu aplikacji Spring. Spring Boot pozwala pominąć wiele kroków konfiguracyjnych, które są potrzebne do uruchomienia aplikacji Spring, co pozwala na szybsze tworzenie aplikacji. Spring Boot jest również łatwy do rozszerzenia, co oznacza, że można go dostosować do konkretnych potrzeb projektu. 
 
-1. Mark Erikson, Dan Abramov, "Redux Fundamentals", https://redux.js.org/tutorials/fundamentals/part-1-overview, (dostęp: 21.02.2023)
-2. Zsolt Nagy, "Getting Started with Redux", https://www.pluralsight.com/guides/getting-started-with-redux, (dostęp: 21.02.2023)
+### Przechowywanie danych
 
-#### RxJS
+### Zewnętrzne API
 
-RxJS to biblioteka JavaScript, która umożliwia programowanie reaktywne oparte na strumieniach danych. Jest to implementacja ReactiveX, który umożliwia programowanie reaktywne w różnych językach programowania. RxJS pozwala na pracę z asynchronicznymi operacjami, obserwowaniem zmian stanu i wykorzystaniem funkcyjnego podejścia do programowania. Biblioteka ta jest szczególnie przydatna w tworzeniu aplikacji webowych, które wymagają dużego stopnia interaktywności oraz odświeżania danych w czasie rzeczywistym. [1]
-
-RxJS dostarcza wiele operatorów, które pozwalają na manipulowanie strumieniami danych, takich jak filtrowanie, łączenie, przekształcanie i wiele innych. Wraz z pojawieniem się nowych wersji biblioteki, jej API uległo znacznym zmianom, co znacznie ułatwiło programowanie reaktywne. RxJS jest jednym z kluczowych elementów stosu technologicznego Angulara, choć może być stosowany również w innych frameworkach i bibliotekach JavaScript.
-
-Ważną cechą RxJS jest też fakt, że umożliwia ona łatwe testowanie kodu, ponieważ programowanie reaktywne oparte na strumieniach danych jest deklaratywne, a co za tym idzie, kod staje się bardziej przewidywalny i prostszy do testowania. Dzięki RxJS możemy więc nie tylko tworzyć bardziej responsywne i interaktywne aplikacje, ale także zwiększyć jakość naszego kodu i ułatwić sobie jego testowanie. [2]
-
-Źródła:
-
-1. "Reactive Programming with RxJS 5" - Sergi Mansilla, Packt Publishing
-2. "Mastering RxJS 6" - Andrew Venegas, Packt Publishing
-
-#### SCSS
-
-SCSS (Sassy CSS) to rozwinięcie języka CSS, które wprowadza dodatkowe funkcjonalności i ułatwia tworzenie stylów. Jest to preprocesor CSS, co oznacza, że kod napisany w SCSS jest kompilowany do standardowego CSS. Dzięki SCSS można pisać bardziej złożone i elastyczne style, wykorzystując m.in. zmienne, funkcje czy operatory logiczne [1]. Ponadto, SCSS umożliwia tworzenie modułowych styli, co ułatwia pracę w większych projektach.
-
-Jedną z zalet SCSS jest też możliwość tworzenia mixinów, czyli wielokrotnie używanych fragmentów kodu, które mogą przyjmować argumenty. Dzięki temu można uniknąć powielania kodu i zwiększyć czytelność stylów. SCSS wspiera także dziedziczenie stylów, co pozwala na łatwe dziedziczenie właściwości z jednej klasy do innej.
-
-Podsumowując, SCSS to bardzo przydatne narzędzie dla front-end developerów, które pozwala na pisanie bardziej złożonych i elastycznych stylów, a jednocześnie ułatwia ich utrzymanie i organizację.
-
-Źródła:
-
-1. Hampton, C. (2015). Sassy CSS: Sass vs. SCSS. [Online] Dostępne w: https://www.sitepoint.com/sass-vs-scss-which-syntax-is-better/ [Dostęp: 21.02.2023]
-
-#### Material UI (React)
-
-Material-UI to popularny zestaw gotowych komponentów React zgodnych z zasadami projektowymi firmy Google - Material Design [1]. Biblioteka ta umożliwia tworzenie responsywnych interfejsów użytkownika oraz upraszcza implementację popularnych wzorców projektowych takich jak np. drzewa, tabele czy formularze. Dzięki dużej ilości gotowych komponentów, Material-UI przyspiesza proces tworzenia aplikacji webowych oraz ułatwia utrzymanie spójnego wyglądu strony. Biblioteka ta zapewnia również możliwość modyfikowania stylów za pomocą SCSS oraz łatwą integrację z Redux czy React Router [2].
-
-Źródła:
-
-1. Material-UI: A popular React UI framework. Material-UI. https://material-ui.com/
-2. Zyskowski A., Graczyk R. (2018). React w akcji. Helion.
-
-#### Typescript
-
-Typescript to język programowania, który został stworzony przez Microsoft jako rozszerzenie dla języka JavaScript [1]. Umożliwia on deweloperom pisanie kodu w bardziej typowanym środowisku, co zwiększa bezpieczeństwo i jakość kodu, poprawia jego czytelność oraz ułatwia refaktoryzację [2]. Typescript jest również w stanie wykrywać pewne błędy w czasie kompilacji, co pozwala na uniknięcie wielu problemów podczas uruchamiania aplikacji [3]. Dzięki temu zyskuje coraz większą popularność wśród programistów, szczególnie w projektach złożonych i wymagających [4].
-
-Źródła:
-
-1. Anders Hejlsberg, Steve Lucco, Michael Barnett, and Drew Marsh. 2012. The TypeScript Language Specification. (2012).
-2. Boris Cherny. Programming TypeScript: Making Your JavaScript Applications Scale. O'Reilly Media, Inc., 2019.
-3. Basarat Ali Syed. TypeScript Deep Dive. Leanpub, 2020.
-4. Stack Overflow Developer Survey 2021. https://insights.stackoverflow.com/survey/2021
-
-#### npm
-
-npm to menadżer pakietów dla języka JavaScript. Umożliwia instalowanie, udostępnianie i aktualizowanie różnych pakietów oraz bibliotek do projektów tworzonych w języku JavaScript. Npm jest zintegrowany z większością narzędzi programistycznych, co ułatwia zarządzanie projektami i udostępnianie pakietów dla innych użytkowników. Dzięki npm możliwe jest także budowanie własnych pakietów i publikowanie ich w repozytorium npm. [1]
-
-Źródła:
-
-1. "Mastering TypeScript - Second Edition" - Nathan Rozentals, Packt Publishing (2019)
-
-### Logika biznesowa
-
-#### Kotlin
-
-Kotlin to statycznie typowany język programowania, który działa na wirtualnej maszynie Javy. Jego cechą wyróżniającą jest łączenie w sobie funkcjonalności zarówno języków obiektowych, jak i funkcyjnych, co pozwala na tworzenie czytelnych i wydajnych aplikacji [1]. Kotlin zdobył popularność w świecie aplikacji mobilnych, ale jest również stosowany do tworzenia aplikacji backendowych, a nawet desktopowych [2].
-
-Źródła:
-
-1. Harris, Mark; (2019) "Programming Kotlin", O'Reilly Media
-2. Breslav, Andrey; (2011) "Kotlin: Towards a Better Java", Proceedings of the 16th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications (OOPSLA '11).
-
-#### Spring Framework
-
-Spring Framework to popularny framework dla języków z platformy JVM (głównie Java, ale też może być używany z językiem Kotlin), który dostarcza rozwiązania do budowy aplikacji webowych, aplikacji desktopowych i usług sieciowych. Framework ten pozwala na efektywną pracę z bazami danych, konfigurację aplikacji, bezpieczeństwo i testowanie kodu. Spring Framework składa się z wielu modułów, z których każdy dostarcza inną funkcjonalność, taką jak obsługa transakcji, dostarczanie widoków webowych czy obsługa komunikacji sieciowej [1].
-
-Spring Framework wyróżnia się zastosowaniem wzorca projektowego Inversion of Control (IoC), który pozwala na odwrócenie procesu tworzenia obiektów. W efekcie, framework dostarcza obiektów gotowych do użycia zamiast wymagania ich tworzenia ręcznie w kodzie. Dzięki temu programiści mogą skupić się na logice biznesowej swoich aplikacji, zamiast zajmować się tworzeniem i konfiguracją obiektów [2].
-
-Spring Framework jest stale rozwijany przez społeczność programistów i posiada szeroką dokumentację. Wraz z rozwojem frameworka, pojawiają się też nowe rozwiązania, takie jak Spring Boot, który ułatwia i przyspiesza tworzenie nowych aplikacji Spring.
-
-Źródła:
-
-1. Craig Walls, Spring in Action, Fifth Edition, Manning Publications, 2019.
-2. Rod Johnson, Juergen Hoeller, Keith Donald, Colin Sampaleanu, Rob Harrop, Thomas Risberg, Spring Framework Reference Documentation, Spring Framework 5.3.15, 2022.
-
-#### Spring Boot
-
-Spring Boot to popularny framework do tworzenia aplikacji opartych o język platformę JVM, zbudowany na Spring Framework, a jego celem jest ułatwienie tworzenia aplikacji opartych na Springu [1]. Framework ten oferuje wiele wbudowanych funkcjonalności, takich jak konfiguracja, obsługa bazy danych, bezpieczeństwo i wiele innych. Dzięki temu programiści mogą skupić się na tworzeniu funkcjonalności, a nie na konfigurowaniu środowiska i innych podstawowych funkcjonalności [2].
-
-Spring Boot oferuje wiele korzyści, takich jak prostota, szybkość i łatwość w utrzymaniu. Wbudowane mechanizmy obsługi bazy danych i bezpieczeństwa pozwalają na szybkie tworzenie aplikacji bez konieczności pisania dodatkowego kodu [3]. Ponadto, Spring Boot oferuje wiele narzędzi do automatyzacji procesu budowania, testowania i wdrażania aplikacji, takich jak Maven i Gradle [4].
-
-Źródła:
-
-2. Spring Boot, https://spring.io/projects/spring-boot, 21 lutego 2023.
-1. Craig Walls, Spring Boot in Action, Manning Publications, 2016.
-3. Baeldung, Spring Boot Tutorial, https://www.baeldung.com/spring-boot, 21 lutego 2023.
-4. Spring Boot Reference Guide, https://docs.spring.io/spring-boot/docs/current/reference/html/index.html, 21 lutego 2023.
-
-#### Spring Web
-
-Spring Web to moduł frameworku Spring, który umożliwia tworzenie aplikacji internetowych. Spring Web dostarcza narzędzi, które pozwalają na tworzenie kontrolerów REST, obsługę formularzy, walidację danych, integrację z technologiami szablonów, obsługę Cookie i wiele więcej. Spring Web integruje się również z innymi modułami Spring, takimi jak Spring Security, Spring Data i Spring Boot, co ułatwia rozwijanie zaawansowanych aplikacji webowych. [1]
-
-Źródła:
-1. Wallner, M., Breitner, M., & Schilling, M. (2019). Spring 5.0: kurz & gut. O'Reilly.
-
-#### Spring WebFlux
-
-Spring Webflux to reaktywny framework webowy, który został wprowadzony w Spring 5 [1]. Główną różnicą między Spring Web a Spring Webflux jest podejście do obsługi żądań - Webflux używa obsługi zdarzeń asynchronicznych, co pozwala na wydajniejsze wykorzystanie zasobów serwera, a także ułatwia obsługę wielu równoległych żądań [2]. Framework ten pozwala na tworzenie aplikacji reaktywnych, w których żądania HTTP są przetwarzane asynchronicznie i nieblokująco [1].
-
-Źródła:
-
-1. M. Tosić, "Spring 5 Design Patterns", 2nd ed., Packt Publishing, 2018.
-2. "Spring Webflux - Reference Documentation", Spring Framework Reference Documentation, dostępne online: https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html (dostęp: 21.02.2023).
-
-#### Spring Data
-
-Spring Data to projekt w ramach Spring Framework, który zapewnia prosty sposób dostępu do różnych źródeł danych. Dzięki Spring Data programiści mogą pisać mniej kodu, a jednocześnie dostarczać bogatą funkcjonalność. Spring Data zapewnia wsparcie dla różnych technologii baz danych, takich jak relacyjne bazy danych, bazy danych NoSQL, a także mapowania obiektowo-relacyjnego (ORM) [1].
-
-Spring Data zapewnia programistom wygodny interfejs do operacji na bazie danych, w tym do odczytu i zapisu danych, operacji na transakcjach, mapowania relacji między obiektami, agregacji, sortowania i filtrowania wyników, a także wiele innych funkcjonalności. Spring Data umożliwia również programistom dostosowywanie i rozbudowywanie funkcjonalności, takie jak wprowadzanie własnych zapytań, a także dostarcza rozwiązania dla specyficznych przypadków, takie jak stronicowanie wyników [2].
-
-Spring Data jest często wykorzystywane wraz z innymi technologiami Spring, takimi jak Spring MVC, Spring Boot czy Spring Cloud. Dzięki temu można w łatwy sposób zbudować pełnowartościowe aplikacje webowe, mikroserwisy czy rozproszone systemy [3].
-
-Źródła:
-
-1. Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Brisbin, Michael Hunger, Spring Data, O'Reilly Media, Inc., 2012.
-2. https://spring.io/projects/spring-data
-3. https://dzone.com/articles/introduction-to-spring-data-1
-
-#### Spring Security
-
-Spring Security to moduł Spring Framework odpowiedzialny za obsługę bezpieczeństwa. Daje on programistom możliwość łatwej implementacji autentykacji, autoryzacji oraz zarządzania sesjami użytkowników w aplikacjach webowych [1]. Spring Security oferuje wiele wbudowanych funkcjonalności, takich jak integrację z wieloma protokołami autentykacyjnymi (np. OAuth), integrację z innymi narzędziami Spring (np. Spring Boot, Spring Data) oraz prostą konfigurację [2]. Dzięki temu, programiści nie muszą poświęcać dużo czasu na implementację bezpieczeństwa w aplikacji, co pozwala skupić się na jej logice biznesowej.
-
-Źródła:
-
-1. M. Winand, "Spring Security 5.3: A Quick Guide to the New Features," Baeldung, 23 grudnia 2019, [Online]. Dostępne: https://www.baeldung.com/spring-security-5-3-new-features. [Dostęp: 21 lutego 2023].
-2. "Spring Security Reference," Spring Framework, [Online]. Dostępne: https://docs.spring.io/spring-security/site/docs/current/reference/html5/. [Dostęp: 21 lutego 2023].
-
-
-#### Spring Cloud
-
-Spring Cloud to zestaw narzędzi, które pomagają w łatwej i efektywnej budowie rozproszonych systemów opartych na mikroserwisach. Zawiera on wiele projektów, takich jak Spring Cloud Config, Spring Cloud Netflix, Spring Cloud Gateway i wiele innych, które ułatwiają wdrożenie, skalowanie i zarządzanie mikroserwisami. Dzięki temu, że Spring Cloud integruje się z popularnymi rozwiązaniami takimi jak Netflix OSS czy Kubernetes, umożliwia tworzenie elastycznych, wydajnych i łatwych w zarządzaniu systemów rozproszonych. [1]
-
-Jednym z komponentów Spring Cloud jest Spring Cloud OpenFeign, który pozwala na deklaratywne definiowanie klientów REST dla innych serwisów w ramach mikroserwisowej architektury [2]. Dzięki Spring Cloud OpenFeign programiści nie muszą ręcznie pisać kodu do wywoływania API innych usług, co przyspiesza proces tworzenia aplikacji.
-
-Źródła:
-
-1. Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Schneider, Josh Long, Spring Data: Modern Data Access for Enterprise Java, O'Reilly Media, 2012.
-2. Craig Walls - "Spring in Action: Covers Spring 5", Manning Publications, 2018.
-
-#### Gradle
-
-Gradle to narzędzie do automatyzacji budowania oprogramowania. Jest ono oparte na języku Groovy, ale umożliwia pisanie skryptów budowania w innych językach, takich jak Kotlin czy Scala. Gradle oferuje elastyczność w definiowaniu i konfigurowaniu zależności między komponentami oprogramowania, a także w zarządzaniu konfiguracją, budowaniem, testowaniem i publikacją artefaktów. Dzięki temu narzędziu możliwe jest łatwe zarządzanie projektami, a proces budowania może być dokładnie dostosowany do potrzeb danej aplikacji lub biblioteki. [1][2]
-
-Źródła:
-
-1. Gradle in Action: Build Automation for the Modern Age, Benjamin Muschko
-2. https://gradle.org/
-
-#### REST
-
-REST to styl architektury oprogramowania, który opiera się na prostych protokołach HTTP i wykorzystuje ich metody do tworzenia zasobów i wykonywania operacji na tych zasobach. REST jest bardzo popularnym podejściem do tworzenia aplikacji sieciowych i jest wykorzystywany w większości nowoczesnych systemów internetowych. Jego zaletami są m.in. skalowalność, elastyczność, prostota i niezależność od języka programowania [1].
-
-Źródła:
-
-1. Roy T. Fielding. Architectural Styles and the Design of Network-based Software Architectures. PhD thesis, University of California, Irvine, 2000. Available online: https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
-
-### API
-
-#### RestCountries
-
-RestCountries to publiczne API, które udostępnia informacje o państwach na całym świecie. API pozwala na pobranie takich informacji jak nazwa państwa, stolica, populacja, strefa czasowa, waluta, język i wiele innych. RestCountries oferuje również zaawansowane funkcje wyszukiwania, takie jak filtrowanie po stolicy, walucie czy języku, co pozwala na dostosowanie zapytania do indywidualnych potrzeb. API jest udostępnione za darmo, a jego dokumentacja jest dobrze udokumentowana i łatwa do zrozumienia [1].
-
-Źródła:
-
-1. Rest Countries API - https://restcountries.com/
-
-#### SIL International
-
-SIL International to organizacja pozarządowa zajmująca się badaniem, dokumentowaniem i ochroną różnorodności językowej na świecie. Ich działania obejmują m.in. prowadzenie badań terenowych, katalogowanie języków, opracowywanie systemów pisma dla mniej znanych języków oraz tłumaczenie tekstów na te języki [1]. SIL International prowadzi międzynarodowe programy badawcze i edukacyjne, a ich celem jest zapewnienie, że każdy język na świecie ma zapewniony status, ochronę i szanse na rozwój.
-
-Jednym z najważniejszych działań SIL International jest katalogowanie języków, czyli badanie, dokumentowanie i klasyfikowanie różnych języków na świecie [2]. Dzięki temu organizacja jest w stanie dostarczyć informacje na temat języków mniej znanych i zagrożonych wyginięciem. W ramach tych badań SIL International zbiera informacje o językach, ich systemach pisma, gramatyce, słownictwie i sposobie użycia, aby stworzyć dokumentację językową, która może być używana do rozwoju edukacji i tłumaczeń.
-
-Źródła:
-
-1. Eberhard, David M., Gary F. Simons, and Charles D. Fennig (eds.). 2021. SIL International. Online version: https://www.ethnologue.com/about, accessed on 2023-02-21.
-2. "Language Documentation and Description." SIL International. https://www.sil.org/resources/publications/language-documentation-and-description, accessed on 2023-02-21.
-
-#### exchangerate.host
-
-exchangerate.host to darmowe API umożliwiające łatwe i szybkie pobieranie kursów wymiany walut. Dostarcza ono dane w czasie rzeczywistym z możliwością ich łatwej integracji z różnymi aplikacjami. exchangerate.host zapewnia również dokładność i niezawodność danych dzięki wykorzystaniu wielu źródeł. Platforma ta posiada wiele funkcjonalności, takich jak możliwość pobierania kursów wielu walut jednocześnie, a także konwersję walut według bieżącego kursu wymiany. [1][2]
-
-Źródła:
-
-1. exchangerate.host. (n.d.). exchangerate.host. https://exchangerate.host/
-2. Exchangerate.host (2021). "Exchangerate.host API Documentation". https://exchangerate.host/#/docs
-
-### Testy
-
-#### JUnit
-
-JUnit 5 to popularny framework do testowania aplikacji w języku Java, który umożliwia pisanie testów jednostkowych, integracyjnych oraz testów wydajnościowych [1]. Framework ten dostarcza wiele wbudowanych asercji oraz umożliwia tworzenie własnych [2]. Wraz z rozwojem języka Kotlin, pojawiło się wiele nowych rozwiązań, które umożliwiają łatwe pisanie testów w tym języku. JUnit 5 jest dostępny również dla projektów napisanych w Kotlinie i zapewnia pełne wsparcie dla tego języka [3]. Dzięki temu programiści, którzy korzystają z Kotlina, mogą w pełni wykorzystać możliwości JUnit 5 podczas pisania testów jednostkowych i integracyjnych.
-
-Źródła:
-
-1. S. P. Len Bass, Paul C. Clements, Rick Kazman, "Software Architecture in Practice", 3rd Edition, Addison-Wesley, 2020.
-2. https://junit.org/junit5/docs/current/user-guide/
-3. https://kotlinlang.org/docs/testing.html#testing-frameworks
-
-#### Mockito
-
-Mockito to biblioteka umożliwiająca tworzenie obiektów testowych (mocków) do testów jednostkowych [1]. W połączeniu z Kotlinem, Mockito pozwala na jeszcze bardziej ekspresywny i czytelny kod testów [2]. Dzięki funkcjonalnościom języka Kotlin, takim jak krótsza składnia lambda czy operator destrukturyzacji, tworzenie i konfiguracja mocków staje się łatwiejsza i bardziej czytelna.
-
-Źródła:
-
-1. M. Kuczera, K. Wyrzykowski, Java i Kotlin. Praktyczny przewodnik dla początkujących, Helion, 2018.
-2. "Kotlin Mocking with Mockito", Mockito.org, https://site.mockito.org/blog/2017/10/29/kotlin.html (dostęp: 21.02.2023)
-
-### Baza danych
-
-#### PostgreSQL
-
-PostgreSQL to obiektowo-relacyjna baza danych typu open source. Charakteryzuje się ona dużą skalowalnością i wydajnością, obsługuje większość standardów SQL oraz oferuje szeroki zakres narzędzi do zarządzania bazą danych. PostgreSQL jest bardzo popularnym narzędziem w środowisku programistycznym, a jego użycie w projektach open source jest powszechne. [1]
-
-Źródła:
-1. PostgreSQL: https://www.postgresql.org/
-
-#### Redis
-
-Redis to szybka, in-memory baza danych typu klucz-wartość. Jest często wykorzystywana do przechowywania danych tymczasowych, cache'owania i zarządzania sesją w aplikacjach webowych. Redis obsługuje wiele typów danych, w tym łańcuchy, listy, zestawy, mapy i wiele innych, a także oferuje narzędzia do przetwarzania strumieni danych. Redis ma również wbudowany system replikacji i obsługuje partycjonowanie danych [1].
-
-Źródła:
-
-1. C. Grundner, S. Pogorelov, Redis in Action: Modern Data Structure Store. Manning Publications, 2018.
-
-### Wdrożenie
-
-#### Docker
-
-Docker to narzędzie umożliwiające uruchamianie aplikacji w izolowanych kontenerach, co pozwala na ich łatwe przenoszenie i uruchamianie na różnych systemach [1]. Kontenery w Dockerze zawierają wszystko, co jest potrzebne do uruchomienia aplikacji, w tym system operacyjny, biblioteki i pliki konfiguracyjne. Dzięki temu deweloperzy mogą pracować w środowisku kontenerowym, które jest niezależne od ich lokalnego środowiska, co ułatwia testowanie i wdrażanie aplikacji. Docker pozwala też na łatwe skalowanie aplikacji, dzięki czemu można szybko zwiększyć ilość kontenerów w przypadku wzrostu ruchu na serwerze.
-
-Źródła:
-
-1. M. Loukides, B. Chambers, M. Doran, "What is Docker?" O'Reilly, 2015.
-
-#### Kubernetes
-
-Kubernetes to otwarty system do zarządzania kontenerami, który umożliwia automatyzację wdrażania, skalowania i zarządzania aplikacjami w kontenerach. Dzięki Kubernetes możliwe jest uruchomienie aplikacji w wielu kontenerach na wielu maszynach, a system będzie automatycznie zarządzał ich skalowaniem i monitorowaniem [1].
-
-Kubernetes opiera się na koncepcji klastrów, w których węzły (node) tworzące klaster są odpowiedzialne za uruchomienie kontenerów i ich zarządzanie. Kontenery są uruchamiane wewnątrz podów (pod), które są najmniejszym elementem klastra Kubernetes i stanowią jednostkę wdrażania aplikacji [1].
-
-Dzięki Kubernetes możliwe jest zautomatyzowanie wielu zadań, takich jak wdrażanie aktualizacji aplikacji, przesyłanie ruchu sieciowego, replikacja aplikacji, skalowanie i zarządzanie konfiguracją. Kubernetes oferuje również wiele funkcji związanych z bezpieczeństwem, takich jak uwierzytelnianie, autoryzacja i szyfrowanie komunikacji [2].
-
-Podsumowując, Kubernetes jest jednym z najpopularniejszych narzędzi do automatyzacji wdrażania i zarządzania aplikacjami w kontenerach. Dzięki jego elastyczności i skalowalności, Kubernetes może być wykorzystywany w różnych środowiskach, od małych projektów po duże klastry serwerowe [1].
-
-1. Kelsey Hightower, Brendan Burns, Joe Beda, Kubernetes: Up and Running: Dive into the Future of Infrastructure, O'Reilly Media, Inc., 2017.
-2. Senthil Vellingiri, Hideto Saito, Hui-Chuan Chloe Lee, Kubernetes in Action, Manning Publications, 2018.
-
-### Magazyn plików
-
-#### Minio
-
-Minio to oprogramowanie typu cloud storage, które udostępnia S3 API do przechowywania danych w chmurze. Jest to narzędzie open-source i napisane w języku Go. Minio jest szybkie, skalowalne i odporna na awarie. Oprogramowanie to może być uruchomione w klastrze, co umożliwia łatwe skalowanie, wysoką dostępność i replikację danych. Dzięki temu, że Minio udostępnia interfejs S3, może być łatwo zintegrowany z innymi usługami AWS, takimi jak EC2, Lambda, czy Glacier. [1][2]
-
-Źródła:
-
-1. Minio, https://min.io/
-2. Minio Documentation, https://docs.min.io/
-
-### Monitoring i Logowanie
-
-#### Elasticsearch
-
-Elasticsearch to wysoko skalowalna wyszukiwarka i analityczna platforma, która umożliwia przechowywanie, wyszukiwanie i analizę dużych zbiorów danych w czasie rzeczywistym [1]. Elasticsearch jest napisany w języku Java i wykorzystuje bibliotekę Lucene do wyszukiwania i indeksowania tekstu [2]. Jest często stosowany w aplikacjach internetowych i systemach analizy danych do wyszukiwania treści, analizy logów i metryk oraz budowania dashboardów. Elasticsearch oferuje także wiele funkcjonalności związanych z wyszukiwaniem pełnotekstowym, takich jak wyszukiwanie zapytań z odległością edycyjną, morfologiczne przetwarzanie języka naturalnego i analiza podobieństwa tekstu [3].
-
-Źródła:
-
-1. Gormley C., Tong Z. (2015). Elasticsearch: The Definitive Guide. O'Reilly Media, Inc.
-2. Elastic. (2022). What is Elasticsearch? https://www.elastic.co/what-is/elasticsearch
-3. Elasticsearch. (2022). Text analysis. https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html
-
-#### Kibana
-
-Kibana to narzędzie służące do wizualizacji i analizy danych przechowywanych w Elasticsearch [1]. Umożliwia ono interaktywną eksplorację danych oraz tworzenie różnego rodzaju wizualizacji, takich jak wykresy, tabelki czy mapy. Kibana jest łatwa w konfiguracji i dostępna w formie interfejsu webowego, co umożliwia łatwe zarządzanie wizualizacjami i analizami danych. Kibana jest jednym z elementów Elastic Stack, wraz z Elasticsearch i Logstash, które razem tworzą zaawansowane rozwiązanie do przetwarzania, indeksowania i wizualizacji danych [2].
-
-Źródła:
-
-1. E. Fernández, Mastering Kibana 6.x: Visualize your Elastic Stack data with histograms, maps, charts, and graphs, Packt Publishing, 2018.
-2. https://www.elastic.co/what-is/elastic-stack (dostęp: 21.02.2023)
-
-#### Logstash
-
-Logstash to popularny, open-source'owy narzędzie do agregacji i przetwarzania danych logów [1]. Zbiera on dane logów z różnych źródeł i umożliwia ich transformację oraz przesyłanie do innych narzędzi, takich jak Elasticsearch czy Kibana. Logstash obsługuje wiele popularnych formatów logów, takich jak syslog, Apache access logs czy JSON [2]. Dzięki temu, że Logstash działa jako agent, można go zainstalować na wielu maszynach i centralnie zarządzać zbieranymi danymi [3].
-
-Źródła:
-
-1. G. S. Young, "Mastering Logstash 6.0," Birmingham, UK: Packt Publishing, 2017.
-2. "Logstash Reference [7.16] » Input Plugins » Supported Input Plugins," Logstash, [Online]. Available: https://www.elastic.co/guide/en/logstash/7.16/input-plugins.html. [Accessed Feb. 21, 2023].
-3. "What is Logstash?," Logstash, [Online]. Available: https://www.elastic.co/logstash/. [Accessed Feb. 21, 2023].
-
-#### Filebeat
-
-Filebeat to jedno z narzędzi z rodziny Elastic Stack służące do wysyłania logów z różnych źródeł do Elasticsearch [1]. Narzędzie to umożliwia monitorowanie logów, a także przekazywanie ich do innych systemów takich jak Logstash czy Kafka [1]. Dzięki wykorzystaniu protokołu Beats narzędzie to oferuje niskie opóźnienia oraz mały narzut na system, co pozwala na jego stosowanie w aplikacjach o wysokich wymaganiach wydajnościowych [1].
-
-Źródła:
-
-1. Buczkowski, M. (2019). Elasticsearch. Praktyczne wprowadzenie. Helion.
-
-#### Metricbeat
-
-Metricbeat to narzędzie monitorujące rozwijane przez Elastic. Pozwala ono na zbieranie różnego rodzaju metryk z systemów, aplikacji i usług i przesyłanie ich do Elasticsearch lub innego systemu przetwarzania logów. Dzięki temu można uzyskać wgląd w wydajność, stan i problemy różnych elementów systemu. Metricbeat jest łatwy w konfiguracji i obsłudze i pozwala na integrację z wieloma popularnymi usługami, takimi jak Apache, MySQL, MongoDB czy Kafka [1].
-
-Źródła:
-
-1. Monica Sarbu, Andrew Morgan, "Mastering Elasticsearch 7.0", Packt Publishing, 2019.
-
-#### Heartbeat
-
-Heartbeat to jedna z aplikacji wchodzących w skład Elastic Stack, której zadaniem jest monitorowanie dostępności usług internetowych. Dzięki niej można skonfigurować i wykonywać testy sprawdzające dostępność usług oraz zbierać metryki i wykresy dotyczące wydajności aplikacji [1]. Heartbeat umożliwia również definiowanie alertów, które będą wykonywane w momencie wykrycia awarii usługi. Jest to narzędzie, które jest szczególnie przydatne dla firm, które muszą zagwarantować użytkownikom ciągły dostęp do swoich aplikacji internetowych [2].
-
-Źródła:
-
-1. E. Kim, M. Matsuo, Elastic Stack Cookbook, "Packt Publishing" 2019.
-2. https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-overview.html
-
-### Narzędzia dodatkowe
-
-#### Swagger
-
-Swagger jest narzędziem służącym do opisywania i dokumentowania interfejsów API. Swagger UI jest natomiast interfejsem graficznym umożliwiającym wizualizację i testowanie opisanych API. W Springu Swagger i Swagger UI mogą być używane z użyciem dodatkowych bibliotek, takich jak springfox. Konfiguracja takich narzędzi pozwala na generowanie dokumentacji API i automatyczne tworzenie formularzy testowych dla interfejsu. [1]
-
-Źródła:
-
-1. J. Long, S. Mak, G. Lazzara, D. Ruebenacker, Spring in Action, Manning Publications, 2017.
-
-#### PgAdmin
-
-PgAdmin jest popularnym narzędziem do zarządzania bazami danych PostgreSQL. Pozwala na łatwe i intuicyjne zarządzanie bazą danych, włącznie z tworzeniem i edycją tabel, zarządzaniem użytkownikami oraz wykonywaniem zapytań SQL [1]. PgAdmin jest dostępny zarówno jako aplikacja desktopowa, jak i serwerowa, dzięki czemu umożliwia zdalne zarządzanie bazami danych. Wersja serwerowa pozwala na zarządzanie wieloma bazami danych na różnych serwerach z jednego interfejsu [2].
-
-Źródła:
-
-1. Rigsbee, D. (2017). PostgreSQL Administration Cookbook - Second Edition. Packt Publishing Ltd.
-2. PgAdmin. (2022). Retrieved from https://www.pgadmin.org/
-
-#### RedisInsight
-
-RedisInsight to narzędzie do zarządzania bazami danych Redis, które zapewnia wiele przydatnych funkcji, takich jak łatwe przeglądanie, wizualizacja, monitorowanie, konfigurowanie i diagnozowanie problemów. Dzięki RedisInsight można łatwo przeglądać i modyfikować klucze oraz wartości w bazie danych Redis, monitorować wydajność i obciążenie, a także przeglądać dzienniki operacji [1].
-
-Źródła:
-
-1. Srinivasa, V. (2021). Redis for Dummies. Wiley.
-
-### Uwierzytelnianie
-
-#### OAuth2
-
-OAuth 2 to protokół uwierzytelniania i autoryzacji, który umożliwia użytkownikom udostępnianie swoich danych przez strony trzecie bez konieczności udostępniania swojego hasła [1]. Protokół ten umożliwia aplikacjom zewnętrznym uzyskanie dostępu do zasobów na serwerze, a jednocześnie zapewnia, że hasło użytkownika jest bezpieczne, ponieważ nigdy nie jest przekazywane do aplikacji zewnętrznej [2]. OAuth 2 jest szeroko stosowany w różnego rodzaju aplikacjach, w tym w systemach logowania, aplikacjach społecznościowych i usługach chmurowych.
-
-Źródła:
-
-1. Vittoriano Muttillo, Sergio Flesca, Filippo Gramegna - "Secure Data Management in Decentralized Systems" (2018)
-2. Aaron Parecki - "OAuth 2.0 Simplified" (2012)
-
-#### OpenID Connect
-
-OpenID Connect (OIDC) to otwarty standard uwierzytelniania, który został zbudowany na protokole OAuth 2.0 i zapewnia jednocześnie uwierzytelnianie oraz udostępnianie informacji o użytkowniku. OIDC działa w oparciu o tokeny JWT (JSON Web Tokens) i umożliwia aplikacjom webowym i mobilnym korzystanie z jednego punktu uwierzytelniania, co pozwala użytkownikom na bezpieczne i wygodne korzystanie z różnych aplikacji [1].
-
-Źródła:
-
-1. A. Sikora, "OpenID Connect. Wprowadzenie dla programistów" (2019)
-
-#### JWT
-
-JWT, czyli JSON Web Token, to standard definiujący sposób przekazywania informacji w formie tokenów w formacie JSON [1]. Token JWT składa się z trzech sekcji: nagłówka (header), ładunku (payload) i podpisu (signature). Nagłówek zawiera informacje o typie tokenu oraz o algorytmie używanym do jego podpisania. Ładunek zawiera informacje o użytkowniku oraz ewentualnie dodatkowe dane związane z autoryzacją, a podpis służy do weryfikacji, czy token został zmodyfikowany po wygenerowaniu [1]. JWT jest często stosowany w kontekście bezpieczeństwa aplikacji webowych, w których wymagana jest autoryzacja i uwierzytelnienie użytkowników.
-
-Źródła:
-
-1. S. Jang, J. Lee, H. Kim, "Web Security: A WhiteHat Perspective", Springer, 2015.
-
-#### Keycloak
-
-Keycloak to otwarte oprogramowanie służące do zarządzania tożsamością i autoryzacją, oparte na standardach takich jak OpenID Connect, OAuth 2.0 i SAML. Keycloak zapewnia funkcje takie jak uwierzytelnianie wielofazowe, zarządzanie tożsamością użytkowników i zarządzanie uprawnieniami. Może być używany jako serwer uwierzytelniający dla różnych aplikacji, w tym aplikacji webowych, mobilnych i usług sieciowych [1]. Keycloak oferuje również wiele gotowych adapterów dla popularnych frameworków i usług, takich jak Spring Security, Apache HTTP Server, NGINX, czy Apache Tomcat [2].
-
-Źródła:
-
-1. Łukasz Adamski, „Keycloak w praktyce. Bezpieczna autoryzacja i uwierzytelnianie”, Helion, 2020.
-2. Oficjalna dokumentacja Keycloak, https://www.keycloak.org/docs/latest/securing_apps/index.html
-
-## Architektura
-
-## Implementacja aplikacji
-
-### Projekt
-
-### Implementacja
+### Monitorowanie i analiza pracy aplikacji
 
 ### Testowanie
 
 ### Wdrożenie
 
+### Uwierzytelnianie i autoryzacja
+
+
+## Implementacja
+
+### Przygotowanie środowiska
+#### Instalacja Node.js
+#### Instalacja Docker
+#### Instalacja Visual Studio Code
+#### Instalacja IntelliJ IDEA
+#### Instalacja Git
+### Interfejs użytkownika
+#### Tworzenie projektu za pomocą Create React App
+#### Instalacja dodatkowych bibliotek
+#### Implementacja klienta serwera aplikacji
+#### Implementacja komponentów
+#### Implementacja kontekstów
+#### Implementacja układu strony
+#### Implementacja pojedynczych widoków
+#### Utylity
+#### Plik Dockerfile i konfiguracja Nginx
+### Serwer aplikacji
+#### Tworzenie projektu za pomocą Spring Initializr
+#### Gradle i instalacja dodatkowych bibliotek
+#### Implementacja domeny aplikacji
+#### Implementacja portów i adapterów
+#### Integracja domeny z portami i adapterami
+#### Integracja z zewnętrznymi API
+#### Konfiguracja Spring Security
+#### Plik konfiguracyjny aplikacji Spring Boot
+#### Plik Dockerfile
+#### Testy za pomocą JUnit i Mockito
+### Infrastruktura
+#### Docker Compose
+#### Konfiguracja instancji Keycloak
+#### Konfiguracja instancji PostgreSQL
+#### Konfiguracja instancji Redis
+#### Konfiguracja instancji MinIO
+#### Konfiguracja stosu ELK
+
 ## Prezentacja
-
-### Zarządzanie projektem
-
-### Komunikacja i współpraca
-
-### Zarządzanie zasobami
-
-### Raportowanie i analiza
-
-### Bezpieczeństwo
-
-### Logowanie i monitoring
-
-## Przyszłość i rozwój aplikacji
-
+### Rejestracja nowego użytkownika
+### Logowanie się do systemu
+### Zarządzanie słownikami
+### Zarządzanie bazą klientów
+### Zarządzanie projektami
+#### Przegląd projektów
+#### Tworzenie i edycja projektu
+#### Zmiana statusu projektu
+#### Zmiana terminu realizacji projektu
+#### Podział projektu na zadania
+#### Zarządzanie zadaniami
+#### Zarządzanie kosztami realizacji projektu
+#### Zarządzanie dokumentami projektu
+#### Komunikacja w ramach projektu
+### Monitorowanie pracy systemu
+## Przyszłość systemu
 ### Integracja z narzędziami maszynowego tłumaczenia
-
 ### Integracja z narzędziami do analizy tekstu
-
 ### Integracja ze słownikami terminologicznymi
-
 ### Glosariusze
-
 ### Rozbudowanie możliwości raportowania
-
-## Podsumowanie
-
+### Usprawnienia monitorowania pracy systemu
