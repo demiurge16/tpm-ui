@@ -17,8 +17,8 @@ export const Dashboard = () => {
         justifyContent: "center",
         alignItems: "center"
       }}>
-        <Typography variant="h4">Translation project manager</Typography>
-        <Typography variant="body1">Welcome to the translation project manager.</Typography>
+        <Typography variant="h4">Project Hermes</Typography>
+        <Typography variant="body1">Welcome to Project Hermes.</Typography>
         <Typography variant="body1">Start working by selecting a tab from the navigation bar.</Typography>
       </Box>
     </Paper>

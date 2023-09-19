@@ -179,7 +179,7 @@ export const Index = () => {
         showError("Error loading reference data", error.message);
       }
     });
-  }, [setBreadcrumbs, showError, tpmClient]);
+  }, []);
 
   return (
     <Box>

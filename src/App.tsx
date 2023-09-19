@@ -1,4 +1,3 @@
-import "./App.scss";
 import { useState } from "react";
 import { Route, Link as RouterLink, Navigate, Routes } from "react-router-dom";
 import {
@@ -42,7 +41,7 @@ import { ServiceTypes } from "./pages/dictionaries/service-types/ServiceTypes";
 import { Role } from "./contexts/AuthContext";
 
 function App() {
-  const title = "Translation Project Manager";
+  const title = "Project Hermes";
 
   type RouteConfig = {
     path: string;
@@ -570,7 +569,7 @@ function App() {
           }}
         >
           <Typography variant="body2" color="text.secondary" align="center">
-            © 2022 Translation Project Manager by&nbsp;
+            © 2022 Project Hermes by&nbsp;
             <Link
               href="https://nuclear-prometheus.net/"
               color="inherit"

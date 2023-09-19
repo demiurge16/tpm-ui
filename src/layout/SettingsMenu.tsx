@@ -40,7 +40,7 @@ export const SettingsMenu = () => {
       </Box>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
-          <Avatar alt={`${firstName} ${lastName}`} src="/static/images/avatar/2.jpg" />
+          <Avatar alt={`${firstName} ${lastName}`} />
         </IconButton>
       </Tooltip>
       <Menu id="menu-appbar"
