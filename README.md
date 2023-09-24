@@ -1057,11 +1057,334 @@ useEffect(() => {
   });
   return () => subscription.unsubscribe();
 }, []);
-
 ```
 
 #### Implementacja komponentów
+
+W projekcie React, dobrze zorganizowana struktura katalogów i spójna organizacja komponentów są kluczowe dla skalowalności i utrzymywalności kodu. Komponenty są fundamentalnymi elementami architektury React i umożliwiają budowanie zaawansowanych, responsywnych interfejsów użytkownika. 
+Warto zaznaczyć, że w React istnieją głównie dwa typy komponentów: klasowe i funkcyjne. Komponenty klasowe były bardzo popularne w wcześniejszych wersjach biblioteki, oferując pełny dostęp do cyklu życia komponentu oraz stanu.
+Jednak od wprowadzenia hooków w React 16.8, komponenty funkcyjne stały się bardziej elastyczne i potężne, umożliwiając korzystanie ze stanu i innych funkcji życia komponentu, które wcześniej były dostępne tylko dla komponentów klasowych. Dzięki hookom, komponenty funkcyjne są teraz zalecane jako standardowy sposób tworzenia komponentów w React, oferując bardziej zwięzły i zrozumiały sposób na budowanie interfejsów użytkownika.
+Obecnie, korzystanie z komponentów klasowych jest uważane za przestarzałe, i nie są one rekomendowane do użycia w nowych projektach. Jednak wciąż można spotkać je w starszych projektach, dlatego ważne jest, aby znać różnice między komponentami klasowymi a funkcyjnymi oraz umieć pracować z oboma typami.
+W przykładzie poniżej, `useState` jest hookiem, który pozwala korzystać ze stanu wewnątrz komponentu funkcyjnego. Jest to jeden z wielu hooków dostarczanych przez React, które umożliwiają efektywne zarządzanie stanem i cyklem życia komponentu.
+
+```jsx
+// Przykładowy komponent funkcyjny z hookiem stanu
+import React, { useState } from 'react';
+
+function ExampleComponent() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+W projekcie systemu organizacji pracy komponenty są umieszczone w katalogu `/src/components`. Utrzymanie komponentów w dedykowanym katalogu jest istotne dla zachowania klarowności i porządku w strukturze projektu. W projekcie komponenty pełnią dwie główne role:
+
+1. **Adaptery do Zewnętrznych Komponentów:** Dzięki adapterom możliwe jest dostosowanie zewnętrznych komponentów do specyficznych wymagań projektowych, zarówno pod kątem funkcjonalności, jak i prezentacji. Korzystanie z adapterów pozwala na utrzymanie spójności API i ułatwia integrację z resztą systemu. Dodatkowo, ułatwiają one wprowadzanie zmian, izolując potencjalne modyfikacje w przypadku aktualizacji lub zastąpienia używanej biblioteki. Dzięki nim, developerzy mają także większą kontrolę nad stylami i zachowaniem komponentów, umożliwiając precyzyjne dostosowanie ich do projektu. Przykładem takiego adaptera jest `SelectField.tsx`, który opakowuje komponent `Select` z biblioteki `@mui/material` i dostosowuje go do użycia w aplikacji. Używa on komponentu `Field` z biblioteki `react-final-form` do zarządzania stanem pola formularza, oraz komponentów `FormControl`, `InputLabel`, `Select` i `MenuItem` z biblioteki `@mui/material` do prezentacji.
+```tsx
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
+import { Field } from 'react-final-form';
+
+export interface SelectFieldProps {
+  name: string;
+  label: string;
+  multiple?: boolean;
+  required?: boolean;
+  defaultValue?: [];
+  options: { key: string, value: string }[];
+}
+
+export const SelectField = (props: SelectFieldProps) => {
+  const { name, label, multiple, required, options } = props;
+  const labelId = `${name}-label`;
+
+  return (
+    <Field name={name}>
+      {({ input, meta }) => (
+        <FormControl variant="outlined" fullWidth margin="normal" error={meta.error && meta.touched}>
+          <InputLabel id={labelId}>{label}</InputLabel>
+          <Select
+            {...input}
+            label={label}
+            labelId={labelId}
+            displayEmpty
+            multiple={multiple}
+            required={required}
+            inputProps={{ name: label, id: label }}
+          >
+            {
+              options.map(option => (
+                <MenuItem key={option.key} value={option.key}>
+                  {option.value}
+                </MenuItem>
+              ))
+            }
+          </Select>
+          <FormHelperText>{meta.error && meta.touched && meta.error}</FormHelperText>
+        </FormControl>
+      )}
+    </Field>
+  );
+}
+```
+
+2. **Reużywalne Komponenty Własne:** Komponenty są również reużywalnymi elementami interfejsu, często używanymi w różnych miejscach aplikacji. Takie podejście promuje zasadę DRY (Don't Repeat Yourself) i pomaga w utrzymaniu kodu. Przykładem takiego komponentu jest `SecuredComponent.tsx`, który warunkowo renderuje swoje dzieci w zależności od ról użytkownika, służąc jako mechanizm zabezpieczający i kontrolujący dostęp.
+```tsx
+import { ReactNode } from "react";
+import { Role, useAuth } from "../../contexts/AuthContext";
+
+export interface SecuredComponentProps {
+  roles?: Role[];
+  children: ReactNode;
+}
+
+export const SecuredComponent = ({ roles, children }: SecuredComponentProps) => {
+  const { hasAnyRole } = useAuth();
+
+  return roles && hasAnyRole(roles) ? <>{children}</> : null;
+}
+```
+
 #### Implementacja kontekstów
+
+Konteksty w React to mechanizm, który pozwala na przechowywanie i udostępnianie danych dla różnych komponentów w drzewie komponentów. Jest to szczególnie użyteczne, gdy dane, takie jak dane uwierzytelniające użytkownika, są konieczne w wielu różnych miejscach w aplikacji. Użycie kontekstów eliminuje potrzebę przekazywania danych za pomocą propsów przez wiele poziomów komponentów, co sprawia, że kod jest bardziej zwięzły i łatwiejszy do zarządzania.
+
+`AuthContext.tsx` jest przykładem implementacji kontekstu, który przechowuje informacje o uwierzytelnieniu użytkownika, takie jak identyfikator użytkownika, imię, nazwisko, email, role oraz metody umożliwiające sprawdzenie ról użytkownika. Kontekst korzysta z biblioteki Keycloak do uwierzytelniania i zarządzania tożsamością. Początek implementacji odpowiada za inicjalizację Keycloak:
+
+```typescript
+const keycloakConfig: KeycloakConfig = {
+  realm: "tpm",
+  clientId: "tpm-frontend",
+  url: environment.authServerUrl,
+};
+
+const keycloak = new Keycloak(keycloakConfig);
+```
+
+AuthContext jest tworzony przy użyciu `createContext` z domyślnymi wartościami, które są stanem początkowym dla komponentu `AuthContextProvider`. Kod niżej deklaruje typ `Role`, który jest typem wyliczeniowym, reprezentującym role użytkownika w systemie. Następnie, deklarowany jest interfejs `AuthContextValues`, który zawiera wszystkie dane uwierzytelniające użytkownika oraz metody do zarządzania kontekstem. Na końcu, tworzony jest kontekst przy użyciu `createContext` i eksportowany jako `AuthContext`. 
+
+```typescript
+export type Role = "admin"
+  | "project-manager"
+  | "translator"
+  | "editor"
+  | "proofreader"
+  | "subject-matter-expert"
+  | "publisher"
+  | "observer"
+  | "user";
+
+interface AuthContextValues {
+  isAuthenticated: boolean;
+  logout: () => void;
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roles: Role[];
+  hasRole: (role: Role) => boolean;
+  hasAnyRole: (roles: Role[]) => boolean;
+}
+
+const defaultAuthContextValues: AuthContextValues = {
+  isAuthenticated: false,
+  logout: () => {},
+  userId: "",
+  username: "",
+  firstName: "",
+  lastName: "",
+  email: "",
+  roles: [],
+  hasRole: (role: Role) => false,
+  hasAnyRole: (roles: Role[]) => false
+};
+
+export const AuthContext = createContext<AuthContextValues>(
+  defaultAuthContextValues
+);
+```
+
+`AuthContextProvider` jest komponentem funkcyjnym, który implementuje `AuthContext` i udostępnia go do swoich dzieci. Komponent ten jest odpowiedzialny za inicjalizację Keycloak, zarządzanie stanem uwierzytelnienia oraz dostarczanie danych uwierzytelniających użytkownika do kontekstu. Komponent ten jest również odpowiedzialny za dodanie tokena uwierzytelniającego do nagłówka każdego zapytania HTTP, aby umożliwić dostęp do chronionych zasobów API. Komponent ten jest również odpowiedzialny za obsługę błędów zapytań HTTP, takich jak błąd 401, który oznacza, że token uwierzytelniający wygasł i należy wykonać ponowne uwierzytelnienie. W takim przypadku, komponent ten wywołuje metodę `updateToken` z Keycloak, aby uzyskać nowy token, a następnie wykonuje ponownie zapytanie HTTP. Jeśli token nie może zostać odświeżony, użytkownik jest wylogowywany z aplikacji. Poniżej znajduje się kod komponentu `AuthContextProvider`:
+
+```tsx
+interface AuthContextProviderProps {
+  children: JSX.Element;
+}
+
+const AuthContextProvider = (props: AuthContextProviderProps) => {
+  const [initialized, setInitialized] = useState<boolean>(false);
+
+  const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [roles, setRoles] = useState<Role[]>([]);
+
+  const keycloakInitOptions: KeycloakInitOptions = {
+    onLoad: "login-required",
+    flow: "standard"
+  };
+
+  useEffect(() => {
+    keycloak.init(keycloakInitOptions)
+      .then((authenticated) => {
+        if (!authenticated) {
+          keycloak.login();
+        }
+
+        setAuthenticated(authenticated);
+        setUserId(keycloak.tokenParsed?.sub || "");
+        setUsername(keycloak.tokenParsed?.preferred_username);
+        setFirstName(keycloak.tokenParsed?.given_name);
+        setLastName(keycloak.tokenParsed?.family_name);
+        setEmail(keycloak.tokenParsed?.email);
+        setRoles(keycloak.tokenParsed?.realm_access?.roles as Array<Role> || []);
+
+        axios.interceptors.request.use(
+          (config) => {
+            config.headers ??= {};
+            config.headers["Authorization"] = `Bearer ${keycloak.token}`;
+            return config;
+          },
+          (error) => {
+            return Promise.reject(error);
+          }
+        );
+
+        axios.interceptors.response.use(
+          (response) => response,
+          (error) => {
+            if (error.response === undefined) {
+              return Promise.reject(error);
+            }
+            if (error.response.status === 401) {
+              return keycloak.updateToken(5)
+                .then((result) => {
+                  if (result === true) {
+                    return axios({ ...error.config });
+                  } else {
+                    return Promise.reject(new Error("Unauthorized"));
+                  }
+                })
+                .catch((error) => {
+                  keycloak.logout();
+                  return Promise.reject(error);
+                });
+            }
+            return Promise.reject(error);
+          },
+        );
+
+        setInitialized(true);
+      })
+      .catch((error) => {
+        setAuthenticated(false);
+        setInitialized(true);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setUserId(keycloak.tokenParsed?.sub || "");
+      setUsername(keycloak.tokenParsed?.preferred_username);
+      setFirstName(keycloak.tokenParsed?.given_name);
+      setLastName(keycloak.tokenParsed?.family_name);
+      setEmail(keycloak.tokenParsed?.email);
+      setRoles(keycloak.tokenParsed?.realm_access?.roles as Array<Role> || []);
+    }
+  }, [isAuthenticated]);
+
+  const logout = () => {
+    keycloak.logout();
+  };
+
+  const hasRole = (role: Role) => {
+    return roles.includes(role);
+  };
+
+  const hasAnyRole = (roles: Role[]) => {
+    return roles.some(role => hasRole(role));
+  };
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, logout, userId, username, firstName, lastName, email, roles, hasRole, hasAnyRole }}>
+      { initialized ? props.children : <LoadingScreen /> }
+    </AuthContext.Provider>
+  );
+};
+
+export default AuthContextProvider;
+```
+
+Aby skorzystać z `AuthContextProvider`, umieśzcza się go w drzewie komponentów, tak aby otaczał komponenty, które mają mieć dostęp do kontekstu uwierzytelnienia. Zazwyczaj jest to osiągane przez umieszczenie go blisko korzenia drzewa komponentów. W przypadku systemu organizacji pracy, `AuthContextProvider` jest umieszczony w komponencie `Root`, który jest korzeniem drzewa komponentów aplikacji. Poniżej znajduje się kod komponentu `Root.tsx`:
+
+```tsx
+// import pozostałych komponentów i kontekstów pominięty dla czytelności
+
+const Root = () => {
+  const { theme } = useThemeContext();
+  const currentTheme = useMemo(() => theme === "dark" ? darkTheme : lightTheme, [theme]);
+
+  return (
+    <ThemeProvider theme={currentTheme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <AuthContextProvider>
+          <TpmClientContextProvider>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <BreadcrumbsContextProvider>
+                <SnackbarContextProvider>
+                  <StrictMode>
+                    <App />
+                  </StrictMode>
+                </SnackbarContextProvider>
+              </BreadcrumbsContextProvider>
+            </LocalizationProvider>
+          </TpmClientContextProvider>
+        </AuthContextProvider>
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+};
+
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+root.render(
+  <ThemeContextProvider>
+    <Root />
+  </ThemeContextProvider>
+);
+```
+
+Kolejnym krokiem jest utworzenie hooka `useAuth`, który pozwala na łatwy dostęp do kontekstu uwierzytelnienia w komponentach. Hook useAuth jest implementowany jako funkcja, która wywołuje `useContext` z kontekstem uwierzytelnienia i zwraca jego wartość. Jeśli kontekst nie istnieje, hook `useAuth` wyrzuca błąd. Poniżej znajduje się kod hooka `useAuth`:
+
+```typescript
+export const useAuth = () => {
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    throw new Error("useAuth must be used within an AuthContextProvider");
+  }
+
+  return authContext;
+}
+```
+
+Dzięki hookowi `useAuth`, komponenty zagnieżdżone wewnątrz `AuthContextProvider` mogą łatwo uzyskać dostęp do kontekstu uwierzytelnienia oraz funkcji do manipulowania nim, jak na przykład wyżej w komponencie `SecuredComponent.tsx`. Przy użyciu `useAuth`, komponenty mają dostęp do informacji uwierzytelniających oraz funkcji takich jak `logout`, `hasRole` i `hasAnyRole`, które ułatwiają zarządzanie stanem uwierzytelnienia w różnych częściach aplikacji.
+
+Na koniec też warto wspomnieć że istnieje wiele alternatywnych rozwiązań do kontekstów, takich jak Redux, które są bardziej odpowiednie dla dużych aplikacji. Redux też był rozważany jako rozwiązanie do zarządzania stanem w systemie organizacji pracy, ale ostatecznie zdecydowano się na konteksty, ponieważ są one prostsze w użyciu i wystarczające dla potrzeb projektu.
+
 #### Implementacja układu strony
 #### Implementacja pojedynczych widoków
 #### Utylity

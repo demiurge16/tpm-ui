@@ -11,11 +11,6 @@ const keycloakConfig: KeycloakConfig = {
   url: environment.authServerUrl,
 };
 
-const keycloakInitOptions: KeycloakInitOptions = {
-  onLoad: "login-required",
-  flow: "standard"
-};
-
 const keycloak = new Keycloak(keycloakConfig);
 
 export type Role = "admin"
@@ -72,6 +67,11 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [roles, setRoles] = useState<Role[]>([]);
+
+  const keycloakInitOptions: KeycloakInitOptions = {
+    onLoad: "login-required",
+    flow: "standard"
+  };
 
   useEffect(() => {
     keycloak.init(keycloakInitOptions)

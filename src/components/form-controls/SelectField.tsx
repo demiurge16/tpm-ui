@@ -11,7 +11,7 @@ export interface SelectFieldProps {
 }
 
 export const SelectField = (props: SelectFieldProps) => {
-  const { name, label, multiple, required, defaultValue, options } = props;
+  const { name, label, multiple, required, options } = props;
   const labelId = `${name}-label`;
 
   return (
