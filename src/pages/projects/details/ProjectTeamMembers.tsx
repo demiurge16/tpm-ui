@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { useProjectContext } from './ProjectContext';
+import { useProjectContext } from './context/ProjectContext';
 import { CreateTeamMember, ProjectRole, TeamMember, TeamMemberProjectRole } from '../../../client/types/project/TeamMember';
 import { forkJoin } from 'rxjs';
 import { Avatar, Box, Button, Divider, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Paper, Typography } from '@mui/material';

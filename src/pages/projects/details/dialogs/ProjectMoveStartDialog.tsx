@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { useTpmClient } from "../../../../contexts/TpmClientContext";
 import { Form } from "react-final-form";
-import { DateTimeField } from "../../../components/form-controls/DateTimeField";
-import { ProjectMoveStart } from "../../../client/types/project/Project";
-import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useProjectContext } from "./ProjectContext";
+import { DateTimeField } from "../../../../components/form-controls/DateTimeField";
+import { ProjectMoveStart } from "../../../../client/types/project/Project";
+import { useSnackbarContext } from "../../../../contexts/SnackbarContext";
+import { useProjectContext } from "../context/ProjectContext";
 
 export interface MoveStartDialogProps {
   projectId: string;

@@ -19,9 +19,11 @@ import { AsyncSelectField } from '../../components/form-controls/AsyncSelectFiel
 import { validateWithSchema } from '../../utils/validate';
 import { useTpmClient } from '../../contexts/TpmClientContext';
 import { ServiceType } from '../../client/types/dictionaries/ServiceType';
+import { LoadingScreen } from '../utils/LoadingScreen';
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [accuracies, setAccuracies] = useState<Array<Accuracy>>([]);
   const [industries, setIndustries] = useState<Array<Industry>>([]);
@@ -94,6 +96,7 @@ export const Create = () => {
         setUnits(units.items);
         setServiceTypes(serviceTypes.items);
         setClients(clients.items);
+        setLoading(false);
       },
       error: (error) => {
         showError('Error loading reference data', error.message);
@@ -115,7 +118,11 @@ export const Create = () => {
         }
       });
 
-  return (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen /> 
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">Create Project</Typography>
       <Box pb={2} />

@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { GridHandle } from '../../../components/grid/GridProps';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { useProjectContext } from './ProjectContext';
+import { useProjectContext } from './context/ProjectContext';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Box, Button, Grid as MuiGrid, Paper, Typography } from '@mui/material';
 import { Grid } from '../../../components/grid/Grid';

@@ -1386,9 +1386,1154 @@ Dzięki hookowi `useAuth`, komponenty zagnieżdżone wewnątrz `AuthContextProvi
 Na koniec też warto wspomnieć że istnieje wiele alternatywnych rozwiązań do kontekstów, takich jak Redux, które są bardziej odpowiednie dla dużych aplikacji. Redux też był rozważany jako rozwiązanie do zarządzania stanem w systemie organizacji pracy, ale ostatecznie zdecydowano się na konteksty, ponieważ są one prostsze w użyciu i wystarczające dla potrzeb projektu.
 
 #### Implementacja układu strony
+
+Układ strony, czyli layout, to sposób organizacji elementów wizualnych na stronie internetowej. Definiuje on relacje między różnymi sekcjami strony i zapewnia spójność interfejsu użytkownika. W systemie organizacji pracy dla biura tłumaczeń układ strony został zaimplementowany przy użyciu różnych komponentów biblioteki `@mui/material`.
+Cały układ strony został zdefiniowany w komponencie `<App />`, gdzie są połączone różne elementy strony, takie jak pasek nawigacji górnej (`<NavigationBreadcrumbs />`), nawigacja boczna (`<NavigationDrawer />`), przełączniki języka (`<LanguageSwitcher />`) i motywu (`<ThemeSwitcher />`), menu ustawień (`<SettingsMenu />`) oraz konfiguracja routera (`<RouterConfig />`). Poniżej znajduje się kod komponentu:
+
+```tsx
+import { useState } from "react";
+import {
+  Container,
+  Box,
+  IconButton,
+  AppBar,
+  Toolbar,
+  useTheme,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { SettingsMenu } from "./layout/SettingsMenu";
+import { LanguageSwitcher } from "./layout/LanguageSwitcher";
+import { ThemeSwitcher } from "./layout/ThemeSwitcher";
+import { NavigationDrawer } from "./layout/NavigationDrawer";
+import { RouterConfig } from "./layout/RouterConfig";
+import { NavigationBreadcrumbs } from "./layout/NavigationBreadcrumbs";
+import { Footer } from "./layout/Footer";
+
+function App() {
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
+  const drawerWidth = 280;
+  const theme = useTheme();
+  const drawerOpenAnimation = theme.transitions.create("padding-left", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  });
+  const drawerCloseAnimation = theme.transitions.create("padding-left", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  });
+
+  return (
+    <>
+      <Container
+        maxWidth={false}
+        sx={{
+          display: "flex",
+          minHeight: "100vh",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+        }}
+      >
+        <AppBar
+          position="fixed"
+          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        >
+          <Toolbar>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={() => toggleDrawer()}
+            >
+              <MenuIcon />
+            </IconButton>
+            <NavigationBreadcrumbs />
+            <Box sx={{ flexGrow: 1 }} />
+            <ThemeSwitcher></ThemeSwitcher>
+            <LanguageSwitcher></LanguageSwitcher>
+            <SettingsMenu></SettingsMenu>
+          </Toolbar>
+        </AppBar>
+        <NavigationDrawer open={drawerOpen}></NavigationDrawer>
+        <Box
+          component="main"
+          sx={{
+            paddingLeft: drawerOpen ? `${drawerWidth}px` : theme.spacing(7),
+            transition: drawerOpen ? drawerOpenAnimation : drawerCloseAnimation,
+          }}
+        >
+          <Toolbar />
+          <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
+            <RouterConfig />
+          </Container>
+        </Box>
+        <Box
+          component="footer"
+          sx={{
+            p: 2,
+            mt: "auto",
+            mx: "auto",
+            paddingLeft: drawerOpen ? `${drawerWidth}px` : theme.spacing(7),
+            transition: drawerOpen ? drawerOpenAnimation : drawerCloseAnimation,
+          }}
+        >
+          <Footer />
+        </Box>
+      </Container>
+    </>
+  );
+}
+
+export default App;
+```
+
+W kontekście layoutu szczególną uwagę należy przydzielić nawigacji, która jest kluczowym elementem interfejsu użytkownika. Nawigacja jest odpowiedzialna za umożliwienie użytkownikowi poruszania się po stronie i dostęp do różnych sekcji. W systemie organizacji pracy nawigacja została zaimplementowana w postaci paska nawigacji górnej (`NavigationBreadcrumbs.tsx`) oraz nawigacji bocznej (`NavigationDrawer.tsx`). Pasek nawigacji górnej jest odpowiedzialny za wyświetlanie ścieżki URL, a nawigacja boczna za wyświetlanie menu nawigacyjnego.
+
+Pasek nawigacji górnej (`NavigationBreadcrumbs.tsx`) jest implementowany przy użyciu komponentu `Breadcrumbs` z biblioteki `@mui/material`. Komponent ten jest odpowiedzialny za wyświetlanie ścieżki URL, a także za nawigację po stronie. Informacje o ścieżce URL są przechowywane w kontekście nawigacji (`BreadcrumbsContext.tsx`), który jest aktualizowany przy każdej zmianie ścieżki URL. Poniżej znajduje się kod komponentu `NavigationBreadcrumbs.tsx`:
+
+```tsx
+import { Link as RouterLink } from "react-router-dom";
+import { Typography, Breadcrumbs, Link } from "@mui/material";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { useBreadcrumbsContext } from "../contexts/BreadcrumbsContext";
+
+export const NavigationBreadcrumbs = () => {
+  const { breadcrumbs } = useBreadcrumbsContext();
+
+  return (
+    <Breadcrumbs
+      aria-label="breadcrumb"
+      separator={<NavigateNextIcon fontSize="small" />}
+    >
+      <Link
+        underline="hover"
+        color="text.primary"
+        component={RouterLink}
+        to="/dashboard"
+      >
+        <Typography variant="h6" component="div">
+          {"Project Hermes"}
+        </Typography>
+      </Link>
+      {breadcrumbs &&
+        breadcrumbs.map((item, index) => {
+          return (
+            <Link
+              key={`breadcrumb-${index}`}
+              underline="hover"
+              color="inherit"
+              component={RouterLink}
+              to={item.path}
+            >
+              <Typography variant="h6" component="div" color="inherit">
+                {item.label}
+              </Typography>
+            </Link>
+          );
+        })}
+    </Breadcrumbs>
+  );
+};
+```
+
+Komponent nawigacji bocznej (`NavigationDrawer.tsx`) jest odpowiedzialny za wyświetlanie menu nawigacyjnego. Menu to jest zdefiniowane w postaci konfiguracji (`MenuConfig.tsx`), która jest mapowana na komponenty nawigacyjne. Konfiguracja menu jest zdefiniowana jako tablica obiektów `MenuItem`, które reprezentują elementy menu. Każdy element menu może być elementem (`MenuItem`) lub grupą (`MenuItemGroup`). Element menu (`MenuItem`) reprezentuje pojedynczy element menu, a grupa menu (`MenuItemGroup`) reprezentuje grupę elementów menu. Każdy element menu składa się z ikony, etykiety, ścieżki URL oraz wymaganych ról. Jeśli użytkownik nie ma wymaganych ról, element menu nie jest wyświetlany. Grupa menu składa się z ikony, etykiety oraz tablicy elementów menu. Jeśli żaden z elementów menu w grupie nie jest wyświetlany, grupa menu nie jest wyświetlana. Poniżej znajduje się kod komponentu `NavigationDrawer.tsx` i konfiguracji menu `MenuConfig.ts`:
+
+```typescript
+// MenuConfig.tsx
+// Import pozostałych komponentów pominięty dla czytelności
+
+export type MenuItem = {
+  icon: any;
+  label: string;
+  path: string;
+  roles: Role[];
+};
+
+export type MenuItemGroup = {
+  icon: any;
+  label: string;
+  items: MenuConfig;
+};
+
+export type MenuConfig = (MenuItem | MenuItemGroup)[];
+
+export const isItem = (item: MenuItem | MenuItemGroup): item is MenuItem => {
+  return 'path' in item;
+};
+
+export const isGroup = (item: MenuItem | MenuItemGroup): item is MenuItemGroup => {
+  return 'items' in item;
+};
+
+export const flattenMenu = (menu: MenuConfig): MenuItem[] => {
+  const items: MenuItem[] = [];
+
+  menu.forEach(item => {
+    if (isItem(item)) {
+      items.push(item);
+    } else if (isGroup(item)) {
+      items.push(...flattenMenu(item.items));
+    }
+  });
+
+  return items;
+};
+
+export const menuConfig: MenuConfig = [
+  {
+    icon: ChecklistIcon,
+    label: Projects.title,
+    path: Projects.path,
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer"
+    ],
+  },
+  // Pozostałe elementy ominięte dla czytelności
+  {
+    icon: WorkIcon,
+    label: Clients.title,
+    items: [
+      {
+        icon: WorkIcon,
+        label: Clients.title,
+        path: Clients.path,
+        roles: [
+          "admin",
+          "project-manager"
+        ],
+      },
+      {
+        icon: HomeWorkIcon,
+        label: ClientTypes.title,
+        path: ClientTypes.path,
+        roles: [
+          "admin",
+          "project-manager"
+        ],
+      }
+    ]
+  }
+  // Pozostałe elementy ominięte dla czytelności
+];
+```
+
+```tsx
+// NavigationDrawer.tsx
+// Import pozostałych komponentów pominięty dla czytelności
+
+export interface NavigationDrawerProps {
+  open: boolean;
+}
+
+export const NavigationDrawer = (props: NavigationDrawerProps) => {
+  const [open, setOpen] = useState(props.open);
+  useEffect(() => setOpen(props.open), [props.open]);
+
+  const drawerWidth = 280;
+  const theme = useTheme();
+  const { hasAnyRole } = useAuth();
+
+  const drawerOpenAnimation = theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  });
+  const drawerCloseAnimation = theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  });
+
+  const styles = {
+    drawerOpened: css`
+      transition: ${drawerOpenAnimation};
+      & .MuiDrawer-paper {
+        transition: ${drawerOpenAnimation};
+      }
+    `,
+    drawerClosed: css`
+      transition: ${drawerCloseAnimation};
+      & .MuiDrawer-paper {
+        transition: ${drawerCloseAnimation};
+      }
+    `,
+  };
+
+  const filterMenu = (menu: MenuConfig) => {
+    const filteredItems: MenuConfig = [];
+
+    for (const item of menu) {
+      if (isItem(item) && hasAnyRole(item.roles)) {
+        filteredItems.push(item);
+      } else if (isGroup(item)) {
+        const filteredGroup = filterItemGroup(item);
+        if (filteredGroup.items.length > 0) {
+          filteredItems.push(filteredGroup);
+        }
+      }
+    }
+
+    return filteredItems;
+  }
+
+  const filterItemGroup = (group: MenuItemGroup) => {
+    const filteredItems: MenuConfig = [];
+
+    for (const item of group.items) {
+      if (isItem(item) && hasAnyRole(item.roles)) {
+        filteredItems.push(item);
+      } else if (isGroup(item)) {
+        const filteredGroup = filterItemGroup(item);
+        if (filteredGroup.items.length > 0) {
+          filteredItems.push(filteredGroup);
+        }
+      }
+    }
+
+    return {
+      ...group,
+      items: filteredItems,
+    };
+  }
+
+  return (
+    <Drawer
+      variant="permanent"
+      open={open}
+      className={open ? styles.drawerOpened : styles.drawerClosed}
+      sx={{
+        flexShrink: 0,
+        whiteSpace: "nowrap",
+        boxSizing: "border-box",
+        overflow: "hidden",
+        width: open ? drawerWidth : theme.spacing(9),
+        "& .MuiDrawer-paper": {
+          width: open ? drawerWidth : theme.spacing(9),
+          whiteSpace: "nowrap",
+          boxSizing: "border-box",
+          overflow: "hidden",
+        },
+      }}
+    >
+      <Toolbar />
+      <Box sx={{ overflowY: "auto", overflowX: "hidden" }}>
+        {open ? (
+          <List>
+            {filterMenu(menuConfig).map((menuItem, index) =>
+              (isItem(menuItem) ? (
+                <NavigationDrawerItem
+                  key={index}
+                  open={open}
+                  index={index}
+                  icon={menuItem.icon}
+                  label={menuItem.label}
+                  path={menuItem.path}
+                  nestIndex={0}
+                />
+              ) : (
+                isGroup(menuItem) && (
+                  <NavigationDrawerItemGroup
+                    key={index}
+                    drawerOpen={open}
+                    index={index}
+                    icon={menuItem.icon}
+                    label={menuItem.label}
+                    items={menuItem.items}
+                    nestIndex={0}
+                  />
+                )
+              )
+            ))}
+          </List>
+        ) : flattenMenu(filterMenu(menuConfig)).map((menuItem, index) => (
+            <NavigationDrawerItem
+              key={index}
+              open={open}
+              index={index}
+              icon={menuItem.icon}
+              label={menuItem.label}
+              path={menuItem.path}
+              nestIndex={0}
+            />
+        ))}
+      </Box>
+    </Drawer>
+  );
+};
+
+```
+
+Kolejnym ważnym elementen jest konfiguracja routera, która jest odpowiedzialna za mapowanie ścieżek URL na komponenty. W systemie organizacji pracy, konfiguracja routera została zaimplementowana przy użyciu komponentu `Routes` z biblioteki `react-router-dom`. Komponent ten przyjmuje tablicę obiektów `Route`, które zawierają ścieżkę, rolę wymaganą do dostępu oraz komponent do wyrenderowania. Komponent `SecuredRoute` jest odpowiedzialny za sprawdzenie czy użytkownik ma wymaganą rolę do dostępu do komponentu. Jeśli użytkownik nie ma wymaganej roli, zostaje przekierowany na stronę `Forbidden`. Poniżej znajduje się kod komponentu `RouterConfig.tsx`:
+
+```tsx
+type RouteConfig = {
+  path: string;
+  roles: Role[];
+  element: JSX.Element;
+};
+
+const routerConfig: RouteConfig[] = [
+  {
+    path: "/",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+      "user",
+    ],
+    element: <Navigate to="/dashboard" />,
+  },
+  {
+    path: "/dashboard",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+      "user",
+    ],
+    element: <Dashboard />,
+  },
+  {
+    path: "/projects",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+    ],
+    element: <Projects.Index />,
+  },
+  // pozostałe ścieżki pominięte dla czytelności
+];
+
+export const RouterConfig = () => {
+  return (
+    <Routes>
+      {
+        routerConfig.map((item, index) => {
+          return (
+            <Route
+              key={`route-${index}`}
+              path={item.path}
+              element={
+                <SecuredRoute roles={item.roles}>{item.element}</SecuredRoute>
+              }
+            />
+          );
+        })
+      }
+      <Route path="/forbidden" element={<Errors.Forbidden />} />
+      <Route path="/internal-server-error" element={<Errors.InternalServerError />} />
+      <Route path="*" element={<Errors.NotFound />} />
+    </Routes>
+  );
+}
+
+```
+
+Podsumowując, układ strony został zaimplementowany w sposób modularny i dynamiczny, z wykorzystaniem różnych komponentów biblioteki Material-UI oraz hooków Reacta. Dzięki modularności, poszczególne elementy strony są niezależne i mogą być łatwo modyfikowane lub rozbudowywane. Płynne animacje i responsywność układu zapewniają przyjemne doświadczenia użytkownika, podczas gdy przełączniki języka i motywu oraz menu ustawień oferują dodatkową personalizację interfejsu.
+
 #### Implementacja pojedynczych widoków
+
+Po pomyślnym przygotowaniu układu strony, kolejnym etapem procesu deweloperskiego jest implementacja pojedynczych widoków. Pojedyncze widoki są kluczowymi elementami aplikacji, które służą do interakcji użytkowników z różnymi zasobami i funkcjonalnościami dostępnymi w aplikacji. Te widoki są odpowiedzialne za prezentowanie informacji użytkownikowi w przystępny sposób oraz za obsługę wszelkich interakcji, takich jak wprowadzanie danych, nawigacja, czy operacje CRUD (Create, Read, Update, Delete) na zasobach.
+
+Pojedyncze widoki są umieszczone w katalogu `/src/pages` aplikacji. Dalej, każdy widok jest umieszczony w katalogu z nazwą jakiegoś zasobu, np. `/src/pages/projects`. W katalogu zasobu zazwyczaj znajdziemy cztery pliki:
+
+1. **`Index.tsx`** - plik zawierający komponent listy zasobów
+2. **`Create.tsx`** - plik zawierający komponent formularza tworzenia zasobu
+3. **`Edit.tsx`** - plik zawierający komponent formularza edycji zasobu
+4. **`Details.tsx`** - plik zawierający komponent prezentacji zasobu
+5. **`<resource-name>.ts`** - plik grupujący wszystkie widoki zasobu w jedną przestrzeń nazw
+
+Dopuszcza się też modyfikację tej struktury, jeśli jest to uzasadnione. Na przykład, jeśli zasób nie ma formularza tworzenia, plik `Create.tsx` może zostać pominięty. Poniżej znajduje się przykładowa struktura katalogu zasobu `projects`, zasobu z najbardziej złożoną obsługą w całej aplikacji:
+
+```
+projects
+├── Create.tsx
+├── Details.tsx
+├── Edit.tsx
+├── Index.tsx
+├── Projects.ts
+└── details
+    ├── ProjectDetails.tsx
+    ├── ProjectExpenses.tsx
+    ├── ProjectFiles.tsx
+    ├── ProjectTasks.tsx
+    ├── ProjectTeamMembers.tsx
+    ├── ProjectThreads.tsx
+    ├── context
+    │   └── ProjectContext.tsx
+    ├── dialogs
+    │   ├── ProjectMoveDeadlinesDialog.tsx
+    │   └── ProjectMoveStartDialog.tsx
+    └── handlers
+        └── ProjectStatusTransitionHandlers.ts
+```
+
+Tutaj widzimy, domyślne cztery widoki zasobu `projects` oraz dodatkowe widoki, które są używane wewnątrz widoku `Details.tsx`. Taki podział jest spowodowany względnie dużą liczbą możliwych interakcji zasobu `projects`. W przypadku większości innych zasobów wystarczyłoby tylko cztery podstawowe widoki, ponieważ interakcje z nimi są ograniczone do podstawowych operacji CRUD.
+
+Interakcja z różnymi zasobami aplikacji rozpoczyna się z widoku, który prezentuje listę tych zasobów. Ten widok listy jest kluczowy, gdyż nie tylko wyświetla zasoby, ale także umożliwia użytkownikowi nawigowanie do innych sekcji aplikacji. 
+
+W kontekście systemu do zarządzania pracą, widok ten został zaimplementowany przy użyciu komponentu `Grid`. Komponent ten służy jako adapter dla `AgGridReact` z biblioteki `ag-grid-react`. Jego główna rola to przedstawienie listy zasobów i umożliwienie nawigacji do różnych sekcji aplikacji. 
+
+Konfiguracja komponentu `Grid` odbywa się przez obiekt `GridConfig`. Zawiera on szczegóły dotyczące kolumn, filtrów, paginacji oraz funkcji służących do pobierania i eksportowania danych. 
+
+Widok korzysta także z hooków `useTpmClient` i `useAuth`, które odpowiadają za dostarczanie klienta API oraz informacji o uwierzytelnieniu użytkownika. Funkcja `hasAnyRole` jest używana w konfiguracji kolumn i filtrów, umożliwiając dynamiczne ukrywanie lub wyświetlanie elementów w zależności od roli użytkownika. 
+
+Dodatkowo, w widoku zaimplementowano hook `useBreadcrumbsContext`, odpowiadający za aktualizację informacji nawigacyjnych, oraz `useSnackbarContext`, który pozwala na wyświetlanie komunikatów o błędach, jeśli te wystąpią podczas ładowania danych. 
+
+Widok również wykorzystuje komponent `SecuredComponent` w celu ukrycia przycisku do tworzenia nowego projektu dla użytkowników, którzy nie mają odpowiednich uprawnień.
+
+Poniżej znajduje się przykładowy kod komponentu `Index.tsx` zasobu `projects`:
+
+```tsx
+// Import komponentów pominięty dla czytelności
+
+export const Index = () => {
+  const gridRef = useRef<GridHandle>(null);
+
+  const tpmClient = useTpmClient();
+  const { hasAnyRole } = useAuth();
+
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+
+  const [gridConfig, setGridConfig] = useState<GridConfig<Project>>({
+    page: 0,
+    pageSize: 25,
+    columnDefs: [],
+    filters: []
+  });
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: 'Projects', path: '/projects' }
+    ]);
+
+    forkJoin({
+      languages: tpmClient.languages().all(),
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      currencies: tpmClient.currencies().all(),
+      statuses: tpmClient.projects().refdata().statuses(),
+      clients: hasAnyRole(['admin', 'project-manager']) ? tpmClient.clients().all() : of({ items: [] })
+    }).subscribe({
+      next: (response) => {
+        setGridConfig((prev) => {
+          setLoading(false);
+
+          const columnDefs = [
+            {
+              headerName: "Id",
+              field: "id",
+              resizable: true,
+              lockVisible: true,
+              suppressSizeToFit: true,
+              cellRenderer: (params: any) => {
+                const priority = params.data as Project;
+                return (
+                  <Box>
+                    <Button variant="text" component={Link} to={`${priority.id}`}>{priority.id}</Button>
+                  </Box>
+                );
+              },
+            },
+            { headerName: "Title", field: "title", resizable: true },
+            // Definicja pozostałych kolumn pominięta dla czytelności
+          ];
+          hasAnyRole(['admin', 'project-manager']) && columnDefs.push({
+            headerName: "Client",
+            field: "client",
+            suppressSizeToFit: true,
+            resizable: true,
+            cellRenderer: (params: any) => params.data.client.name
+          });
+
+          const filters = [
+            FilterDefinition.uniqueToken("id", "Id"),
+            FilterDefinition.string("title", "Title"),
+            FilterDefinition.select(
+              "sourceLanguage",
+              "Source Language",
+              response.languages.items.map(l => ({ label: l.name, value: l.code }))
+            ),
+            // Definicja pozostałych filtrów pominięta dla czytelności
+          ];
+
+          hasAnyRole(['admin', 'project-manager']) && filters.push(
+            FilterDefinition.select(
+              "clientId",
+              "Client",
+              response.clients.items.map(c => ({ label: c.name, value: c.id }))
+            )
+          );
+
+          return {
+            page: 0,
+            pageSize: 25,
+            columnDefs: columnDefs,
+            filters: filters
+          };
+        });
+      },
+      error: (error) => {
+        showError("Error loading reference data", error.message);
+      }
+    });
+  }, []);
+
+  return (
+    <Box>
+      <Typography variant="h4">{Projects.title}</Typography>
+      <Typography variant="subtitle1">{Projects.description}</Typography>
+      <Box pb={2} />
+      {
+        loading ? (
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <LoadingScreen />
+          </Paper>
+        ) : (
+          <>
+            <Grid<Project>
+              innerRef={gridRef}
+              startPage={gridConfig.page}
+              pageSize={gridConfig.pageSize}
+              fetch={tpmClient.projects().all}
+              exportData={tpmClient.projects().export}
+              filters={gridConfig.filters}
+              columnDefinitions={gridConfig.columnDefs}
+              elevation={2}
+            />
+            <Box pb={2} />
+
+            <SecuredComponent roles={['admin', 'project-manager']}>
+              <Paper elevation={2} sx={{ p: 2 }}>
+                <SecuredComponent roles={['admin', 'project-manager']}>
+                  <Button variant="contained" component={Link} to="create">
+                    Create new project
+                  </Button>
+                </SecuredComponent>
+              </Paper>
+            </SecuredComponent>
+          </>
+        )
+      }
+    </Box>
+  );
+};
+```
+
+Zakładając że użytkownik ma rolę `admin` lub `project-manager`, może on przejść do widoku tworzenia nowego projektu poprzez wciśnięcie przycisku `Create new project`. 
+Widok ten jest odpowiedzialny za prezentację formularza tworzenia nowego projektu. Na początku komponent ustawia ściężkę nawigacji i pobiera dane referencyjne, które są potrzebne do wypełnienia formularza, pokazując ekran ładowania w międzyczasie. Następnie, po załadowaniu danych referencyjnych, komponent wyświetla formularz, który jest zdefiniowany przy użyciu komponentu `Form` z biblioteki `react-final-form`. Komponent ten jest odpowiedzialny za zarządzanie stanem formularza, walidację danych oraz renderowanie pól formularza. Schemat walidacji jest zdefiniowany przy użyciu biblioteki `yup`. Po wciśnięciu przycisku `Create` komponent wywołuje walidator i jeśli nie ma błędów, wysyła dane do API. W przypadku wystąpienia błędów, komponent wyświetla komunikat o błędzie, w przeciwnym razie przekierowuje użytkownika do widoku szczegółów nowo utworzonego projektu. Poniżej znajduje się przykładowy kod komponentu `Create.tsx` zasobu `projects`:
+
+```tsx
+// Import komponentów pominięty dla czytelności
+
+export const Create = () => {
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const [accuracies, setAccuracies] = useState<Array<Accuracy>>([]);
+  const [industries, setIndustries] = useState<Array<Industry>>([]);
+  const [units, setUnits] = useState<Array<Unit>>([]);
+  const [serviceTypes, setServiceTypes] = useState<Array<ServiceType>>([]);
+  const [clients, setClients] = useState<Array<Client>>([]);
+
+  const navigate = useNavigate();
+  const tpmClient = useTpmClient();
+
+  const { showSuccess, showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+
+  const initialValues: CreateProject = {
+    title: '',
+    description: '',
+    // Pozostałe pola pominięte dla czytelności
+  };
+
+  const validationSchema = object({
+    title: string().required('Title is required'),
+    description: string().required('Description is required'),
+    // Pozostałe pola pominięte dla czytelności
+  });
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: 'Projects', path: '/projects' },
+      { label: 'Create Project', path: '/projects/create' }
+    ]);
+
+    forkJoin({
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      serviceTypes: tpmClient.serviceTypes().all(),
+      clients: tpmClient.clients().all()
+    }).subscribe({
+      next: (response) => {
+        const { accuracies, industries, units, serviceTypes, clients } = response;
+
+        setAccuracies(accuracies.items);
+        setIndustries(industries.items);
+        setUnits(units.items);
+        setServiceTypes(serviceTypes.items);
+        setClients(clients.items);
+        setLoading(false);
+      },
+      error: (error) => {
+        showError('Error loading reference data', error.message);
+      }
+    });
+  }, [setBreadcrumbs, showError, tpmClient]);
+
+  const handleSubmit = async (values: CreateProject) =>
+    tpmClient.projects()
+      .create(values)
+      .subscribe({
+        next: (response) => {
+          showSuccess('Success', 'Project created');
+          navigate(`/projects/${response.id}`);
+        },
+        error: (error) => {
+          showError('Error creating project', error.message);
+          setServerError(error.message);
+        }
+      });
+
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen /> 
+    </Paper>
+  ) : (
+    <Box>
+      <Typography variant="h4">Create Project</Typography>
+      <Box pb={2} />
+      <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
+        initialValues={initialValues}
+        validate={(values) => validateWithSchema(validationSchema, values)}
+        render={({ handleSubmit, form, submitting, pristine }) => (
+          <form onSubmit={handleSubmit}>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6">Project Details</Typography>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={12}>
+                  <TextField name="title" label="Title" required />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField name="description" label="Description" multiline rows={4} required />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField name="industryId" label="Industry" required
+                    options={industries.map((industry) => ({ key: industry.id, value: industry.name }))}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField name="accuracyId" label="Accuracy" required
+                    options={accuracies.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <SelectField name="serviceTypeIds" label="Service Types" required multiple
+                    options={serviceTypes.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+            <Box pb={2} />
+
+            {/* Definicja pozostałych pól pominięta dla czytelności */}
+
+            {serverError && (
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {serverError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
+            )}
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  Submit
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  Reset
+                </Button>
+              </Box>
+            </Paper>
+          </form>
+        )}
+      />
+    </Box>
+  );
+};
+```
+
+Widok szczegółów projektu jest najbardziej złożonym widokiem w całej aplikacji. Jest on odpowiedzialny za prezentację wszystkich informacji o projekcie oraz za obsługę wszystkich interakcji związanych z projektem. Widok ten jest podzielony na kilka sekcji, z których każda jest odpowiedzialna za prezentację innych informacji o projekcie:
+
+1. **`ProjectDetails.tsx`** - sekcja prezentująca podstawowe informacje o projekcie, takie jak tytuł, opis, status, klient, itp.
+2. **`ProjectTeamMembers.tsx`** - sekcja prezentująca członków zespołu projektowego. Przedstawia listę członków zespołu, wraz z ich rolami.
+3. **`ProjectTasks.tsx`** - sekcja prezentująca zadania projektowe. Ma wygląd widoku listy zasobów, analogicznie do widoku `Index.tsx`
+4. **`ProjectExpenses.tsx`** - sekcja prezentująca wydatki projektowe. Ma wygląd widoku listy zasobów, analogicznie do widoku `Index.tsx`
+5. **`ProjectThreads.tsx`** - sekcja prezentująca wątki projektowe. Przedstawia listę wątków, wraz z ich statusami i treścią.
+6. **`ProjectFiles.tsx`** - sekcja prezentująca pliki projektowe. Ma wygląd widoku listy zasobów, analogicznie do widoku `Index.tsx`.
+
+Widok `Details.tsx` jest odpowiedzialny za wyświetlanie wszystkich tych sekcji. W tym celu, wykorzystuje on komponent `Tabs` z biblioteki `@mui/material`. Komponent ten jest odpowiedzialny za wyświetlanie zakładek, które umożliwiają użytkownikowi przełączanie się między sekcjami. Na początku komponent ustawia ściężkę nawigacji i pobiera dane projektu, pokazując ekran ładowania w międzyczasie. Następnie, po załadowaniu danych projektu, komponent wyświetla zakładki, które są zdefiniowane przy użyciu komponentu `Tab`. Każda zakładka jest odpowiedzialna za wyświetlanie innej sekcji. Dodatkowo, ustawiany jest kontekst projektu, który jest wykorzystywany przez wszystkie sekcje. Poniżej znajduje się przykładowy kod komponentu `Details.tsx` zasobu `projects`:
+
+```tsx
+// Import komponentów pominięty dla czytelności
+
+export const Details = () => {
+  const [project, setProject] = useState<Project>({
+    id: '',
+    title: '',
+    // Pozostałe pola pominięte dla czytelności
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  const { id } = useParams();
+
+  const { showError } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const tpmClient = useTpmClient();
+
+  useEffect(() => {
+    if (!id) return;
+
+    tpmClient.projects()
+      .withId(id)
+      .get()
+      .subscribe({
+        next: (response) => {
+          setProject(response);
+          setBreadcrumbs([
+            { label: 'Project', path: '/projects' },
+            { label: response.title, path: `/projects/${response.id}` },
+          ]);
+          setLoading(false);
+        },
+        error: (error) => showError(`Error loading project ${id}`, error.message)
+      });
+  }, [id, setBreadcrumbs, showError, tpmClient]);
+
+
+  const [value, setValue] = useState(0);
+  const handleChange = (event: SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+  const a11yProps = (index: number) => {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  }
+
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen /> 
+    </Paper>
+  ) : (
+    <ProjectContextProvider project={project}>
+      <Box>
+        <Typography variant="h4" gutterBottom>{project.title}</Typography>
+        <Typography variant="subtitle1" gutterBottom>{project.description}</Typography>
+
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={value} onChange={handleChange} aria-label="project tabs">
+            <Tab label="Details" {...a11yProps(0)} />
+            <Tab label="Team members" {...a11yProps(1)} />
+            <Tab label="Tasks" {...a11yProps(2)} />
+            <Tab label="Expenses" {...a11yProps(3)} />
+            <Tab label="Threads" {...a11yProps(4)} />
+            <Tab label="Files" {...a11yProps(5)} />
+          </Tabs>
+        </Box>
+        <TabPanel value={value} index={0}>
+          <ProjectDetails />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <ProjectTeamMembers />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <ProjectTasks />
+        </TabPanel>
+        <TabPanel value={value} index={3}>
+          <ProjectExpenses />
+        </TabPanel>
+        <TabPanel value={value} index={4}>
+          <ProjectThreads />
+        </TabPanel>
+        <TabPanel value={value} index={5}>
+          <ProjectFiles />
+        </TabPanel>
+      </Box>
+    </ProjectContextProvider>
+  );
+};
+
+interface TabPanelProps {
+  children?: ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel = (props: TabPanelProps) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+```
+
+Z kolei, edycja projektu jest bardzo podobna do tworzenia projektu. Różnica polega na tym, że komponent `Edit.tsx` pobiera dane projektu, które są wykorzystywane do wypełnienia formularza. Poniżej znajduje się przykładowy kod komponentu `Edit.tsx` zasobu `projects`:
+
+```tsx
+// Import komponentów pominięty dla czytelności
+
+export const Edit = () => {
+  // Definicja stanu i użycie hooków jest identyczne jak w przypadku tworzenia projektu i zostało pominięta dla czytelności
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    forkJoin({
+      project: tpmClient.projects().withId(id).get(),
+      accuracies: tpmClient.accuracies().all(),
+      industries: tpmClient.industries().all(),
+      units: tpmClient.units().all(),
+      serviceTypes: tpmClient.serviceTypes().all(),
+      clients: tpmClient.clients().all()
+    }).subscribe({
+      next: (response) => {
+        const { project, accuracies, industries, units, serviceTypes, clients } = response;
+
+        setProject(project);
+        setInitialValues({
+          title: project.title,
+          description: project.description,
+          sourceLanguage: project.sourceLanguage.code,
+          targetLanguages: project.targetLanguages.map((language) => language.code),
+          accuracyId: project.accuracy.id,
+          industryId: project.industry.id,
+          unitId: project.unit.id,
+          serviceTypeIds: project.serviceTypes.map((serviceType) => serviceType.id),
+          amount: project.amount,
+          budget: project.budget,
+          currencyCode: project.currency.code,
+          clientId: project.client.id
+        });
+        setAccuracies(accuracies.items);
+        setIndustries(industries.items);
+        setUnits(units.items);
+        setServiceTypes(serviceTypes.items);
+        setClients(clients.items);
+        setLoading(false);
+
+        setBreadcrumbs([
+          { label: 'Projects', path: '/projects' },
+          { label: project.title, path: `/projects/${project.id}` },
+          { label: 'Edit', path: `/projects/${project.id}/edit` }
+        ]);
+      },
+      error: (error) => {
+        showError('Error loading reference data', error.message);
+      }
+    });
+  }, [id, setBreadcrumbs, showError, tpmClient]);
+
+  const handleSubmit = (values: UpdateProject) => {
+    if (!id) {
+      return;
+    }
+
+    tpmClient.projects()
+      .withId(id)
+      .update(values)
+      .subscribe({
+        next: (response) => {
+          showSuccess('Success', 'Project updated');
+          navigate(`/projects/${response.id}`);
+        },
+        error: (error) => {
+          showError(error.message, error.response.data.message);
+          setServerError(error.message);
+        }
+      });
+  }
+
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen /> 
+    </Paper>
+  ) : (
+    {/* Definicja formularza jest identyczna i została pominięta dla czytelności */}
+  );
+};
+```
+
+Widoki te są połączone z głównym układem strony za pomocą mechanizmu trasowania (routing), który pozwala na dynamiczne ładowanie i prezentowanie różnych sekcji aplikacji bez konieczności przeładowywania całej strony. Mechanizm trasowania w projekcie jest oparty na komponencie `RouterConfig`, który zarządza ścieżkami dostępu do różnych widoków i definiuje, jakie komponenty mają być renderowane dla danej ścieżki URL. Komponent `RouterConfig` był już omówiony w sekcji dotyczącej układu strony.
+
+Implementacja pojedynczych widoków to kluczowy etap w procesie rozwoju aplikacji, który decyduje o tym, jak użytkownicy będą interaktywować z aplikacją. Poprzez umiejętne połączenie komponentów, logiki i stylowania, developerzy mogą stworzyć intuicyjne i responsywne interfejsy użytkownika, które efektywnie obsługują różne scenariusze użycia i potrzeby użytkowników.
+
 #### Utylity
+
+Utylity, w kontekście rozwoju oprogramowania, to narzędzia, funkcje lub moduły, które wykonują konkretne, często używane zadania i mogą być wykorzystywane w wielu miejscach w aplikacji. Celem utylitów jest zwiększenie reużywalności kodu, co ułatwia zarządzanie kodem źródłowym i zmniejsza ryzyko błędów, poprawiając jednocześnie efektywność procesu rozoju aplikacji.
+
+W projekcie, utylity są umieszczone w katalogu `/src/utils`. W tym katalogu znajdują się pliki, które zawierają funkcje pomocnicze, które są wykorzystywane w różnych miejscach w aplikacji. W związku z tym, że aplikacja mimo swojej skali jest wciąż stosunkowo mała, utylity są umieszczone w jednym katalogu i nie jest ich dużo, a w zasadzie są to tylko dwie funkcje pomocnicze. Pierwsza z nich to `formatDate` z pliku `dateFormatters.ts`, która służy do formatowania daty i czasu:
+
+```ts
+export const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false
+  });
+}
+```
+
+Druga funkcja to `validateWithSchema` z pliku `validate.ts`, która służy do walidacji danych przy użyciu schematu walidacji zdefiniowanego przy użyciu biblioteki `yup`:
+
+```ts
+export const validateWithSchema = (validationSchema: ObjectSchema<any>, values: any): ValidationErrors => {
+  try {
+    validationSchema.validateSync(values, { abortEarly: false });
+  } catch (error: any) {
+    return error.inner.reduce((errors: any, error: any) => {
+      return {
+        ...errors,
+        [error.path]: error.message
+      };
+    }, {});
+  }
+};
+```
+
 #### Plik Dockerfile i konfiguracja Nginx
+
+#### Dockerfile
+Plik `Dockerfile` jest to tekstowy dokument, który zawiera wszystkie instrukcje konieczne do zbudowania obrazu Docker. Docker używa tego pliku do tworzenia izolowanych środowisk, zwanych kontenerami, które mogą być używane do uruchamiania aplikacji i usług.
+
+Kod źródłowy aplikacji jest budowany w pierwszym etapie, przy użyciu obrazu `node` w wersji `alpine`, która jest bardzo lekka i zawiera tylko niezbędne pakiety. Następnie, kod jest kopiowany do katalogu roboczego, gdzie są instalowane zależności i wykonywany jest skrypt budowania. Skrypt budowania jest odpowiedzialny za kompilację kodu źródłowego aplikacji do kodu JavaScript, który jest wykonywany przez przeglądarkę. Po zakończeniu skryptu budowania, kod źródłowy jest usuwany, 
+
+Następnie wynikowy kod jest kopiowany do drugiego etapu, który jest wykorzystywany do uruchomienia aplikacji. Dzięki temu, że drugi etap bazuje na lekkim obrazie `nginx`, obraz aplikacji jest bardzo mały i zajmuje tylko około 30 MB.
+
+```dockerfile
+FROM node:18-alpine as builder
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json package-lock.json postinstall.ts ./
+COPY assets ./assets
+RUN npm ci && npm install react-scripts@3.4.1 -g
+COPY . ./
+RUN npm run build:qa
+
+FROM nginx:stable-alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### Nginx i Konfiguracja
+Nginx to lekki i wydajny serwer webowy, który często jest używany jako serwer pośredniczący i serwer odwróconego proxy. Został wybrany ze względu na jego wydajność, stabilność i niskie zużycie zasobów.
+
+Plik `nginx.conf` to główny plik konfiguracyjny dla Nginx. Definiuje, jak serwer ma przetwarzać przychodzące żądania. Poniżej znajduje się zawartość pliku `nginx.conf`:
+
+```nginx
+
+events {}
+
+http {
+  include /etc/nginx/mime.types;
+  
+  server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+      root   /usr/share/nginx/html;
+      index  index.html;
+      try_files $uri $uri/ /index.html;
+
+      # Add CORS headers
+      if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+        add_header 'Access-Control-Max-Age' 1728000;
+        add_header 'Content-Type' 'text/plain; charset=utf-8';
+        add_header 'Content-Length' 0;
+        return 204;
+      }
+      add_header 'Access-Control-Allow-Origin' '*';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+      add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+      root   /usr/share/nginx/html;
+    }
+  }
+}
+```
+
+- Plik składa się z dwóch głównych bloków: `events` i `http`.
+- Blok `http` zawiera wszystkie ustawienia dotyczące przetwarzania żądań HTTP.
+- Blok `server` definiuje nasłuchiwanie na porcie `80` i ustawia nazwę serwera na `localhost`.
+- Blok `location /` definiuje konfigurację dla głównego katalogu; określa korzeń dokumentu, indeks, próbuje różnych plików URI i dodaje nagłówki CORS.
+- Blok `error_page` i kolejny blok `location` są używane do obsługi błędów serwera.
+
+Konfiguracja CORS pozwala na wymianę zasobów między różnymi domenami, co jest kluczowe dla wielu aplikacji webowych, które muszą komunikować się z różnymi usługami internetowymi.
 
 ### Serwer aplikacji
 #### Tworzenie projektu za pomocą Spring Initializr

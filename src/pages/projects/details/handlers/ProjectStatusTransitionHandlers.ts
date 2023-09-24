@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
-import { ProjectNewStatus, StatusCode } from "../../../client/types/project/Project";
-import TpmClient from "../../../client/TpmClient";
+import { ProjectNewStatus, StatusCode } from "../../../../client/types/project/Project";
+import TpmClient from "../../../../client/TpmClient";
 
 export type StatusTransition = {
   [key in StatusCode]: {

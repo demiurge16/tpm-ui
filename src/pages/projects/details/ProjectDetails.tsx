@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { useProjectContext } from "./ProjectContext";
+import { useProjectContext } from "./context/ProjectContext";
 import { formatDate } from "../../../utils/dateFormatters";
-import { createStatusTransitionHandler } from "./ProjectStatusTransitionHandlers";
+import { createStatusTransitionHandler } from "./handlers/ProjectStatusTransitionHandlers";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { MoveStartDialog } from "./ProjectMoveStartDialog";
-import { MoveDeadlinesDialog } from "./ProjectMoveDeadlinesDialog";
+import { MoveStartDialog } from "./dialogs/ProjectMoveStartDialog";
+import { MoveDeadlinesDialog } from "./dialogs/ProjectMoveDeadlinesDialog";
 import { Link } from "react-router-dom";
 import { SecuredComponent } from "../../../components/security/SecuredComponent";
 

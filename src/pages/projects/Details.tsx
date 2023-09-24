@@ -1,10 +1,10 @@
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { Project } from "../../client/types/project/Project"
-import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import ProjectContextProvider from "./details/ProjectContext";
+import ProjectContextProvider from "./details/context/ProjectContext";
 import { ProjectDetails } from "./details/ProjectDetails";
 import { ProjectTeamMembers } from "./details/ProjectTeamMembers";
 import { ProjectFiles } from "./details/ProjectFiles";
@@ -119,7 +119,11 @@ export const Details = () => {
     };
   }
 
-  return loading ? <LoadingScreen /> : (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen /> 
+    </Paper>
+  ) : (
     <ProjectContextProvider project={project}>
       <Box>
         <Typography variant="h4" gutterBottom>{project.title}</Typography>
@@ -135,24 +139,24 @@ export const Details = () => {
             <Tab label="Files" {...a11yProps(5)} />
           </Tabs>
         </Box>
-        <CustomTabPanel value={value} index={0}>
+        <TabPanel value={value} index={0}>
           <ProjectDetails />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
           <ProjectTeamMembers />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
+        </TabPanel>
+        <TabPanel value={value} index={2}>
           <ProjectTasks />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={3}>
+        </TabPanel>
+        <TabPanel value={value} index={3}>
           <ProjectExpenses />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={4}>
+        </TabPanel>
+        <TabPanel value={value} index={4}>
           <ProjectThreads />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={5}>
+        </TabPanel>
+        <TabPanel value={value} index={5}>
           <ProjectFiles />
-        </CustomTabPanel>
+        </TabPanel>
       </Box>
     </ProjectContextProvider>
   );
@@ -164,7 +168,7 @@ interface TabPanelProps {
   value: number;
 }
 
-const CustomTabPanel = (props: TabPanelProps) => {
+const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
 
   return (

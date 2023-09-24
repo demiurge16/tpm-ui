@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext } from 'react';
-import { Project } from '../../../client/types/project/Project';
+import { Project } from '../../../../client/types/project/Project';
 
 interface ProjectContextValues {
   project: Project;

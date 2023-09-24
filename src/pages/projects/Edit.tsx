@@ -22,6 +22,7 @@ import { LoadingScreen } from '../utils/LoadingScreen';
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [project, setProject] = useState<Project>({} as Project);
   const [initialValues, setInitialValues] = useState<UpdateProject>({} as UpdateProject);
@@ -92,6 +93,7 @@ export const Edit = () => {
         setUnits(units.items);
         setServiceTypes(serviceTypes.items);
         setClients(clients.items);
+        setLoading(false);
 
         setBreadcrumbs([
           { label: 'Projects', path: '/projects' },
@@ -125,7 +127,11 @@ export const Edit = () => {
       });
   }
 
-  return project.title ? (
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen /> 
+    </Paper>
+  ) : (
     <Box>
       <Typography variant="h4">Edit {project.title}</Typography>
       <Box pb={2} />
@@ -290,7 +296,5 @@ export const Edit = () => {
         )}
       />
     </Box>
-  ) : (
-    <LoadingScreen />
   );
 };

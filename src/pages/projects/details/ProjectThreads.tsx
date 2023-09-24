@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Link as MuiLink, List, Typography, Button, Chip, Paper } from "@mui/material";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useProjectContext } from "./ProjectContext";
+import { useProjectContext } from "./context/ProjectContext";
 import { Thread } from "../../../client/types/thread/Thread";
 import { Link } from "react-router-dom";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
