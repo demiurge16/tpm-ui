@@ -14,4 +14,3 @@ fse.copySync(
   path.join(topDir, 'public', 'assets'),
   { overwrite: true }
 );
-

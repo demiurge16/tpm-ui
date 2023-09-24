@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 import { Page } from "./types/common/Page";
 import { Search } from "./types/common/Search";
 import { CreateProject, ProjectDeadlineMoved, ProjectMoveDeadline, ProjectMoveStart, ProjectNewStatus, Project, ProjectStartMoved, ProjectStatus, UpdateProject } from "./types/project/Project";
-import { CreateTeamMember, Role, TeamMember } from "./types/project/TeamMember";
+import { CreateTeamMember, ProjectRole, TeamMember } from "./types/project/TeamMember";
 import { CreateTask } from "./types/project/Task";
 import { Assign, Assigned, ChangePriority, PriorityChanged, Task, TaskDeadlineMoved, TaskMoveDeadline, TaskMoveStart, TaskNewStatus, TaskStartMoved, TaskStatus, UpdateTask } from "./types/task/Task";
 import { Expense } from "./types/expense/Expense";
@@ -147,7 +147,7 @@ export default class TpmClient {
           statuses: (): Observable<ProjectStatus[]> => this.get(`project/refdata/status`),
           teamMembers: () => {
             return {
-              roles: (): Observable<Role[]> => this.get(`project/refdata/team-member/role`),
+              roles: (): Observable<ProjectRole[]> => this.get(`project/refdata/team-member/role`),
             };
           }
         };

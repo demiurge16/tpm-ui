@@ -38,6 +38,7 @@ interface AuthContextValues {
   email: string;
   roles: Role[];
   hasRole: (role: Role) => boolean;
+  hasAnyRole: (roles: Role[]) => boolean;
 }
 
 const defaultAuthContextValues: AuthContextValues = {
@@ -49,7 +50,8 @@ const defaultAuthContextValues: AuthContextValues = {
   lastName: "",
   email: "",
   roles: [],
-  hasRole: (role: Role) => false
+  hasRole: (role: Role) => false,
+  hasAnyRole: (roles: Role[]) => false
 };
 
 export const AuthContext = createContext<AuthContextValues>(
@@ -148,8 +150,12 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
     return roles.includes(role);
   };
 
+  const hasAnyRole = (roles: Role[]) => {
+    return roles.some(role => hasRole(role));
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, logout, userId, username, firstName, lastName, email, roles, hasRole }}>
+    <AuthContext.Provider value={{ isAuthenticated, logout, userId, username, firstName, lastName, email, roles, hasRole, hasAnyRole }}>
       { initialized ? props.children : <LoadingScreen /> }
     </AuthContext.Provider>
   );

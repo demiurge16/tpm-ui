@@ -96,7 +96,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
             <DialogContent>
               <SelectField name="userId" label="Team member" required
                 options={teamMembers.map((teamMember) => ({
-                  key: teamMember.userId,
+                  key: teamMember.id,
                   value: `${teamMember.firstName} ${teamMember.lastName}`
                 }))}
               />

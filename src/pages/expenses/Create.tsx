@@ -112,7 +112,7 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="spenderId" label="Team Member" required
-                    options={teamMembers.map((e) => ({ key: e.userId, value: e.firstName + ' ' + e.lastName }))}
+                    options={teamMembers.map((e) => ({ key: e.id, value: e.firstName + ' ' + e.lastName }))}
                   />
                 </Grid>
                 <Grid item xs={12}>

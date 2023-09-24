@@ -651,15 +651,415 @@ Odpowiednia konfiguracja uwierzytelniania i autoryzacji jest kluczem do ochrony 
 
 ### Przygotowanie środowiska
 #### Instalacja Node.js
+
+Node.js to środowisko uruchomieniowe JavaScript, umożliwiające wykonywanie kodu JavaScript poza przeglądarką. W naszym projekcie Node.js będzie używane głównie do uruchomienia serwera deweloperskiego dla Reacta, co umożliwi efektywny rozwój i testowanie aplikacji front-endowej. Dzięki temu programiści będą mogli korzystać z funkcji, takich jak "hot reloading", co znacząco przyspiesza proces tworzenia oprogramowania. 
+
+Node.js dostarcza również menedżera pakietów npm, który jest niezbędnym narzędziem dla każdego programisty JavaScript. Npm pozwala na zarządzanie zależnościami projektu i jest wykorzystywany do instalowania, udostępniania i zarządzania zależnościami (takimi jak biblioteki i narzędzia), które są niezbędne do rozwoju aplikacji.
+
+Aby zainstalować Node.js na Windowsie, należy pobrać instalator z oficjalnej strony projektu Node.js i postępować zgodnie z instrukcjami wyświetlanymi przez instalator. Po zakończeniu instalacji, można sprawdzić poprawność instalacji, otwierając wiersz poleceń i wpisując polecenie `node -v`. Prawidłowa odpowiedź powinna zawierać numer zainstalowanej wersji Node.js. Aby sprawdzić czy npm został poprawnie zainstalowany razem z Node.js, można użyć polecenia `npm -v`, które także powinno zwrócić numer wersji.
+
 #### Instalacja Docker
+
+Docker to platforma umożliwiająca konteneryzację aplikacji, co sprawia, że aplikacje są izolowane w kontenerach, co z kolei umożliwia łatwe przenoszenie i uruchamianie ich w różnych środowiskach. Docker jest niezbędnym narzędziem dla programistów, umożliwiającym tworzenie, testowanie, i rozmieszczanie aplikacji w izolowanym, spójnym i powtarzalnym środowisku.
+
+Docker umożliwia instalację różnych narzędzi, silników baz danych, serwerów WWW i instancji serwisów, takich jak ELK, prawie nie ingerując w działanie maszyny-hosta. To pozwala na szybkie stawianie środowiska od zera, bez obaw o konflikty z wcześniej zainstalowanym oprogramowaniem.
+
+W kontekście pracy nad systemem organizacji pracy dla biura tłumaczeń, Docker będzie używany do uruchamiania różnych serwisów i narzędzi. Ułatwi to zarządzanie zależnościami oraz konfigurację środowiska programistycznego i produkcyjnego. Dzięki Dockerowi, konfiguracja środowiska jest jednolita dla wszystkich programistów pracujących nad systemem, minimalizując ryzyko pojawienia się błędów wynikających z różnic w konfiguracji lokalnych środowisk programistycznych.
+
+Aby zainstalować Docker na platformie Windows, należy pobrać instalator Docker Desktop for Windows ze strony [Docker Hub](https://hub.docker.com/editions/community/docker-ce-desktop-windows) i postępować zgodnie z instrukcjami wyświetlanymi przez instalator. Po zakończeniu instalacji, Docker powinien być dostępny w menu Start. Aby sprawdzić, czy instalacja przebiegła prawidłowo, można otworzyć wiersz poleceń i wpisać polecenie `docker -v`, które powinno zwrócić numer zainstalowanej wersji Docker.
+
 #### Instalacja Visual Studio Code
+
+Visual Studio Code to lekki, ale potężny edytor kodu źródłowego, dostępny na różne platformy, który staje się coraz bardziej popularny wśród programistów. Jest to narzędzie, które charakteryzuje się minimalnym użyciem zasobów komputera, co sprawia, że jest bardzo wydajne, nawet na komputerach o ograniczonej mocy obliczeniowej. Visual Studio Code oferuje także prawie nieograniczone możliwości personalizacji oraz konfiguracji za pomocą rozszerzeń dostępnych w sklepie Visual Studio Code Marketplace, co pozwala dostosować edytor do indywidualnych potrzeb i preferencji każdego programisty.
+
+W kontekście budowy systemu organizacji pracy dla biura tłumaczeń, Visual Studio Code zostanie użyty głównie do tworzenia i modyfikowania kodu aplikacji front-endowej. Jego przystępność, elastyczność i wydajność sprawiają, że jest to idealne narzędzie do prac związanych z rozwojem aplikacji opartej na technologiach webowych.
+
+Aby zainstalować Visual Studio Code na platformie Windows, należy najpierw odwiedzić stronę [Visual Studio Code](https://code.visualstudio.com/) i pobrać instalator dla systemu Windows. Następnie, po pobraniu, uruchomić instalator i postępować zgodnie z instrukcjami wyświetlanymi przez kreatora instalacji. Po zakończeniu procesu instalacji, Visual Studio Code będzie dostępny w menu Start, gotowy do uruchomienia i konfiguracji zgodnie z indywidualnymi preferencjami, w tym dodawania odpowiednich rozszerzeń dostępnych w Visual Studio Code Marketplace.
+
+Visual Studio Code to narzędzie, które doskonale nadaje się do pracy nad różnymi typami projektów programistycznych, a jego elastyczność i możliwość personalizacji pozwalają na dostosowanie edytora do konkretnych wymagań projektu, co sprawia, że jest to jedno z kluczowych narzędzi wykorzystywanych w procesie tworzenia oprogramowania.
+
 #### Instalacja IntelliJ IDEA
+
+IntelliJ IDEA to zaawansowane środowisko programistyczne (IDE) stworzone przez JetBrains, znane z doskonałego wsparcia dla ekosystemu JVM i Javy. Jest to wybór wielu profesjonalnych programistów, szczególnie tych, którzy pracują nad aplikacjami korzystającymi z Spring Framework oraz JPA, dzięki wszechstronnemu i intuicyjnemu wsparciu tych technologii.
+
+IntelliJ IDEA oferuje szereg funkcji, które ułatwiają codzienną pracę, takich jak inteligentne uzupełnianie kodu, analiza kodu w czasie rzeczywistym, automatyczne refaktoryzacje i wiele innych. Dzięki temu skomplikowane zadania stają się bardziej zrozumiałe, a proces rozwijania aplikacji na platformie Java staje się bardziej efektywny i przyjemny.
+
+W przypadku naszej pracy nad systemem dla biura tłumaczeń, IntelliJ IDEA będzie głównym narzędziem wykorzystywanym do rozwijania części backendowej aplikacji, oferując efektywne narzędzia i wsparcie dla technologii używanych w projekcie.
+
+Aby zainstalować IntelliJ IDEA na platformie Windows, należy przejść na stronę [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) i pobrać wersję odpowiednią dla systemu operacyjnego Windows. Po pobraniu pliku instalacyjnego, wystarczy uruchomić go i postępować zgodnie z instrukcjami pojawiającymi się w trakcie procesu instalacji. Po zakończeniu instalacji, IntelliJ IDEA będzie gotowa do użycia i dalszej konfiguracji zgodnie z preferencjami użytkownika.
+
 #### Instalacja Git
 
+Git to system kontroli wersji, który umożliwia efektywne śledzenie zmian w kodzie źródłowym, zapisywanie różnych wersji projektu i bezproblemowe wprowadzanie modyfikacji w kodzie. Jest to kluczowe narzędzie, które pozwala na organizację i kontrolę pracy nad kodem źródłowym podczas tworzenia systemu organizacji pracy dla biura tłumaczeń.
+
+W tym projekcie, Git będzie używany do zapisywania różnych etapów rozwoju projektu, co pozwoli na łatwy dostęp do wcześniejszych wersji kodu i umożliwi analizę oraz modyfikację historii projektu. Dzięki temu możliwe będzie utrzymanie porządku i ciągłości pracy nad systemem, oraz precyzyjna kontrola nad każdym etapem procesu tworzenia oprogramowania.
+
+Aby zainstalować Git na platformie Windows, najpierw trzeba pobrać instalator z oficjalnej strony [Git](https://git-scm.com/). Po pobraniu instalatora, użytkownik powinien uruchomić plik i postępować zgodnie z instrukcjami pojawiającymi się w kreatorze instalacji. Zaleca się akceptowanie domyślnych ustawień, choć doświadczeni użytkownicy mogą dostosować opcje instalacji do własnych potrzeb. Po zakończeniu instalacji, Git jest gotowy do użycia zarówno z linii poleceń, jak i za pośrednictwem dostarczonego interfejsu graficznego, takiego jak Git Bash.
+
 ### Interfejs użytkownika
+
 #### Tworzenie projektu za pomocą Create React App
+
+Create React App (CRA) to narzędzie do inicjalizacji projektów React, które jest utrzymane przez zespół Facebooka. Jest to oficjalnie rekomendowane narzędzie do tworzenia nowych projektów React, ponieważ automatyzuje wiele zadań konfiguracyjnych, pozwala uniknąć błędów konfiguracji, i pomaga w utrzymaniu jednolitych standardów kodowania.
+
+`npx` to narzędzie wchodzące w skład ekosystemu Node.js, umożliwiające wykonywanie pakietów npm bez konieczności ich globalnej instalacji. Dzięki `npx`, polecenie `create-react-app` mogło zostać wykonane bezpośrednio, co znacznie upraszcza proces inicjalizacji projektu.
+
+W trakcie inicjalizacji projektu interfejsu użytkownika systemu organizacji pracy dla biura tłumaczeń, wykorzystano szablon `typescript` przy użyciu polecenia:
+
+```shell
+npx create-react-app tpm-ui --template typescript
+```
+
+Szablony w CRA pozwalają na inicjalizację projektu z wcześniej zdefiniowaną konfiguracją oraz zestawem zależności. Szablon `typescript` dodaje do projektu konfigurację TypeScript.
+
+Po inicjalizacji projektu otrzymaliśmy strukturę katalogów i plików zorganizowaną w sposób typowy dla projektów Create React App. Struktura ta zawiera m.in. katalog `src` zawierający pliki źródłowe aplikacji, katalog `public` z plikami statycznymi, oraz plik `package.json` definiujący zależności projektu i skrypty npm. W katalogu `src` znajdują się pliki takie jak `index.tsx`, będący punktem wejściowym aplikacji, oraz `App.tsx`, definiujący główny komponent aplikacji. Dzięki szablonowi `typescript`, wszystkie pliki źródłowe są już odpowiednio skonfigurowane do pracy z TypeScriptem. Podsumowując, struktura projektu po inicjalizacji wygląda następująco:
+
+```
+tpm-ui
+├── node_modules
+├── public
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── src
+│   ├── App.css
+│   ├── App.test.tsx
+│   ├── App.tsx
+│   ├── index.css
+│   ├── index.tsx
+│   ├── logo.svg
+│   ├── react-app-env.d.ts
+│   ├── reportWebVitals.ts
+│   └── setupTests.ts
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── README.md
+└── tsconfig.json
+```
+
+Struktura ta jest wyjściowym punktem dla dalszego rozwoju aplikacji, umożliwiającym dodawanie nowych komponentów, modułów i funkcji, które będą implementowane w kolejnych etapach pracy nad systemem organizacji pracy dla biura tłumaczeń.
+
 #### Instalacja dodatkowych bibliotek
+
+W projektach opartych na Node.js, zależności są zarządzane przez plik `package.json`. Dodawanie zależności do projektu jest stosunkowo proste i odbywa się za pomocą narzędzia npm, które jest menedżerem pakietów dla Node.js.
+
+Aby dodać zależność, używa się polecenia `npm install <nazwa_pakietu>`. Na przykład, aby dodać bibliotekę `axios`, używa się polecenia:
+
+```sh
+npm install axios
+```
+
+Wtedy, `npm` automatycznie dodaje wpis do sekcji `dependencies` w pliku `package.json` oraz instaluje odpowiednie pakiety w katalogu `node_modules`.
+
+```json
+{
+  "name": "project-hermes-ui",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.54",
+    "@types/react": "^18.2.22",
+    "@types/react-dom": "^18.2.7",
+    "axios": "^1.2.0", // Dodana zależność
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  // Pozostała część pliku
+}
+
+```
+W przypadku pracy nad systemem organizacji pracy dla biura tłumaczeń, dodano szereg dodatkowych zależności, aby zapewnić wszystkie potrzebne funkcjonalności i ułatwić proces rozwoju.
+
+- **@emoji-mart/data, @emoji-mart/react, emoji-mart**: Biblioteki do obsługi emoji.
+- **@emotion/css, @emotion/react, @emotion/styled**: Biblioteki do stylizacji komponentów.
+- **@fontsource/roboto, @mui/icons-material, @mui/material, @mui/x-date-pickers**: Zależności związane z Material-UI, frameworkiem do budowy interfejsów użytkownika.
+- **@tinymce/tinymce-react, tinymce**: Zależności dla edytora tekstu TinyMCE.
+- **ag-grid-community, ag-grid-react**: Biblioteki dla tabeli ag-Grid.
+- **axios**: Biblioteka do obsługi zapytań HTTP.
+- **env-cmd**: Narzędzie do zarządzania zmiennymi środowiskowymi.
+- **final-form, react-final-form, yup**: Biblioteki do obsługi formularzy.
+- **fs-extra, install, npm**: Narzędzia i zależności do zarządzania pakietami i systemem plików.
+- **keycloak-js**: Klient Keycloak do autoryzacji i uwierzytelniania użytkownika.
+- **luxon, @types/luxon**: Biblioteka do zarządzania datami i czasem.
+- **react-router-dom**: Router do obsługi nawigacji w aplikacji React.
+- **rxjs**: Biblioteka do programowania reaktywnego.
+- **sanitize-html, @types/sanitize-html**: Biblioteka do czyszczenia i sanitizacji HTML.
+- **sass**: Preprocesor CSS.
+- **typescript, @types/node, @types/react, @types/react-dom, @types/jest, @types/tinymce, @types/sanitize-html**: Typy TypeScript do różnych bibliotek.
+
+Sekcja `scripts` w pliku `package.json` została także zmodyfikowana, aby dodać różne środowiska uruchomieniowe i budowania za pomocą `env-cmd`, oraz skrypt `postinstall`.
+
+```json
+{
+  "name": "project-hermes-ui",
+  "version": "0.1.0",
+  "private": true,
+  // Sekcja dependencies
+  "scripts": {
+    "start:local": "env-cmd -f ./environments/local.env react-scripts start",
+    "start:dev": "env-cmd -f ./environments/dev.env react-scripts start",
+    "start:qa": "env-cmd -f ./environments/qa.env react-scripts start",
+    "start:prod": "env-cmd -f ./environments/prod.env react-scripts start",
+    "build:local": "env-cmd -f ./environments/local.env react-scripts build",
+    "build:dev": "env-cmd -f ./environments/dev.env react-scripts build",
+    "build:qa": "env-cmd -f ./environments/qa.env react-scripts build",
+    "build:prod": "env-cmd -f ./environments/prod.env react-scripts build",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "postinstall": "node ./postinstall.ts"
+  },
+  // Pozostała część pliku
+}
+```
+
+Projekt został dodatkowo skonfigurowany przez dodanie folderu `/assets`, zawierającego zasoby projektu takie jak czcionki i ikony. Dodano także folder `/environments`, przechowujący definicje zmiennych środowiskowych, które pozwalają na unikalną konfigurację aplikacji dla różnych środowisk, takich jak lokalne, developerskie czy produkcyjne.
+Też został dodany skrypt `postinstall.ts`:
+
+```ts
+const fse = require('fs-extra');
+const path = require('path');
+const topDir = __dirname;
+fse.emptyDirSync(path.join(topDir, 'public', 'tinymce'));
+fse.copySync(
+  path.join(topDir, 'node_modules', 'tinymce'),
+  path.join(topDir, 'public', 'tinymce'),
+  { overwrite: true }
+);
+
+fse.emptyDirSync(path.join(topDir, 'public', 'assets'));
+fse.copySync(
+  path.join(topDir, 'assets'),
+  path.join(topDir, 'public', 'assets'),
+  { overwrite: true }
+);
+```
+
+Skrypt postinstall.ts jest uruchamiany po każdej instalacji lub aktualizacji zależności npm. Automatyzuje zadania konieczne do wykonania po tych procesach, co pozwala na upewnienie się, że wszystkie potrzebne zasoby są na miejscu i są aktualne. Celem tego skryptu jest przeniesienie określonych folderów i zasobów, takich jak tinymce oraz zasobów zawartych w folderze assets, do publicznego katalogu projektu. Dzięki temu zasoby te są dostępne publicznie, co jest szczególnie ważne dla edytora tekstowego tinymce.Automatyzacja tego procesu minimalizuje ryzyko ludzkich błędów i ułatwia zarządzanie zasobami projektu, zapewniając, że są one zawsze aktualne i dostępne w odpowiednich lokalizacjach.
+
 #### Implementacja klienta serwera aplikacji
+
+`TpmClient` jest klasą służącą do komunikacji z backendem aplikacji, umożliwiającą wykonywanie różnych operacji na zasobach, takich jak projekty, klienci, typy klientów itd. Używa ona bibliotekę `axios` do wykonania żądań HTTP oraz `rxjs` do obsługi strumieni asynchronicznych danych. Ta klasa jest również implementowana jako singleton, co oznacza, że może istnieć tylko jedna instancja tej klasy w danej aplikacji:
+
+```ts
+private constructor() { }
+
+private static instance: TpmClient;
+
+static getInstance(): TpmClient {
+  if (!TpmClient.instance) {
+    TpmClient.instance = new TpmClient();
+  }
+  return TpmClient.instance;
+}
+```
+
+Metoda `get` jest używana do pobierania danych z serwera. Na przykład:
+
+```typescript
+private get<TResponse>(path: string, params?: Record<string, any>): Observable<TResponse> {
+  return new Observable((observer) => {
+    axios.get(`${this.baseUrl}/${path}`, { params })
+      .then((response) => {
+        observer.next(response.data);
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error);
+      });
+  });
+}
+```
+
+Metoda `post` jest używana do wysyłania danych (takich jak JSON) na serwer, aby utworzyć nowy zasób.
+
+```typescript
+private post<TRequest, TResponse>(path: string, body: TRequest): Observable<TResponse> {
+  return new Observable((observer) => {
+    axios.post(`${this.baseUrl}/${path}`, body)
+      .then((response) => {
+        observer.next(response.data);
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error);
+      });
+  });
+}
+```
+
+Metoda `postMultipart` służy do wysyłania plików i innych danych formularza za pomocą żądań HTTP POST. Można jej użyć, gdy chcemy przesłać plik lub inne dane binarne na serwer.
+
+```typescript
+private postMultipart<TResponse>(path: string, data: FormData): Observable<TResponse> {
+  return new Observable((observer) => {
+    axios.post(`${this.baseUrl}/${path}`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+      .then((response) => {
+        observer.next(response.data);
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error);
+      });
+  });
+}
+```
+
+Metoda `put` jest używana do aktualizacji istniejącego zasobu na serwerze. Na przykład:
+
+```typescript
+private put<TRequest, TResponse>(path: string, body: TRequest): Observable<TResponse> {
+  return new Observable((observer) => {
+    axios.put(`${this.baseUrl}/${path}`, body)
+      .then((response) => {
+        observer.next(response.data);
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error);
+      });
+  });
+}
+```
+
+Metoda `patch` jest podobna do `put`, ale jest używana do aktualizacji częściowego zasobu.
+
+```typescript
+private patch<TRequest, TResponse>(path: string, body: TRequest): Observable<TResponse> {
+  return new Observable((observer) => {
+    axios.patch(`${this.baseUrl}/${path}`, body)
+      .then((response) => {
+        observer.next(response.data);
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error);
+      });
+  });
+}
+```
+
+Metoda `delete` jest używana do usuwania zasobu na serwerze.
+
+```typescript
+private delete<TResponse>(path: string): Observable<TResponse> {
+  return new Observable((observer) => {
+    axios.delete(`${this.baseUrl}/${path}`)
+      .then((response) => {
+        observer.next(response.data);
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error);
+      });
+  });
+}
+```
+
+Wszystkie te metody są prywatne i są używane wewnątrz klasy do komunikacji z różnymi endpointami API, które są reprezentowane przez publiczne metody takie jak `projects()`, `clients()`, `clientTypes()`, `accuracies()`, `countries()`, `currencies()` itd:
+
+```typescript
+  projects() {
+    return {
+      all: (search?: Partial<Search>): Observable<Page<Project>> => this.get("project", search),
+      export: (search?: Partial<Search>): Observable<unknown> => this.get("project/export", search, { responseType: "blob" }),
+      create: (body: CreateProject): Observable<Project> => this.post("project", body),
+      refdata: () => {
+        return {
+          statuses: (): Observable<ProjectStatus[]> => this.get(`project/refdata/status`),
+          teamMembers: () => {
+            return {
+              roles: (): Observable<ProjectRole[]> => this.get(`project/refdata/team-member/role`),
+            };
+          }
+        };
+      },
+      withId: (id: string) => {
+        return {
+          get: (): Observable<Project> => this.get(`project/${id}`),
+          update: (body: UpdateProject): Observable<Project> => this.put(`project/${id}`, body),
+          moveStart: (body: ProjectMoveStart): Observable<ProjectStartMoved> => this.patch(`project/${id}/move-start`, body),
+          moveDeadline: (body: ProjectMoveDeadline): Observable<ProjectDeadlineMoved> => this.patch(`project/${id}/move-deadline`, body),
+          finishDraft: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/finish-draft`),
+          backToDraft: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/back-to-draft`),
+          startProgress: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/start-progress`),
+          startReview: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/start-review`),
+          approve: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/approve`),
+          reject: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/reject`),
+          deliver: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/deliver`),
+          invoice: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/invoice`),
+          pay: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/pay`),
+          putOnHold: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/put-on-hold`),
+          resume: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/resume`),
+          cancel: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/cancel`),
+          reopen: (): Observable<ProjectNewStatus> => this.patch(`project/${id}/reopen`),
+          teamMembers: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<TeamMember>> => this.get(`project/${id}/team-member`, search),
+              add: (body: CreateTeamMember): Observable<TeamMember> => this.post(`project/${id}/team-member`, body),
+              remove: (id: string) => this.delete(`project/${id}/team-member/${id}`)
+            };
+          },
+          tasks: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<Task>> => this.get(`project/${id}/task`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => this.get(`project/${id}/task/export`, search, { responseType: "blob" }),
+              create: (body: CreateTask): Observable<Task> => this.post(`project/${id}/task`, body),
+            };
+          },
+          expenses: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<Expense>> => this.get(`project/${id}/expense`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => this.get(`project/${id}/expense/export`, search, { responseType: "blob" }),
+              create: (body: CreateExpense): Observable<Expense> => this.post(`project/${id}/expense`, body),
+            };
+          },
+          threads: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<Thread>> => this.get(`project/${id}/thread`, search),
+              create: (body: CreateThread): Observable<Thread> => this.post(`project/${id}/thread`, body),
+            };
+          },
+          files: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<File>> => this.get(`project/${id}/file`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => this.get(`project/${id}/file/export`, search, { responseType: "blob" }),
+              create: (body: any) => this.postMultipart(`project/${id}/file`, body),
+            };
+          },
+        };
+      },
+    };
+  }
+
+  // Pozostałe metody
+```
+
+Taka implementacja pozwala na wygodne korzystanie z klienta serwera aplikacji w komponentach React, co jest szczególnie przydatne w przypadku aplikacji, które korzystają z wielu zasobów API. Na przykład, aby pobrać wszystkie projekty, można użyć:
+
+```tsx
+const [projects, setProjects] = useState<Project[]>([]);
+
+useEffect(() => {
+  const subscription = TpmClient.getInstance().projects().all().subscribe((page) => {
+    setProjects(page.content);
+  });
+  return () => subscription.unsubscribe();
+}, []);
+
+```
+
 #### Implementacja komponentów
 #### Implementacja kontekstów
 #### Implementacja układu strony
@@ -703,6 +1103,7 @@ Odpowiednia konfiguracja uwierzytelniania i autoryzacji jest kluczem do ochrony 
 #### Zarządzanie dokumentami projektu
 #### Komunikacja w ramach projektu
 ### Monitorowanie pracy systemu
+
 ## Przyszłość systemu
 ### Integracja z narzędziami maszynowego tłumaczenia
 ### Integracja z narzędziami do analizy tekstu

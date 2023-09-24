@@ -1,22 +1,22 @@
 export interface CreateTeamMember {
   userId: string;
-  role: RoleCode
+  role: ProjectRoleCode
 }
 
-export type RoleCode = "PROJECT_MANAGER" | "TRANSLATOR" | "EDITOR" | "PROOFREADER" | "SUBJECT_MATTER_EXPERT" | "PUBLISHER" | "OBSERVER";
+export type ProjectRoleCode = "PROJECT_MANAGER" | "TRANSLATOR" | "EDITOR" | "PROOFREADER" | "SUBJECT_MATTER_EXPERT" | "PUBLISHER" | "OBSERVER";
 
 export interface TeamMember {
   id: string;
-  userId: string;
   firstName: string;
   lastName: string;
   email: string;
-  role: Role,
-  project: string;
+  roles: TeamMemberProjectRole[],
+  project: ProjectShortView;
 }
 
-export interface Role {
-  role: RoleCode;
+export interface TeamMemberProjectRole {
+  projectRoleId: string;
+  role: ProjectRoleCode;
   title: string;
   description: string;
 }
@@ -32,5 +32,11 @@ export type StatusCode = "DRAFT" | "READY_TO_START" | "ACTIVE" | "ON_HOLD" | "RE
 export interface ProjectStatus {
   status: StatusCode;
   name: string;
+  description: string;
+}
+
+export interface ProjectRole {
+  role: ProjectRoleCode;
+  title: string;
   description: string;
 }

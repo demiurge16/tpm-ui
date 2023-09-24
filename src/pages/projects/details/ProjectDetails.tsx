@@ -8,6 +8,7 @@ import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { MoveStartDialog } from "./ProjectMoveStartDialog";
 import { MoveDeadlinesDialog } from "./ProjectMoveDeadlinesDialog";
 import { Link } from "react-router-dom";
+import { SecuredComponent } from "../../../components/security/SecuredComponent";
 
 export const ProjectDetails = () => {
   const { showSuccess, showError } = useSnackbarContext();
@@ -75,19 +76,21 @@ export const ProjectDetails = () => {
       </Paper>
       <Box pb={2} />
 
-      <Paper elevation={2} sx={{ p: 2 }}>
-        <Typography variant="h5" gutterBottom>Client</Typography>
-        <Typography variant="body1">
-          Name: {`${project.client.name}`}
-        </Typography>
-        <Typography variant="body1">
-          Email: {project.client.email}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          Phone: {project.client.phone}
-        </Typography>
-      </Paper>
-      <Box pb={2} />
+      <SecuredComponent roles={['admin', 'project-manager']}>
+        <Paper elevation={2} sx={{ p: 2 }}>
+          <Typography variant="h5" gutterBottom>Client</Typography>
+          <Typography variant="body1">
+            Name: {`${project.client.name}`}
+          </Typography>
+          <Typography variant="body1">
+            Email: {project.client.email}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Phone: {project.client.phone}
+          </Typography>
+        </Paper>
+        <Box pb={2} />
+      </SecuredComponent>
 
       <Paper elevation={2} sx={{ p: 2 }}>
         <Typography variant="h5" gutterBottom>Project status</Typography>
@@ -97,70 +100,72 @@ export const ProjectDetails = () => {
       </Paper>
       <Box pb={2} />
 
-      <Paper elevation={2} sx={{ p: 2 }}>
-        <Typography variant="h5" gutterBottom>Actions</Typography>
-        <Button variant="contained" color="primary" component={Link} to="edit"
-          sx={{
-            marginRight: 1
-          }}
-        >
-          Edit
-        </Button>
+      <SecuredComponent roles={['admin', 'project-manager']}>
+        <Paper elevation={2} sx={{ p: 2 }}>
+          <Typography variant="h5" gutterBottom>Actions</Typography>
+          <Button variant="contained" color="primary" component={Link} to="edit"
+            sx={{
+              marginRight: 1
+            }}
+          >
+            Edit
+          </Button>
 
-        <Button variant="contained" color="primary" onClick={() => openMoveStartDialog()}
-          sx={{
-            marginRight: 1
-          }}
-        >
-          Move start date
-        </Button>
-        <MoveStartDialog projectId={project.id} open={moveStartDialogOpen} onClose={closeMoveStartDialog} />
+          <Button variant="contained" color="primary" onClick={() => openMoveStartDialog()}
+            sx={{
+              marginRight: 1
+            }}
+          >
+            Move start date
+          </Button>
+          <MoveStartDialog projectId={project.id} open={moveStartDialogOpen} onClose={closeMoveStartDialog} />
 
-        <Button variant="contained" color="primary" onClick={() => openMoveDeadlinesDialod()}
-          sx={{
-            marginRight: 1
-          }}
-        >
-          Move deadlines
-        </Button>
-        <MoveDeadlinesDialog projectId={project.id} open={moveDeadlinesDialogOpen} onClose={closeMoveDeadlinesDialog} />
+          <Button variant="contained" color="primary" onClick={() => openMoveDeadlinesDialod()}
+            sx={{
+              marginRight: 1
+            }}
+          >
+            Move deadlines
+          </Button>
+          <MoveDeadlinesDialog projectId={project.id} open={moveDeadlinesDialogOpen} onClose={closeMoveDeadlinesDialog} />
 
-        {
-            Object.entries(statusTransitionHandlers[project.status.status])
-              .map((key) => {
-                const [statusCode, targetAction] = key;
+          {
+              Object.entries(statusTransitionHandlers[project.status.status])
+                .map((key) => {
+                  const [statusCode, targetAction] = key;
 
-                return (
-                  <Button
-                    sx={{
-                      marginRight: 1
-                    }}
-                    key={statusCode}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      targetAction.action()
-                        .subscribe({
-                          next: (status) => {
-                            setProject({
-                              ...project,
-                              status: status.status
-                            });
-                            
-                            showSuccess('Success', 'Project status changed');
-                          },
-                          error: (error) => {
-                            showError('Failed to change project status', error.message);
-                          }
-                        });
-                    }}
-                  >
-                    {targetAction.name}
-                  </Button>
-                );
-              })
-          }
-      </Paper>
+                  return (
+                    <Button
+                      sx={{
+                        marginRight: 1
+                      }}
+                      key={statusCode}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        targetAction.action()
+                          .subscribe({
+                            next: (status) => {
+                              setProject({
+                                ...project,
+                                status: status.status
+                              });
+                              
+                              showSuccess('Success', 'Project status changed');
+                            },
+                            error: (error) => {
+                              showError('Failed to change project status', error.message);
+                            }
+                          });
+                      }}
+                    >
+                      {targetAction.name}
+                    </Button>
+                  );
+                })
+            }
+        </Paper>
+      </SecuredComponent>
     </>
   );
 }

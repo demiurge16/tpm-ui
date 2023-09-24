@@ -29,7 +29,7 @@ const TpmClientContextProvider = (
   useEffect(() => {
     axios.interceptors.response.use(
       (response) => {
-        return response;
+        return Promise.resolve(response);
       },
       (error) => {
         // if (error.response.status === 403) {
@@ -37,6 +37,7 @@ const TpmClientContextProvider = (
         // } else if (error.response.status === 404) {
         //   navigate('/not-found');
         // }
+        return Promise.reject(error);
       }
     );
     setInitialized(true);

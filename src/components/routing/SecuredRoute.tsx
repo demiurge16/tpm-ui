@@ -10,9 +10,9 @@ export interface SecuredRouteProps {
 
 export const SecuredRoute = (props: SecuredRouteProps) => {
   const { roles, children } = props;
-  const { isAuthenticated, hasRole } = useAuth();
+  const { isAuthenticated, hasAnyRole } = useAuth();
 
   return isAuthenticated
-    ? roles && roles.some(hasRole) ? <>{children}</> : <Navigate to="/forbidden" />
+    ? roles && hasAnyRole(roles) ? <>{children}</> : <Navigate to="/forbidden" />
     : <LoadingScreen />;
 };
