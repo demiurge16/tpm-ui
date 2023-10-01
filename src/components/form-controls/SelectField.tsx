@@ -27,6 +27,8 @@ export const SelectField = (props: SelectFieldProps) => {
             multiple={multiple}
             required={required}
             inputProps={{ name: label, id: label }}
+            error={(meta.error && meta.touched) || meta.submitError}
+            value={input.value || (multiple ? [] : '')}
           >
             {
               options.map(option => (
@@ -36,7 +38,9 @@ export const SelectField = (props: SelectFieldProps) => {
               ))
             }
           </Select>
-          <FormHelperText>{meta.error && meta.touched && meta.error}</FormHelperText>
+          <FormHelperText error={(meta.error && meta.touched) || meta.submitError}>
+            {(meta.touched && meta.error) || meta.submitError}
+          </FormHelperText>
         </FormControl>
       )}
     </Field>

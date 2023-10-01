@@ -1,6 +1,8 @@
 import { AgGridReact } from "ag-grid-react";
 import {
   ChangeEvent,
+  createContext,
+  useContext,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -34,7 +36,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import DownloadIcon from '@mui/icons-material/Download';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import { Operation } from "./Operation";
-import { useStyles } from "./Styles";
+import { useStyles } from "./Grid.styles";
 import { ColumnPicker } from "./ColumnPicker";
 import { LoadingScreen } from "../../pages/utils/LoadingScreen";
 

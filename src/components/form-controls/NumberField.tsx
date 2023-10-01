@@ -22,8 +22,8 @@ export const NumberField = (props: NumberFieldProps) => {
           margin="normal"
           fullWidth
           variant="outlined"
-          error={meta.error && meta.touched}
-          helperText={meta.error}
+          error={(meta.error && meta.touched) || meta.submitError}
+          helperText={meta.error || meta.submitError}
         />
       )}
     </Field>

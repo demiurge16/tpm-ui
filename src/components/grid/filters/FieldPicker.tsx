@@ -7,8 +7,7 @@ export interface FieldPickerProps {
   onChange: (field: string) => void;
 }
 
-export const FieldPicker = (props: FieldPickerProps) => {
-  const { selectedField, fields, onChange } = props;
+export const FieldPicker = ({ selectedField, fields, onChange }: FieldPickerProps) => {
   const [state, setState] = useState<string>(selectedField);
 
   const handleChange = (field: string) => {

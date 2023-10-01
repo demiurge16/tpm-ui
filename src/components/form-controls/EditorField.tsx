@@ -25,7 +25,9 @@ export const EditorField = (props: EditorInputProps) => {
             input.onChange(content);
           }}
         />
-        <FormHelperText>{meta.error && meta.touched && meta.error}</FormHelperText>
+        <FormHelperText>
+          {(meta.touched && meta.error) || meta.submitError}
+        </FormHelperText>
       </FormControl>
     )}
   </Field>

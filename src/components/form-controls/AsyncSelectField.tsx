@@ -1,82 +1,37 @@
-import { useEffect, useState, useRef } from "react";
-import { Page } from "../../client/types/common/Page";
-import { Autocomplete, CircularProgress, FormControl, TextField } from "@mui/material";
-import { Observable, Subject, debounceTime, map, switchMap } from "rxjs";
+import { Autocomplete, FormControl, TextField } from "@mui/material";
 import { Field } from "react-final-form";
-import { useSnackbarContext } from "../../contexts/SnackbarContext";
-import { Search } from "../../client/types/common/Search";
 
 type Option = {
   key: string;
   value: string;
 };
 
-type OptionsLoader = (search: Search) => Observable<Page<any>>;
-type SearchQueryProvider = (searchTerm: string) => Search;
-type ResultFormatter = (result: any) => Option;
-
 export interface AsyncSelectFieldProps {
   name: string;
   label: string;
   multiple?: boolean;
   required?: boolean;
-  defaultValue?: Option | Option[];
-  optionsLoader: OptionsLoader;
-  searchQueryProvider: SearchQueryProvider;
-  resultFormatter: ResultFormatter;
+  options: Option[];
 }
 
 export const AsyncSelectField = (
-  { name, label, multiple, required, defaultValue, optionsLoader, searchQueryProvider, resultFormatter }: AsyncSelectFieldProps
+  { name, label, multiple, required, options }: AsyncSelectFieldProps
 ) => {
-  const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState<Option[]>(
-    defaultValue && defaultValue instanceof Array ? defaultValue : [defaultValue as Option]
-  );
-
-  const { showError } = useSnackbarContext();
-
-  const searchSubject = useRef(new Subject<string>());
-
-  useEffect(() => {
-    const subscription = searchSubject.current
-      .pipe(
-        debounceTime(300),
-        switchMap((search: string) =>
-          optionsLoader(searchQueryProvider(search))
-            .pipe(
-              map((response) => {
-                return {
-                  items: response.items.map((item) => resultFormatter(item)),
-                  currentPage: response.currentPage,
-                  totalPages: response.totalPages,
-                  totalItems: response.totalItems,
-                  hasNextPage: response.hasNextPage,
-                  hasPreviousPage: response.hasPreviousPage
-                }
-              })
-            )
-        )
-      )
-      .subscribe({
-        next: (response) => {
-          setOptions(response.items);
-          setLoading(false);
-        },
-        error: (error) => {
-          showError("Error", error.message);
-          setLoading(false);
-        },
-      });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
   return (
     <Field name={name}>
       {({ input, meta }) => {
+        const onChange = (event: any, newValue: Option | Option[] | null) => {
+          if (newValue instanceof Array) {
+            input.onChange(newValue.map((option) => option.key));
+          } else {
+            input.onChange(newValue?.key);
+          }
+        };
+
+        const value = input.value instanceof Array
+          ? options.filter((option) => input.value.includes(option.key))
+          : options.find((option) => option.key === input.value) || null;
+
         return (
           <FormControl 
             variant="outlined"
@@ -84,50 +39,23 @@ export const AsyncSelectField = (
             margin="normal"
           >
             <Autocomplete
-              defaultValue={
-                defaultValue instanceof Array || defaultValue instanceof Object
-                  ? defaultValue
-                  : (multiple ? [] : null)
-              }
               multiple={multiple}
-              loading={loading}
+              value={value}
               options={options}
-              getOptionLabel={(option) => option && option.value}
-              onChange={(event, value) => {
-                if (value instanceof Array) {
-                  input.onChange(value.map((item) => item.key));
-                } else if (value) {
-                  input.onChange(value.key);
-                } else {
-                  input.onChange(null);
-                }
-                
-                setLoading(false);
-                return;
-              }}
-              onInputChange={(event, value) => {
-                setLoading(true);
-                searchSubject.current.next(value);
-              }}
+              onChange={onChange}
+              getOptionLabel={(option) => option.value}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label={label + (required ? " *" : "")}
                   variant="outlined"
-                  error={meta.error && meta.touched}
-                  helperText={meta.touched && meta.error}
+                  error={(meta.error && meta.touched) || meta.submitError}
+                  helperText={meta.error || meta.submitError}
                   InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    )
+                    ...params.InputProps
                   }}
                 />
               )}
-              noOptionsText="No options found. Please refine your search term."
             />
           </FormControl>
         )}}

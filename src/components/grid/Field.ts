@@ -1,4 +1,3 @@
-import { FilterValue } from "../../client/types/common/Search";
 import { FieldType } from "./FieldType";
 import { Operation } from "./Operation";
 

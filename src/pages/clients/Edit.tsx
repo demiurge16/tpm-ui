@@ -1,105 +1,81 @@
-import { useState, useEffect } from "react";
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
-import { Country } from "../../client/types/dictionaries/Country";
-import { ClientType } from "../../client/types/client/ClientType";
-import { UpdateClient } from "../../client/types/client/Client";
-import { forkJoin } from "rxjs";
+import { Client, UpdateClient } from "../../client/types/client/Client";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { useSubmitHandler } from "../../components/form/useSubmitHandler";
+import { useRefdata } from "../../components/form/useRefdata";
+import { LoadingScreen } from "../utils/LoadingScreen";
+import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
 
 export interface EditParams {
   id: string;
 }
 
 export const Edit = () => {
-  const [serverError, setServerError] = useState<string | null>(null);
-
-  const [countries, setCountries] = useState<Array<Country>>([]);
-  const [types, setTypes] = useState<Array<ClientType>>([]);
-  const [initialValues, setInitialValues] = useState<UpdateClient>({} as UpdateClient);
-
-  const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const tpmClient = useTpmClient();
-
-  const navigate = useNavigate();
   const { id } = useParams();
 
-  useEffect(() => {
-    if (!id) {
-      return;
-    }
+  if (!id) {
+    throw new Error("Missing id parameter");
+  }
 
-    forkJoin({
+  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
+
+  const { loading, refdata, refdataError } = useRefdata(
+    {
       countries: tpmClient.countries().all(),
       types: tpmClient.clientTypes().all(),
       client: tpmClient.clients().withId(id).get()
-    }).subscribe({
-      next: (response) => {
-        const { countries, types, client } = response;
+    },
+    (result) => setBreadcrumbs([
+      { label: "Clients", path: "/clients" },
+      { label: result.client.name, path: `/clients/${result.client.id}` },
+      { label: "Edit", path: `/clients/${result.client.id}/edit` }
+    ])
+  );
 
-        setCountries(countries.items);
-        setTypes(types.items);
-        setInitialValues({
+  const { countries, types, client } = refdata;
+
+  const { showSuccess } = useSnackbarContext();
+  const navigate = useNavigate();
+
+  const { handleSubmit, submitError } = useSubmitHandler<UpdateClient, Client>({
+    handleSubmit: (values: UpdateClient) => tpmClient.clients().withId(id).update(values),
+    successHandler: (result: Client) => {
+      showSuccess("Success", "Client updated successfully");
+      navigate(`/clients/${result.id}`);
+    }
+  });
+
+  return loading ? (
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <LoadingScreen />
+    </Paper>
+  ) : (
+    <Box>
+      <Typography variant="h4">Edit {client.name}</Typography>
+      <Box pb={2} />
+      <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
+        initialValues={{
           name: client.name,
+          notes: client.notes,
+          clientTypeId: client.type.id,
+          vat: client.vat,
           email: client.email,
           phone: client.phone,
           address: client.address,
           city: client.city,
           state: client.state,
           zip: client.zip,
-          countryCode: client.country.code,
-          vat: client.vat,
-          notes: client.notes,
-          clientTypeId: client.type.id
-        });
-
-        setBreadcrumbs([
-          { label: "Clients", path: "/clients" },
-          { label: client.name, path: `/clients/${id}` },
-          { label: "Edit", path: `/clients/${id}/edit` }
-        ]);
-      },
-      error: (error) => {
-        setServerError(error.message);
-        showError(`Error loading client ${id}`, error.message);
-      }
-    });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
-
-  const handleSubmit = async (values: UpdateClient) => {
-    if (!id) {
-      return;
-    }
-
-    tpmClient.clients()
-      .withId(id)
-      .update(values)
-      .subscribe({
-        next: () => {
-          showSuccess("Success", "Client updated successfully");
-          navigate("/clients");
-        },
-        error: (error) =>{
-          showError("Error updating client", error.message);
-          setServerError(error.message);
-        }
-      });
-  }
-
-  return (
-    <Box>
-      <Typography variant="h4">Edit {initialValues.name}</Typography>
-      <Box pb={2} />
-      <Form onSubmit={handleSubmit}
-        keepDirtyOnReinitialize
-        initialValues={initialValues}
+          countryCode: client.country.code
+        }}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <Paper elevation={2} sx={{ p: 2 }}>
@@ -113,7 +89,7 @@ export const Edit = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="clientTypeId" label="Client type" required
-                    options={types.map((e) => ({ key: e.id, value: e.name}))}
+                    options={types.items.map((e) => ({ key: e.id, value: e.name}))}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -152,17 +128,17 @@ export const Edit = () => {
                   <TextField name="zip" label="Zip" required />
                 </Grid>
                 <Grid item xs={12}>
-                  <SelectField name="countryCode" label="Country" required
-                    options={countries.map((e) => ({ key: e.code, value: e.name.common }))} />
+                  <AsyncSelectField name="countryCode" label="Country" required
+                    options={countries.items.map((e) => ({ key: e.code, value: e.name.common }))} />
                 </Grid>
               </Grid>
             </Paper>
             <Box pb={2} />
             
-            {serverError && (
+            {(refdataError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError}</Typography>
+                  <Typography color="error">Error: {(refdataError || submitError)}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>

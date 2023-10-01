@@ -87,7 +87,7 @@ export const Details = () => {
         <Typography variant="body1">City: {client.city}</Typography>
         <Typography variant="body1">State: {client.state}</Typography>
         <Typography variant="body1">Zip: {client.zip}</Typography>
-        <Typography variant="body1" gutterBottom>Country: {client.country.name}</Typography>
+        <Typography variant="body1" gutterBottom>Country: {client.country.name.common}</Typography>
       </Paper>
       <Box pb={2} />
 

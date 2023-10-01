@@ -6,7 +6,7 @@ export interface CreateTeamMember {
 export type ProjectRoleCode = "PROJECT_MANAGER" | "TRANSLATOR" | "EDITOR" | "PROOFREADER" | "SUBJECT_MATTER_EXPERT" | "PUBLISHER" | "OBSERVER";
 
 export interface TeamMember {
-  id: string;
+  userId: string;
   firstName: string;
   lastName: string;
   email: string;

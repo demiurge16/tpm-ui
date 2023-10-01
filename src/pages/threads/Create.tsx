@@ -6,15 +6,21 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { CreateThread } from "../../client/types/project/Thread";
 import { Form } from "react-final-form";
 import { array, object, string } from "yup";
-import { validateWithSchema } from "../../utils/validate";
 import { MultivalueStringField, TextField } from "../../components/form-controls/TextField";
 import { EditorField } from "../../components/form-controls/EditorField";
 import { useTpmClient } from "../../contexts/TpmClientContext";
+import { useSubmitHandler } from "../../components/form/useSubmitHandler";
+import { Thread } from "../../client/types/thread/Thread";
+import { useValidator } from "../../components/form/useValidator";
 
 export const Create = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const { showSuccess, showError } = useSnackbarContext();
+  const { showSuccess } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();;
+
+  if (!projectId) {
+    throw new Error('Project ID is required');
+  }
 
   const tpmClient = useTpmClient();
 
@@ -41,32 +47,25 @@ export const Create = () => {
     ]);
   }, [projectId, setBreadcrumbs]);
 
-  const handleSubmit = (thread: CreateThread) => {
-    if (!projectId) {
-      return;
-    }
-
-    tpmClient.projects()
-      .withId(projectId)
-      .threads()
-      .create(thread)
-      .subscribe({
-        next: (response) => {
-          showSuccess('Success', 'Note added');
-        },
-        error: (error) => showError(error.message, error.response.data.message)
-      });
-  };
-
-  const validationSchema = object({
-    title: string().required('Title is required')
-      .min(3, 'Title must be at least 3 characters long')
-      .max(512, 'Title must be at most 512 characters long'),
-    tags: array().of(string().required('Tag is required'))
-      .min(1, 'At least one tag is required')
-      .max(12, 'At most 12 tags are allowed'),
-    // body: string().required('Body is required')
+  const { handleSubmit, submitError } = useSubmitHandler<CreateThread, Thread>({
+    handleSubmit: (values) => tpmClient.projects().withId(projectId).threads().create(values),
+    successHandler: (thread) => {
+      showSuccess('Success', 'Thread created successfully');
+      window.location.href = `/projects/${projectId}/threads/${thread.id}`;
+    },
   });
+
+  const validator = useValidator(
+    object({
+      title: string().required('Title is required')
+        .min(3, 'Title must be at least 3 characters long')
+        .max(512, 'Title must be at most 512 characters long'),
+      tags: array().of(string().required('Tag is required'))
+        .min(1, 'At least one tag is required')
+        .max(12, 'At most 12 tags are allowed'),
+      // body: string().required('Body is required')
+    })
+  );
 
   return (
     <Box>
@@ -76,7 +75,7 @@ export const Create = () => {
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={initialValues}
-        validate={(values) => validateWithSchema(validationSchema, values)}
+        validate={validator}
         render={({ handleSubmit, submitting, pristine, values, form }) => (
           <form onSubmit={(event) => event.preventDefault()}>
             <Paper elevation={2} sx={{ p: 2 }}>

@@ -8,9 +8,10 @@ export interface OperatorPickerProps {
   onChange: (operator: Operation) => void;
 }
 
-export const OperatorPicker = (props: OperatorPickerProps) => {
-  const { selectedOperator, operations, onChange } = props;
-  const defaultOperator = props.operations[0];
+export const OperatorPicker = (
+  { selectedOperator, operations, onChange }: OperatorPickerProps
+) => {
+  const defaultOperator = operations[0];
 
   const [state, setState] = useState<string>(selectedOperator);
 

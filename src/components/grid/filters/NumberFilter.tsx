@@ -15,9 +15,9 @@ export interface MultivalueNumberFilterProps {
   onChange: (value: number[]) => void;
 }
 
-export const NumberFilter = (props: NumberFilterProps) => {
-  const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
-
+export const NumberFilter = (
+  { id, label, value, onChange }: NumberFilterProps
+) => {
   return (
     <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={id}>{label}</InputLabel>
@@ -36,8 +36,9 @@ export const NumberFilter = (props: NumberFilterProps) => {
   );
 }
 
-export const MultivalueNumberFilter = (props: MultivalueNumberFilterProps) => {
-  const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
+export const MultivalueNumberFilter = (
+  { id, label, value, onChange }: MultivalueNumberFilterProps
+) => {
   const [values, setValues] = useState<Array<number>>(value ?? []);
   const [inputValue, setInputValue] = useState('');
 

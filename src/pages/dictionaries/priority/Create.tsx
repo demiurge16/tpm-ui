@@ -1,60 +1,57 @@
-import { useEffect } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { useState } from "react";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "../../../components/form-controls/TextField";
 import { CreatePriority } from "../../../client/types/dictionaries/Priority";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
-import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
-import { validateWithSchema } from "../../../utils/validate";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
+import { Priority } from "../../../client/types/task/Task";
+import { useValidator } from "../../../components/form/useValidator";
+import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useRefdata } from "../../../components/form/useRefdata";
 
 export const Create = () => {
-  const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const { showSuccess, showError } = useSnackbarContext();
-  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  useEffect(() => {
-    setBreadcrumbs([
-      { label: "Priority", path: "/priorities" },
+  const { loading, refdata, refdataError } = useRefdata(
+    {},
+    (result) => setBreadcrumbs([
+      { label: "Priorities", path: "/priorities" },
       { label: "Create", path: "/priorities/create" },
-    ]);
-  }, [setBreadcrumbs]);
+    ])
+  );
 
-  const handleSubmit = (data: CreatePriority) => 
-    tpmClient.priorities()
-      .create(data)
-      .subscribe({
-        next: () => {
-          showSuccess("Success", "Priority created");
-          navigate("/priorities");
-        },
-        error: (error) => {
-          showError("Error creating priority", error.message);
-          setServerError(error.message);
-        }
-      });
-
-  const validationSchema = object({
-    name: string().required("Name is required")
-      .min(3, "Name must be at least 3 characters long")
-      .max(50, "Name must be at most 50 characters long"),
-    description: string().required("Description is required")
-      .min(3, "Description must be at least 3 characters long")
-      .max(1000, "Description must be at most 1000 characters long"),
-    value: number().required("Value is required")
-      .integer("Value must be an integer")
-      .min(0, "Value must be at least 0")
-      .max(1000000, "Value must be at most 1000000"),
-    emoji: string().required("Emoji is required")
+  const { showSuccess } = useSnackbarContext();
+  const tpmClient = useTpmClient();
+  const { handleSubmit, submitError } = useSubmitHandler<CreatePriority, Priority>({
+    handleSubmit: (values) => tpmClient.priorities().create(values),
+    successHandler: (priority) => {
+      showSuccess("Success", "Priority created successfully");
+      navigate(`/priorities/${priority.id}`);
+    },
   });
+
+  const validator = useValidator( 
+    object({
+      name: string().required("Name is required")
+        .min(3, "Name must be at least 3 characters long")
+        .max(50, "Name must be at most 50 characters long"),
+      description: string().required("Description is required")
+        .min(3, "Description must be at least 3 characters long")
+        .max(1000, "Description must be at most 1000 characters long"),
+      value: number().required("Value is required")
+        .integer("Value must be an integer")
+        .min(0, "Value must be at least 0")
+        .max(1000000, "Value must be at most 1000000"),
+      emoji: string().required("Emoji is required")
+    })
+  );
 
   return (
     <Box>
@@ -63,7 +60,7 @@ export const Create = () => {
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={{ name: '', description: '', value: 0, emoji: '' }}
-        validate={(values) => validateWithSchema(validationSchema, values)}
+        validate={validator}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <Paper elevation={2} sx={{ p: 2 }}>
@@ -74,10 +71,10 @@ export const Create = () => {
             </Paper>
             <Box pb={2} />
 
-            {serverError && (
+            {submitError && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError}</Typography>
+                  <Typography color="error">Error: {submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>

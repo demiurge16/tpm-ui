@@ -26,14 +26,9 @@ export interface MultivalueDateFilterProps {
   onChange: (value: Date[]) => void;
 }
 
-export const DateFilter = (props: DateFilterProps) => {
-  const [id, label, value, onChange] = [
-    props.id,
-    props.label,
-    props.value,
-    props.onChange,
-  ];
-
+export const DateFilter = (
+  { id, label, value, onChange }: DateFilterProps
+) => {
   return (
     <FormControl id={id} variant="standard" size="small" fullWidth>
       <DatePicker
@@ -51,13 +46,9 @@ export const DateFilter = (props: DateFilterProps) => {
   );
 };
 
-export const MultivalueDateFilter = (props: MultivalueDateFilterProps) => {
-  const [id, label, value, onChange] = [
-    props.id,
-    props.label,
-    props.value,
-    props.onChange,
-  ];
+export const MultivalueDateFilter = (
+  { id, label, value, onChange }: MultivalueDateFilterProps
+) => {
   const [values, setValues] = useState<Array<Date>>(value ?? []);
   
   const [pickerValue, setPickerValue] = useState<Date | null>(null);

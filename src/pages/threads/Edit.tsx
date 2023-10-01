@@ -8,9 +8,10 @@ import { array, object, string } from "yup";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { Form } from "react-final-form";
-import { validateWithSchema } from "../../utils/validate";
 import { MultivalueStringField, TextField } from "../../components/form-controls/TextField";
 import { EditorField } from "../../components/form-controls/EditorField";
+import { useSubmitHandler } from "../../components/form/useSubmitHandler";
+import { useValidator } from "../../components/form/useValidator";
 
 export const Edit = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,21 +20,15 @@ export const Edit = () => {
   const tpmClient = useTpmClient();
   const navigate = useNavigate();
 
+  if (!id) {
+    throw new Error('Thread ID is required');
+  }
+
   const [thread, setThread] = useState<Thread>({} as Thread);
   const [initialValues, setInitialValues] = useState<UpdateThread>({
     title: "",
     content: "",
     tags: []
-  });
-
-  const validationSchema = object({
-    title: string().required('Title is required')
-      .min(3, 'Title must be at least 3 characters long')
-      .max(512, 'Title must be at most 512 characters long'),
-    tags: array().of(string().required('Tag is required'))
-      .min(1, 'At least one tag is required')
-      .max(12, 'At most 12 tags are allowed'),
-    // body: string().required('Body is required')
   });
 
   useEffect(() => {
@@ -63,22 +58,25 @@ export const Edit = () => {
       });
   }, [id, setBreadcrumbs, showError, tpmClient]);
 
-  const handleSubmit = (thread: UpdateThread) => {
-    if (!id) {
-      return;
-    }
+  const { handleSubmit, submitError } = useSubmitHandler<UpdateThread, Thread>({
+    handleSubmit: (values) => tpmClient.threads().withId(id).update(values),
+    successHandler: (thread) => {
+      showSuccess('Success', 'Thread updated successfully');
+      navigate(`/threads/${thread.id}`);
+    },
+  });
 
-    tpmClient.threads()
-      .withId(id)
-      .update(thread)
-      .subscribe({
-        next: (response) => {
-          showSuccess('Success', 'Note updated');
-          navigate(`/threads/${id}`);
-        },
-        error: (error) => showError(error.message, error.response.data.message)
-      });
-  };
+  const validator = useValidator(
+    object({
+      title: string().required('Title is required')
+        .min(3, 'Title must be at least 3 characters long')
+        .max(512, 'Title must be at most 512 characters long'),
+      tags: array().of(string().required('Tag is required'))
+        .min(1, 'At least one tag is required')
+        .max(12, 'At most 12 tags are allowed'),
+      // body: string().required('Body is required')
+    })
+  );
 
   return thread.title ? (
     <Box>
@@ -88,7 +86,7 @@ export const Edit = () => {
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={initialValues}
-        validate={(values) => validateWithSchema(validationSchema, values)}
+        validate={validator}
         render={({ handleSubmit, submitting, pristine, values, form }) => (
           <form onSubmit={(event) => event.preventDefault()}>
             <Paper elevation={2} sx={{ p: 2 }}>

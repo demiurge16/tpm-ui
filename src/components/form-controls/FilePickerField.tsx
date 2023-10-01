@@ -97,7 +97,7 @@ export const FilePickerField: React.FC<FilePickerFieldProps> = ({
           )
         }}
       />
-      <FormHelperText>{meta.touched && meta.error}</FormHelperText>
+      <FormHelperText>{(meta.touched && meta.error) || meta.submitError}</FormHelperText>
       <input ref={fileInputRef}
         accept={accept}
         multiple={multiple}

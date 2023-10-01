@@ -31,8 +31,8 @@ export const DateTimeField = (props: DateFieldProps) => {
             onChange={(value) => input.onChange(value?.toJSDate() ?? null)}
             slotProps={{
               textField: {
-                error: meta.error && meta.touched,
-                helperText: meta.error && meta.touched && meta.error,
+                error: (meta.error && meta.touched) || meta.submitError,
+                helperText: meta.error || meta.submitError
               }
             }}
           />

@@ -1,53 +1,49 @@
-import { useEffect } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { useState } from "react";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "../../../components/form-controls/TextField";
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { object, string } from "yup";
-import { validateWithSchema } from "../../../utils/validate";
-import { CreateServiceType } from "../../../client/types/dictionaries/ServiceType";
+import { CreateServiceType, ServiceType } from "../../../client/types/dictionaries/ServiceType";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
+import { useValidator } from "../../../components/form/useValidator";
+import { useRefdata } from "../../../components/form/useRefdata";
 
 export const Create = () => {
-  const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const { showSuccess, showError } = useSnackbarContext();
-  const tpmClient = useTpmClient();
+  const { showSuccess } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  useEffect(() => {
-    setBreadcrumbs([
+  const { loading, refdata, refdataError } = useRefdata(
+    {},
+    (result) => setBreadcrumbs([
       { label: "Service types", path: "/service-types" },
       { label: "Create", path: "/service-types/create" },
-    ]);
-  }, [setBreadcrumbs]);
+    ])
+  );
 
-  const handleSubmit = (data: CreateServiceType) => 
-    tpmClient.serviceTypes()
-      .create(data)
-      .subscribe({
-        next: () => {
-          showSuccess("Success", "Priority created");
-          navigate("/service-types");
-        },
-        error: (error) => {
-          showError("Error creating priority", error.message);
-          setServerError(error.message);
-        }
-      });
-
-  const validationSchema = object({
-    name: string().required("Name is required")
-      .min(3, "Name must be at least 3 characters long")
-      .max(50, "Name must be at most 50 characters long"),
-    description: string().required("Description is required")
-      .min(3, "Description must be at least 3 characters long")
-      .max(1000, "Description must be at most 1000 characters long")
+  const tpmClient = useTpmClient();
+  const { handleSubmit, submitError } = useSubmitHandler<CreateServiceType, ServiceType>({
+    handleSubmit: (values) => tpmClient.serviceTypes().create(values),
+    successHandler: (serviceType) => {
+      showSuccess("Success", "Service type created successfully");
+      navigate(`/service-types/${serviceType.id}`);
+    },
   });
+
+  const validator = useValidator(
+    object({
+      name: string().required("Name is required")
+        .min(3, "Name must be at least 3 characters long")
+        .max(50, "Name must be at most 50 characters long"),
+      description: string().required("Description is required")
+        .min(3, "Description must be at least 3 characters long")
+        .max(1000, "Description must be at most 1000 characters long")
+    })
+  );
 
   return (
     <Box>
@@ -56,7 +52,7 @@ export const Create = () => {
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={{ name: '', description: '', value: 0, emoji: '' }}
-        validate={(values) => validateWithSchema(validationSchema, values)}
+        validate={validator}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate> 
             <Paper elevation={2} sx={{ p: 2 }}>
@@ -66,10 +62,10 @@ export const Create = () => {
 
             <Box pb={2} />
 
-            {serverError && (
+            {submitError && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError}</Typography>
+                  <Typography color="error">Error: {submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>

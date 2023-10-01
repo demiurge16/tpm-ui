@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState, useContext } from 'react';
 import { Project } from '../../../../client/types/project/Project';
+import { Country } from '../../../../client/types/dictionaries/Country';
 
 interface ProjectContextValues {
   project: Project;
@@ -55,10 +56,7 @@ const defaultProjectContextValues: ProjectContextValues = {
       city: '',
       state: '',
       zip: '',
-      country: {
-        code: '',
-        name: ''
-      },
+      country: { } as Country,
       vat: '',
       notes: '',
       type: {

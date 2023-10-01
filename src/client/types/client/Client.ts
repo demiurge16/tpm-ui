@@ -1,3 +1,5 @@
+import { Country } from "../dictionaries/Country"
+
 export interface CreateClient {
   name: string,
   email: string,
@@ -40,11 +42,6 @@ export interface Client {
   notes: string,
   type: ClientType,
   active: boolean,
-}
-
-export interface Country {
-  code: string,
-  name: string,
 }
 
 export interface ClientType {

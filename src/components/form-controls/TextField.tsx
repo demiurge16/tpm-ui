@@ -25,8 +25,8 @@ export const TextField = (props: TextInputProps) => {
           margin="normal"
           fullWidth
           variant="outlined"
-          error={meta.error && meta.touched}
-          helperText={meta.error}
+          error={(meta.error && meta.touched) || meta.submitError}
+          helperText={meta.error || meta.submitError}
           multiline={multiline}
           rows={rows ?? 1}
         />
@@ -86,8 +86,8 @@ export const MultivalueStringField = (props: MultivalueStringInputProps) => {
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={(e) =>  handleInputKeyDown(e, input.onChange)}
-            error={meta.error && meta.touched}
-            helperText={meta.error}
+            error={(meta.error && meta.touched) || meta.submitError}
+            helperText={meta.error || meta.submitError}
             InputProps={{
               startAdornment: values.map((value, index) => (
                 <Chip

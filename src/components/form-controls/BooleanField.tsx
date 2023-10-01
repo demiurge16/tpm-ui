@@ -29,7 +29,9 @@ export const BooleanField = (props: BooleanFieldProps) => {
             <MenuItem key="false" value="false">No</MenuItem>
             <MenuItem key="true" value="true">Yes</MenuItem>
           </Select>
-          <FormHelperText>{meta.error && meta.touched && meta.error}</FormHelperText>
+          <FormHelperText>
+            {(meta.touched && meta.error) || meta.submitError}
+          </FormHelperText>
         </FormControl>
       )}
     </Field>

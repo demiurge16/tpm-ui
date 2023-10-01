@@ -15,12 +15,14 @@ import { AsyncSelectField } from "../../components/form-controls/AsyncSelectFiel
 import { DateField } from "../../components/form-controls/DateField";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
+import { Currency } from "../../client/types/dictionaries/Currency";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const [expenseCategories, setExpenseCategories] = useState<Array<ExpenseCategory>>([]);
   const [teamMembers, setTeamMembers] = useState<Array<TeamMember>>([]);
+  const [currencies, setCurrencies] = useState<Array<Currency>>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const { projectId } = useParams();
@@ -50,11 +52,13 @@ export const Create = () => {
       teamMembers: tpmClient.projects()
         .withId(projectId)
         .teamMembers()
-        .all()
+        .all(),
+      currencies: tpmClient.currencies().all()
     }).subscribe({
       next: (response) => {
         setExpenseCategories(response.expenseCategories.items);
         setTeamMembers(response.teamMembers.items);
+        setCurrencies(response.currencies.items);
         setLoading(false);
       },
       error: (error) => {
@@ -112,7 +116,7 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="spenderId" label="Team Member" required
-                    options={teamMembers.map((e) => ({ key: e.id, value: e.firstName + ' ' + e.lastName }))}
+                    options={teamMembers.map((e) => ({ key: e.userId, value: e.firstName + ' ' + e.lastName }))}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -128,22 +132,7 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <AsyncSelectField name="currency" label="Currency" required
-                    searchQueryProvider={(search) => (
-                      {
-                        page: 0,
-                        pageSize: 25,
-                        sort: [],
-                        filters: [
-                          {
-                            field: 'name',
-                            operator: 'contains',
-                            value: search
-                          }
-                        ]
-                      }
-                    )}
-                    resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
-                    optionsLoader={tpmClient.currencies().all}
+                    options={currencies.map((e) => ({ key: e.code, value: e.name}))}
                   />
                 </Grid>
               </Grid>

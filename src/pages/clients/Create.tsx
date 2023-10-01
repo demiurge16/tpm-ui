@@ -1,82 +1,42 @@
-import { useState, useEffect } from "react";
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
 import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
-import { CreateClient } from "../../client/types/client/Client";
-import { Country } from "../../client/types/dictionaries/Country";
-import { ClientType } from "../../client/types/client/ClientType";
-import { forkJoin } from "rxjs";
-import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { Client, CreateClient } from "../../client/types/client/Client";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
+import { useSubmitHandler } from "../../components/form/useSubmitHandler";
+import { useRefdata } from "../../components/form/useRefdata";
+import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 
 export const Create = () => {
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const [countries, setCountries] = useState<Array<Country>>([]);
-  const [types, setTypes] = useState<Array<ClientType>>([]);
-
-  const navigate = useNavigate();
   const tpmClient = useTpmClient();
+  const navigate = useNavigate();
 
-  const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-
-  const initialValues: CreateClient = {
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zip: '',
-    countryCode: '',
-    vat: '',
-    notes: '',
-    clientTypeId: ''
-  };
-
-  useEffect(() => {
-    forkJoin({
+  const { setBreadcrumbs } = useBreadcrumbsContext();
+  const { loading, refdata, refdataError } = useRefdata(
+    {
       countries: tpmClient.countries().all(),
       types: tpmClient.clientTypes().all()
-    }).subscribe({
-      next: (response) => {
-        setCountries(response.countries.items);
-        setTypes(response.types.items);
-        setLoading(false);
-      },
-      error: (error) => {
-        showError("Error loading reference data", error.message);
-        setServerError(error.message);
-      }
-    });
-
-    setBreadcrumbs([
+    },
+    (result) => setBreadcrumbs([
       { label: "Clients", path: "/clients" },
-      { label: "Create", path: "/clients/create" },
-    ]);
-  }, [setBreadcrumbs, showError, tpmClient]);
+      { label: "Create", path: "/clients/create" }
+    ])
+  );
 
-  const handleSubmit = async (values: CreateClient) =>
-    tpmClient.clients()
-      .create(values)
-      .subscribe({
-        next: () => {
-          showSuccess("Success", "Client created");
-          navigate("/clients");
-        },
-        error: (error) => {
-          showError("Error creating client", error.message);
-          setServerError(error.message);
-        }
-      });
-
+  const { showSuccess } = useSnackbarContext();
+  const { handleSubmit, submitError } = useSubmitHandler<CreateClient, Client>({
+    handleSubmit: (values: CreateClient) => tpmClient.clients().create(values),
+    successHandler: (result: Client) => {
+      showSuccess("Success", "Client created");
+      navigate(`/clients/${result.id}`);
+    }
+  });
+  
   return loading ? (
     <Paper elevation={2} sx={{ p: 2 }}>
       <LoadingScreen />
@@ -86,7 +46,6 @@ export const Create = () => {
       <Typography variant="h4">Create new client</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
-        initialValues={initialValues}
         keepDirtyOnReinitialize
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
@@ -101,7 +60,15 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="clientTypeId" label="Client type" required
-                    options={types.map((e) => ({ key: e.id, value: e.name}))}
+                    options={
+                      refdata.types.items.map(
+                        (e) => (
+                          { 
+                            key: e.id, value: e.name + (e.corporate ? " (corporate)" : "")
+                          }
+                        )
+                      )
+                    }
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -141,16 +108,16 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <SelectField name="countryCode" label="Country" required
-                    options={countries.map((e) => ({ key: e.code, value: e.name.common }))} />
+                    options={refdata.countries.items.map((e) => ({ key: e.code, value: e.name.common }))} />
                 </Grid>
               </Grid>
             </Paper>
             <Box pb={2} />
             
-            {serverError && (
+            {(refdataError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError}</Typography>
+                  <Typography color="error">Error: {refdataError || submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>

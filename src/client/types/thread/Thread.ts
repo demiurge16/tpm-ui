@@ -71,7 +71,7 @@ export interface ThreadStatus {
 export type ThreadStatusCode = "DRAFT" | "ACTIVE" | "FREEZE" | "CLOSED" | "ARCHIVED" | "DELETED";
 
 export interface Author {
-  userId: string,
+  id: string,
   firstName: string,
   lastName: string,
   email: string,

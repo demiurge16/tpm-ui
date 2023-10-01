@@ -46,8 +46,8 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
 
   const tpmClient = useTpmClient();
 
-  const replyLiked = (reply: Reply) => reply.likes.map((e) => e.author.userId).includes(userId);
-  const replyDisliked = (reply: Reply) => reply.dislikes.map((e) => e.author.userId).includes(userId);
+  const replyLiked = (reply: Reply) => reply.likes.map((e) => e.author.id).includes(userId);
+  const replyDisliked = (reply: Reply) => reply.dislikes.map((e) => e.author.id).includes(userId);
 
   const handleLike = (replyId: string) =>
     tpmClient.replies()
@@ -61,11 +61,11 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
             return;
           }
 
-          if (reply.dislikes.some((dislike) => dislike.author.userId === response.author.userId)) {
-            reply.dislikes = reply.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId);
+          if (reply.dislikes.some((dislike) => dislike.author.id === response.author.id)) {
+            reply.dislikes = reply.dislikes.filter((dislike) => dislike.author.id !== response.author.id);
           }
-          if (reply.likes.some((like) => like.author.userId === response.author.userId)) {
-            reply.likes = reply.likes.map((like) => like.author.userId === response.author.userId ? response : like);
+          if (reply.likes.some((like) => like.author.id === response.author.id)) {
+            reply.likes = reply.likes.map((like) => like.author.id === response.author.id ? response : like);
             return;
           }
 
@@ -87,7 +87,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
             return;
           }
 
-          reply.likes = reply.likes.filter((like) => like.author.userId !== response.author.userId);
+          reply.likes = reply.likes.filter((like) => like.author.id !== response.author.id);
           setRerenderCounter(rerenderCounter + 1);
         },
         error: (error) => showError(error.message, error.response.data.message)
@@ -105,11 +105,11 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
             return;
           }
 
-          if (reply.likes.some((like) => like.author.userId === response.author.userId)) {
-            reply.likes = reply.likes.filter((like) => like.author.userId !== response.author.userId);
+          if (reply.likes.some((like) => like.author.id === response.author.id)) {
+            reply.likes = reply.likes.filter((like) => like.author.id !== response.author.id);
           }
-          if (reply.dislikes.some((dislike) => dislike.author.userId === response.author.userId)) {
-            reply.dislikes = reply.dislikes.map((dislike) => dislike.author.userId === response.author.userId ? response : dislike);
+          if (reply.dislikes.some((dislike) => dislike.author.id === response.author.id)) {
+            reply.dislikes = reply.dislikes.map((dislike) => dislike.author.id === response.author.id ? response : dislike);
             return;
           }
 
@@ -131,7 +131,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
             return;
           }
 
-          reply.dislikes = reply.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId);
+          reply.dislikes = reply.dislikes.filter((dislike) => dislike.author.id !== response.author.id);
           setRerenderCounter(rerenderCounter + 1);
         },
         error: (error) => showError(error.message, error.response.data.message)

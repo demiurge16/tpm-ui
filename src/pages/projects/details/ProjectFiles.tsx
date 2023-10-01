@@ -94,9 +94,27 @@ export const ProjectFiles = () => {
                 lockVisible: true,
                 cellRenderer: (params: any) => {
                   const file = params.data as FileDescriptor;
+                  const handleDownload = () => {
+                    tpmClient.files().withId(file.id).download().subscribe({
+                      next: (data) => {
+                        const blob = new Blob([data as any], { type: 'text/csv' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+              
+                        a.setAttribute('hidden', '');
+                        a.setAttribute('href', url);
+                        a.setAttribute('download', file.name);
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                      },
+                      error: (error) => showError(error.message, error.response.data.message)
+                    });
+                  }
+
                   return (
                     <Box>
-                      <Button variant="text" component={Link} to={`${file.id}`}>
+                      <Button variant="text" onClick={handleDownload}>
                         Download
                       </Button>
                     </Box>

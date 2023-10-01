@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreateUnit, Measurement } from "../../../client/types/dictionaries/Unit";
+import { CreateUnit, Measurement, Unit } from "../../../client/types/dictionaries/Unit";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
@@ -9,13 +9,14 @@ import { SelectField } from "../../../components/form-controls/SelectField";
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
-import { validateWithSchema } from "../../../utils/validate";
 import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
+import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
+import { useValidator } from "../../../components/form/useValidator";
 
 export const Create = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
   const tpmClient = useTpmClient();
@@ -28,7 +29,29 @@ export const Create = () => {
   };
 
   const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const { showSuccess, showError } = useSnackbarContext();
+  const { showSuccess } = useSnackbarContext();
+  const { handleSubmit, submitError } = useSubmitHandler<CreateUnit, Unit>({
+    handleSubmit: (values: CreateUnit) => tpmClient.units().create(values),
+    successHandler: (result: Unit) => {
+      showSuccess("Success", "Unit created");
+      navigate(`/units/${result.id}`);
+    }
+  });
+  const validate = useValidator(
+    object({
+      name: string().required("Name is required")
+        .min(3, "Name must be at least 3 characters long")
+        .max(50, "Name must be at most 50 characters long"),
+      description: string().required("Description is required")
+        .min(3, "Description must be at least 3 characters long")
+        .max(1000, "Description must be at most 1000 characters long"),
+      volume: number().required("Volume is required")
+        .integer("Volume must be an integer")
+        .min(0, "Volume must be at least 0")
+        .max(1000000, "Volume must be at most 1000000"),
+      measurement: string().required("Measurement is required")
+    })
+  );
 
   useEffect(() => {
     tpmClient.units()
@@ -48,34 +71,6 @@ export const Create = () => {
     ]);
   }, [setBreadcrumbs, tpmClient]);
 
-  const validationSchema = object({
-    name: string().required("Name is required")
-      .min(3, "Name must be at least 3 characters long")
-      .max(50, "Name must be at most 50 characters long"),
-    description: string().required("Description is required")
-      .min(3, "Description must be at least 3 characters long")
-      .max(1000, "Description must be at most 1000 characters long"),
-    volume: number().required("Volume is required")
-      .integer("Volume must be an integer")
-      .min(0, "Volume must be at least 0")
-      .max(1000000, "Volume must be at most 1000000"),
-    measurement: string().required("Measurement is required")
-  });
-
-  const handleSubmit = (data: CreateUnit) =>
-    tpmClient.units()
-      .create(data)
-      .subscribe({
-        next: () => {
-          showSuccess("Success", "Unit created");
-          navigate("/units");
-        },
-        error: (error) => {
-          showError("Error creating unit", error.message);
-          setServerError(error.message);
-        }
-      });
-
   return loading ? (
     <Paper elevation={2} sx={{ p: 2 }}>
       <LoadingScreen />
@@ -87,7 +82,7 @@ export const Create = () => {
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={initialValues}
-        validate={(values) => validateWithSchema(validationSchema, values)}
+        validate={validate}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <Paper elevation={2} sx={{ p: 2 }}>
@@ -103,10 +98,10 @@ export const Create = () => {
 
             <Box pb={2} />
 
-            {serverError && (
+            {(serverError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError}</Typography>
+                  <Typography color="error">Error: {serverError || submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>

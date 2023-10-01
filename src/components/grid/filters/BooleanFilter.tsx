@@ -7,11 +7,10 @@ export interface BooleanFilterProps {
   onChange: (value: boolean) => void;
 }
 
-export const BooleanFilter = (props: BooleanFilterProps) => {
-
-  const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
+export const BooleanFilter = (
+  { id, label, value, onChange }: BooleanFilterProps
+) => {
   const labelId = `${id}-label`;
-
   return (
     <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={labelId}>{label}</InputLabel>

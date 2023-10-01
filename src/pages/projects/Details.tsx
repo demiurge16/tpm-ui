@@ -1,8 +1,6 @@
-import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
-import { Project } from "../../client/types/project/Project"
+import { ReactNode, SyntheticEvent, useState } from "react";
 import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import ProjectContextProvider from "./details/context/ProjectContext";
 import { ProjectDetails } from "./details/ProjectDetails";
@@ -13,99 +11,29 @@ import { ProjectTasks } from "./details/ProjectTasks";
 import { ProjectThreads } from "./details/ProjectThreads";
 import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
+import { useRefdata } from "../../components/form/useRefdata";
 
 export const Details = () => {
-  const [project, setProject] = useState<Project>({
-    id: '',
-    title: '',
-    description: '',
-    sourceLanguage: {
-      code: '',
-      name: ''
-    },
-    targetLanguages: [],
-    accuracy: {
-      id: '',
-      name: '',
-      description: ''
-    },
-    industry: {
-      id: '',
-      name: '',
-      description: ''
-    },
-    unit: {
-      id: '',
-      name: '',
-      description: ''
-    },
-    serviceTypes: [],
-    amount: 0,
-    expectedStart: new Date(),
-    internalDeadline: new Date(),
-    externalDeadline: new Date(),
-    budget: 0,
-    currency: {
-      code: '',
-      name: ''
-    },
-    status: {
-      status: 'DRAFT',
-      title: '',
-      description: ''
-    },
-    client: {
-      id: '',
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      city: '',
-      state: '',
-      zip: '',
-      country: {
-        code: '',
-        name: ''
-      },
-      vat: '',
-      notes: '',
-      type: {
-        id: '',
-        name: '',
-        description: '',
-        corporate: false,
-      },
-      active: false
-    }
-  });
-
-  const [loading, setLoading] = useState(true);
-
   const { id } = useParams();
 
-  const { showError } = useSnackbarContext();
+  if (!id) {
+    throw new Error('Project ID is required');
+  }
+
   const { setBreadcrumbs } = useBreadcrumbsContext();;
   const tpmClient = useTpmClient();
 
-  useEffect(() => {
-    if (!id) return;
+  const { loading, refdata, refdataError } = useRefdata(
+    {
+      project: tpmClient.projects().withId(id).get(),
+    },
+    (result) => setBreadcrumbs([
+      { label: "Projects", path: "/projects" },
+      { label: result.project.title, path: `/projects/${result.project.id}` }
+    ])
+  );
 
-    tpmClient.projects()
-      .withId(id)
-      .get()
-      .subscribe({
-        next: (response) => {
-          setProject(response);
-          setBreadcrumbs([
-            { label: 'Project', path: '/projects' },
-            { label: response.title, path: `/projects/${response.id}` },
-          ]);
-          setLoading(false);
-        },
-        error: (error) => showError(`Error loading project ${id}`, error.message)
-      });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
-
+  const { project } = refdata;
 
   const [value, setValue] = useState(0);
   const handleChange = (event: SyntheticEvent, newValue: number) => {

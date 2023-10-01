@@ -31,7 +31,7 @@ export const Details = () => {
     title: '',
     content: '',
     author: {
-      userId: '',
+      id: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -67,8 +67,8 @@ export const Details = () => {
 
   const statusTransitionHandler = createStatusTransitionHandler(tpmClient, id || '');
 
-  const threadLiked = () => thread.likes.some((like) => like.author.userId === userId);
-  const threadDisliked = () => thread.dislikes.some((dislike) => dislike.author.userId === userId);
+  const threadLiked = () => thread.likes.some((like) => like.author.id === userId);
+  const threadDisliked = () => thread.dislikes.some((dislike) => dislike.author.id === userId);
 
   useEffect(() => {
     if (!id) {
@@ -115,11 +115,11 @@ export const Details = () => {
       .like()
       .subscribe({
         next: (response) => {
-          if (thread.dislikes.some((dislike) => dislike.author.userId === response.author.userId)) {
-            thread.dislikes = thread.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId);
+          if (thread.dislikes.some((dislike) => dislike.author.id === response.author.id)) {
+            thread.dislikes = thread.dislikes.filter((dislike) => dislike.author.id !== response.author.id);
           }
-          if (thread.likes.some((like) => like.author.userId === response.author.userId)) {
-            thread.likes = thread.likes.map((like) => like.author.userId === response.author.userId ? response : like);
+          if (thread.likes.some((like) => like.author.id === response.author.id)) {
+            thread.likes = thread.likes.map((like) => like.author.id === response.author.id ? response : like);
             return;
           }
 
@@ -147,7 +147,7 @@ export const Details = () => {
         next: (response) => {
           setThread({
             ...thread,
-            likes: thread.likes.filter((like) => like.author.userId !== response.author.userId)
+            likes: thread.likes.filter((like) => like.author.id !== response.author.id)
           });
         },
         error: (error) => showError(error.message, error.response.data.message)
@@ -164,12 +164,12 @@ export const Details = () => {
       .dislike()
       .subscribe({
         next: (response) => {
-          if (thread.likes.some((like) => like.author.userId === response.author.userId)) {
-            thread.likes = thread.likes.filter((like) => like.author.userId !== response.author.userId);
+          if (thread.likes.some((like) => like.author.id === response.author.id)) {
+            thread.likes = thread.likes.filter((like) => like.author.id !== response.author.id);
           }
 
-          if (thread.dislikes.some((dislike) => dislike.author.userId === response.author.userId)) {
-            thread.dislikes = thread.dislikes.map((dislike) => dislike.author.userId === response.author.userId ? response : dislike);
+          if (thread.dislikes.some((dislike) => dislike.author.id === response.author.id)) {
+            thread.dislikes = thread.dislikes.map((dislike) => dislike.author.id === response.author.id ? response : dislike);
             return;
           }
 
@@ -197,7 +197,7 @@ export const Details = () => {
         next: (response) => {
           setThread({
             ...thread,
-            dislikes: thread.dislikes.filter((dislike) => dislike.author.userId !== response.author.userId)
+            dislikes: thread.dislikes.filter((dislike) => dislike.author.id !== response.author.id)
           });
         },
         error: (error) => showError(error.message, error.response.data.message)
@@ -260,7 +260,7 @@ export const Details = () => {
                 </Button>
                 <Divider orientation="vertical" flexItem sx={{ mr: 1 }}/>
                 By:
-                <Button variant="text" component={Link} to={`/users/${thread.author.userId}`}>
+                <Button variant="text" component={Link} to={`/users/${thread.author.id}`}>
                   {thread.author.firstName} {thread.author.lastName}
                 </Button>
                 at {formatDate(thread.createdAt)}

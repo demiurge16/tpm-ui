@@ -15,10 +15,7 @@ export interface MultivalueStringFilterProps {
   onChange: (value: string[]) => void;
 }
 
-export const StringFilter = (props: StringFilterProps) => {
-
-  const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
-
+export const StringFilter = ({ id, label, value, onChange }: StringFilterProps) => {
   return (
     <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={id}>{label}</InputLabel>
@@ -31,8 +28,9 @@ export const StringFilter = (props: StringFilterProps) => {
   );
 }
 
-export const MultivalueStringFilter = (props: MultivalueStringFilterProps) => {
-  const [id, label, value, onChange] = [props.id, props.label, props.value, props.onChange];
+export const MultivalueStringFilter = (
+  { id, label, value, onChange }: MultivalueStringFilterProps
+) => {
   const [values, setValues] = useState<Array<string>>(value ?? []);
   const [inputValue, setInputValue] = useState('');
 

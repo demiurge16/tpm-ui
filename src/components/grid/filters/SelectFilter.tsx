@@ -9,8 +9,9 @@ export interface SelectFilterProps {
   onChange: (value: string | string[]) => void;
 }
 
-export const SelectFilter = (props: SelectFilterProps) => {
-  const { id, label, value, multiple, options, onChange } = props;
+export const SelectFilter = (
+  { id, label, value, multiple, options, onChange }: SelectFilterProps
+) => {
   const labelId = `${id}-label`;
 
   const renderValue = (values: string | string[]) => {

@@ -1,11 +1,5 @@
-import { useEffect, useState } from 'react';
 import { useSnackbarContext } from '../../contexts/SnackbarContext';
-import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { useNavigate, useParams } from 'react-router-dom';
-import { forkJoin } from 'rxjs';
-import { Accuracy } from '../../client/types/dictionaries/Accuracy';
-import { Industry } from '../../client/types/dictionaries/Industry';
-import { Unit } from '../../client/types/dictionaries/Unit';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
 import { TextField } from '../../components/form-controls/TextField';
@@ -15,115 +9,77 @@ import { DateTimeField } from '../../components/form-controls/DateTimeField';
 import { object, string, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
 import { CreateTask } from '../../client/types/project/Task';
-import { Priority } from '../../client/types/dictionaries/Priority';
-import { validateWithSchema } from '../../utils/validate';
 import { useTpmClient } from '../../contexts/TpmClientContext';
 import { LoadingScreen } from '../utils/LoadingScreen';
-import { ServiceType } from '../../client/types/project/Project';
+import { useSubmitHandler } from '../../components/form/useSubmitHandler';
+import { Task } from '../../client/types/task/Task';
+import { useValidator } from '../../components/form/useValidator';
+import { useRefdata } from '../../components/form/useRefdata';
+import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 
 export const Create = () => {
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { projectId } = useParams();
 
-  const [accuracies, setAccuracies] = useState<Array<Accuracy>>([]);
-  const [industries, setIndustries] = useState<Array<Industry>>([]);
-  const [units, setUnits] = useState<Array<Unit>>([]);
-  const [priorities, setPriorities] = useState<Array<Priority>>([]);
-  const [serviceTypes, setServiceTypes] = useState<Array<ServiceType>>([]);
+  if (!projectId) {
+    throw new Error('Project ID is required');
+  }
+
+  const { showSuccess } = useSnackbarContext();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const navigate = useNavigate();
   const tpmClient = useTpmClient();
-  const { projectId } = useParams();
 
-  const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-
-  const initialValues: CreateTask = {
-    title: '',
-    description: '',
-    sourceLanguage: '',
-    targetLanguage: '',
-    accuracyId: '',
-    industryId: '',
-    unitId: '',
-    amount: 0,
-    expectedStart: new Date(),
-    deadline: new Date(),
-    budget: 0,
-    currencyCode: '',
-    priorityId: ''
-  };
-
-  const validationSchema = object({
-    title: string().required('Title is required'),
-    description: string().required('Description is required'),
-    sourceLanguage: string().required('Source language is required'),
-    targetLanguage: string().required('Target language is required'),
-    accuracyId: string().required('Accuracy is required'),
-    industryId: string().required('Industry is required'),
-    unitId: string().required('Unit is required'),
-    serviceTypeId: string().required('Service type is required'),
-    amount: number().required('Amount is required')
-      .min(1, 'Amount must be greater than or equal to 1'),
-    expectedStart: date().required('Expected start date is required'),
-    deadline: date().required('Deadline is required'),
-    budget: number().required('Budget is required')
-      .min(0, 'Budget must be greater than or equal to 0'),
-    currencyCode: string().required('Currency is required'),
-    priorityId: string().required('Priority is required')
-  });
-
-  useEffect(() => {
-    setBreadcrumbs([
-      { label: 'Projects', path: '/projects' },
-      { label: 'Project', path: `/projects/${projectId}` },
-      { label: 'Create Task', path: '/projects/tasks/create' }
-    ]);
-
-    forkJoin({
+  const { loading, refdata, refdataError } = useRefdata(
+    {
       accuracies: tpmClient.accuracies().all(),
       industries: tpmClient.industries().all(),
       units: tpmClient.units().all(),
       priorities: tpmClient.priorities().all(),
-      serviceTypes: tpmClient.serviceTypes().all()
-    }).subscribe({
-      next: (response) => {
-        const { accuracies, industries, units, priorities, serviceTypes } = response;
-
-        setAccuracies(accuracies.items);
-        setIndustries(industries.items);
-        setUnits(units.items);
-        setPriorities(priorities.items);
-        setServiceTypes(serviceTypes.items);
-        setLoading(false);
-      },
-      error: (error) => {
-        showError('Error loading reference data', error.message);
-      }
-    });
-  }, [projectId, setBreadcrumbs, showError, tpmClient]);
-
-  const handleSubmit = async (values: CreateTask) => {
-    if (!projectId) {
-      return;
+      serviceTypes: tpmClient.serviceTypes().all(),
+      languages: tpmClient.languages().all(),
+      currencies: tpmClient.currencies().all(),
+      project: tpmClient.projects().withId(projectId).get()
+    },
+    (result) => {
+      setBreadcrumbs([
+        { label: 'Projects', path: '/projects' },
+        { label: result.project.name, path: `/projects/${result.project.id}` },
+        { label: 'Create Task', path: `/projects/${result.project.id}/tasks/create` }
+      ]);
     }
+  );
 
-    tpmClient
-      .projects()
-      .withId(projectId)
-      .tasks()
-      .create(values)
-      .subscribe({
-        next: (response) => {
-          showSuccess('Success', 'Task created');
-          navigate(`/tasks/${response.id}`);
-        },
-        error: (error) => {
-          showError(error.message, error.response.data.message);
-          setServerError(error.message);
-        }
-      });
-  };
+  const { accuracies, industries, units, priorities, serviceTypes, languages, currencies } = refdata;
+
+  const { handleSubmit, submitError } = useSubmitHandler<CreateTask, Task>({
+    handleSubmit: (values) => tpmClient.projects().withId(projectId).tasks().create(values),
+    successHandler: (task) => {
+      showSuccess('Success', 'Task created successfully');
+      navigate(`/tasks/${task.id}`);
+    },
+  });
+
+  const validator = useValidator(
+    object({
+      title: string().required('Title is required'),
+      description: string().required('Description is required'),
+      sourceLanguage: string().required('Source language is required'),
+      targetLanguage: string().required('Target language is required'),
+      accuracyId: string().required('Accuracy is required'),
+      industryId: string().required('Industry is required'),
+      unitId: string().required('Unit is required'),
+      serviceTypeId: string().required('Service type is required'),
+      amount: number().required('Amount is required')
+        .min(1, 'Amount must be greater than or equal to 1'),
+      expectedStart: date().required('Expected start date is required'),
+      deadline: date().required('Deadline is required'),
+      budget: number().required('Budget is required')
+        .min(0, 'Budget must be greater than or equal to 0'),
+      currencyCode: string().required('Currency is required'),
+      priorityId: string().required('Priority is required')
+    })
+  );
 
   return loading ? (
     <Paper elevation={2} sx={{ p: 2 }}>
@@ -135,8 +91,7 @@ export const Create = () => {
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
-        initialValues={initialValues}
-        validate={(values) => validateWithSchema(validationSchema, values)}
+        validate={validator}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit}>
             <Paper elevation={2} sx={{ p: 2 }}>
@@ -150,17 +105,17 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="industryId" label="Industry" required
-                    options={industries.map((industry) => ({ key: industry.id, value: industry.name }))}
+                    options={industries.items.map((industry) => ({ key: industry.id, value: industry.name }))}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="accuracyId" label="Accuracy" required
-                    options={accuracies.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
+                    options={accuracies.items.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <SelectField name="serviceTypeId" label="Service Type" required
-                    options={serviceTypes.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
+                    options={serviceTypes.items.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
                   />
                 </Grid>
               </Grid>
@@ -172,42 +127,12 @@ export const Create = () => {
               <Grid container columnSpacing={2}>
                 <Grid item xs={6}>
                   <AsyncSelectField name="sourceLanguage" label="Source Language" required
-                    searchQueryProvider={(search) => (
-                      {
-                        page: 0,
-                        pageSize: 25,
-                        sort: [],
-                        filters: [
-                          {
-                            field: 'name',
-                            operator: 'contains',
-                            value: search
-                          }
-                        ]
-                      }
-                    )}
-                    resultFormatter={(language) => ({ key: language.code, value: language.name })}
-                    optionsLoader={tpmClient.languages().all}
+                    options={languages.items.map((language) => ({ key: language.code, value: language.name }))}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <AsyncSelectField name="targetLanguage" label="Target Language" required
-                    searchQueryProvider={(search) => (
-                      {
-                        page: 0,
-                        pageSize: 25,
-                        sort: [],
-                        filters: [
-                          {
-                            field: 'name',
-                            operator: 'contains',
-                            value: search
-                          }
-                        ]
-                      }
-                    )}
-                    resultFormatter={(language) => ({ key: language.code, value: language.name })}
-                    optionsLoader={tpmClient.languages().all}
+                    options={languages.items.map((language) => ({ key: language.code, value: language.name }))}
                   />
                 </Grid>
               </Grid>
@@ -235,12 +160,12 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>              
                   <SelectField name="unitId" label="Unit" required
-                    options={units.map((unit) => ({ key: unit.id, value: unit.name }))}
+                    options={units.items.map((unit) => ({ key: unit.id, value: unit.name }))}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <SelectField name="priorityId" label="Priority" required
-                    options={priorities.map((priority) => ({ key: priority.id, value: priority.name }))}
+                    options={priorities.items.map((priority) => ({ key: priority.id, value: priority.name }))}
                   />
                 </Grid>
               </Grid>
@@ -255,32 +180,17 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <AsyncSelectField name="currencyCode" label="Currency" required
-                    searchQueryProvider={(search) => (
-                      {
-                        page: 0,
-                        pageSize: 25,
-                        sort: [],
-                        filters: [
-                          {
-                            field: 'name',
-                            operator: 'contains',
-                            value: search
-                          }
-                        ]
-                      }
-                    )}
-                    resultFormatter={(currency) => ({ key: currency.code, value: currency.name })}
-                    optionsLoader={tpmClient.currencies().all}
+                    options={currencies.items.map((currency) => ({ key: currency.code, value: currency.name }))}
                   />
                 </Grid>
               </Grid>
             </Paper>
             <Box pb={2} />
               
-            {serverError && (
+            {(refdataError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError}</Typography>
+                  <Typography color="error">Error: {refdataError || submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>
