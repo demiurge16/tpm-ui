@@ -3,17 +3,17 @@ import { FilterOperator } from "../../client/types/common/Search";
 export class Operation {
   constructor(public symbol: FilterOperator, public name: string, public multivalue: boolean) { }
 
-  static EQUALS = new Operation("eq", "Is equal to", false);
-  static CONTAINS = new Operation("contains", "Contains", false);
-  static GREATER_THAN = new Operation("gt", "Greater than", false);
-  static LESS_THAN = new Operation("lt", "Less than", false);
-  static GREATER_THAN_OR_EQUAL = new Operation("gte", "Greater than or equal", false);
-  static LESS_THAN_OR_EQUAL = new Operation("lte", "Less than or equal", false);
-  static ANY = new Operation("any", "Is any of", true);
-  static ALL = new Operation("all", "Is all of", true);
-  static NONE = new Operation("none", "Is none of", true);
-  static IS_NULL = new Operation("null", "Is null", false);
-  static IS_EMPTY = new Operation("empty", "Is empty", false);
+  static EQUALS = new Operation("eq", "filters.operation.eq", false);
+  static CONTAINS = new Operation("contains", "filters.operation.contains", false);
+  static GREATER_THAN = new Operation("gt", "filters.operation.gt", false);
+  static LESS_THAN = new Operation("lt", "filters.operation.lt", false);
+  static GREATER_THAN_OR_EQUAL = new Operation("gte", "filters.operation.gte", false);
+  static LESS_THAN_OR_EQUAL = new Operation("lte", "filters.operation.lte", false);
+  static ANY = new Operation("any", "filters.operation.any", true);
+  static ALL = new Operation("all", "filters.operation.all", true);
+  static NONE = new Operation("none", "filters.operation.none", true);
+  static IS_NULL = new Operation("null", "filters.operation.null", false);
+  static IS_EMPTY = new Operation("empty", "filters.operation.empty", false);
 
   static getOperationForSymbol(type: FilterOperator): Operation {
     switch (type) {

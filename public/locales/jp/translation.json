@@ -1,0 +1,88 @@
+{
+  "components": {
+    "grid": {
+      "actions": {
+        "columns": "カラム",
+        "filters": "フィルター",
+        "exportAll": "すべてエクスポート",
+        "exportAllTooltip": "ページネーションの設定を無視してデータをエクスポート",
+        "export": "エクスポート",
+        "exportTooltip": "グリッドに表示されているデータをエクスポート",
+        "refresh": "リフレッシュ"
+      },
+      "filters": {
+        "addFilter": "フィルターを追加",
+        "clear": "クリア",
+        "field": "フィールド",
+        "operator": "オペレーター",
+        "value": "値",
+        "boolean": {
+          "true": "真",
+          "false": "偽"
+        },
+        "operation": {
+          "eq": "等しい",
+          "contains": "含む",
+          "gt": "より大きい",
+          "lt": "より小さい",
+          "gte": "以上",
+          "lte": "以下",
+          "any": "いずれか",
+          "all": "すべて",
+          "none": "なし",
+          "null": "ヌル",
+          "empty": "空"
+        }
+      },
+      "overlays": {
+        "noRowsToShow": "表示する行がありません"
+      },
+      "pagination": {
+        "itemsPerPage": "ページあたりの項目数:",
+        "of": "の"
+      }
+    }
+  },
+  "projects": {
+    "index": {
+      "title": "プロジェクト",
+      "description": "これがあなたのビジネスの核心です。ここでは、すべてのプロジェクトを表示して管理できます。",
+      "breadcrumbs": {
+        "index": "プロジェクト"
+      },
+      "grid": {
+        "id": "Id",
+        "title": "タイトル",
+        "description": "説明",
+        "languagePair": "言語ペア（ソース->ターゲット）",
+        "timeframe": "タイムフレーム（予定開始->内部締め切り->外部締め切り）",
+        "accuracy": "精度",
+        "industry": "業界",
+        "volume": "ボリューム",
+        "budget": "予算",
+        "status": "状態",
+        "client": "クライアント",
+        "filters": {
+          "id": "ID",
+          "title": "タイトル",
+          "sourceLanguage": "ソース言語",
+          "targetLanguages": "ターゲット言語",
+          "accuracy": "正確さ",
+          "industry": "業界",
+          "unit": "単位",
+          "amount": "金額",
+          "expectedStart": "予想開始日",
+          "internalDeadline": "内部締め切り",
+          "externalDeadline": "外部締め切り",
+          "budget": "予算",
+          "currency": "通貨",
+          "status": "ステータス",
+          "client": "クライアント"
+        }
+      },
+      "actions": {
+        "create": "新しいプロジェクトを作成する"
+      }
+    }
+  }
+}

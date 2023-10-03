@@ -1,8 +1,6 @@
 import { AgGridReact } from "ag-grid-react";
-import {
+import React, {
   ChangeEvent,
-  createContext,
-  useContext,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -39,6 +37,7 @@ import { Operation } from "./Operation";
 import { useStyles } from "./Grid.styles";
 import { ColumnPicker } from "./ColumnPicker";
 import { LoadingScreen } from "../../pages/utils/LoadingScreen";
+import { useTranslation } from "react-i18next";
 
 export const Grid = <Type,>(
   { startPage, pageSize, columnDefinitions, filters, fetch, exportData, innerRef, elevation }: GridProps<Type>
@@ -46,6 +45,7 @@ export const Grid = <Type,>(
   const gridRef = useRef<AgGridReact<Type>>(null);
   const theme = useTheme();
   const styles = useStyles(theme, elevation);
+  const { t, i18n } = useTranslation("translation", { keyPrefix: "components.grid" });
 
   useImperativeHandle(innerRef, () => ({
     refresh: () => reloadData(query),
@@ -69,6 +69,13 @@ export const Grid = <Type,>(
 
   useEffect(() => reloadData(query), []);
   useEffect(() => resizeGrid(), [columnDefinitions]);
+
+  // This is a hack to force the grid to redraw when the language changes
+  const [redraw, setRedraw] = useState(false);
+  useEffect(() => {
+    setRedraw(true);
+    setTimeout(() => setRedraw(false), 0);
+  }, [i18n.language]);
 
   function handleChangePage(event: unknown, newPage: number) {
     setQuery(prev => {
@@ -188,30 +195,66 @@ export const Grid = <Type,>(
   };
 
   const getFilterLabel = (filter: Filter) => {
-    const column =
+    const Column =
       filters.find((column) => column.id === filter.field)?.name ||
       filter.field;
-    const operator = Operation.getOperationForSymbol(filter.operator).name.toLowerCase();
+
+    const operator = t(Operation.getOperationForSymbol(filter.operator).name).toLowerCase();
 
     if (filter.value instanceof Array) {
       const options =
-        filters.find((column) => column.id === filter.field)?.options ||
-        [];
+        filters.find((column) => column.id === filter.field)?.options || [];
       const values = filter.value.map(
         (value) =>
           options.find((option) => option.value === value)?.label || value
       );
-      return `${column} ${operator} [${values.join(", ")}]`;
+      
+      return (
+        <>
+          <Column />
+          {" "}{operator}{" "}
+          {values.map((value, index) => (
+            <React.Fragment key={index}>
+              {value.toString()}
+              {index < values.length - 1 && ", "}
+            </React.Fragment>
+          ))}
+        </>
+      );
     } else if (filter.value instanceof Date) {
-      return `${column} ${operator} ${filter.value.toLocaleDateString()}`;
+      return (
+        <>
+          <Column />
+          {" "}{operator}{" "}
+          {filter.value.toLocaleDateString()}
+        </>
+      );
     } else if (typeof filter.value === "boolean") {
-      return `${column} ${operator} ${filter.value ? "Yes" : "No"}`;
+      return (
+        <>
+          <Column />
+          {" "}{operator}{" "}
+          {filter.value ? t("filters.boolean.true") : t("filters.boolean.false")}
+        </>
+      )
     } else if (typeof filter.value === "number") {
-      return `${column} ${operator} ${filter.value}`;
+      return (
+        <>
+          <Column />
+          {" "}{operator}{" "}
+          {filter.value.toString()}
+        </>
+      );
     }
 
     const value = filter.value;
-    return `${column} ${operator} "${value}"`;
+    return (
+      <>
+        <Column />
+        {" "}{operator}{" "}
+        {value?.toString()}
+      </>
+    )
   };
 
   const handleColumnsChange = (columnDefinitions: ColumnDefinition<Type>[]) => {
@@ -226,7 +269,9 @@ export const Grid = <Type,>(
 
         <Button variant="text" onClick={handleOpenFilters} sx={{ mb: 1 }}>
           <FilterListIcon sx={{ mr: 1 }} />
-          <Typography variant="button">Filters</Typography>
+          <Typography variant="button">
+            {t("actions.filters")}
+          </Typography>
           <NavigateNextIcon sx={{ ml: 1 }} />
         </Button>
         <Typography variant="caption" sx={{ mb: 1 }}>
@@ -270,58 +315,76 @@ export const Grid = <Type,>(
         {
           exportData &&
             <>
-              <Tooltip title="Export data ignoring pagination settings">
+              <Tooltip title={t("actions.exportAllTooltip")}>
                 <Button sx={{ mb: 1 }} variant="text" onClick={() => exportAllData()}>
                   <DownloadIcon sx={{ mr: 1 }} />
-                  <Typography variant="button">Export All</Typography>
+                  <Typography variant="button">
+                    {t("actions.exportAll")}
+                  </Typography>
                 </Button>
               </Tooltip>
-              <Tooltip title="Export data visible on the grid">
+              <Tooltip title={t("actions.exportTooltip")}>
                 <Button sx={{ mb: 1 }} variant="text" onClick={() => exportCurrentPage()}>
                   <DownloadOutlinedIcon sx={{ mr: 1 }} />
-                  <Typography variant="button">Export</Typography>
+                  <Typography variant="button">
+                    {t("actions.export")}
+                  </Typography>
                 </Button>
               </Tooltip>
             </>
         }
         <Button sx={{ mb: 1 }} variant="text" onClick={() => reloadData(query)}>
           <RefreshIcon sx={{ mr: 1 }} />
-          <Typography variant="button">Refresh</Typography>
+          <Typography variant="button">
+            {t("actions.refresh")}
+          </Typography>
         </Button>
       </Box>
 
-      <div className={`ag-theme-alpine ${styles.grid}`}>
-        <AgGridReact<Type>
-          domLayout="autoHeight"
-          ref={gridRef}
-          rowData={data.items}
-          columnDefs={columnDefinitions}
-          animateRows={true}
-          rowSelection="multiple"
-          multiSortKey="ctrl"
-          suppressDragLeaveHidesColumns={true}
-          onSortChanged={(event) => handleSortChange(event)}
-          loadingOverlayComponent={LoadingScreen}
-        />
-        <Box className={styles.pagination}>
-          <TablePagination
-            component="div"
-            count={data.totalItems}
-            page={query.page}
-            onPageChange={handleChangePage}
-            rowsPerPage={query.pageSize}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={Object.values(PageSizeOptions)}
+      {
+        !redraw && (
+        <div className={`ag-theme-alpine ${styles.grid}`}>
+          <AgGridReact<Type>
+            domLayout="autoHeight"
+            ref={gridRef}
+            rowData={data.items}
+            columnDefs={columnDefinitions}
+            animateRows={true}
+            rowSelection="multiple"
+            multiSortKey="ctrl"
+            suppressDragLeaveHidesColumns={true}
+            onSortChanged={(event) => handleSortChange(event)}
+            loadingOverlayComponent={LoadingScreen}
+            noRowsOverlayComponent={() => (
+              <>{t("overlays.noRowsToShow")}</>
+            )}
           />
-        </Box>
-      </div>
+          <Box className={styles.pagination}>
+            <TablePagination
+              component="div"
+              count={data.totalItems}
+              page={query.page}
+              onPageChange={handleChangePage}
+              rowsPerPage={query.pageSize}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={Object.values(PageSizeOptions)}
+              labelRowsPerPage={t("pagination.itemsPerPage")}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}-${to} ${t("pagination.of")} ${count}`
+              }
+            />
+          </Box>
+        </div>
+        )
+      }
+      
     </Container>
   );
 };
 
 interface ContainerProps {
   elevation?: number;
-  children: any;
+  children: React.ReactNode;
 }
 
 const Container = ({ elevation, children }: ContainerProps) => {

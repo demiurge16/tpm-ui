@@ -3,35 +3,35 @@ import { FormControl, InputLabel, Input, TextField, Chip } from "@mui/material";
 
 export interface StringFilterProps {
   id: string;
-  label: string;
+  label: string | React.ComponentType<object>;
   value: string | null;
   onChange: (value: string) => void;
 }
 
 export interface MultivalueStringFilterProps {
   id: string;
-  label: string;
+  label: string | React.ComponentType<object>;
   value: string[] | null;
   onChange: (value: string[]) => void;
 }
 
-export const StringFilter = ({ id, label, value, onChange }: StringFilterProps) => {
+export const StringFilter = (props: StringFilterProps) => {
   return (
     <FormControl variant="standard" size="small" fullWidth>
-      <InputLabel id={id}>{label}</InputLabel>
-      <Input id={id}
+      <InputLabel id={props.id}>
+        {typeof props.label === "string" ? props.label : <props.label />}
+      </InputLabel>
+      <Input id={props.id}
         type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
       />
     </FormControl>
   );
 }
 
-export const MultivalueStringFilter = (
-  { id, label, value, onChange }: MultivalueStringFilterProps
-) => {
-  const [values, setValues] = useState<Array<string>>(value ?? []);
+export const MultivalueStringFilter = (props: MultivalueStringFilterProps) => {
+  const [values, setValues] = useState<Array<string>>(props.value ?? []);
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +47,7 @@ export const MultivalueStringFilter = (
 
       setValues((prevValues) => {
         const newValues = [...prevValues, inputValue]
-        onChange(newValues);
+        props.onChange(newValues);
         return newValues;
       });
       setInputValue('');
@@ -57,7 +57,7 @@ export const MultivalueStringFilter = (
   const handleDelete = (valueToDelete: string) => () => {
     setValues(prevValues => {
       const newValues = prevValues.filter((value) => value !== valueToDelete);
-      onChange(newValues);
+      props.onChange(newValues);
       return newValues;
     });
   };
@@ -65,7 +65,7 @@ export const MultivalueStringFilter = (
   return (
     <>
       <TextField
-        label={label}
+        label={typeof props.label === "string" ? props.label : <props.label />}
         variant="standard"
         fullWidth
         value={inputValue}
@@ -82,7 +82,7 @@ export const MultivalueStringFilter = (
           )),
         }}
       />
-      <input id={id} type="hidden" value={values} />
+      <input id={props.id} type="hidden" value={values} />
     </>
   );
 };

@@ -15,6 +15,7 @@ import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { useRefdata } from '../../components/form/useRefdata';
 import { useValidator } from '../../components/form/useValidator';
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useTranslation } from "react-i18next";
 
 export const Create = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const Create = () => {
 
   const { showSuccess } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
+  const { t } = useTranslation();
 
   const { loading, refdata, refdataError } = useRefdata(
     {
@@ -33,9 +35,15 @@ export const Create = () => {
       currencies: tpmClient.currencies().all(),
       languages: tpmClient.languages().all()
     },
-    (result) => setBreadcrumbs([
-      { label: "Projects", path: "/projects" },
-      { label: "Create Project", path: "/projects/create" }
+    () => setBreadcrumbs([
+      { 
+        label: t('projects.breadcrumbs.index'),
+        path: "/projects"
+      },
+      { 
+        label: t('projects.breadcrumbs.create'),
+        path: "/projects/create"
+      }
     ])
   );
 
@@ -75,7 +83,8 @@ export const Create = () => {
     </Paper>
   ) : (
     <Box>
-      <Typography variant="h4">Create Project</Typography>
+      {/* <Typography variant="h4">Create Project</Typography> */}
+      <Typography variant="h4">{t('projects.create.title')}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize

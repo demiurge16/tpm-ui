@@ -51,9 +51,6 @@ export const AsyncSelectField = (
                   variant="outlined"
                   error={(meta.error && meta.touched) || meta.submitError}
                   helperText={meta.error || meta.submitError}
-                  InputProps={{
-                    ...params.InputProps
-                  }}
                 />
               )}
             />

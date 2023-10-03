@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, FormControlLabel, List, ListItem, Popover, Switch, Typography } from "@mui/material";
 import { ColumnDefinition } from "./GridProps";
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import { useTranslation } from "react-i18next";
 
 export interface ColumnPickerProps<Type> {
   columnDefinitions: ColumnDefinition<Type>[];
@@ -13,6 +14,8 @@ export const ColumnPicker = <Type extends any>(props: ColumnPickerProps<Type>) =
   useEffect(() => {
     setColumnDefinitions(props.columnDefinitions);
   }, [props.columnDefinitions]);
+
+  const { t } = useTranslation("translation", { keyPrefix: "components.grid" });
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -32,7 +35,9 @@ export const ColumnPicker = <Type extends any>(props: ColumnPickerProps<Type>) =
     <>
       <Button variant="text" onClick={handleOpenColumns} sx={{ mb: 1 }}>
         <ViewColumnIcon sx={{ mr: 1 }} />
-        <Typography variant="button">Columns</Typography>
+        <Typography variant="button">
+          {t("actions.columns")}
+        </Typography>
       </Button>
       <Popover
         sx={{ p: 2 }}
@@ -69,7 +74,7 @@ export const ColumnPicker = <Type extends any>(props: ColumnPickerProps<Type>) =
                         }}
                       />
                     }
-                    label={column.headerName}
+                    label={column.headerName || <column.headerComponent />}
                   />
                 </ListItem>
               ))

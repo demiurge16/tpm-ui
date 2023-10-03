@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
-interface Breadcrumb {
-  label: string;
+interface Breadcrumb<T = object> {
+  label: string | JSX.Element | React.ComponentType<T>;
   path: string;
 }
 
@@ -29,12 +29,7 @@ const BreadcrumbsContextProvider = (
   const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
 
   return (
-    <BreadcrumbsContext.Provider
-      value={{
-        breadcrumbs,
-        setBreadcrumbs,
-      }}
-    >
+    <BreadcrumbsContext.Provider value={{ breadcrumbs, setBreadcrumbs }}>
       {props.children}
     </BreadcrumbsContext.Provider>
   );

@@ -1,0 +1,88 @@
+{
+  "components": {
+    "grid": {
+      "actions": {
+        "columns": "Columnas",
+        "filters": "Filtros",
+        "exportAll": "Exportar todo",
+        "exportAllTooltip": "Exportar datos ignorando los ajustes de paginación",
+        "export": "Exportar",
+        "exportTooltip": "Exportar datos visibles en la rejilla",
+        "refresh": "Actualizar"
+      },
+      "filters": {
+        "addFilter": "Agregar filtro",
+        "clear": "Limpiar",
+        "field": "Campo",
+        "operator": "Operador",
+        "value": "Valor",
+        "boolean": {
+          "true": "Verdadero",
+          "false": "Falso"
+        },
+        "operation": {
+          "eq": "Es igual a",
+          "contains": "Contiene",
+          "gt": "Es mayor que",
+          "lt": "Es menor que",
+          "gte": "Es mayor o igual que",
+          "lte": "Es menor o igual que",
+          "any": "Es alguno de",
+          "all": "Es todos de",
+          "none": "No es ninguno de",
+          "null": "Es nulo",
+          "empty": "Está vacío"
+        }
+      },
+      "overlays": {
+        "noRowsToShow": "No hay filas para mostrar."
+      },
+      "pagination": {
+        "itemsPerPage": "Elementos por página:",
+        "of": "de"
+      }
+    }
+  },
+  "projects": {
+    "index": {
+      "title": "Proyectos",
+      "description": "Este es el corazón de su negocio. Aquí puede ver y administrar todos sus proyectos.",
+      "breadcrumbs": {
+        "index": "Proyectos"
+      },
+      "grid": {
+        "id": "Id",
+        "title": "Título",
+        "description": "Descripción",
+        "languagePair": "Par de idiomas (Origen -> Destino)",
+        "timeframe": "Marco temporal (Inicio esperado -> Fecha límite interna -> Fecha límite externa)",
+        "accuracy": "Precisión",
+        "industry": "Industria",
+        "volume": "Volumen",
+        "budget": "Presupuesto",
+        "status": "Estado",
+        "client": "Cliente",
+        "filters": {
+          "id": "Id",
+          "title": "Título",
+          "sourceLanguage": "Idioma de origen",
+          "targetLanguages": "Idiomas de destino",
+          "accuracy": "Precisión",
+          "industry": "Industria",
+          "unit": "Unidad",
+          "amount": "Cantidad",
+          "expectedStart": "Inicio esperado",
+          "internalDeadline": "Fecha límite interna",
+          "externalDeadline": "Fecha límite externa",
+          "budget": "Presupuesto",
+          "currency": "Moneda",
+          "status": "Estado",
+          "client": "Cliente"
+        }
+      },
+      "actions": {
+        "create": "Crear nuevo proyecto"
+      }
+    }
+  }
+}

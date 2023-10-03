@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/css";
-import { useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material";
 import Box from "@mui/material/Box/Box";
 import Toolbar from "@mui/material/Toolbar/Toolbar";
 import Drawer from "@mui/material/Drawer/Drawer";
 import List from "@mui/material/List/List";
 import { useAuth } from "../contexts/AuthContext";
-import { MenuConfig, MenuItem, MenuItemGroup, flattenMenu, isGroup, isItem, menuConfig } from "./navigation/MenuConfig";
+import { MenuConfig, MenuItemGroup, flattenMenu, isGroup, isItem, menuConfig } from "./navigation/MenuConfig";
 import { NavigationDrawerItem } from "./navigation/NavigationDrawerItem";
 import { NavigationDrawerItemGroup } from "./navigation/NavigationDrawerItemGroup";
 

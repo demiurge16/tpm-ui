@@ -1,0 +1,88 @@
+{
+  "components": {
+    "grid": {
+      "actions": {
+        "columns": "Stupci",
+        "filters": "Filtri",
+        "exportAll": "Izvezi sve",
+        "exportAllTooltip": "Izvoz podataka zanemarujući postavke paginacije",
+        "export": "Izvezi",
+        "exportTooltip": "Izvoz podataka vidljivih na rešetci",
+        "refresh": "Osvježi"
+      },
+      "filters": {
+        "addFilter": "Dodaj filter",
+        "clear": "Očisti",
+        "field": "Polje",
+        "operator": "Operator",
+        "value": "Vrijednost",
+        "boolean": {
+          "true": "Točno",
+          "false": "Netočno"
+        },
+        "operation": {
+          "eq": "Jednako je",
+          "contains": "Sadrži",
+          "gt": "Veće je od",
+          "lt": "Manje je od",
+          "gte": "Veće je ili jednako",
+          "lte": "Manje je ili jednako",
+          "any": "Bilo koji od",
+          "all": "Svi od",
+          "none": "Nijedan od",
+          "null": "Je null",
+          "empty": "Je prazno"
+        }
+      },
+      "overlays": {
+        "noRowsToShow": "Nema redaka za prikaz"
+      },
+      "pagination": {
+        "itemsPerPage": "Stavki po stranici:",
+        "of": "od"
+      }
+    }
+  },
+  "projects": {
+    "index": {
+      "title": "Projekti",
+      "description": "Ovo je srce vašeg poslovanja. Ovdje možete vidjeti i upravljati svim svojim projektima.",
+      "breadcrumbs": {
+        "index": "Projekti"
+      },
+      "grid": {
+        "id": "Id",
+        "title": "Naslov",
+        "description": "Opis",
+        "languagePair": "Par jezika (Izvor -> Odredište)",
+        "timeframe": "Vremenski okvir (Očekivani početak -> Interni rok -> Vanjski rok)",
+        "accuracy": "Točnost",
+        "industry": "Industrija",
+        "volume": "Volumen",
+        "budget": "Proračun",
+        "status": "Status",
+        "client": "Klijent",
+        "filters": {
+          "id": "Id",
+          "title": "Naslov",
+          "sourceLanguage": "Izvorni jezik",
+          "targetLanguages": "Ciljni jezici",
+          "accuracy": "Točnost",
+          "industry": "Industrija",
+          "unit": "Jedinica",
+          "amount": "Iznos",
+          "expectedStart": "Očekivani početak",
+          "internalDeadline": "Unutarnji rok",
+          "externalDeadline": "Vanjski rok",
+          "budget": "Proračun",
+          "currency": "Valuta",
+          "status": "Status",
+          "client": "Klijent"
+        }
+      },
+      "actions": {
+        "create": "Stvorite novi projekt"
+      }
+    }
+  }
+}

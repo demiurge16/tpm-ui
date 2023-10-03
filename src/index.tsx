@@ -1,4 +1,5 @@
 import "./index.scss";
+import "./localization";
 import { StrictMode, useMemo } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -6,7 +7,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider, createTheme } from "@mui/material";
 import AuthContextProvider from "./contexts/AuthContext";
 import BreadcrumbsContextProvider from "./contexts/BreadcrumbsContext";
 import ThemeContextProvider, { useThemeContext } from "./contexts/ThemeContext";

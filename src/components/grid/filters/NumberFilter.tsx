@@ -3,32 +3,32 @@ import { FormControl, InputLabel, Input, TextField, Chip } from "@mui/material";
 
 export interface NumberFilterProps {
   id: string;
-  label: string;
+  label: string | React.ComponentType<object>;
   value: number | string | null;
   onChange: (value: number | null) => void;
 }
 
 export interface MultivalueNumberFilterProps {
   id: string;
-  label: string;
+  label: string | React.ComponentType<object>;
   value: number[] | null;
   onChange: (value: number[]) => void;
 }
 
-export const NumberFilter = (
-  { id, label, value, onChange }: NumberFilterProps
-) => {
+export const NumberFilter = (props: NumberFilterProps) => {
   return (
     <FormControl variant="standard" size="small" fullWidth>
-      <InputLabel id={id}>{label}</InputLabel>
-      <Input id={id}
+      <InputLabel id={props.id}>
+        {typeof props.label === "string" ? props.label : <props.label />}
+      </InputLabel>
+      <Input id={props.id}
         type="number"
-        value={value}
+        value={props.value}
         onChange={(e) => {
           if (e.target.value === '') {
-            onChange(null);
+            props.onChange(null);
           } else {
-            onChange(parseFloat(e.target.value));
+            props.onChange(parseFloat(e.target.value));
           }
         }}
       />
@@ -36,10 +36,8 @@ export const NumberFilter = (
   );
 }
 
-export const MultivalueNumberFilter = (
-  { id, label, value, onChange }: MultivalueNumberFilterProps
-) => {
-  const [values, setValues] = useState<Array<number>>(value ?? []);
+export const MultivalueNumberFilter = (props: MultivalueNumberFilterProps) => {
+  const [values, setValues] = useState<Array<number>>(props.value ?? []);
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +53,7 @@ export const MultivalueNumberFilter = (
 
       setValues((prevValues) => {
         const newValues = [...prevValues, parseFloat(inputValue)]
-        onChange(newValues);
+        props.onChange(newValues);
         return newValues;
       });
       setInputValue('');
@@ -65,7 +63,7 @@ export const MultivalueNumberFilter = (
   const handleDelete = (valueToDelete: number) => () => {
     setValues(prevValues => {
       const newValues = prevValues.filter((value) => value !== valueToDelete);
-      onChange(newValues);
+      props.onChange(newValues);
       return newValues;
     });
   };
@@ -73,7 +71,7 @@ export const MultivalueNumberFilter = (
   return (
     <>
       <TextField
-        label={label}
+        label={typeof props.label === "string" ? props.label : <props.label />}
         variant="standard"
         fullWidth
         value={inputValue}
@@ -90,7 +88,7 @@ export const MultivalueNumberFilter = (
           )),
         }}
       />
-      <input id={id} type="hidden" value={values.map(e => e.toString())} />
+      <input id={props.id} type="hidden" value={values.map(e => e.toString())} />
     </>
   );
 };

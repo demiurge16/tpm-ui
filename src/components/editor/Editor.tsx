@@ -20,13 +20,13 @@ export const Editor = (props: EditorProps) => {
 
   return (
     <>
-      <TinyMceEditor tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
+      <TinyMceEditor tinymceScriptSrc={import.meta.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
         init={{
           plugins: 'preview paste importcss searchreplace autolink autosave directionality code visualblocks visualchars image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
           imagetools_cors_hosts: [
-            'localhost:3000',
+            'localhost:5173',
             'localhost:8080',
-            '26.44.49.6:3000',
+            '26.44.49.6:5173',
             '26.44.49.6:8080'
           ],
           menubar: 'edit view insert format',

@@ -90,7 +90,7 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
 
         axios.interceptors.request.use(
           (config) => {
-            config.headers ??= {};
+            config.headers = config.headers || {};
             config.headers["Authorization"] = `Bearer ${keycloak.token}`;
             return config;
           },

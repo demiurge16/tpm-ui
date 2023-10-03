@@ -2,6 +2,13 @@
   "name": "project-hermes-ui",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "postinstall": "node ./postinstall.ts"
+  },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
@@ -16,20 +23,12 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@tinymce/tinymce-react": "^4.3.0",
-    "@types/jest": "^27.5.2",
-    "@types/luxon": "^3.3.1",
-    "@types/node": "^16.18.3",
-    "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.9",
-    "@types/sanitize-html": "^2.9.0",
-    "@types/tinymce": "^4.6.5",
     "ag-grid-community": "^28.2.1",
     "ag-grid-react": "^28.2.1",
     "axios": "^1.2.0",
     "emoji-mart": "^5.5.2",
-    "env-cmd": "^10.1.0",
     "final-form": "^4.20.9",
-    "fs-extra": "^11.1.1",
+    "i18next": "^23.5.1",
     "install": "^0.13.0",
     "keycloak-js": "^22.0.1",
     "luxon": "^3.3.0",
@@ -37,28 +36,14 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-final-form": "^6.5.9",
+    "react-i18next": "^13.2.2",
     "react-router-dom": "^6.4.3",
-    "react-scripts": "5.0.1",
     "rxjs": "^7.8.0",
     "sanitize-html": "^2.11.0",
     "tinymce": "^6.6.1",
-    "typescript": "^4.9.3",
+    "typescript": "^5.2.2",
     "web-vitals": "^2.1.4",
     "yup": "^1.2.0"
-  },
-  "scripts": {
-    "start:local": "env-cmd -f ./environments/local.env react-scripts start",
-    "start:dev": "env-cmd -f ./environments/dev.env react-scripts start",
-    "start:qa": "env-cmd -f ./environments/qa.env react-scripts start",
-    "start:prod": "env-cmd -f ./environments/prod.env react-scripts start",
-    "build:local": "env-cmd -f ./environments/local.env react-scripts build",
-    "build:dev": "env-cmd -f ./environments/dev.env react-scripts build",
-    "build:qa": "env-cmd -f ./environments/qa.env react-scripts build",
-    "build:prod": "env-cmd -f ./environments/prod.env react-scripts build",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postinstall": "node ./postinstall.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -79,6 +64,22 @@
     ]
   },
   "devDependencies": {
-    "sass": "^1.56.1"
+    "@types/jest": "^27.5.2",
+    "@types/luxon": "^3.3.1",
+    "@types/node": "^16.18.3",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@types/sanitize-html": "^2.9.0",
+    "@types/tinymce": "^4.6.5",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "fs-extra": "^11.1.1",
+    "sass": "^1.56.1",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
   }
 }

@@ -1,0 +1,91 @@
+{
+  "components": {
+    "grid": {
+      "actions": {
+        "columns": "Spalten",
+        "filters": "Filter",
+        "exportAll": "Alles exportieren",
+        "exportAllTooltip": "Daten exportieren, ohne auf die Paginierungseinstellungen zu achten",
+        "export": "Exportieren",
+        "exportTooltip": "Im Raster sichtbare Daten exportieren",
+        "refresh": "Aktualisieren"
+      },
+      "filters": {
+        "addFilter": "Filter hinzufügen",
+        "clear": "Leeren",
+        "field": "Feld",
+        "operator": "Operator",
+        "value": "Wert",
+        "boolean": {
+          "true": "Wahr",
+          "false": "Falsch"
+        },
+        "operation": {
+          "eq": "Ist gleich",
+          "contains": "Enthält",
+          "gt": "Ist größer als",
+          "lt": "Ist kleiner als",
+          "gte": "Ist größer oder gleich",
+          "lte": "Ist kleiner oder gleich",
+          "any": "Ist eines von",
+          "all": "Ist alles von",
+          "none": "Ist keines von",
+          "null": "Ist null",
+          "empty": "Ist leer"
+        }
+      },
+      "overlays": {
+        "noRowsToShow": "Keine Daten zum Anzeigen"
+      },
+      "pagination": {
+        "itemsPerPage": "Elemente pro Seite:",
+        "of": "von"
+      }
+    }
+  },
+  "layout": {
+
+  },
+  "projects": {
+    "index": {
+      "title": "Projekte",
+      "description": "Dies ist das Herz Ihres Unternehmens. Hier können Sie alle Ihre Projekte einsehen und verwalten.",
+      "breadcrumbs": {
+        "index": "Projekte"
+      },
+      "grid": {
+        "id": "Id",
+        "title": "Titel",
+        "description": "Beschreibung",
+        "languagePair": "Sprachpaar (Quelle -> Ziel)",
+        "timeframe": "Zeitrahmen (Erwarteter Start -> Interne Frist -> Externe Frist)",
+        "accuracy": "Genauigkeit",
+        "industry": "Industrie",
+        "volume": "Volumen",
+        "budget": "Budget",
+        "status": "Status",
+        "client": "Kunde",
+        "filters": {
+          "id": "Id",
+          "title": "Titel",
+          "sourceLanguage": "Ausgangssprache",
+          "targetLanguages": "Zielsprachen",
+          "accuracy": "Genauigkeit",
+          "industry": "Branche",
+          "unit": "Einheit",
+          "amount": "Betrag",
+          "expectedStart": "Erwarteter Beginn",
+          "internalDeadline": "Interne Frist",
+          "externalDeadline": "Externe Frist",
+          "budget": "Budget",
+          "currency": "Währung",
+          "status": "Status",
+          "client": "Kunde"
+        }
+      },
+      "actions": {
+        "create": "Neues Projekt erstellen"
+      }
+    }
+  }
+}

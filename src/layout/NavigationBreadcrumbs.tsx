@@ -2,9 +2,15 @@ import { Link as RouterLink } from "react-router-dom";
 import { Typography, Breadcrumbs, Link } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { useBreadcrumbsContext } from "../contexts/BreadcrumbsContext";
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 export const NavigationBreadcrumbs = () => {
   const { breadcrumbs } = useBreadcrumbsContext();
+  const { i18n } = useTranslation();
+
+  // This is a hack to force the component to re-render when the language changes
+  useEffect(() => {}, [i18n]);
 
   return (
     <Breadcrumbs
@@ -18,7 +24,7 @@ export const NavigationBreadcrumbs = () => {
         to="/dashboard"
       >
         <Typography variant="h6" component="div">
-          {"Project Hermes"}
+          Project Hermes
         </Typography>
       </Link>
       {breadcrumbs &&
@@ -32,7 +38,7 @@ export const NavigationBreadcrumbs = () => {
               to={item.path}
             >
               <Typography variant="h6" component="div" color="inherit">
-                {item.label}
+                {item.label instanceof Function ? <item.label /> : item.label}
               </Typography>
             </Link>
           );

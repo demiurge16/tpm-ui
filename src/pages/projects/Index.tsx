@@ -4,7 +4,6 @@ import { FilterDefinition } from "../../components/grid/FilterDefinition";
 import { GridHandle } from "../../components/grid/GridProps";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
-import { Projects } from "./Projects";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Grid } from "../../components/grid/Grid";
 import { Link } from "react-router-dom";
@@ -15,6 +14,7 @@ import { LoadingScreen } from "../utils/LoadingScreen";
 import { GridConfig } from "../../components/grid/GridConfig";
 import { useAuth } from "../../contexts/AuthContext";
 import { SecuredComponent } from "../../components/security/SecuredComponent";
+import { useTranslation } from "react-i18next";
 
 export const Index = () => {
   const gridRef = useRef<GridHandle>(null);
@@ -23,7 +23,8 @@ export const Index = () => {
   const { hasAnyRole } = useAuth();
 
   const { showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
+  const { t } = useTranslation('translation', { keyPrefix: 'projects.index' });
 
   const [gridConfig, setGridConfig] = useState<GridConfig<Project>>({
     page: 0,
@@ -35,7 +36,10 @@ export const Index = () => {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: 'Projects', path: '/projects' }
+      { 
+        label: () => <>{t('breadcrumbs.index')}</>,
+        path: '/projects'
+      }
     ]);
 
     forkJoin({
@@ -48,37 +52,66 @@ export const Index = () => {
       clients: hasAnyRole(['admin', 'project-manager']) ? tpmClient.clients().all() : of({ items: [] })
     }).subscribe({
       next: (response) => {
-        setGridConfig((prev) => {
+        setGridConfig(() => {
           setLoading(false);
 
           const columnDefs = [
             {
-              headerName: "Id",
+              headerComponent: () => (
+                <>
+                  {t('grid.id')}
+                </>
+              ),
               field: "id",
               resizable: true,
               lockVisible: true,
               suppressSizeToFit: true,
               cellRenderer: (params: any) => {
-                const priority = params.data as Project;
+                const project = params.data as Project;
                 return (
                   <Box>
-                    <Button variant="text" component={Link} to={`${priority.id}`}>{priority.id}</Button>
+                    <Button variant="text" component={Link} to={`${project.id}`}>{project.id}</Button>
                   </Box>
                 );
               },
             },
-            { headerName: "Title", field: "title", resizable: true },
-            { headerName: "Description", field: "description", resizable: true, hide: true },
             {
-              headerName: "Language Pair (Source -> Target)",
+              headerComponent: () => (
+                <>
+                  {t('grid.title')}
+                </>
+              ),
+              field: "title",
+              resizable: true
+            },
+            {
+              headerComponent: () => (
+                <>
+                  {t('grid.description')}
+                </>
+              ),
+              field: "description",
+              resizable: true,
+              hide: true
+            },
+            {
+              headerComponent: () => (
+                <>
+                  {t('grid.languagePair')}
+                </>
+              ),
               resizable: true,
               cellRenderer: (params: any) => {
                 const project = params.data as Project;
-                return `${project.sourceLanguage.name} -> ${project.targetLanguages.map((l: any) => l.name).join(", ")}`;
+                return `${project.sourceLanguage.name} -> ${project.targetLanguages.map(l => l.name).join(", ")}`;
               }
             },
             {
-              headerName: "Timeframe (Expected Start -> Internal Deadline -> External Deadline)",
+              headerComponent: () => (
+                <>
+                  {t('grid.timeframe')}
+                </>
+              ),
               resizable: true,
               suppressSizeToFit: true,
               cellRenderer: (params: any) => {
@@ -87,21 +120,33 @@ export const Index = () => {
               }
             },
             {
-              headerName: "Accuracy",
+              headerComponent: () => (
+                <>
+                  {t('grid.accuracy')}
+                </>
+              ),
               field: "accuracy",
               resizable: true,
               suppressSizeToFit: true,
               cellRenderer: (params: any) => params.data.accuracy.name
             },
             {
-              headerName: "Industry",
+              headerComponent: () => (
+                <>
+                  {t('grid.industry')}
+                </>
+              ),
               field: "industry",
               resizable: true,
               suppressSizeToFit: true,
               cellRenderer: (params: any) => params.data.industry.name
             },
             {
-              headerName: "Volume",
+              headerComponent: () => (
+                <>
+                  {t('grid.volume')}
+                </>
+              ),
               resizable: true,
               suppressSizeToFit: true,
               cellRenderer: (params: any) => {
@@ -110,13 +155,21 @@ export const Index = () => {
               }
             },
             {
-              headerName: "Budget",
+              headerComponent: () => (
+                <>
+                  {t('grid.budget')}
+                </>
+              ),
               resizable: true,
               suppressSizeToFit: true,
               cellRenderer: (params: any) => `${params.data.budget} ${params.data.currency.name}`
             },
             {
-              headerName: "Status",
+              headerComponent: () => (
+                <>
+                  {t('grid.status')}
+                </>
+              ),
               field: "status",
               resizable: true,
               suppressSizeToFit: true,
@@ -124,7 +177,11 @@ export const Index = () => {
             }
           ];
           hasAnyRole(['admin', 'project-manager']) && columnDefs.push({
-            headerName: "Client",
+            headerComponent: () => (
+              <>
+                {t('grid.client')}
+              </>
+            ),
             field: "client",
             suppressSizeToFit: true,
             resizable: true,
@@ -132,46 +189,46 @@ export const Index = () => {
           });
 
           const filters = [
-            FilterDefinition.uniqueToken("id", "Id"),
-            FilterDefinition.string("title", "Title"),
+            FilterDefinition.uniqueToken("id", () => <>{t("grid.filters.id")}</>),
+            FilterDefinition.string("title", () => <>{t("grid.filters.title")}</>),
             FilterDefinition.select(
               "sourceLanguage",
-              "Source Language",
+              () => <>{t("grid.filters.sourceLanguage")}</>,
               response.languages.items.map(l => ({ label: l.name, value: l.code }))
             ),
             FilterDefinition.multiSelect(
               "targetLanguages",
-              "Target Languages",
+              () => <>{t("grid.filters.targetLanguages")}</>,
               response.languages.items.map(l => ({ label: l.name, value: l.code }))
             ),
             FilterDefinition.select(
               "accuracyId",
-              "Accuracy",
+              () => <>{t("grid.filters.accuracy")}</>,
               response.accuracies.items.map(a => ({ label: a.name, value: a.id }))
             ),
             FilterDefinition.select(
               "industryId",
-              "Industry",
+              () => <>{t("grid.filters.industry")}</>,
               response.industries.items.map(i => ({ label: i.name, value: i.id }))
             ),
             FilterDefinition.select(
               "unitId",
-              "Unit",
+              () => <>{t("grid.filters.unit")}</>,
               response.units.items.map(u => ({ label: u.name, value: u.id }))
             ),
-            FilterDefinition.number("amount", "Amount"),
-            FilterDefinition.datetime("expectedStart", "Expected Start"),
-            FilterDefinition.datetime("internalDeadline", "Internal Deadline"),
-            FilterDefinition.datetime("externalDeadline", "External Deadline"),
-            FilterDefinition.number("budget", "Budget"),
+            FilterDefinition.number("amount", () => <>{t("grid.filters.amount")}</>),
+            FilterDefinition.datetime("expectedStart", () => <>{t("grid.filters.expectedStart")}</>),
+            FilterDefinition.datetime("internalDeadline", () => <>{t("grid.filters.internalDeadline")}</>),
+            FilterDefinition.datetime("externalDeadline", () => <>{t("grid.filters.externalDeadline")}</>),
+            FilterDefinition.number("budget", () => <>{t("grid.filters.budget")}</>),
             FilterDefinition.select(
               "currency",
-              "Currency",
+              () => <>{t("grid.filters.currency")}</>,
               response.currencies.items.map(c => ({ label: c.name, value: c.code }))
             ),
             FilterDefinition.select(
               "status",
-              "Status",
+              () => <>{t("grid.filters.status")}</>,
               response.statuses.map(s => ({ label: s.title, value: s.status }))
             )
           ];
@@ -179,7 +236,7 @@ export const Index = () => {
           hasAnyRole(['admin', 'project-manager']) && filters.push(
             FilterDefinition.select(
               "clientId",
-              "Client",
+              () => <>{t("grid.filters.client")}</>,
               response.clients.items.map(c => ({ label: c.name, value: c.id }))
             )
           );
@@ -200,8 +257,8 @@ export const Index = () => {
 
   return (
     <Box>
-      <Typography variant="h4">{Projects.title}</Typography>
-      <Typography variant="subtitle1">{Projects.description}</Typography>
+      <Typography variant="h4">{t('title')}</Typography>
+      <Typography variant="subtitle1">{t('description')}</Typography>
       <Box pb={2} />
       {
         loading ? (
@@ -226,7 +283,7 @@ export const Index = () => {
               <Paper elevation={2} sx={{ p: 2 }}>
                 <SecuredComponent roles={['admin', 'project-manager']}>
                   <Button variant="contained" component={Link} to="create">
-                    Create new project
+                    {t('actions.create')}
                   </Button>
                 </SecuredComponent>
               </Paper>

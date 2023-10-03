@@ -1,0 +1,88 @@
+{
+  "components": {
+    "grid": {
+      "actions": {
+        "columns": "Columns",
+        "filters": "Filters",
+        "exportAll": "Export all",
+        "exportAllTooltip": "Export data ignoring pagination settings",
+        "export": "Export",
+        "exportTooltip": "Export data visible on the grid",
+        "refresh": "Refresh"
+      },
+      "filters": {
+        "addFilter": "Add filter",
+        "clear": "Clear",
+        "field": "Field",
+        "operator": "Operator",
+        "value": "Value",
+        "boolean": {
+          "true": "True",
+          "false": "False"
+        },
+        "operation": {
+          "eq": "Is equal to",
+          "contains": "Contains",
+          "gt": "Is greater than",
+          "lt": "Is less than",
+          "gte": "Is greater than or equal to",
+          "lte": "Is less than or equal to",
+          "any": "Is any of",
+          "all": "Is all of",
+          "none": "Is none of",
+          "null": "Is null",
+          "empty": "Is empty"
+        }
+      },
+      "overlays": {
+        "noRowsToShow": "No rows to show"
+      },
+      "pagination": {
+        "itemsPerPage": "Items per page:",
+        "of": "of"
+      }
+    }
+  },
+  "projects": {
+    "index": {
+      "title": "Projects",
+      "description": "This is the heart of your business. Here you can see and manage all your projects.",
+      "breadcrumbs": {
+        "index": "Projects"
+      },
+      "grid": {
+        "id": "Id",
+        "title": "Title",
+        "description": "Description",
+        "languagePair": "Language Pair (Source -> Target)",
+        "timeframe": "Timeframe (Expected Start -> Internal Deadline -> External Deadline)",
+        "accuracy": "Accuracy",
+        "industry": "Industry",
+        "volume": "Volume",
+        "budget": "Budget",
+        "status": "Status",
+        "client": "Client",
+        "filters": {
+          "id": "Id",
+          "title": "Title",
+          "sourceLanguage": "Source Language",
+          "targetLanguages": "Target Languages",
+          "accuracy": "Accuracy",
+          "industry": "Industry",
+          "unit": "Unit",
+          "amount": "Amount",
+          "expectedStart": "Expected Start",
+          "internalDeadline": "Internal Deadline",
+          "externalDeadline": "External Deadline",
+          "budget": "Budget",
+          "currency": "Currency",
+          "status": "Status",
+          "client": "Client"
+        }
+      },
+      "actions": {
+        "create": "Create new project"
+      }
+    }
+  }
+}

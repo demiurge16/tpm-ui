@@ -14,27 +14,25 @@ import { DateTime } from "luxon";
 
 export interface DateFilterProps {
   id: string;
-  label: string;
+  label: string | React.ComponentType<object>;
   value: Date | null;
   onChange: (value: Date | null) => void;
 }
 
 export interface MultivalueDateFilterProps {
   id: string;
-  label: string;
+  label: string | React.ComponentType<object>;
   value: Date[] | null;
   onChange: (value: Date[]) => void;
 }
 
-export const DateFilter = (
-  { id, label, value, onChange }: DateFilterProps
-) => {
+export const DateFilter = (props: DateFilterProps) => {
   return (
-    <FormControl id={id} variant="standard" size="small" fullWidth>
+    <FormControl id={props.id} variant="standard" size="small" fullWidth>
       <DatePicker
-        label={label}
-        value={value ? DateTime.fromJSDate(new Date(value)) : null}
-        onChange={(date) => onChange(date?.toJSDate() ?? null)}
+        label={typeof props.label === "string" ? props.label : <props.label />}
+        value={props.value ? DateTime.fromJSDate(new Date(props.value)) : null}
+        onChange={(date) => props.onChange(date?.toJSDate() ?? null)}
         slotProps={{
           textField: {
             variant: "standard",
@@ -46,10 +44,8 @@ export const DateFilter = (
   );
 };
 
-export const MultivalueDateFilter = (
-  { id, label, value, onChange }: MultivalueDateFilterProps
-) => {
-  const [values, setValues] = useState<Array<Date>>(value ?? []);
+export const MultivalueDateFilter = (props: MultivalueDateFilterProps) => {
+  const [values, setValues] = useState<Array<Date>>(props.value ?? []);
   
   const [pickerValue, setPickerValue] = useState<Date | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -75,7 +71,7 @@ export const MultivalueDateFilter = (
     if (pickerValue) {
       setValues((prevValues) => {
         const newValues = [...prevValues, pickerValue];
-        onChange(newValues);
+        props.onChange(newValues);
         return newValues;
       });
     }
@@ -86,17 +82,17 @@ export const MultivalueDateFilter = (
   const handleDelete = (valueToDelete: Date) => () => {
     setValues((prevValues) => {
       const newValues = prevValues.filter((value) => value !== valueToDelete);
-      onChange(newValues);
+      props.onChange(newValues);
       return newValues;
     });
   };
 
   return (
-    <FormControl id={id} variant="standard" size="small" fullWidth>
+    <FormControl id={props.id} variant="standard" size="small" fullWidth>
       <TextField
-        label={label}
+        label={typeof props.label === "string" ? props.label : <props.label />}
         variant="standard"
-        value={value}
+        value={props.value}
         InputProps={{
           readOnly: true,
           startAdornment: values.map((value, index) => (

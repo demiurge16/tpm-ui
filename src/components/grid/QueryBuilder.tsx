@@ -14,6 +14,7 @@ import { Operation } from './Operation';
 import { Filter, FilterOperator, FilterValue } from '../../client/types/common/Search';
 import { Field } from './Field';
 import { FieldType } from './FieldType';
+import { useTranslation } from 'react-i18next';
 
 const getDefaultValue = (type: FieldType, multivalue: boolean): FilterValue | null => {
   switch (type) {
@@ -36,6 +37,7 @@ const getDefaultValue = (type: FieldType, multivalue: boolean): FilterValue | nu
 
 export function QueryBuilder(props: QueryBuilderProps) {
   const { initialState, filters, onQueryChange } = props;
+  const { t } = useTranslation("translation", { keyPrefix: "components.grid" });
 
   const [state, setState] = useState<Filter[]>(
     initialState == null || initialState.length === 0 ? [
@@ -203,7 +205,7 @@ export function QueryBuilder(props: QueryBuilderProps) {
               startIcon={<Add />}
               onClick={() => addFilter()}
             >
-              Add Filter
+              {t("filters.addFilter")}
             </Button>
             </Grid>
             <Grid item xs={6}>
@@ -214,7 +216,7 @@ export function QueryBuilder(props: QueryBuilderProps) {
                 startIcon={<Clear />}
                 onClick={() => clearFilters()}
               >
-                Clear
+                {t("filters.clear")}
               </Button>
             </Grid>
           </Grid>
@@ -226,11 +228,11 @@ export function QueryBuilder(props: QueryBuilderProps) {
 
 interface FilterProps {
   id: string;
-  label: string;
+  label: string | React.ComponentType<object>;
   type: FieldType;
   multiple: boolean;
   value: FilterValue | null;
-  options?: { value: string, label: string }[];
+  options?: { value: string, label: string | React.ComponentType<object> }[];
   valueChanged: (value: FilterValue | null) => void;
 }
 

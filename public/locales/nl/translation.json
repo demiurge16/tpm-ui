@@ -1,0 +1,88 @@
+{
+  "components": {
+    "grid": {
+      "actions": {
+        "columns": "Kolommen",
+        "filters": "Filters",
+        "exportAll": "Alles exporteren",
+        "exportAllTooltip": "Gegevens exporteren zonder rekening te houden met paginering",
+        "export": "Exporteren",
+        "exportTooltip": "Gegevens die zichtbaar zijn op het raster exporteren",
+        "refresh": "Vernieuwen"
+      },
+      "filters": {
+        "addFilter": "Filter toevoegen",
+        "clear": "Wissen",
+        "field": "Veld",
+        "operator": "Operator",
+        "value": "Waarde",
+        "boolean": {
+          "true": "Waar",
+          "false": "Onwaar"
+        },
+        "operation": {
+          "eq": "Is gelijk aan",
+          "contains": "Bevat",
+          "gt": "Is groter dan",
+          "lt": "Is kleiner dan",
+          "gte": "Is groter dan of gelijk aan",
+          "lte": "Is kleiner dan of gelijk aan",
+          "any": "Is een van",
+          "all": "Is alles van",
+          "none": "Is geen van",
+          "null": "Is null",
+          "empty": "Is leeg"
+        }
+      },
+      "overlays": {
+        "noRowsToShow": "Geen rijen om te tonen"
+      },
+      "pagination": {
+        "itemsPerPage": "Items per pagina:",
+        "of": "van"
+      }
+    }
+  },
+  "projects": {
+    "index": {
+      "title": "Projecten",
+      "description": "Dit is het hart van uw bedrijf. Hier kunt u al uw projecten bekijken en beheren.",
+      "breadcrumbs": {
+        "index": "Projecten"
+      },
+      "grid": {
+        "id": "Id",
+        "title": "Titel",
+        "description": "Beschrijving",
+        "languagePair": "Taalpaar (Bron -> Doel)",
+        "timeframe": "Tijdsbestek (Verwachte start -> Interne deadline -> Externe deadline)",
+        "accuracy": "Nauwkeurigheid",
+        "industry": "Industrie",
+        "volume": "Volume",
+        "budget": "Budget",
+        "status": "Status",
+        "client": "Klant",
+        "filters": {
+          "id": "Id",
+          "title": "Titel",
+          "sourceLanguage": "Brontaal",
+          "targetLanguages": "Doeltalen",
+          "accuracy": "Nauwkeurigheid",
+          "industry": "Industrie",
+          "unit": "Eenheid",
+          "amount": "Bedrag",
+          "expectedStart": "Verwachte start",
+          "internalDeadline": "Interne deadline",
+          "externalDeadline": "Externe deadline",
+          "budget": "Budget",
+          "currency": "Valuta",
+          "status": "Status",
+          "client": "Klant"
+        }
+      },
+      "actions": {
+        "create": "Maak een nieuw project aan"
+      }
+    }
+  }
+}
