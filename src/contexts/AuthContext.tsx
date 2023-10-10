@@ -36,7 +36,7 @@ interface AuthContextValues {
   hasAnyRole: (roles: Role[]) => boolean;
 }
 
-const defaultAuthContextValues: AuthContextValues = {
+export const AuthContext = createContext<AuthContextValues>({
   isAuthenticated: false,
   logout: () => {},
   userId: "",
@@ -47,11 +47,7 @@ const defaultAuthContextValues: AuthContextValues = {
   roles: [],
   hasRole: (role: Role) => false,
   hasAnyRole: (roles: Role[]) => false
-};
-
-export const AuthContext = createContext<AuthContextValues>(
-  defaultAuthContextValues
-);
+});
 
 interface AuthContextProviderProps {
   children: JSX.Element;
@@ -74,61 +70,57 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
   };
 
   useEffect(() => {
-    keycloak.init(keycloakInitOptions)
-      .then((authenticated) => {
-        if (!authenticated) {
-          keycloak.login();
-        }
-
-        setAuthenticated(authenticated);
-        setUserId(keycloak.tokenParsed?.sub || "");
-        setUsername(keycloak.tokenParsed?.preferred_username);
-        setFirstName(keycloak.tokenParsed?.given_name);
-        setLastName(keycloak.tokenParsed?.family_name);
-        setEmail(keycloak.tokenParsed?.email);
-        setRoles(keycloak.tokenParsed?.realm_access?.roles as Array<Role> || []);
-
-        axios.interceptors.request.use(
-          (config) => {
-            config.headers = config.headers || {};
-            config.headers["Authorization"] = `Bearer ${keycloak.token}`;
-            return config;
-          },
-          (error) => {
-            return Promise.reject(error);
+    const initializeUser = (authenticated: boolean) => {
+      setAuthenticated(authenticated);
+      const { sub, preferred_username, given_name, family_name, email, realm_access } = keycloak.tokenParsed || {};
+      setUserId(sub || "");
+      setUsername(preferred_username);
+      setFirstName(given_name);
+      setLastName(family_name);
+      setEmail(email);
+      setRoles(realm_access?.roles as Array<Role> || []);
+    };
+  
+    const setAuthorizationHeader = (config: any) => {
+      config.headers = config.headers || {};
+      config.headers["Authorization"] = `Bearer ${keycloak.token}`;
+      return config;
+    };
+  
+    const handleResponseError = async (error: any) => {
+      if (error.response?.status === 401) {
+        try {
+          const result = await keycloak.updateToken(5);
+          if (result) {
+            return axios({ ...error.config });
+          } else {
+            throw new Error("Unauthorized");
           }
-        );
-
-        axios.interceptors.response.use(
-          (response) => response,
-          (error) => {
-            if (error.response === undefined) {
-              return Promise.reject(error);
-            }
-            if (error.response.status === 401) {
-              return keycloak.updateToken(5)
-                .then((result) => {
-                  if (result === true) {
-                    return axios({ ...error.config });
-                  } else {
-                    return Promise.reject(new Error("Unauthorized"));
-                  }
-                })
-                .catch((error) => {
-                  keycloak.logout();
-                  return Promise.reject(error);
-                });
-            }
-            return Promise.reject(error);
-          },
-        );
-
+        } catch (error) {
+          keycloak.logout();
+          throw error;
+        }
+      }
+      throw error;
+    };
+  
+    const initializeKeycloak = async () => {
+      try {
+        const authenticated = await keycloak.init(keycloakInitOptions);
+        if (!authenticated) keycloak.login();
+        initializeUser(authenticated);
+  
+        axios.interceptors.request.use(setAuthorizationHeader, error => Promise.reject(error));
+        axios.interceptors.response.use(response => response, handleResponseError);
+  
         setInitialized(true);
-      })
-      .catch((error) => {
+      } catch (error) {
         setAuthenticated(false);
         setInitialized(true);
-      });
+      }
+    };
+  
+    initializeKeycloak();
   }, []);
 
   useEffect(() => {

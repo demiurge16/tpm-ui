@@ -44,6 +44,13 @@
     * [Instalacja Visual Studio Code](#instalacja-visual-studio-code)
     * [Instalacja IntelliJ IDEA](#instalacja-intellij-idea)
     * [Instalacja Git](#instalacja-git)
+  * [Infrastruktura](#infrastruktura)
+    * [Docker Compose](#docker-compose)
+    * [Konfiguracja instancji Keycloak](#konfiguracja-instancji-keycloak)
+    * [Konfiguracja instancji PostgreSQL](#konfiguracja-instancji-postgresql)
+    * [Konfiguracja instancji Redis](#konfiguracja-instancji-elasticsearch)
+    * [Konfiguracja instancji MinIO](#konfiguracja-instancji-minio)
+    * [Konfiguracja stosu ELK](#konfiguracja-stosu-elk)
   * [Interfejs użytkownika](#interfejs-użytkownika-1)
     * [Tworzenie projektu za pomocą Vite](#tworzenie-projektu-za-pomocą-vite)
     * [Zarządzanie zależnościami za pomocą narzędzia npm](#zarządzanie-zależnościami-za-pomocą-narzędzia-npm)
@@ -64,13 +71,6 @@
     * [Implementacja logowania i monitorowania](#implementacja-logowania-i-monitorowania)
     * [Testowanie](#testowanie-1)
     * [Wdrożenie aplikacji](#wdrożenie-aplikacji-1)
-  * [Infrastruktura](#infrastruktura)
-    * [Docker Compose](#docker-compose)
-    * [Konfiguracja instancji Keycloak](#konfiguracja-instancji-keycloak)
-    * [Konfiguracja instancji PostgreSQL](#konfiguracja-instancji-postgresql)
-    * [Konfiguracja instancji Redis](#konfiguracja-instancji-elasticsearch)
-    * [Konfiguracja instancji MinIO](#konfiguracja-instancji-minio)
-    * [Konfiguracja stosu ELK](#konfiguracja-stosu-elk)
 * [Prezentacja](#prezentacja)
   * [Rejestracja nowego użytkownika](#rejestracja-nowego-użytkownika)
   * [Logowanie się do systemu](#logowanie-się-do-systemu)
@@ -695,6 +695,14 @@ W tym projekcie, Git będzie używany do zapisywania różnych etapów rozwoju p
 
 Aby zainstalować Git na platformie Windows, najpierw trzeba pobrać instalator z oficjalnej strony [Git](https://git-scm.com/). Po pobraniu instalatora, użytkownik powinien uruchomić plik i postępować zgodnie z instrukcjami pojawiającymi się w kreatorze instalacji. Zaleca się akceptowanie domyślnych ustawień, choć doświadczeni użytkownicy mogą dostosować opcje instalacji do własnych potrzeb. Po zakończeniu instalacji, Git jest gotowy do użycia zarówno z linii poleceń, jak i za pośrednictwem dostarczonego interfejsu graficznego, takiego jak Git Bash.
 
+### Infrastruktura
+#### Docker Compose
+#### Konfiguracja instancji Keycloak
+#### Konfiguracja instancji PostgreSQL
+#### Konfiguracja instancji Redis
+#### Konfiguracja instancji MinIO
+#### Konfiguracja stosu ELK
+
 ### Interfejs użytkownika
 
 #### Tworzenie projektu za pomocą Vite
@@ -950,6 +958,258 @@ Poniżej przedstawiono przykładowy szkic interfejsu użytkownika, który zawier
 Kontynuując temat konwencji i wzorców, należy też pamiętać o takich ważnych elementach jak kolorystyka, dostępność, responsywność i wiele innych. Rozwiązania te są szeroko opisane w literaturze i nie będą tutaj szczegółowo omawiane, ale należy pamiętać, że są one niezbędne do stworzenia intuicyjnego i przyjaznego interfejsu użytkownika. W projekcie zostanie wykorzystany system projektowania Material Design, który adresuje wiele z tych problemów i zapewnia spójny wygląd i zachowanie aplikacji.
 
 #### Uwierzytelnianie i kontrola dostępu
+
+Uwierzytelnianie i kontrola dostępu to kluczowe elementy każdej aplikacji, które zapewniają bezpieczeństwo i poufność danych. W przypadku interfejsu użytkownika systemu organizacji pracy dla biura tłumaczeń, uwierzytelnianie i kontrola dostępu realizują następujące funkcje:
+
+1. **Blokada dostępu do aplikacji**
+   - **Definicja**: Jest to mechanizm, który uniemożliwia dostęp do aplikacji osobom nieupoważnionym.
+   - **Znaczenie**: Zapewnia bezpieczeństwo i poufność danych, uniemożliwiając dostęp osobom niepowołanym.
+   - **Dobre praktyki**: Powinien być łatwy w użyciu, a jednocześnie zapewniać wysoki poziom bezpieczeństwa.
+2. **Uwierzytelnianie użytkownika**
+   - **Definicja**: Jest to proces weryfikacji tożsamości użytkownika, który pozwala na potwierdzenie, że użytkownik jest tym, za kogo się podaje.
+   - **Znaczenie**: Zapewnia bezpieczeństwo i poufność danych, uniemożliwiając dostęp osobom niepowołanym.
+   - **Dobre praktyki**: Powinien być łatwy w użyciu, a jednocześnie zapewniać wysoki poziom bezpieczeństwa.
+3. **Kontrola dostępu**
+   - **Definicja**: Jest to mechanizm, który pozwala na kontrolę dostępu do różnych funkcji aplikacji na podstawie uprawnień użytkownika.
+   - **Znaczenie**: Zapewnia bezpieczeństwo i poufność danych, uniemożliwiając dostęp osobom niepowołanym.
+   - **Dobre praktyki**: Powinien być łatwy w użyciu, a jednocześnie zapewniać wysoki poziom bezpieczeństwa.
+
+Cały system uwierzytelniania i kontroli dostępu będzie oparty o Keycloak, otwartoźródłowe narzędzie do zarządzania tożsamością i dostępem. Keycloak został skonfigurowany pod obsługę protokołu OpenID Connect, który jest standardem branżowym dla uwierzytelniania i kontroli dostępu. W przypadku interfejsu użytkownika, zadaniem jest integracja z Keycloak.
+
+Integracja z Keycloak na skonfigurowaniu klienta OIDC w Keycloak oraz tworzeniu kontekstu autoryzacji w aplikacji.
+
+Konfiguracją klienta OIDC w Keycloak polega na utworzeniu klienta w odpowiednim realmie, który będzie używany przez aplikację do uwierzytelniania użytkowników. W tym celu należy przejść do zakładki "Clients" w panelu administracyjnym Keycloak i kliknąć przycisk "Create". Typ klienta powinien być ustawiony na "OpenID Connect", a nazwę klienta można ustawić na dowolną, np. "tpm-ui":
+
+![Keycloak Client](./docs/keycloak-client-ui.png)
+
+Klikamy przycisk "Next". Następnym krokiem będzie konfiguracja klienta. W tym kroku musimy upewnić się, że opcja Client Authentication jest wyłącona, a opcje "Standard Flow Enabled" oraz "Direct Access Grants" są zaznaczone:
+
+![Keycloak Client Config](./docs/keycloak-client-ui-config.png)
+
+Klikamy prycisk "Next". W kolejnym kroku musimy ustawić adres URL aplikacji w polu "Valid Redirect URIs" oraz "Web Origins":
+
+![Keycloak Client URLs](./docs/keycloak-client-ui-urls.png)
+
+Klikamy przycisk "Save". Na tym etapie konfiguracja klienta OIDC w Keycloak jest zakończona.
+
+Kolejnym krokiem jest utworzenie kontekstu autoryzacji w aplikacji. Kontekst autoryzacji jest odpowiedzialny za komunikację z Keycloak i uwierzytelnianie użytkowników. Kontekst autoryzacji został zaimplementowany z użyciem React Context API oraz biblioteki `keycloak-js`.
+
+Na początku, tworzymy plik `AuthContext.tsx` w katalogu `src/contexts`. Zaczynamy od tworzenia instancji klienta Keycloak:
+
+```tsx
+const keycloakConfig: KeycloakConfig = {
+  realm: "tpm",
+  clientId: "tpm-frontend",
+  url: environment.authServerUrl,
+};
+
+const keycloak = new Keycloak(keycloakConfig);
+```
+
+W konfiguracji klienta Keycloak, należy ustawić `realm` na nazwę realmu, który został utworzony w Keycloak, `clientId` na nazwę klienta, który został utworzony w Keycloak, oraz `url` na adres URL instancji Keycloak. W przypadku projektu, wartości te są pobierane z pliku konfiguracyjnego `environment.ts`.
+
+Kolejny krok to utworzenie kontekstu autoryzacji. Kontekst w aplikacji React służy do przechowania globalnego stanu aplikacji i udostępnienia go wszystkim komponentom które są w nim zawarte. W tym przypadku, kontekst autoryzacji będzie zawierał informacje o zalogowanym użytkowniku, takie jak identyfikator, imię, nazwisko, adres email, role, itp. Kontekst autoryzacji będzie też zawierał funkcje, które będą używane do logowania i wylogowywania użytkownika, sprawdzania uprawnień, itp.
+
+Początek implementacji odznacza definicja interfejsu `AuthContextValues`, który będzie zawierał wszystkie wartości, które będą dostępne w kontekście autoryzacji:
+
+```tsx
+export type Role = "admin"
+  | "project-manager"
+  | "translator"
+  | "editor"
+  | "proofreader"
+  | "subject-matter-expert"
+  | "publisher"
+  | "observer"
+  | "user";
+
+interface AuthContextValues {
+  isAuthenticated: boolean;
+  logout: () => void;
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roles: Role[];
+  hasRole: (role: Role) => boolean;
+  hasAnyRole: (roles: Role[]) => boolean;
+}
+```
+
+Następnie, definiujemy sam kontekst autoryzacji z domyślnymi wartościami używając funkcji `createContext`:
+
+```tsx
+export const AuthContext = createContext<AuthContextValues>({
+  isAuthenticated: false,
+  logout: () => {},
+  userId: "",
+  username: "",
+  firstName: "",
+  lastName: "",
+  email: "",
+  roles: [],
+  hasRole: (role: Role) => false,
+  hasAnyRole: (roles: Role[]) => false
+});
+```
+
+Wartości te są domyślne i będą używane w przypadku, gdy użytkownik nie jest zalogowany. Następnie, definiujemy komponent `AuthContextProvider`. `AuthContextProvider` ma za zadanie inicjalizację klienta Keycloak, uwierzytelnianie użytkownika, oraz przechowywanie informacji o użytkowniku w kontekście autoryzacji. Implementacja używa hooków Reacta. Hooki w React są funkcjami, które pozwalają na manipulację stanem komponentu oraz wykonanie pewnych akcji w odpowiednich momentach cyklu życia komponentu. W tym przypadku, hooki są używane do przechowywania stanu uwierzytelnienia użytkownika oraz informacji o użytkowniku (hook `useState`), a także do inicjalizacji klienta Keycloak i aktualizacji informacji o użytkowniku (hook `useEffect`):
+
+```tsx
+interface AuthContextProviderProps {
+  children: JSX.Element;
+}
+
+const AuthContextProvider = (props: AuthContextProviderProps) => {
+  const [initialized, setInitialized] = useState<boolean>(false);
+
+  const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [roles, setRoles] = useState<Role[]>([]);
+
+  const keycloakInitOptions: KeycloakInitOptions = {
+    onLoad: "login-required",
+    flow: "standard"
+  };
+
+  useEffect(() => {
+    const initializeUser = (authenticated) => {
+      setAuthenticated(authenticated);
+      const { sub, preferred_username, given_name, family_name, email, realm_access } = keycloak.tokenParsed || {};
+      setUserId(sub || "");
+      setUsername(preferred_username);
+      setFirstName(given_name);
+      setLastName(family_name);
+      setEmail(email);
+      setRoles(realm_access?.roles as Array<Role> || []);
+    };
+
+    const setAuthorizationHeader = (config) => {
+      config.headers = config.headers || {};
+      config.headers["Authorization"] = `Bearer ${keycloak.token}`;
+      return config;
+    };
+
+    const handleResponseError = async (error) => {
+      if (error.response?.status === 401) {
+        try {
+          const result = await keycloak.updateToken(5);
+          if (result) {
+            return axios({ ...error.config });
+          } else {
+            throw new Error("Unauthorized");
+          }
+        } catch (error) {
+          keycloak.logout();
+          throw error;
+        }
+      }
+      throw error;
+    };
+
+    const initializeKeycloak = async () => {
+      try {
+        const authenticated = await keycloak.init(keycloakInitOptions);
+        if (!authenticated) keycloak.login();
+        initializeUser(authenticated);
+
+        axios.interceptors.request.use(setAuthorizationHeader, error => Promise.reject(error));
+        axios.interceptors.response.use(response => response, handleResponseError);
+
+        setInitialized(true);
+      } catch (error) {
+        setAuthenticated(false);
+        setInitialized(true);
+      }
+    };
+
+    initializeKeycloak();
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setUserId(keycloak.tokenParsed?.sub || "");
+      setUsername(keycloak.tokenParsed?.preferred_username);
+      setFirstName(keycloak.tokenParsed?.given_name);
+      setLastName(keycloak.tokenParsed?.family_name);
+      setEmail(keycloak.tokenParsed?.email);
+      setRoles(keycloak.tokenParsed?.realm_access?.roles as Array<Role> || []);
+    }
+  }, [isAuthenticated]);
+
+  const logout = () => {
+    keycloak.logout();
+  };
+
+  const hasRole = (role: Role) => {
+    return roles.includes(role);
+  };
+
+  const hasAnyRole = (roles: Role[]) => {
+    return roles.some(role => hasRole(role));
+  };
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, logout, userId, username, firstName, lastName, email, roles, hasRole, hasAnyRole }}>
+      { initialized ? props.children : <LoadingScreen /> }
+    </AuthContext.Provider>
+  );
+};
+
+export default AuthContextProvider;
+```
+
+Na koniec, dodatkowo definiujemy hook `useAuth`, który pozwala na dostęp do kontekstu autoryzacji w komponentach:
+
+```tsx
+export const useAuth = () => {
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    throw new Error("useAuth must be used within an AuthContextProvider");
+  }
+
+  return authContext;
+}
+```
+
+Po zdefiniowaniu kontekstu autoryzacji, należy go użyć w aplikacji. W tym celu, należy dodać komponent `AuthContextProvider` blisko korzenia aplikacji tak, aby zawierał wszystkie komponenty, które będą używały kontekstu autoryzacji:
+
+```tsx
+const Root = () => {
+  const { theme } = useThemeContext();
+  const currentTheme = useMemo(() => theme === "dark" ? darkTheme : lightTheme, [theme]);
+
+  return (
+    <ThemeProvider theme={currentTheme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <AuthContextProvider>
+          <TpmClientContextProvider>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <BreadcrumbsContextProvider>
+                <SnackbarContextProvider>
+                  <StrictMode>
+                    <App />
+                  </StrictMode>
+                </SnackbarContextProvider>
+              </BreadcrumbsContextProvider>
+            </LocalizationProvider>
+          </TpmClientContextProvider>
+        </AuthContextProvider>
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+};
+```
+
+Po dodaniu komponentu `AuthContextProvider`, aplikacja jest gotowa do uwierzytelniania użytkowników. 
+
 #### Nawigacja i routing
 #### Komunikacja z serwerem
 #### Implementacja widoków
@@ -966,14 +1226,6 @@ Kontynuując temat konwencji i wzorców, należy też pamiętać o takich ważny
 #### Implementacja logowania i monitorowania
 #### Testowanie
 #### Wdrożenie aplikacji
-
-### Infrastruktura
-#### Docker Compose
-#### Konfiguracja instancji Keycloak
-#### Konfiguracja instancji PostgreSQL
-#### Konfiguracja instancji Redis
-#### Konfiguracja instancji MinIO
-#### Konfiguracja stosu ELK
 
 ## Prezentacja
 ### Rejestracja nowego użytkownika
