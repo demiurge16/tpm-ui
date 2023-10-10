@@ -65,7 +65,7 @@ export const LanguageSwitcher = () => {
     }
   ];
 
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("translation", { keyPrefix: "layout.languageSwitcher" });
 
   const handleOpenLanguageMenu = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -83,7 +83,7 @@ export const LanguageSwitcher = () => {
 
   return (
     <div className={styles.langaugeSwitchContainer}>
-      <Tooltip title="Change language">
+      <Tooltip title={t("tooltip")}>
         <IconButton onClick={handleOpenLanguageMenu}>
           <Language />
         </IconButton>

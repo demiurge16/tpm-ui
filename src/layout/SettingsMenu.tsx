@@ -10,10 +10,12 @@ import Menu from "@mui/material/Menu/Menu";
 import MenuList from "@mui/material/MenuList/MenuList";
 import Link from "@mui/material/Link/Link";
 import { environment } from "../Environment";
+import { useTranslation } from "react-i18next";
 
 export const SettingsMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { firstName, lastName, email, logout } = useAuth();
+  const { t } = useTranslation("translation", { keyPrefix: "layout.settingsMenu" });
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,7 +40,7 @@ export const SettingsMenu = () => {
           {email}
         </Typography>
       </Box>
-      <Tooltip title="Open settings">
+      <Tooltip title={t('tooltip')}>
         <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
           <Avatar alt={`${firstName} ${lastName}`} />
         </IconButton>
@@ -63,9 +65,9 @@ export const SettingsMenu = () => {
             underline="none"
             color="inherit"
           >
-            <MenuItem onClick={handleCloseMenu} label="Account"/>
+            <MenuItem onClick={handleCloseMenu} label={t("items.account")}/>
           </Link>
-          <MenuItem onClick={handleLogout} label="Logout" />
+          <MenuItem onClick={handleLogout} label={t("items.logout")} />
         </MenuList>
       </Menu>
     </>

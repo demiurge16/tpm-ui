@@ -43,6 +43,46 @@
       }
     }
   },
+  "layout": {
+    "header": {
+      "title": "Progetto Hermes"
+    },
+    "navigationDrawer": {
+      "title": "Progetto Hermes",
+      "items": {
+        "projects": "Progetti",
+        "tasks": "Compiti",
+        "expenses": "Spese",
+        "threads": "Discussioni",
+        "clients": "Clienti",
+        "clientTypes": "Tipi di Cliente",
+        "dictionaries": "Dizionari",
+        "languages": "Lingue",
+        "countries": "Paesi",
+        "currencies": "Valute",
+        "accuracies": "Precisioni",
+        "expenseCategories": "Categorie di Spesa",
+        "industries": "Industrie",
+        "priorities": "Priorità",
+        "translationUnits": "Unità di Traduzione",
+        "serviceTypes": "Tipi di Servizio",
+        "users": "Utenti"
+      }
+    },
+    "themeSwitcher": {
+      "tooltip": "Attiva/disattiva tema chiaro/scuro"
+    },
+    "languageSwitcher": {
+      "tooltip": "Cambia lingua"
+    },
+    "settingsMenu": {
+      "tooltip": "Impostazioni",
+      "items": {
+        "account": "Account",
+        "logout": "Esci"
+      }
+    }
+  },
   "projects": {
     "index": {
       "title": "Progetti",

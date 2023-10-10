@@ -43,6 +43,46 @@
       }
     }
   },
+  "layout": {
+    "header": {
+      "title": "Projekt Hermes"
+    },
+    "navigationDrawer": {
+      "title": "Projekt Hermes",
+      "items": {
+        "projects": "Projekti",
+        "tasks": "Zadaci",
+        "expenses": "Troškovi",
+        "threads": "Dretve",
+        "clients": "Klijenti",
+        "clientTypes": "Vrste klijenata",
+        "dictionaries": "Rječnici",
+        "languages": "Jezici",
+        "countries": "Zemlje",
+        "currencies": "Valute",
+        "accuracies": "Točnosti",
+        "expenseCategories": "Kategorije troškova",
+        "industries": "Industrije",
+        "priorities": "Prioriteti",
+        "translationUnits": "Jedinice prijevoda",
+        "serviceTypes": "Vrste usluga",
+        "users": "Korisnici"
+      }
+    },
+    "themeSwitcher": {
+      "tooltip": "Prebaci svjetlo/tamno temu"
+    },
+    "languageSwitcher": {
+      "tooltip": "Promijeni jezik"
+    },
+    "settingsMenu": {
+      "tooltip": "Postavke",
+      "items": {
+        "account": "Račun",
+        "logout": "Odjava"
+      }
+    }
+  },
   "projects": {
     "index": {
       "title": "Projekti",

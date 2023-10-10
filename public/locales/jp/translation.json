@@ -43,6 +43,46 @@
       }
     }
   },
+  "layout": {
+    "header": {
+      "title": "プロジェクトヘルメス"
+    },
+    "navigationDrawer": {
+      "title": "プロジェクトヘルメス",
+      "items": {
+        "projects": "プロジェクト",
+        "tasks": "タスク",
+        "expenses": "経費",
+        "threads": "スレッド",
+        "clients": "クライアント",
+        "clientTypes": "クライアントの種類",
+        "dictionaries": "辞書",
+        "languages": "言語",
+        "countries": "国",
+        "currencies": "通貨",
+        "accuracies": "精度",
+        "expenseCategories": "経費カテゴリ",
+        "industries": "産業",
+        "priorities": "優先度",
+        "translationUnits": "翻訳単位",
+        "serviceTypes": "サービスタイプ",
+        "users": "ユーザー"
+      }
+    },
+    "themeSwitcher": {
+      "tooltip": "ライト/ダークテーマを切り替える"
+    },
+    "languageSwitcher": {
+      "tooltip": "言語を変更する"
+    },
+    "settingsMenu": {
+      "tooltip": "設定",
+      "items": {
+        "account": "アカウント",
+        "logout": "ログアウト"
+      }
+    }
+  },
   "projects": {
     "index": {
       "title": "プロジェクト",

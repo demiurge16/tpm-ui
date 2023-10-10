@@ -41,6 +41,45 @@
         "of": "з"
       }
     }
+  },"layout": {
+    "header": {
+      "title": "Проект Гермес"
+    },
+    "navigationDrawer": {
+      "title": "Проект Гермес",
+      "items": {
+        "projects": "Проекти",
+        "tasks": "Завдання",
+        "expenses": "Витрати",
+        "threads": "Потоки",
+        "clients": "Клієнти",
+        "clientTypes": "Типи клієнтів",
+        "dictionaries": "Словники",
+        "languages": "Мови",
+        "countries": "Країни",
+        "currencies": "Валюти",
+        "accuracies": "Точності",
+        "expenseCategories": "Категорії витрат",
+        "industries": "Галузі",
+        "priorities": "Пріоритети",
+        "translationUnits": "Одиниці перекладу",
+        "serviceTypes": "Типи послуг",
+        "users": "Користувачі"
+      }
+    },
+    "themeSwitcher": {
+      "tooltip": "Перемкнути світлу/темну тему"
+    },
+    "languageSwitcher": {
+      "tooltip": "Змінити мову"
+    },
+    "settingsMenu": {
+      "tooltip": "Налаштування",
+      "items": {
+        "account": "Акаунт",
+        "logout": "Вийти"
+      }
+    }
   },
   "projects": {
     "index": {

@@ -43,6 +43,46 @@
       }
     }
   },
+  "layout": {
+    "header": {
+      "title": "Project Hermes"
+    },
+    "navigationDrawer": {
+      "title": "Project Hermes",
+      "items": {
+        "projects": "Projecten",
+        "tasks": "Taken",
+        "expenses": "Uitgaven",
+        "threads": "Discussies",
+        "clients": "Klanten",
+        "clientTypes": "Klanttypes",
+        "dictionaries": "Woordenboeken",
+        "languages": "Talen",
+        "countries": "Landen",
+        "currencies": "Valuta",
+        "accuracies": "Nauwkeurigheden",
+        "expenseCategories": "Uitgavencategorieën",
+        "industries": "Industrieën",
+        "priorities": "Prioriteiten",
+        "translationUnits": "Vertaaleenheden",
+        "serviceTypes": "Servicetypes",
+        "users": "Gebruikers"
+      }
+    },
+    "themeSwitcher": {
+      "tooltip": "Wissel licht/donker thema"
+    },
+    "languageSwitcher": {
+      "tooltip": "Verander taal"
+    },
+    "settingsMenu": {
+      "tooltip": "Instellingen",
+      "items": {
+        "account": "Account",
+        "logout": "Uitloggen"
+      }
+    }
+  },
   "projects": {
     "index": {
       "title": "Projecten",

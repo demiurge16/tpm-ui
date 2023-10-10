@@ -43,6 +43,46 @@
       }
     }
   },
+  "layout": {
+    "header": {
+      "title": "Project Hermes"
+    },
+    "navigationDrawer": {
+      "title": "Project Hermes",
+      "items": {
+        "projects": "Projects",
+        "tasks": "Tasks",
+        "expenses": "Expenses",
+        "threads": "Threads",
+        "clients": "Clients",
+        "clientTypes": "Client Types",
+        "dictionaries": "Dictionaries",
+        "languages": "Languages",
+        "countries": "Countries",
+        "currencies": "Currencies",
+        "accuracies": "Accuracies",
+        "expenseCategories": "Expense Categories",
+        "industries": "Industries",
+        "priorities": "Priorities",
+        "translationUnits": "Translation Units",
+        "serviceTypes": "Service Types",
+        "users": "Users"
+      }
+    },
+    "themeSwitcher": {
+      "tooltip": "Toggle light/dark theme"
+    },
+    "languageSwitcher": {
+      "tooltip": "Change language"
+    },
+    "settingsMenu": {
+      "tooltip": "Settings",
+      "items": {
+        "account": "Account",
+        "logout": "Logout"
+      }
+    }
+  },
   "projects": {
     "index": {
       "title": "Projects",

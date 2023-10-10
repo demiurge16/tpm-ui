@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 export const NavigationBreadcrumbs = () => {
   const { breadcrumbs } = useBreadcrumbsContext();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // This is a hack to force the component to re-render when the language changes
   useEffect(() => {}, [i18n]);
@@ -24,7 +24,7 @@ export const NavigationBreadcrumbs = () => {
         to="/dashboard"
       >
         <Typography variant="h6" component="div">
-          Project Hermes
+          {t("layout.header.title")}
         </Typography>
       </Link>
       {breadcrumbs &&

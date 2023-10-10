@@ -27,7 +27,7 @@ export const Notifications = () => {
     `,
   };
 
-  let [testNotifications, setTestNotifications] = useState([
+  const [testNotifications, setTestNotifications] = useState([
     {
       id: 1,
       title: "Test notification 1",
