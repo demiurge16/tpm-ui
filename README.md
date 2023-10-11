@@ -1211,6 +1211,459 @@ const Root = () => {
 Po dodaniu komponentu `AuthContextProvider`, aplikacja jest gotowa do uwierzytelniania użytkowników. 
 
 #### Nawigacja i routing
+
+W aplikcajach webowych, routing jest mechanizmem, który pozwala na nawigację pomiędzy różnymi widokami aplikacji. Z kolei nawigacja to proces przechodzenia pomiędzy różnymi widokami aplikacji. Są one ze sobą ścisłe powiązane, ponieważ nawigacja jest realizowana za pomocą routingu i odwrotnie, routing jest używany do nawigacji.
+
+W przypadku interfejsu użytkownika systemu organizacji pracy dla biura tłumaczeń, routing i nawigacja zostały zaimplementowane z użyciem biblioteki React Router DOM, która cieszy się dużą popularnością w ekosystemie React. React Router DOM jest biblioteką, która pozwala na deklaratywne definiowanie routingu w aplikacji React. Deklaratywne definiowanie oznacza, że routing jest definiowany za pomocą komponentów React, które są renderowane w zależności od ścieżki URL. React Router DOM pozwala też na nawigację pomiędzy widokami aplikacji za pomocą komponentu `Link`, który renderuje link do określonej ścieżki URL.
+
+Implementację routingu zaczynamy od zdefiniowania komponentu `RouterConfig`. Komponent ten zawiera wszystkie ścieżki URL, które są dostępne w aplikacji oraz komponenty, które są renderowane dla tych ścieżek, oraz odpowiada za kontrolę dostępu do poszczególnych ścieżek. Implementację komponentu zapoczątkowuje zdefiniowanie interfejsu `RouteConfig`, który zawiera informacje o ścieżce URL, komponencie, który ma być renderowany dla tej ścieżki, oraz rolach, które są wymagane do uzyskania dostępu do tej ścieżki:
+
+```tsx
+type RouteConfig = {
+  path: string;
+  roles: Role[];
+  element: JSX.Element;
+};
+```
+
+Następnie, definiujemy tablicę `routerConfig`, która zawiera wszystkie ścieżki URL, które są dostępne w aplikacji. Każda ścieżka jest reprezentowana przez obiekt typu `RouteConfig`:
+
+```tsx
+const routerConfig: RouteConfig[] = [
+  {
+    path: "/",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+      "user",
+    ],
+    element: <Navigate to="/dashboard" />,
+  },
+  {
+    path: "/dashboard",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+      "user",
+    ],
+    element: <Dashboard />,
+  },
+  {
+    path: "/projects",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+    ],
+    element: <Projects.Index />,
+  },
+  {
+    path: "/projects/create",
+    roles: ["admin", "project-manager"],
+    element: <Projects.Create />,
+  },
+  {
+    path: "/projects/:id/edit",
+    roles: ["admin", "project-manager"],
+    element: <Projects.Edit />,
+  },
+  {
+    path: "/projects/:id",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+    ],
+    element: <Projects.Details />,
+  },
+  {
+    path: "/tasks",
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer",
+    ],
+    element: <Tasks.Index />,
+  },
+  // Pozostałe ścieżki...
+];
+```
+
+Następnie, definiujemy komponent `RouterConfig`, który będzie renderował komponent `Routes` z React Router DOM. Komponent `Routes` renderuje komponent `Route` dla każdej ścieżki URL zdefiniowanej w tablicy `routerConfig`. Komponent `Route` z kolei renderuje komponent `SecuredRoute`, który jest odpowiedzialny za kontrolę dostępu do ścieżki URL.
+
+```tsx
+export const RouterConfig = () => {
+  return (
+    <Routes>
+      {
+        routerConfig.map((item, index) => {
+          return (
+            <Route
+              key={`route-${index}`}
+              path={item.path}
+              element={
+                <SecuredRoute roles={item.roles}>{item.element}</SecuredRoute>
+              }
+            />
+          );
+        })
+      }
+      <Route path="/forbidden" element={<Errors.Forbidden />} />
+      <Route path="/internal-server-error" element={<Errors.InternalServerError />} />
+      <Route path="*" element={<Errors.NotFound />} />
+    </Routes>
+  );
+}
+```
+
+Komponent `SecuredRoute` jest odpowiedzialny za kontrolę dostępu do ścieżki URL. Komponent ten sprawdza, czy użytkownik jest zalogowany, a następnie sprawdza, czy użytkownik ma wymagane role do uzyskania dostępu do ścieżki URL. Jeżeli użytkownik nie jest zalogowany, to zostaje przekierowany do strony logowania zgodnie z implementacją kontekstu autoryzacji. Jeżeli użytkownik jest zalogowany, ale nie ma wymaganych ról, to zostaje przekierowany do strony "403 Forbidden". Implementacja komponentu `SecuredRoute` wygląda następująco:
+
+```tsx
+export interface SecuredRouteProps {
+  roles?: Role[];
+  children: ReactNode;
+}
+
+export const SecuredRoute = (props: SecuredRouteProps) => {
+  const { roles, children } = props;
+  const { isAuthenticated, hasAnyRole } = useAuth();
+
+  return isAuthenticated
+    ? roles && hasAnyRole(roles) ? <>{children}</> : <Navigate to="/forbidden" />
+    : <LoadingScreen />;
+};
+```
+
+Za nawigacje pomiędzy widokami aplikacji odpowiadają komponenty `NavigationDrawer` oraz `NavigationBreadcrumbs`. Komponent `NavigationDrawer` jest odpowiedzialny za nawigację pomiędzy widokami aplikacji za pomocą nawigacji bocznej. Komponent ten renderuje listę linków do poszczególnych widoków aplikacji. Implementacja komponentu `NavigationDrawer` zaczyna się od zdefiniowania konfiguracji nawigacji, która zawiera informacje o ścieżce URL, ikonie, etykiecie oraz rolach, które są wymagane do uzyskania dostępu do widoku:
+
+```tsx
+export type MenuItem = {
+  icon: any;
+  label: string;
+  path: string;
+  roles: Role[];
+};
+
+export type MenuItemGroup = {
+  icon: any;
+  label: string;
+  items: MenuConfig;
+};
+
+export type MenuConfig = (MenuItem | MenuItemGroup)[];
+
+export const isItem = (item: MenuItem | MenuItemGroup): item is MenuItem => {
+  return 'path' in item;
+};
+
+export const isGroup = (item: MenuItem | MenuItemGroup): item is MenuItemGroup => {
+  return 'items' in item;
+};
+
+export const flattenMenu = (menu: MenuConfig): MenuItem[] => {
+  const items: MenuItem[] = [];
+
+  menu.forEach(item => {
+    if (isItem(item)) {
+      items.push(item);
+    } else if (isGroup(item)) {
+      items.push(...flattenMenu(item.items));
+    }
+  });
+
+  return items;
+};
+
+export const menuConfig: MenuConfig = [
+  {
+    icon: ChecklistIcon,
+    label: Projects.title,
+    path: Projects.path,
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer"
+    ],
+  },
+  {
+    icon: TaskIcon,
+    label: Tasks.title,
+    path: Tasks.path,
+    roles: [
+      "admin",
+      "project-manager",
+      "translator",
+      "editor",
+      "proofreader",
+      "subject-matter-expert",
+      "publisher",
+      "observer"
+    ],
+  },
+  {
+    icon: WorkIcon,
+    label: Clients.title,
+    items: [
+      {
+        icon: WorkIcon,
+        label: Clients.title,
+        path: Clients.path,
+        roles: [
+          "admin",
+          "project-manager"
+        ],
+      },
+      {
+        icon: HomeWorkIcon,
+        label: ClientTypes.title,
+        path: ClientTypes.path,
+        roles: [
+          "admin",
+          "project-manager"
+        ],
+      }
+    ]
+  },
+  // Pozostałe elementy nawigacji...
+];
+```
+
+Z kolei komponent `NavigationDrawer` renderuje listę linków do poszczególnych widoków aplikacji. Komponent ten wykorzystuje komponent `Link` z React Router DOM do nawigacji pomiędzy widokami aplikacji. Implementacja komponentu `NavigationDrawer` wykorzystuje komponenty z biblioteki `@mui/material` do renderowania nawigacji bocznej oraz ikon z biblioteki `@mui/icons-material` do renderowania ikon. Zostały również zaimplementowane dodatkowe subtelne animacje i stylowanie, które sprawiają, że nawigacja boczna jest bardziej przyjazna dla użytkownika. Komponent został zaimplementowany w taki sposób, aby uwzględniał uprawnienia użytkownika do poszczególnych widoków aplikacji korzystając z kontekstu autoryzacji. Implementacja komponentu `NavigationDrawer` wygląda następująco:
+
+```tsx
+export interface NavigationDrawerProps {
+  open: boolean;
+}
+
+export const NavigationDrawer = (props: NavigationDrawerProps) => {
+  const [open, setOpen] = useState(props.open);
+  useEffect(() => setOpen(props.open), [props.open]);
+
+  const drawerWidth = 280;
+  const theme = useTheme();
+  const { hasAnyRole } = useAuth();
+
+  const drawerOpenAnimation = theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  });
+  const drawerCloseAnimation = theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  });
+
+  const styles = {
+    drawerOpened: css`
+      transition: ${drawerOpenAnimation};
+      & .MuiDrawer-paper {
+        transition: ${drawerOpenAnimation};
+      }
+    `,
+    drawerClosed: css`
+      transition: ${drawerCloseAnimation};
+      & .MuiDrawer-paper {
+        transition: ${drawerCloseAnimation};
+      }
+    `,
+  };
+
+  const filterMenu = (menu: MenuConfig) => {
+    const filteredItems: MenuConfig = [];
+
+    for (const item of menu) {
+      if (isItem(item) && hasAnyRole(item.roles)) {
+        filteredItems.push(item);
+      } else if (isGroup(item)) {
+        const filteredGroup = filterItemGroup(item);
+        if (filteredGroup.items.length > 0) {
+          filteredItems.push(filteredGroup);
+        }
+      }
+    }
+
+    return filteredItems;
+  }
+
+  const filterItemGroup = (group: MenuItemGroup) => {
+    const filteredItems: MenuConfig = [];
+
+    for (const item of group.items) {
+      if (isItem(item) && hasAnyRole(item.roles)) {
+        filteredItems.push(item);
+      } else if (isGroup(item)) {
+        const filteredGroup = filterItemGroup(item);
+        if (filteredGroup.items.length > 0) {
+          filteredItems.push(filteredGroup);
+        }
+      }
+    }
+
+    return {
+      ...group,
+      items: filteredItems,
+    };
+  }
+
+  return (
+    <Drawer
+      variant="permanent"
+      open={open}
+      className={open ? styles.drawerOpened : styles.drawerClosed}
+      sx={{
+        flexShrink: 0,
+        whiteSpace: "nowrap",
+        boxSizing: "border-box",
+        overflow: "hidden",
+        width: open ? drawerWidth : theme.spacing(9),
+        "& .MuiDrawer-paper": {
+          width: open ? drawerWidth : theme.spacing(9),
+          whiteSpace: "nowrap",
+          boxSizing: "border-box",
+          overflow: "hidden",
+        },
+      }}
+    >
+      <Toolbar />
+      <Box sx={{ overflowY: "auto", overflowX: "hidden" }}>
+        {open ? (
+          <List>
+            {filterMenu(menuConfig).map((menuItem, index) =>
+              (isItem(menuItem) ? (
+                <NavigationDrawerItem
+                  key={index}
+                  open={open}
+                  index={index}
+                  icon={menuItem.icon}
+                  label={menuItem.label}
+                  path={menuItem.path}
+                  nestIndex={0}
+                />
+              ) : (
+                isGroup(menuItem) && (
+                  <NavigationDrawerItemGroup
+                    key={index}
+                    drawerOpen={open}
+                    index={index}
+                    icon={menuItem.icon}
+                    label={menuItem.label}
+                    items={menuItem.items}
+                    nestIndex={0}
+                  />
+                )
+              )
+            ))}
+          </List>
+        ) : flattenMenu(filterMenu(menuConfig)).map((menuItem, index) => (
+            <NavigationDrawerItem
+              key={index}
+              open={open}
+              index={index}
+              icon={menuItem.icon}
+              label={menuItem.label}
+              path={menuItem.path}
+              nestIndex={0}
+            />
+        ))}
+      </Box>
+    </Drawer>
+  );
+};
+```
+
+Komponent `NavigationBreadcrumbs` jest odpowiedzialny za nawigację pomiędzy widokami aplikacji za pomocą nawigacji górnej. Komponent ten renderuje listę linków do poszczególnych widoków aplikacji, które pokazują ścieżkę nawigacji od widoku głównego do aktualnego widoku. Implementacja komponentu `NavigationBreadcrumbs` wykorzystuje komponent `Link` z React Router DOM do nawigacji pomiędzy widokami aplikacji oraz komponent `Breadcrumbs` z biblioteki `@mui/material` do renderowania nawigacji górnej:
+
+```tsx
+export const NavigationBreadcrumbs = () => {
+  const { breadcrumbs } = useBreadcrumbsContext();
+  const { t, i18n } = useTranslation();
+
+  // Force the component to re-render when the language changes
+  useEffect(() => {}, [i18n]);
+
+  return (
+    <Breadcrumbs
+      aria-label="breadcrumb"
+      separator={<NavigateNextIcon fontSize="small" />}
+    >
+      <Link
+        underline="hover"
+        color="text.primary"
+        component={RouterLink}
+        to="/dashboard"
+      >
+        <Typography variant="h6" component="div">
+          {t("layout.header.title")}
+        </Typography>
+      </Link>
+      {breadcrumbs &&
+        breadcrumbs.map((item, index) => {
+          return (
+            <Link
+              key={`breadcrumb-${index}`}
+              underline="hover"
+              color="inherit"
+              component={RouterLink}
+              to={item.path}
+            >
+              <Typography variant="h6" component="div" color="inherit">
+                {item.label instanceof Function ? <item.label /> : item.label}
+              </Typography>
+            </Link>
+          );
+        })}
+    </Breadcrumbs>
+  );
+};
+```
+
+Informacje o tym, jakie linki powinny być wyświetlane w nawigacji górnej są przechowywane w kontekście nawigacji `BreadcrumbsContext`, zaimplementowanym w analogiczny do kontekstu autoryzacji sposób. Kontekst nawigacji `BreadcrumbsContext` jest odpowiedzialny za przechowywanie informacji o ścieżce nawigacji oraz aktualizację tych informacji w zależności od aktualnego widoku aplikacji i jest opisany poprzez interfejs `BreadcrumbsContextValues`:
+
+```tsx
+interface Breadcrumb<T = object> {
+  label: string | JSX.Element | React.ComponentType<T>;
+  path: string;
+}
+
+interface BreadcrumbsContextValues {
+  breadcrumbs: Breadcrumb[];
+  setBreadcrumbs: (breadcrumbs: Breadcrumb[]) => void;
+}
+```
+
+Pojedyńcze widoki aplikacji są odpowiedzialne za aktualizację kontekstu nawigacji `BreadcrumbsContext` w zależności od aktualnego widoku aplikacji.
+
 #### Komunikacja z serwerem
 #### Implementacja widoków
 #### Implementacja formularzy
