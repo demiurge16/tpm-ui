@@ -9,11 +9,12 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { Collapse } from "@mui/material";
 import { MenuConfig, isGroup, isItem } from "./MenuConfig";
 import { NavigationDrawerItem } from "./NavigationDrawerItem";
+import { Label } from "../../components/utils/Label";
 
 export const NavigationDrawerItemGroup = (props: {
   drawerOpen: boolean;
   index: number;
-  label: string;
+  label: React.ReactNode | React.ComponentType;
   icon: ElementType;
   items: MenuConfig;
   nestIndex: number;
@@ -51,7 +52,7 @@ export const NavigationDrawerItemGroup = (props: {
             {props.icon && <props.icon sx={{ mr: 1 }} />}
           </ListItemIcon>
           <ListItemText
-            primary={label}
+            primary={<Label content={label} />}
             sx={{
               display: drawerOpen ? "initial" : "none",
               whiteSpace: "nowrap",

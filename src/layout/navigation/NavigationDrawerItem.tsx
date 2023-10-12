@@ -6,12 +6,13 @@ import ListItemIcon from "@mui/material/ListItemIcon/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText/ListItemText";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Tooltip } from "@mui/material";
+import { Label } from "../../components/utils/Label";
 
 export const NavigationDrawerItem = (props: {
   open: boolean;
   index: number;
   icon: ElementType;
-  label: string;
+  label: React.ReactNode | React.ComponentType;
   path: string;
   nestIndex: number;
 }) => {
@@ -22,7 +23,9 @@ export const NavigationDrawerItem = (props: {
   useEffect(() => setOpen(props.open), [props.open]);
 
   return (
-    <Tooltip title={label} placement="right">
+    <Tooltip placement="right"
+      title={<Label content={label} />} 
+    >
       <Link
         key={index}
         component={RouterLink}
@@ -58,7 +61,7 @@ export const NavigationDrawerItem = (props: {
               {icon && <props.icon sx={{ mr: 1 }} />}
             </ListItemIcon>
             <ListItemText
-              primary={label}
+              primary={<Label content={label} />}
               sx={{
                 display: open ? "initial" : "none",
                 whiteSpace: "nowrap",

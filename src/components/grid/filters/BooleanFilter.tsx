@@ -1,9 +1,10 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { Label } from "../../utils/Label";
 
 export interface BooleanFilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   value: boolean | string | null;
   onChange: (value: boolean) => void;
 }
@@ -14,12 +15,12 @@ export const BooleanFilter = (props: BooleanFilterProps) => {
   return (
     <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={labelId}>        
-        {typeof props.label === "string" ? props.label : <props.label />}
+        <Label content={props.label} />
       </InputLabel>
       <Select id={props.id}
         labelId={labelId}
         value={props.value}
-        label={typeof props.label === "string" ? props.label : <props.label />}
+        label={<Label content={props.label} />}
         onChange={(e) => props.onChange(e.target.value as boolean)}
       >
         <MenuItem value="true">

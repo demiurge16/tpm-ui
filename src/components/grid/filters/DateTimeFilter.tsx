@@ -2,17 +2,18 @@ import { MouseEvent, useState } from "react";
 import { Box, Button, Chip, FormControl, IconButton, InputAdornment, Popover, TextField } from "@mui/material";
 import { CalendarIcon, DateTimePicker, StaticDateTimePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
+import { Label } from "../../utils/Label";
 
 export interface DateTimeFilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   value: Date | null;
   onChange: (value: Date | null) => void;
 }
 
 export interface MultivalueDateTimeFilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   value: Date[] | null;
   onChange: (value: Date[]) => void;
 }
@@ -21,7 +22,7 @@ export const DateTimeFilter = (props: DateTimeFilterProps) => {
   return (
     <FormControl id={props.id} variant="standard" size="small" fullWidth>
       <DateTimePicker
-        label={typeof props.label === "string" ? props.label : <props.label />}
+        label={<Label content={props.label} />}
         ampm={false}
         value={props.value ? DateTime.fromJSDate(new Date(props.value)) : null}
         onChange={(date) => props.onChange(date?.toJSDate() ?? null)}
@@ -82,7 +83,7 @@ export const MultivalueDateTimeFilter = (props: MultivalueDateTimeFilterProps) =
   return (
     <FormControl id={props.id} variant="standard" size="small" fullWidth>
       <TextField
-        label={typeof props.label === "string" ? props.label : <props.label />}
+        label={<Label content={props.label} />}
         variant="standard"
         value={props.value}
         InputProps={{

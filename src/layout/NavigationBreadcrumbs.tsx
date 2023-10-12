@@ -4,6 +4,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { useBreadcrumbsContext } from "../contexts/BreadcrumbsContext";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import { Label } from "../components/utils/Label";
 
 export const NavigationBreadcrumbs = () => {
   const { breadcrumbs } = useBreadcrumbsContext();
@@ -38,7 +39,7 @@ export const NavigationBreadcrumbs = () => {
               to={item.path}
             >
               <Typography variant="h6" component="div" color="inherit">
-                {item.label instanceof Function ? <item.label /> : item.label}
+                <Label content={item.label} />
               </Typography>
             </Link>
           );

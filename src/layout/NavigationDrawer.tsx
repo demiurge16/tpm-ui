@@ -6,7 +6,7 @@ import Toolbar from "@mui/material/Toolbar/Toolbar";
 import Drawer from "@mui/material/Drawer/Drawer";
 import List from "@mui/material/List/List";
 import { useAuth } from "../contexts/AuthContext";
-import { MenuConfig, MenuItemGroup, flattenMenu, isGroup, isItem, menuConfig } from "./navigation/MenuConfig";
+import { MenuConfig, MenuItemGroup, flattenMenu, isGroup, isItem, useMenuConfig } from "./navigation/MenuConfig";
 import { NavigationDrawerItem } from "./navigation/NavigationDrawerItem";
 import { NavigationDrawerItemGroup } from "./navigation/NavigationDrawerItemGroup";
 
@@ -20,6 +20,7 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
 
   const drawerWidth = 280;
   const theme = useTheme();
+  const menuConfig = useMenuConfig();
   const { hasAnyRole } = useAuth();
 
   const drawerOpenAnimation = theme.transitions.create("width", {

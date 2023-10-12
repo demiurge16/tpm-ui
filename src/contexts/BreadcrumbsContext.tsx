@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 
-interface Breadcrumb<T = object> {
-  label: string | JSX.Element | React.ComponentType<T>;
+interface Breadcrumb {
+  label: React.ReactNode | React.ComponentType;
   path: string;
 }
 

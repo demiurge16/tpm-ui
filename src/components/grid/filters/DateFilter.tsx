@@ -11,17 +11,18 @@ import {
 } from "@mui/material";
 import { CalendarIcon, DateCalendar, DatePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
+import { Label } from "../../utils/Label";
 
 export interface DateFilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   value: Date | null;
   onChange: (value: Date | null) => void;
 }
 
 export interface MultivalueDateFilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   value: Date[] | null;
   onChange: (value: Date[]) => void;
 }
@@ -30,7 +31,7 @@ export const DateFilter = (props: DateFilterProps) => {
   return (
     <FormControl id={props.id} variant="standard" size="small" fullWidth>
       <DatePicker
-        label={typeof props.label === "string" ? props.label : <props.label />}
+        label={<Label content={props.label} />}
         value={props.value ? DateTime.fromJSDate(new Date(props.value)) : null}
         onChange={(date) => props.onChange(date?.toJSDate() ?? null)}
         slotProps={{
@@ -90,7 +91,7 @@ export const MultivalueDateFilter = (props: MultivalueDateFilterProps) => {
   return (
     <FormControl id={props.id} variant="standard" size="small" fullWidth>
       <TextField
-        label={typeof props.label === "string" ? props.label : <props.label />}
+        label={<Label content={props.label} />}
         variant="standard"
         value={props.value}
         InputProps={{

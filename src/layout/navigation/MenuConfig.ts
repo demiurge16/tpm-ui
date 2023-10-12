@@ -32,17 +32,18 @@ import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import DesignServicesIcon from '@mui/icons-material/DesignServices';
 import { ServiceTypes } from "../../pages/dictionaries/service-types/ServiceTypes";
 import { Role } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export type MenuItem = {
-  icon: any;
-  label: string;
+  icon: React.ElementType;
+  label: React.ReactNode | React.ComponentType;
   path: string;
   roles: Role[];
 };
 
 export type MenuItemGroup = {
-  icon: any;
-  label: string;
+  icon: React.ElementType;
+  label: React.ReactNode | React.ComponentType;
   items: MenuConfig;
 };
 
@@ -70,228 +71,232 @@ export const flattenMenu = (menu: MenuConfig): MenuItem[] => {
   return items;
 };
 
-export const menuConfig: MenuConfig = [
-  {
-    icon: ChecklistIcon,
-    label: Projects.title,
-    path: Projects.path,
-    roles: [
-      "admin",
-      "project-manager",
-      "translator",
-      "editor",
-      "proofreader",
-      "subject-matter-expert",
-      "publisher",
-      "observer"
-    ],
-  },
-  {
-    icon: TaskIcon,
-    label: Tasks.title,
-    path: Tasks.path,
-    roles: [
-      "admin",
-      "project-manager",
-      "translator",
-      "editor",
-      "proofreader",
-      "subject-matter-expert",
-      "publisher",
-      "observer"
-    ],
+export function useMenuConfig(): MenuConfig {
+  const { t } = useTranslation("translation", { keyPrefix: "layout.navigationDrawer" });
 
-  },
-  {
-    icon: RequestQuoteIcon,
-    label: Expenses.title,
-    path: Expenses.path,
-    roles: [
-      "admin",
-      "project-manager"
-    ],
-  },
-  {
-    icon: NoteAltIcon,
-    label: Threads.title,
-    path: Threads.path,
-    roles: [
-      "admin",
-      "project-manager",
-      "translator",
-      "editor",
-      "proofreader",
-      "subject-matter-expert",
-      "publisher",
-      "observer"
-    ],
-  },
-  {
-    icon: WorkIcon,
-    label: Clients.title,
-    items: [
-      {
-        icon: WorkIcon,
-        label: Clients.title,
-        path: Clients.path,
-        roles: [
-          "admin",
-          "project-manager"
-        ],
-      },
-      {
-        icon: HomeWorkIcon,
-        label: ClientTypes.title,
-        path: ClientTypes.path,
-        roles: [
-          "admin",
-          "project-manager"
-        ],
-      }
-    ]
-  },
-  {
-    icon: MenuBookIcon,
-    label: "Dictionaries",
-    items: [
-      {
-        icon: TranslateIcon,
-        label: Languages.title,
-        path: Languages.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ],
-      },
-      {
-        icon: PublicIcon,
-        label: Countries.title,
-        path: Countries.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ],
-      },
-      {
-        icon: CurrencyExchangeIcon,
-        label: Currencies.title,
-        path: Currencies.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ],
-      },
-      {
-        icon: FactCheckIcon,
-        label: Accuracies.title,
-        path: Accuracies.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ],
-      },
-      {
-        icon: ProductionQuantityLimitsIcon,
-        label: ExpenseCategories.title,
-        path: ExpenseCategories.path,
-        roles: [
-          "admin",
-          "project-manager"
-        ],
-      },
-      {
-        icon: ConstructionIcon,
-        label: Industries.title,
-        path: Industries.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ],
-      },
-      {
-        icon: LowPriorityIcon,
-        label: Priorities.title,
-        path: Priorities.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ],
-      },
-      {
-        icon: PercentIcon,
-        label: Units.title,
-        path: Units.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ],
-      },
-      {
-        icon: DesignServicesIcon,
-        label: ServiceTypes.title,
-        path: ServiceTypes.path,
-        roles: [
-          "admin",
-          "project-manager",
-          "translator",
-          "editor",
-          "proofreader",
-          "subject-matter-expert",
-          "publisher",
-          "observer",
-        ]
-      }
-    ],
-  },
-  {
-    icon: PersonIcon,
-    label: Users.title,
-    path: Users.path,
-    roles: [
-      "admin",
-      "project-manager"
-    ],
-  },
-];
+  return [
+    {
+      icon: ChecklistIcon,
+      label: () => t("items.projects"),
+      path: Projects.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
+    },
+    {
+      icon: TaskIcon,
+      label: () => t("items.tasks"),
+      path: Tasks.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
+
+    },
+    {
+      icon: RequestQuoteIcon,
+      label: () => t("items.expenses"),
+      path: Expenses.path,
+      roles: [
+        "admin",
+        "project-manager"
+      ],
+    },
+    {
+      icon: NoteAltIcon,
+      label: () => t("items.threads"),
+      path: Threads.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
+    },
+    {
+      icon: WorkIcon,
+      label: () => t("items.clients"),
+      items: [
+        {
+          icon: WorkIcon,
+          label: Clients.title,
+          path: Clients.path,
+          roles: [
+            "admin",
+            "project-manager"
+          ],
+        },
+        {
+          icon: HomeWorkIcon,
+          label: () => t("items.clientTypes"),
+          path: ClientTypes.path,
+          roles: [
+            "admin",
+            "project-manager"
+          ],
+        }
+      ]
+    },
+    {
+      icon: MenuBookIcon,
+      label: () => t("items.dictionaries"),
+      items: [
+        {
+          icon: TranslateIcon,
+          label: () => t("items.languages"),
+          path: Languages.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ],
+        },
+        {
+          icon: PublicIcon,
+          label: () => t("items.countries"),
+          path: Countries.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ],
+        },
+        {
+          icon: CurrencyExchangeIcon,
+          label: () => t("items.currencies"),
+          path: Currencies.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ],
+        },
+        {
+          icon: FactCheckIcon,
+          label: () => t("items.accuracies"),
+          path: Accuracies.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ],
+        },
+        {
+          icon: ProductionQuantityLimitsIcon,
+          label: () => t("items.expenseCategories"),
+          path: ExpenseCategories.path,
+          roles: [
+            "admin",
+            "project-manager"
+          ],
+        },
+        {
+          icon: ConstructionIcon,
+          label: () => t("items.industries"),
+          path: Industries.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ],
+        },
+        {
+          icon: LowPriorityIcon,
+          label: () => t("items.priorities"),
+          path: Priorities.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ],
+        },
+        {
+          icon: PercentIcon,
+          label: () => t("items.translationUnits"),
+          path: Units.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ],
+        },
+        {
+          icon: DesignServicesIcon,
+          label: () => t("items.serviceTypes"),
+          path: ServiceTypes.path,
+          roles: [
+            "admin",
+            "project-manager",
+            "translator",
+            "editor",
+            "proofreader",
+            "subject-matter-expert",
+            "publisher",
+            "observer",
+          ]
+        }
+      ],
+    },
+    {
+      icon: PersonIcon,
+      label: () => t("items.users"),
+      path: Users.path,
+      roles: [
+        "admin",
+        "project-manager"
+      ],
+    },
+  ];
+}

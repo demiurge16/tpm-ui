@@ -228,11 +228,11 @@ export function QueryBuilder(props: QueryBuilderProps) {
 
 interface FilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   type: FieldType;
   multiple: boolean;
   value: FilterValue | null;
-  options?: { value: string, label: string | React.ComponentType<object> }[];
+  options?: { value: string, label: React.ReactNode | React.ComponentType }[];
   valueChanged: (value: FilterValue | null) => void;
 }
 

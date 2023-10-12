@@ -1,16 +1,17 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { FormControl, InputLabel, Input, TextField, Chip } from "@mui/material";
+import { Label } from "../../utils/Label";
 
 export interface StringFilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   value: string | null;
   onChange: (value: string) => void;
 }
 
 export interface MultivalueStringFilterProps {
   id: string;
-  label: string | React.ComponentType<object>;
+  label: React.ReactNode | React.ComponentType;
   value: string[] | null;
   onChange: (value: string[]) => void;
 }
@@ -19,7 +20,7 @@ export const StringFilter = (props: StringFilterProps) => {
   return (
     <FormControl variant="standard" size="small" fullWidth>
       <InputLabel id={props.id}>
-        {typeof props.label === "string" ? props.label : <props.label />}
+        <Label content={props.label} />
       </InputLabel>
       <Input id={props.id}
         type="text"
@@ -65,7 +66,7 @@ export const MultivalueStringFilter = (props: MultivalueStringFilterProps) => {
   return (
     <>
       <TextField
-        label={typeof props.label === "string" ? props.label : <props.label />}
+        label={<Label content={props.label} />}
         variant="standard"
         fullWidth
         value={inputValue}

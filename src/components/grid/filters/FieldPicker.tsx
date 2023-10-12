@@ -1,10 +1,11 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Label } from "../../utils/Label";
 
 export interface FieldPickerProps {
   selectedField: string;
-  fields: { id: string, name: string | React.ComponentType<object> }[];
+  fields: { id: string, name: React.ReactNode | React.ComponentType }[];
   onChange: (field: string) => void;
 }
 
@@ -31,7 +32,7 @@ export const FieldPicker = ({ selectedField, fields, onChange }: FieldPickerProp
         {
           fields.map(field => (
             <MenuItem key={field.id} value={field.id}>
-              {typeof field.name === "string" ? field.name : <field.name />}
+              <Label content={field.name} />
             </MenuItem>
           ))
         }
