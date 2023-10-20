@@ -46,10 +46,10 @@
     * [Instalacja Git](#instalacja-git)
   * [Infrastruktura](#infrastruktura)
     * [Docker Compose](#docker-compose)
-    * [Konfiguracja instancji Keycloak](#konfiguracja-instancji-keycloak)
     * [Konfiguracja instancji PostgreSQL](#konfiguracja-instancji-postgresql)
     * [Konfiguracja instancji Redis](#konfiguracja-instancji-elasticsearch)
     * [Konfiguracja instancji MinIO](#konfiguracja-instancji-minio)
+    * [Konfiguracja instancji Keycloak](#konfiguracja-instancji-keycloak)
     * [Konfiguracja stosu ELK](#konfiguracja-stosu-elk)
   * [Interfejs użytkownika](#interfejs-użytkownika-1)
     * [Tworzenie projektu za pomocą Vite](#tworzenie-projektu-za-pomocą-vite)
@@ -697,11 +697,96 @@ W tym projekcie, Git będzie używany do zapisywania różnych etapów rozwoju p
 Aby zainstalować Git na platformie Windows, najpierw trzeba pobrać instalator z oficjalnej strony [Git](https://git-scm.com/). Po pobraniu instalatora, użytkownik powinien uruchomić plik i postępować zgodnie z instrukcjami pojawiającymi się w kreatorze instalacji. Zaleca się akceptowanie domyślnych ustawień, choć doświadczeni użytkownicy mogą dostosować opcje instalacji do własnych potrzeb. Po zakończeniu instalacji, Git jest gotowy do użycia zarówno z linii poleceń, jak i za pośrednictwem dostarczonego interfejsu graficznego, takiego jak Git Bash.
 
 ### Infrastruktura
+
 #### Docker Compose
-#### Konfiguracja instancji Keycloak
+
+Docker Compose to narzędzie do definiowania i uruchamiania wielokontenerowych aplikacji Docker. Umożliwia użytkownikowi definiowanie całego ekosystemu aplikacji, składającego się z wielu serwisów, w jednym pliku YAML. Dzięki temu możliwe jest jednoczesne uruchamianie wszystkich serwisów z jednym poleceniem (`docker-compose up`).
+
+Plik `docker-compose.yml` to standardowy plik konfiguracyjny używany przez Docker Compose do definiowania i uruchamiania wielokontenerowych aplikacji Docker. Jest napisany w formacie YAML i umożliwia definiowanie różnych aspektów infrastruktury aplikacji.
+
+Kluczowe sekcje w pliku `docker-compose.yml` to:
+
+1. **services**: Sekcja ta definiuje kontenery, które mają być uruchomione w ramach danej kompozycji. Każdy serwis reprezentuje kontener i opiera się na obrazie Docker:
+    ```yaml
+    services:
+      web:
+        image: nginx:latest
+        ports:
+          - "8080:80"
+      database:
+        image: postgres:latest
+        environment:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+    ```
+    W powyższym przykładzie definiujemy dwa serwisy: `web` oparty na obrazie `nginx` oraz `database` oparty na obrazie `postgres`. W ramach projektu poszczególne serwisy będą reprezentować instancje różnych narzędzi
+
+2. **networks**: Sekcja ta pozwala na definiowanie własnych sieci dla kontenerów. Dzięki temu można izolować komunikację między kontenerami lub połączyć je w określony sposób:
+    ```yaml
+    networks:
+      frontend:
+      backend:
+    ```
+    Możemy następnie przypisać te sieci do określonych serwisów:
+    ```yaml
+    services:
+      web:
+        image: nginx:latest
+        networks:
+          - frontend
+      database:
+        image: postgres:latest
+        networks:
+          - backend
+      ```
+
+3. **volumes**: Sekcja ta umożliwia definiowanie woluminów, które pozwalają na trwałe przechowywanie danych poza kontenerami. Jest to kluczowe dla baz danych, aby dane nie były tracone po zniszczeniu kontenera:
+    ```yaml
+    volumes:
+      db-data:
+    ```
+    Podobnie jak w przypadku sieci, można następnie przypisać te woluminy do określonych serwisów:
+    ```yaml
+    services:
+      database:
+        image: postgres:latest
+        volumes:
+          - db-data:/var/lib/postgresql/data
+    ```
+
+Każda z tych sekcji pozwala na definiowanie kluczowych aspektów kompozycji wielokontenerowej aplikacji. Korzystając z nich, można zapewnić właściwą komunikację między kontenerami, trwałe przechowywanie danych oraz precyzyjne definiowanie zależności i konfiguracji każdego kontenera. Inicjalizacje projektu zaczniemy od tworzenia katalogu, umieszczając w nim plik `docker-compose.yml` z podstawową konfiguracją:
+
+```yaml
+version: "3.8"
+
+services:
+
+volumes:
+
+networks:
+  tpm-network:
+    driver: bridge
+
+```
+
+Wykorzystanie Docker Compose w projekcie ma na celu uproszczenie procesu konfiguracji środowiska developerskiego oraz zapewnienie spójności środowiska między programistami. Poniżej kilka kluczowych korzyści wynikających z zastosowania Docker Compose:
+
+1. **Kod jako infrastruktura**: Dzięki Docker Compose cała infrastruktura jest zdefiniowana w postaci kodu, co sprawia, że jest ona łatwo powtarzalna, przenośna i wersjonowana. Wszystkie zależności, konfiguracje i inne ustawienia są jasno określone w pliku `docker-compose.yml`.
+2. **Eliminacja "u mnie działa"**: Problem różnic w środowiskach developerskich jest dobrze znany w branży IT. Docker Compose minimalizuje ten problem, gwarantując, że wszyscy programiści pracują na identycznym środowisku.
+3. **Szybkie wdrażanie i przywracanie środowiska**: W przypadku problemów z konfiguracją lub uszkodzeniem środowiska, zamiast tracić godziny na diagnozowanie i naprawę, programista może szybko zniszczyć i ponownie uruchomić wszystkie kontenery za pomocą kilku poleceń.
+4. **Onboarding nowych programistów**: Wprowadzenie nowego członka zespołu jest znacznie uproszczone. Wystarczy sklonować repozytorium i uruchomić `docker-compose up`, aby natychmiast mieć działające środowisko developerskie.
+
+W kontekście współczesnego rozwoju oprogramowania, gdzie złożoność technologiczna i liczba zależności ciągle rośnie, narzędzia takie jak Docker Compose stają się niezbędne. W tym projekcie Docker Compose pełni kluczową rolę, umożliwiając łatwe zarządzanie, konfigurację i izolację różnych serwisów potrzebnych do działania aplikacji.
+
 #### Konfiguracja instancji PostgreSQL
+
 #### Konfiguracja instancji Redis
+
 #### Konfiguracja instancji MinIO
+
+#### Konfiguracja instancji Keycloak
+
 #### Konfiguracja stosu ELK
 
 ### Interfejs użytkownika
