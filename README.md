@@ -56,6 +56,7 @@
     * [Zarządzanie zależnościami za pomocą narzędzia npm](#zarządzanie-zależnościami-za-pomocą-narzędzia-npm)
     * [Wyznaczenie kluczowych elementów interfejsu](#wyznaczenie-kluczowych-elementów-interfejsu)
     * [Uwierzytelnianie i kontrola dostępu](#uwierzytelnianie-i-kontrola-dostępu)
+    * [Lokalizacja](#lokalizacja)
     * [Nawigacja i routing](#nawigacja-i-routing)
     * [Komunikacja z serwerem](#komunikacja-z-serwerem)
     * [Implementacja widoków](#implementacja-widoków)
@@ -1208,7 +1209,193 @@ const Root = () => {
 };
 ```
 
-Po dodaniu komponentu `AuthContextProvider`, aplikacja jest gotowa do uwierzytelniania użytkowników. 
+Po dodaniu komponentu `AuthContextProvider`, aplikacja jest gotowa do uwierzytelniania użytkowników.
+
+#### Lokalizacja
+
+W erze globalizacji, zdolność aplikacji do obsługi różnych języków i dostosowywania się do kulturowych specyfików danego regionu stała się kluczem do jej sukcesu na międzynarodowym rynku. Lokalizacja odnosi się nie tylko do tłumaczenia treści, ale również do dostosowywania formatu daty, waluty, jednostek miary i innych kulturowych norm. W przypadku systemu zarządzania biurem tłumaczeń, zdolność do obsługi wielu języków jest nie tylko pożądana, ale wręcz konieczna.
+
+W ramach projektu, lokalizacja została zaimplementowana z użyciem biblioteki react-i18next, która jest szeroko stosowana w ekosystemie React. React-i18next jest biblioteką, która umożliwia tłumaczenie treści, obsługuje wiele języków i dostosowuje się do regionalnych ustawień użytkownika. W przypadku aplikacji React, react-i18next jest najczęściej używaną biblioteką do lokalizacji. Kluczowe Funkcje react-i18next:
+- **Wsparcie dla wielu języków:** Umożliwia dodawanie i zarządzanie tłumaczeniami dla wielu języków.
+- **Lazy Loading:** Tłumaczenia dla określonego języka mogą być ładowane na żądanie, co przyspiesza wczytywanie aplikacji.
+- **Detekcja języka:** Automatyczne rozpoznawanie preferowanego języka użytkownika na podstawie ustawień przeglądarki.
+- **Zintegrowane interpolacje:** Możliwość wstawiania dynamicznych wartości do tłumaczonych ciągów.
+
+Proces implementacji lokalizacji zaczyna się od inicjalizacji react-i18next. Inicjalizacja react-i18next polega na utworzeniu instancji `i18n` i przekazaniu jej konfiguracji. Konfiguracja `i18n` zawiera informacje o językach, które są obsługiwane przez aplikację, domyślny język, oraz ścieżkę do plików z tłumaczeniami. W tym celu tworzymy plik `localization.ts` w katalogu `src`:
+
+```ts
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import en from '../public/locales/en/translation.json';
+import pl from '../public/locales/pl/translation.json';
+// Pozostałe języki
+
+i18n.use(initReactI18next).init({
+  lng: 'en',
+  debug: true,
+  resources: {
+    en: {
+      translation: en
+    },
+    pl: {
+      translation: pl
+    },
+    // Pozostałe języki
+  },
+  fallbackLng: 'en'
+});
+
+export default i18n;
+```
+
+Kolejny krok to zdefiniowanie tłumaczeń. Tłumaczenia są przechowywane w plikach JSON, gdzie każdy język posiada osobny plik z odpowiadającymi mu tłumaczeniami. W tym celu tworzymy katalog `locales` w katalogu `public`, a następnie tworzymy katalogi dla każdego języka, który jest obsługiwany przez aplikację. W każdym katalogu tworzymy plik `translation.json`, który zawiera tłumaczenia dla danego języka. Przykładowe tłumaczenia dla języka angielskiego:
+
+```json
+{
+  "layout": {
+    "header": {
+      "title": "Project Hermes"
+    },
+    "navigationDrawer": {
+      "title": "Project Hermes",
+      "items": {
+        "projects": "Projects",
+        "tasks": "Tasks",
+        "expenses": "Expenses",
+        "threads": "Threads",
+        "clients": "Clients",
+        "clientTypes": "Client Types",
+        "dictionaries": "Dictionaries",
+        "languages": "Languages",
+        "countries": "Countries",
+        "currencies": "Currencies",
+        "accuracies": "Accuracies",
+        "expenseCategories": "Expense Categories",
+        "industries": "Industries",
+        "priorities": "Priorities",
+        "translationUnits": "Translation Units",
+        "serviceTypes": "Service Types",
+        "users": "Users"
+      }
+    },
+    "themeSwitcher": {
+      "tooltip": "Toggle light/dark theme"
+    },
+    "languageSwitcher": {
+      "tooltip": "Change language"
+    },
+    "settingsMenu": {
+      "tooltip": "Settings",
+      "items": {
+        "account": "Account",
+        "logout": "Logout"
+      }
+    }
+  },
+  // Pozostałe tłumaczenia
+}
+```
+
+Po zdefiniowaniu tłumczeń, pozostaje użyć ich w aplikacji. W tym celu, należy użyć hooka `useTranslation`, który pozwala na dostęp do tłumaczeń w komponentach. Hook `useTranslation` zwraca obiekt, który zawiera funkcję `t`, która pozwala na tłumaczenie ciągów tekstowych. Przykład użycia hooka `useTranslation`:
+
+```tsx
+export const ThemeSwitcher = () => {
+  const { theme, setTheme } = useThemeContext();
+  const { t } = useTranslation("translation", { keyPrefix: "layout.themeSwitcher" });
+  const [darkTheme, setDarkTheme] = useState<boolean>(theme === "dark"); 
+
+  const handleThemeChange = () => {
+    setDarkTheme(prevDarkTheme => {
+      setTheme(prevDarkTheme ? "light" : "dark");
+      return !prevDarkTheme;
+    });
+  };
+
+  return (
+    <Tooltip title={t('tooltip')}>
+      <IconButton onClick={handleThemeChange}>
+        {darkTheme ? <Brightness7 /> : <Brightness4 />}
+      </IconButton>
+    </Tooltip>
+  );
+};
+```
+
+Ostatnim krokiem jest implementacja mechanizmu zmiany języka. W tym celu, należy użyć hooka `useTranslation`. Hook `useTranslation` zwraca obiekt, który zawiera funkcję `i18n`, która pozwala na zmianę języka. Przykład implementacji mechanizmu zmiany języka w postaci menu:
+
+```tsx
+export const LanguageSwitcher = () => {
+  const styles = {
+    langaugeSwitchContainer: css`
+      position: relative;
+      display: inline-block;
+    `,
+  };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [language, setLanguage] = useState("en");
+
+  const languages = [
+    {
+      code: "en",
+      name: "English",
+    },
+    {
+      code: "pl",
+      name: "Polski",
+    },
+    // Pozostałe języki
+  ];
+
+  const { t, i18n } = useTranslation("translation", { keyPrefix: "layout.languageSwitcher" });
+
+  const handleOpenLanguageMenu = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseLanguageMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLanguageChange = (code: string) => {
+    i18n.changeLanguage(code);
+    setLanguage(language);
+    setAnchorEl(null);
+  };
+
+  return (
+    <div className={styles.langaugeSwitchContainer}>
+      <Tooltip title={t("tooltip")}>
+        <IconButton onClick={handleOpenLanguageMenu}>
+          <Language />
+        </IconButton>
+      </Tooltip>
+      <Menu id="language-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseLanguageMenu}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        {languages.map((language) => (
+          <MenuItem key={language.code} onClick={() => handleLanguageChange(language.code)}>
+            {language.name}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
+  );
+};
+```
+
+Integracja react-i18next z aplikacją zapewnia elastyczne i skalowalne rozwiązanie do obsługi wielojęzyczności. Biuro tłumaczeń, działając na arenie międzynarodowej, zyskuje dzięki temu narzędziu zdolność do komunikacji z klientami i tłumaczami w ich ojczystym języku, co znacząco poprawia doświadczenie użytkownika i profesjonalizm serwisu.
 
 #### Nawigacja i routing
 
@@ -1364,100 +1551,67 @@ export const SecuredRoute = (props: SecuredRouteProps) => {
 Za nawigacje pomiędzy widokami aplikacji odpowiadają komponenty `NavigationDrawer` oraz `NavigationBreadcrumbs`. Komponent `NavigationDrawer` jest odpowiedzialny za nawigację pomiędzy widokami aplikacji za pomocą nawigacji bocznej. Komponent ten renderuje listę linków do poszczególnych widoków aplikacji. Implementacja komponentu `NavigationDrawer` zaczyna się od zdefiniowania konfiguracji nawigacji, która zawiera informacje o ścieżce URL, ikonie, etykiecie oraz rolach, które są wymagane do uzyskania dostępu do widoku:
 
 ```tsx
-export type MenuItem = {
-  icon: any;
-  label: string;
-  path: string;
-  roles: Role[];
-};
+export function useMenuConfig(): MenuConfig {
+  const { t } = useTranslation("translation", { keyPrefix: "layout.navigationDrawer" });
 
-export type MenuItemGroup = {
-  icon: any;
-  label: string;
-  items: MenuConfig;
-};
-
-export type MenuConfig = (MenuItem | MenuItemGroup)[];
-
-export const isItem = (item: MenuItem | MenuItemGroup): item is MenuItem => {
-  return 'path' in item;
-};
-
-export const isGroup = (item: MenuItem | MenuItemGroup): item is MenuItemGroup => {
-  return 'items' in item;
-};
-
-export const flattenMenu = (menu: MenuConfig): MenuItem[] => {
-  const items: MenuItem[] = [];
-
-  menu.forEach(item => {
-    if (isItem(item)) {
-      items.push(item);
-    } else if (isGroup(item)) {
-      items.push(...flattenMenu(item.items));
-    }
-  });
-
-  return items;
-};
-
-export const menuConfig: MenuConfig = [
-  {
-    icon: ChecklistIcon,
-    label: Projects.title,
-    path: Projects.path,
-    roles: [
-      "admin",
-      "project-manager",
-      "translator",
-      "editor",
-      "proofreader",
-      "subject-matter-expert",
-      "publisher",
-      "observer"
-    ],
-  },
-  {
-    icon: TaskIcon,
-    label: Tasks.title,
-    path: Tasks.path,
-    roles: [
-      "admin",
-      "project-manager",
-      "translator",
-      "editor",
-      "proofreader",
-      "subject-matter-expert",
-      "publisher",
-      "observer"
-    ],
-  },
-  {
-    icon: WorkIcon,
-    label: Clients.title,
-    items: [
-      {
-        icon: WorkIcon,
-        label: Clients.title,
-        path: Clients.path,
-        roles: [
-          "admin",
-          "project-manager"
-        ],
-      },
-      {
-        icon: HomeWorkIcon,
-        label: ClientTypes.title,
-        path: ClientTypes.path,
-        roles: [
-          "admin",
-          "project-manager"
-        ],
-      }
-    ]
-  },
-  // Pozostałe elementy nawigacji...
-];
+  return [
+    {
+      icon: ChecklistIcon,
+      label: () => t("items.projects"),
+      path: Projects.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
+    },
+    {
+      icon: TaskIcon,
+      label: () => t("items.tasks"),
+      path: Tasks.path,
+      roles: [
+        "admin",
+        "project-manager",
+        "translator",
+        "editor",
+        "proofreader",
+        "subject-matter-expert",
+        "publisher",
+        "observer"
+      ],
+    },
+    {
+      icon: WorkIcon,
+      label: () => t("items.clients"),
+      items: [
+        {
+          icon: WorkIcon,
+          label: Clients.title,
+          path: Clients.path,
+          roles: [
+            "admin",
+            "project-manager"
+          ],
+        },
+        {
+          icon: HomeWorkIcon,
+          label: () => t("items.clientTypes"),
+          path: ClientTypes.path,
+          roles: [
+            "admin",
+            "project-manager"
+          ],
+        }
+      ]
+    },
+    // Pozostałe elementy...
+  ];
+}
 ```
 
 Z kolei komponent `NavigationDrawer` renderuje listę linków do poszczególnych widoków aplikacji. Komponent ten wykorzystuje komponent `Link` z React Router DOM do nawigacji pomiędzy widokami aplikacji. Implementacja komponentu `NavigationDrawer` wykorzystuje komponenty z biblioteki `@mui/material` do renderowania nawigacji bocznej oraz ikon z biblioteki `@mui/icons-material` do renderowania ikon. Zostały również zaimplementowane dodatkowe subtelne animacje i stylowanie, które sprawiają, że nawigacja boczna jest bardziej przyjazna dla użytkownika. Komponent został zaimplementowany w taki sposób, aby uwzględniał uprawnienia użytkownika do poszczególnych widoków aplikacji korzystając z kontekstu autoryzacji. Implementacja komponentu `NavigationDrawer` wygląda następująco:

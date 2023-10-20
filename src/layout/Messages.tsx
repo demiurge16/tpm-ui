@@ -29,7 +29,7 @@ export const Messages = () => {
     `,
   };
 
-  let [testMessages, setTestMessages] = useState([
+  const [testMessages, setTestMessages] = useState([
     {
       id: 1,
       title: "Test message 1",

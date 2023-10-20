@@ -104,7 +104,6 @@ export function useMenuConfig(): MenuConfig {
         "publisher",
         "observer"
       ],
-
     },
     {
       icon: RequestQuoteIcon,
