@@ -1005,7 +1005,7 @@ Konfiguracja instancji MinIO pozwala na szybkie wdrożenie lokalnego rozwiązani
 
 Keycloak to otwarte oprogramowanie do zarządzania tożsamością i dostępem, które umożliwia uwierzytelnianie i autoryzację użytkowników. W systemie organizacji pracy dla biura tłumaczeń, Keycloak służy jako centralny serwer uwierzytelniania, który zarządza tożsamościami użytkowników i zapewnia bezpieczny dostęp do zasobów.
 
-Przejdźmy przez konfigurację:
+Konfiguracja obejmuje:
 
 1. **Plik Dockerfile**
 
@@ -1087,6 +1087,205 @@ Przejdźmy przez konfigurację:
 Za pomocą powyższej konfiguracji, Keycloak zostanie skonfigurowany do działania jako serwer uwierzytelniania w środowisku Docker. Zostały uwzględnione ważne aspekty takie jak konfiguracja bazy danych, administratora, certyfikatów oraz zależności serwisów. Dzięki Dockerowi, proces wdrożenia i zarządzania instancją Keycloak staje się znacznie bardziej uproszczony i łatwy w utrzymaniu.
 
 #### Konfiguracja stosu ELK
+
+ELK to popularny stos składający się z Elasticsearch (przeszukiwanie i przechowywanie), Logstash (przetwarzanie i przesyłanie logów) oraz Kibana (wizualizacja danych). W systemie organizacji pracy dla biura tłumaczeń, stos ELK będzie wykorzystywany do przetwarzania logów aplikacji i przechowywania ich w centralnym repozytorium.
+
+Konfiguracja obejmuje:
+
+1. **Pseudousługa monitoring-setup**
+
+    Psuedousługa `monitoring-setup` jest usługą, która uruchamia się tylko raz, podczas pierwszego uruchomienia stosu ELK. Jej zadaniem jest skonfigurowanie indeksów, szablonów i innych elementów wymaganych do prawidłowego działania stosu ELK. Definicja tej usługi w pliku `docker-compose.yml`:
+
+    ```yaml
+    services:
+      monitoring-setup:
+        container_name: monitoring-setup
+        build:
+          context: ./monitoring/setup
+          dockerfile: ./setup.Dockerfile
+          args:
+            ELASTIC_VERSION: ${ELASTIC_VERSION}
+        init: true
+        volumes:
+          - ./monitoring/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+          - ./monitoring/setup/lib.sh:/lib.sh:ro,Z
+          - ./monitoring/setup/roles:/roles:ro,Z
+          - monitoring-setup-data:/state:Z
+        environment:
+          ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+          LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+          KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+        networks:
+          - tpm-network
+        depends_on:
+          - elasticsearch
+    ```
+
+    Ważnym elementem tej definicji jest użycie `init: true`, co oznacza, że usługa ta uruchomi się tylko raz oraz definicja zmiennych środowiskowych w sekcji `environment`, które są wymagane do prawidłowego działania usługi. W tym przypadku, zmienne te są pobierane z pliku `.env` znajdującego się w katalogu głównym projektu: 
+
+    ```sh
+    ELASTIC_VERSION=8.6.2
+
+    ELASTIC_PASSWORD='1qaz@WSX'
+    LOGSTASH_INTERNAL_PASSWORD='1qaz@WSX'
+    KIBANA_SYSTEM_PASSWORD='1qaz@WSX'
+    ```
+
+    Właściwa konfiguracja usługi `monitoring-setup` znajduje się w plikach `setup.Dockerfile` oraz `entrypoint.sh` w katalogu `monitoring/setup`. Plik `setup.Dockerfile` definiuje obraz kontenera dla usługi `monitoring-setup`:
+
+    ```Dockerfile
+    ARG ELASTIC_VERSION
+
+    # https://www.docker.elastic.co/
+    FROM docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+
+    USER root
+
+    RUN set -eux; \
+      mkdir /state; \
+      chmod 0775 /state; \
+      chown elasticsearch:root /state
+
+    USER elasticsearch:root
+
+    ENTRYPOINT ["/entrypoint.sh"]
+    ```
+
+    Z kolei plik `entrypoint.sh` zawiera instrukcje, które zostaną wykonane podczas uruchamiania kontenera.
+
+2. **Konfiguracja usług `elasticsearch`, `logstash`, `kibana`**
+
+    Usługi `elasticsearch`, `logstash` i `kibana` są konfigurowane w podobny sposób:
+
+    ```yaml
+    services:
+      elasticsearch:
+        container_name: elasticsearch
+        build:
+          context: ./monitoring/elasticsearch
+          dockerfile: ./elasticsearch.Dockerfile
+          args:
+            ELASTIC_VERSION: ${ELASTIC_VERSION}
+        volumes:
+          - ./monitoring/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+          - elasticsearch-data:/usr/share/elasticsearch/data:Z
+        expose:
+          - "9200"
+          - "9300"
+        environment:
+          node.name: elasticsearch
+          ES_JAVA_OPTS: -Xms512m -Xmx512m
+          ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+          discovery.type: single-node
+        networks:
+          - tpm-network
+        restart: unless-stopped
+
+      logstash:
+        container_name: logstash
+        build:
+          context: ./monitoring/logstash
+          dockerfile: ./logstash.Dockerfile
+          args:
+            ELASTIC_VERSION: ${ELASTIC_VERSION}
+        volumes:
+          - ./monitoring/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+          - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+        ports:
+          - "5000:5000"
+          - "5044:5044"
+          - "9600:9600"
+        environment:
+          LS_JAVA_OPTS: -Xms256m -Xmx256m
+          LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+        networks:
+          - tpm-network
+        depends_on:
+          - elasticsearch
+        restart: unless-stopped
+
+      kibana:
+        container_name: kibana
+        build:
+          context: ./monitoring/kibana
+          dockerfile: ./kibana.Dockerfile
+          args:
+            ELASTIC_VERSION: ${ELASTIC_VERSION}
+        volumes:
+          - ./monitoring/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+        ports:
+          - "5601:5601"
+        environment:
+          KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+        networks:
+          - tpm-network
+        depends_on:
+          - elasticsearch
+        restart: unless-stopped
+    ```
+
+    Warto zauważyć, że usługa `logstash` zależy od usługi `elasticsearch`, ponieważ wysyła do niej logi. Ponadto, wszystkie usługi korzystają z woluminów, które zapewniają trwałość danych.
+
+    Pliki `elasticsearch.Dockerfile`, `logstash.Dockerfile` i `kibana.Dockerfile` są bardzo podobne do siebie, różnią się jedynie odwołaniami do odpowiednich plików konfiguracyjnych. Wszystkie te pliki znajdują się w katalogach `monitoring/elasticsearch`, `monitoring/logstash` i `monitoring/kibana` odpowiednio. Przykładowo, plik `elasticsearch.Dockerfile`:
+
+    ```Dockerfile
+    ARG ELASTIC_VERSION
+
+    FROM docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+
+    # Add elasticsearch plugins setup here
+    # RUN elasticsearch-plugin install analysis-icu
+    ```
+
+    Każda z usług ma zdefiniowany dodatkowy plik konfiguracyjny, który jest montowany do kontenera. Przykładowo, plik `config/logstash.yml` dla usługi `logstash`:
+
+    ```yaml
+    http.host: 0.0.0.0
+
+    node.name: logstash
+    ```
+
+    Oraz w przypadku usługi `logstash`, plik `pipeline/logstash.conf`:
+
+    ```conf
+    input {
+      beats {
+        port => 5044
+      }
+
+      udp {
+            port => 5000
+            codec => json
+        }
+
+      tcp {
+        port => 5000
+        codec => json_lines
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => "elasticsearch:9200"
+        user => "logstash_internal"
+        password => "${LOGSTASH_INTERNAL_PASSWORD}"
+      }
+    }
+    ```
+
+Wykorzystanie Dockera w procesie konfiguracji stosu ELK przynosi wiele korzyści:
+
+1. **Przejrzystość**: Docker pozwala na izolację usług w kontenerach, co gwarantuje, że konfiguracja jest jednolita niezależnie od środowiska, na którym działa. Dzięki jasnym definicjom w Dockerfile oraz plikom konfiguracyjnym, każda usługa jest dokładnie zdefiniowana, co eliminuje problem "u mnie działa".
+
+2. **Skalowalność**: Docker daje możliwość łatwego skalowania usług w miarę wzrostu potrzeb. Można dodawać więcej instancji Elasticsearch czy Logstash bez konieczności ręcznej konfiguracji każdej z nich.
+
+3. **Zarządzanie**: Dzięki Docker Compose wszystkie usługi są zdefiniowane w jednym pliku, co ułatwia zarządzanie, uruchamianie, zatrzymywanie i aktualizację całego stosu jednym poleceniem.
+
+4. **Integracja**: Docker umożliwia łatwą integrację różnych usług, dzięki czemu usługi ELK mogą być łatwo połączone z innymi aplikacjami czy bazami danych w środowisku deweloperskim.
+
+5. **Bezpieczeństwo**: Izolacja kontenerów zapewnia dodatkową warstwę bezpieczeństwa, chroniąc aplikacje przed potencjalnie szkodliwymi interakcjami. Ponadto Docker umożliwia montowanie konfiguracji jako woluminów tylko do odczytu, co dodatkowo zwiększa bezpieczeństwo.
+
+Konfiguracja stosu ELK kończy proces konfiguracji środowiska deweloperskiego. Stos ELK, w połączeniu z innymi usługami, tworzy spójne i wysoce funkcjonalne środowisko, które jest nie tylko łatwe w zarządzaniu, ale również elastyczne i skalowalne. Wykorzystanie Docker Compose do definiowania wszystkich usług w jednym miejscu sprawia, że całe środowisko staje się bardziej zorganizowane i łatwe w utrzymaniu.
 
 ### Interfejs użytkownika
 
