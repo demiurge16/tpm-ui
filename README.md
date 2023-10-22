@@ -876,7 +876,130 @@ Konfiguracja instancji PostgreSQL w kontenerze Docker może wydawać się skompl
 
 #### Konfiguracja instancji Redis
 
+Redis to bardzo popularna, otwartoźródłowa baza danych typu klucz-wartość, która oferuje szybkie operacje na danych. W systemie organizacji pracy dla biura tłumaczeń zostanie wykorzystana instancja Redis do celów cache'owania i tymczasowego przechowywania danych. Konfiguracja tej instancji odbywa się w kilku krokach:
+
+1. **Plik Dockerfile**
+
+    Plik `cache.Dockerfile` w katalogu `cache` definiuje obraz kontenera dla instancji Redis:
+
+    ```Dockerfile
+    FROM redis/redis-stack-server:6.2.6-v9
+
+    EXPOSE 6379
+
+    CMD redis-server --requirepass 1qaz@WSX
+    ```
+
+    Krótkie objaśnienie poszczególnych sekcji:
+
+    - `FROM redis/redis-stack-server:6.2.6-v9`: Wykorzystanie oficjalnego obrazu Redis o określonej wersji jako bazowy dla kontenera.
+    - `EXPOSE 6379`: Eksponowanie portu 6379, standardowego portu dla Redis, dzięki czemu będzie on dostępny z zewnątrz kontenera.
+    - `CMD redis-server --requirepass 1qaz@WSX`: Instrukcja uruchamiająca serwer Redis z wymaganym hasłem dostępu.
+
+2. **Definicja serwisu**
+
+    W pliku `docker-compose.yml` do sekcji `services` należy dodać definicję serwisu dla instancji Redis:
+
+    ```yaml
+    services:
+      cache:
+        container_name: cache
+        build:
+          context: ./cache
+          dockerfile: ./cache.Dockerfile
+        ports:
+          - "6379:6379"
+        networks:
+          - tpm-network
+        volumes:
+          - cache-data:/data
+    ```
+
+    Ważne aspekty konfiguracji serwisu:
+    - `container_name`: Określa nazwę kontenera.
+    - `build`: Określa, w jaki sposób obraz kontenera zostanie zbudowany. Tutaj wskazujemy na plik `cache.Dockerfile` znajdujący się w katalogu `cache`.
+    - `ports`: Mapuje port 6379 kontenera do portu 6379 maszyny-hosta.
+    - `networks`: Przypisuje kontener do sieci `tpm-network`.
+    - `volumes`: Mapuje wolumin `cache-data` do katalogu `/data` w kontenerze.
+
+    Aby zapewnić trwałość danych, wolumin `cache-data` zostanie użyty do przechowywania danych w instancji Redis, o czym mówi sekcja `volumes`:
+
+    ```yaml
+    volumes:
+      cache-data:
+    ```
+
+Konfiguracja instancji Redis jest prosta i zwięzła. Dzięki wykorzystaniu Dockera możemy w szybki sposób uruchomić i skonfigurować serwer Redis, który będzie służył jako mechanizm cache'owania w naszym systemie. Całość konfiguracji opiera się na dwóch głównych elementach: pliku Dockerfile i definicji serwisu w `docker-compose.yml`. Po prawidłowej konfiguracji, serwer Redis jest gotowy do użycia z bezpiecznym hasłem dostępu i możliwością przechowywania danych w sposób trwały dzięki woluminom.
+
 #### Konfiguracja instancji MinIO
+
+MinIO jest wysoko wydajnym, otwartoźródłowym serwerem przechowywania obiektowego, który jest zgodny z Amazon S3. W systemie organizacji pracy dla biura tłumaczeń, MinIO będzie wykorzystywany jako lokalne rozwiązanie do przechowywania plików. Konfiguracja tej instancji obejmuje kilka kroków:
+
+1. **Plik Dockerfile**
+
+    Plik `file-storage.Dockerfile` w katalogu `file-storage` opisuje obraz kontenera dla instancji MinIO:
+
+    ```Dockerfile
+    FROM quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
+
+    ENV MINIO_ROOT_USER=admin
+    ENV MINIO_ROOT_PASSWORD=1qaz@WSX
+
+    EXPOSE 9000 9001
+
+    RUN mkdir -p /data
+
+    COPY entrypoint.sh /entrypoint.sh
+
+    RUN chmod +x /entrypoint.sh
+
+    ENTRYPOINT ["/entrypoint.sh"]
+    ```
+
+    Krótkie objaśnienie poszczególnych sekcji:
+
+    - `FROM quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z`: Wykorzystuje określony obraz MinIO jako bazowy dla kontenera.
+    - `ENV MINIO_ROOT_USER` i `ENV MINIO_ROOT_PASSWORD`: Zmienne środowiskowe definiujące głównego użytkownika i hasło dla serwera MinIO.
+    - `EXPOSE 9000 9001`: Eksponuje porty 9000 i 9001 używane przez MinIO.
+    - `RUN mkdir -p /data`: Tworzy katalog, który będzie używany do przechowywania danych.
+    - `COPY` i `RUN`: Kopiuje i nadaje uprawnienia do wykonania pliku `entrypoint.sh`, który będzie używany jako punkt wejściowy do kontenera.
+
+2. **Plik entrypoint.sh**
+
+    Plik `entrypoint.sh` opisuje instrukcje, które zostaną wykonane podczas uruchamiania kontenera:
+
+    ```bash
+    #!/bin/sh
+    "$@" &
+    minio server --address "0.0.0.0:9000" --console-address "0.0.0.0:9001" /data
+    ```
+
+    Ten skrypt uruchamia serwer MinIO na adresie `0.0.0.0:9000` oraz konsolę zarządzania MinIO na adresie `0.0.0.0:9001`.
+
+3. **Definicja serwisu**
+
+    Definicja serwisu w pliku `docker-compose.yml` dla instancji MinIO:
+
+    ```yaml
+    services:
+      file-storage:
+        container_name: file-storage
+        build:
+          context: ./file-storage
+          dockerfile: ./file-storage.Dockerfile
+        ports:
+          - "9000:9000"
+          - "9001:9001"
+        networks:
+          - tpm-network
+        volumes:
+          - ./file-storage/entrypoint.sh:/entrypoint.sh:ro,Z
+          - file-storage-data:/data
+    ```
+
+    Kluczowe elementy tej definicji to mapowanie portów, przypisanie kontenera do sieci `tpm-network`, oraz mapowanie woluminów, które zapewniają trwałość danych oraz dostępność skryptu `entrypoint.sh` w kontenerze.
+
+Konfiguracja instancji MinIO pozwala na szybkie wdrożenie lokalnego rozwiązania przechowywania plików w zgodzie ze standardem Amazon S3. Dzięki jasnym definicjom Dockerfile oraz skryptowi `entrypoint.sh`, proces uruchamiania serwera jest transparentny i łatwo konfigurowalny. Wykorzystując Docker, można z łatwością zintegrować MinIO z innymi usługami w systemie, zapewniając wydajne i niezawodne przechowywanie danych.
 
 #### Konfiguracja instancji Keycloak
 
