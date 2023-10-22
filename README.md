@@ -526,8 +526,6 @@ Kluczową zaletą skorzystania z technologii Spring oraz jej podprojektów jest 
 
 ### Przechowywanie danych
 
-### Przechowywanie danych
-
 Przechowywanie danych to kluczowy aspekt każdej aplikacji. Wybór odpowiednich technologii do przechowywania, zarządzania i odzyskiwania danych jest niezbędny dla zapewnienia wydajności, niezawodności i elastyczności systemu.
 
 Opierając się na wcześniej ustalonych zasadach, zdefiniowanych w sekcji [Postanowienia ogólne w wyborze technologii](#postanowienia-ogólne-w-wyborze-technologii), dokonano wyboru technologii przechowywania danych w następujący sposób:
@@ -774,12 +772,107 @@ Wykorzystanie Docker Compose w projekcie ma na celu uproszczenie procesu konfigu
 
 1. **Kod jako infrastruktura**: Dzięki Docker Compose cała infrastruktura jest zdefiniowana w postaci kodu, co sprawia, że jest ona łatwo powtarzalna, przenośna i wersjonowana. Wszystkie zależności, konfiguracje i inne ustawienia są jasno określone w pliku `docker-compose.yml`.
 2. **Eliminacja "u mnie działa"**: Problem różnic w środowiskach developerskich jest dobrze znany w branży IT. Docker Compose minimalizuje ten problem, gwarantując, że wszyscy programiści pracują na identycznym środowisku.
-3. **Szybkie wdrażanie i przywracanie środowiska**: W przypadku problemów z konfiguracją lub uszkodzeniem środowiska, zamiast tracić godziny na diagnozowanie i naprawę, programista może szybko zniszczyć i ponownie uruchomić wszystkie kontenery za pomocą kilku poleceń.
-4. **Onboarding nowych programistów**: Wprowadzenie nowego członka zespołu jest znacznie uproszczone. Wystarczy sklonować repozytorium i uruchomić `docker-compose up`, aby natychmiast mieć działające środowisko developerskie.
+3. **Szybkie wdrażanie i przywracanie środowiska**: W przypadku problemów z konfiguracją lub uszkodzeniem środowiska, zamiast tracić godziny na diagnozowanie i naprawę, programista może szybko zniszczyć i ponownie uruchomić wszystkie kontenery za pomocą kilku poleceń (`docker-compose down` i `docker-compose up`). Jeśli problem dotyczy konkretnego kontenera, istnieje również możliwość ponownego uruchomienia tylko tego kontenera. Dodatkowo, przy użyciu woluminów, dane, takie jak bazy danych, mogą być zachowane nawet po zniszczeniu kontenera, a w razie potrzeby można też przywrócić konkretne woluminy lub sieci do ich pierwotnego stanu.
+4. **Onboarding nowych programistów**: Wprowadzenie nowego członka zespołu jest znacznie uproszczone, niezależnie od tego, czy pracuje on w biurze, czy zdalnie. Wystarczy sklonować repozytorium i uruchomić `docker-compose up`, aby natychmiast mieć działające środowisko developerskie. Dzięki temu zminimalizowane są potencjalne problemy z różnicami w konfiguracji lokalnych maszyn, co jest szczególnie ważne w środowiskach zdalnych, gdzie fizyczna pomoc innych członków zespołu może być utrudniona.
 
 W kontekście współczesnego rozwoju oprogramowania, gdzie złożoność technologiczna i liczba zależności ciągle rośnie, narzędzia takie jak Docker Compose stają się niezbędne. W tym projekcie Docker Compose pełni kluczową rolę, umożliwiając łatwe zarządzanie, konfigurację i izolację różnych serwisów potrzebnych do działania aplikacji.
 
 #### Konfiguracja instancji PostgreSQL
+
+Baza danych jest kluczowym składnikiem większości aplikacji. W systemie organizacji pracy dla biura tłumaczeń zostanie wykorzystany PostgreSQL - popularny system zarządzania relacyjnymi bazami danych. Konfiguracja bazy danych dla systemu składa się z kilku kroków:
+
+1. **Plik Dockerfile**
+
+    Plik `db.Dockerfile` w katalogu `db` definiuje obraz kontenera dla instancji PostgreSQL:
+
+    ```Dockerfile
+    FROM postgres:15.3-alpine
+
+    ENV POSTGRES_USER=admin
+    ENV POSTGRES_PASSWORD=1qaz@WSX
+
+    COPY ./init.sql /docker-entrypoint-initdb.d/init.sql
+
+    EXPOSE 5432
+
+    CMD ["postgres"]
+    ```
+
+    Krótkie objaśnienie poszczególnych sekcji:
+
+    - `FROM postgres:15.3-alpine`: Obraz bazowy, na którym zostanie oparty kontener. W tym przypadku jest to `postgres:15.3-alpine`, który jest oficjalnym obrazem PostgreSQL opartym na Alpine Linux.
+    - `ENV POSTGRES_USER` i `ENV POSTGRES_PASSWORD`: Zmienne środowiskowe, które zostaną użyte do utworzenia użytkownika i hasła dla bazy danych.
+    - `COPY ./init.sql /docker-entrypoint-initdb.d/init.sql`: Kopiowanie pliku `init.sql` do katalogu `/docker-entrypoint-initdb.d/` w kontenerze. Plik ten zawiera instrukcje SQL, które zostaną wykonane podczas pierwszego uruchomienia kontenera w celu skonfigurowania bazy danych.
+    - `EXPOSE 5432`: Mapowanie portu 5432, na którym działa serwer PostgreSQL, aby był dostępny z zewnątrz.
+    - `CMD ["postgres"]`: Komenda, która zostanie wykonana po uruchomieniu kontenera. W tym przypadku jest to `postgres`, czyli komenda, która uruchamia serwer PostgreSQL.
+
+2. **Skrypt inicjalizacyjny**
+
+    Plik `init.sql` zawiera instrukcje SQL, które są automatycznie wykonane podczas pierwszego uruchomienia kontenera. Pozwala to na automatyczne skonfigurowanie struktury bazy danych oraz przyznanie odpowiednich uprawnień dla użytkowników:
+
+    ```sql
+    CREATE USER "application" WITH PASSWORD '1qaz@WSX';
+    CREATE USER "keycloak" WITH PASSWORD '1qaz@WSX';
+
+    CREATE DATABASE "tpm";
+    GRANT CONNECT, TEMPORARY ON DATABASE "tpm" TO "application";
+    GRANT CONNECT, TEMPORARY ON DATABASE "tpm" TO "keycloak";
+
+    \c tpm
+
+    CREATE SCHEMA IF NOT EXISTS "application";
+    GRANT ALL PRIVILEGES ON SCHEMA "application" TO "application";
+
+    CREATE SCHEMA IF NOT EXISTS "keycloak";
+    GRANT ALL PRIVILEGES ON SCHEMA "keycloak" TO "keycloak";
+
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    ```
+
+    W przypadku systemu organizacji pracy dla biura tłumaczeń, skrypt inicjalizacyjny tworzy dwóch użytkowników: `application` oraz `keycloak`, którzy będą używani przez aplikację oraz serwer Keycloak. Następnie tworzy schematy `application` i `keycloak`, które będą używane przez aplikację oraz serwer Keycloak i przyznaje odpowiednie uprawnienia dla użytkowników. Na koniec, skrypt tworzy rozszerzenie `uuid-ossp`, które będzie używane przez aplikację do generowania identyfikatorów UUID.
+
+3. **Definicja serwisu**
+
+    W pliku `docker-compose.yml` do sekcji `services` należy dodać definicję serwisu dla bazy danych:
+
+    ```yaml
+    services:
+      db:
+        container_name: db
+        build:
+          context: ./db
+          dockerfile: ./db.Dockerfile
+        ports:
+          - "5432:5432"
+        networks:
+          - tpm-network
+        volumes:
+          - db-data:/var/lib/postgresql/data
+        healthcheck:
+          test: ["CMD", "pg_isready", "-U", "postgres"]
+          interval: 30s
+          timeout: 5s
+          retries: 5
+    ```
+
+    Ważne aspekty konfiguracji serwisu:
+    - `container_name`: Definicja nazwy kontenera.
+    - `build`: Definicja sposobu budowania obrazu kontenera. W tym przypadku zostanie użyty plik `db.Dockerfile` znajdujący się w katalogu `db`.
+    - `ports`: Mapowanie portów. W tym przypadku port 5432 kontenera zostanie udostępniony na porcie 5432 maszyny-hosta.
+    - `networks`: Przypisanie kontenera do sieci `tpm-network`.
+    - `volumes`: Mapowanie woluminu `db-data` do katalogu `/var/lib/postgresql/data` w kontenerze.
+    - `healthcheck`: Definicja testu sprawdzającego stan kontenera. W tym przypadku sprawdzana jest dostępność serwera PostgreSQL.
+
+    Konfiguracja woluminu z kolei jest bardzo prosta, wystarczy dodać definicję woluminu do sekcji `volumes`:
+
+    ```yaml
+    volumes:
+      db-data:
+    ```
+
+    W ten sposób, wolumin `db-data` zostanie utworzony i będzie dostępny dla kontenera `db`.
+
+Konfiguracja instancji PostgreSQL w kontenerze Docker może wydawać się skomplikowana, ale poprzez podzielenie jej na logiczne kroki i jasne objaśnienie każdego z nich, proces ten staje się prosty i przejrzysty. Dzięki takiej konfiguracji, zyskujemy pewność, że baza danych jest nie tylko izolowana i łatwa w zarządzaniu, ale także łatwo reproducyjna, co jest nieocenione w środowiskach produkcyjnych. Ponadto, wykorzystanie Dockera zapewnia elastyczność i skalowalność, dzięki czemu można łatwo dostosować się do rosnących wymagań systemu i zapewnić niezawodność na najwyższym poziomie.
 
 #### Konfiguracja instancji Redis
 

@@ -203,11 +203,9 @@ export const Grid = <Type,>(
     const operator = t(Operation.getOperationForSymbol(filter.operator).name).toLowerCase();
 
     if (filter.value instanceof Array) {
-      const options =
-        filters.find((column) => column.id === filter.field)?.options || [];
+      const options = filters.find((column) => column.id === filter.field)?.options || [];
       const values = filter.value.map(
-        (value) =>
-          options.find((option) => option.value === value)?.label || value
+        (value) => options.find((option) => option.value === value)?.label || value
       );
       
       return (
