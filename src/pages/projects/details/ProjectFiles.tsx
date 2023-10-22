@@ -6,7 +6,6 @@ import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Box, Button, Grid as MuiGrid, Paper, Typography } from '@mui/material';
 import { Grid } from '../../../components/grid/Grid';
 import { File as FileDescriptor } from '../../../client/types/file/File';
-import { Link } from 'react-router-dom';
 import { User } from '../../../client/types/user/User';
 import { forkJoin } from 'rxjs';
 import { useTpmClient } from '../../../contexts/TpmClientContext';
@@ -54,7 +53,7 @@ export const ProjectFiles = () => {
       next: (result) => {
         const users = result.users.items as User[];
 
-        setGridConfig(prev => {
+        setGridConfig(() => {
           setLoading(false);
           return {
             page: 0,
@@ -159,7 +158,7 @@ export const ProjectFiles = () => {
             <Box pb={2} />
             <Paper elevation={2} sx={{ p: 2 }}>
               <Form onSubmit={handleUpload}>
-                {({ handleSubmit, form, submitting, pristine }) => (
+                {({ handleSubmit, submitting, pristine }) => (
                   <form onSubmit={handleSubmit} noValidate>
                     <MuiGrid container spacing={2}>
                       <MuiGrid item xs={10}>

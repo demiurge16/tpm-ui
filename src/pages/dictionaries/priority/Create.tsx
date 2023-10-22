@@ -19,9 +19,9 @@ export const Create = () => {
 
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  const { loading, refdata, refdataError } = useRefdata(
+  useRefdata(
     {},
-    (result) => setBreadcrumbs([
+    () => setBreadcrumbs([
       { label: "Priorities", path: "/priorities" },
       { label: "Create", path: "/priorities/create" },
     ])

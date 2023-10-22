@@ -1,5 +1,4 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useState } from "react";
 import { Operation } from "../Operation";
 import { useTranslation } from "react-i18next";
 
@@ -10,15 +9,11 @@ export interface OperatorPickerProps {
 }
 
 export const OperatorPicker = ({ selectedOperator, operations, onChange }: OperatorPickerProps) => {
-  const defaultOperator = operations[0];
-
-  const [state, setState] = useState<string>(selectedOperator);
   const { t } = useTranslation("translation", { keyPrefix: "components.grid" });
 
   const handleChange = (operator: string) => {
     const operation = operations.find(o => o.symbol === operator);
-    setState(operation?.symbol ?? defaultOperator.symbol);
-    onChange(operation ?? defaultOperator);
+    onChange(operation ?? operations[0]);
   };
 
   return (

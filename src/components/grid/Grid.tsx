@@ -38,6 +38,7 @@ import { useStyles } from "./Grid.styles";
 import { ColumnPicker } from "./ColumnPicker";
 import { LoadingScreen } from "../../pages/utils/LoadingScreen";
 import { useTranslation } from "react-i18next";
+import { Label } from "../utils/Label";
 
 export const Grid = <Type,>(
   { startPage, pageSize, columnDefinitions, filters, fetch, exportData, innerRef, elevation }: GridProps<Type>
@@ -211,7 +212,7 @@ export const Grid = <Type,>(
       
       return (
         <>
-          <Column />
+          <Label content={Column} />
           {" "}{operator}{" "}
           {values.map((value, index) => (
             <React.Fragment key={index}>
@@ -224,7 +225,7 @@ export const Grid = <Type,>(
     } else if (filter.value instanceof Date) {
       return (
         <>
-          <Column />
+          <Label content={Column} />
           {" "}{operator}{" "}
           {filter.value.toLocaleDateString()}
         </>
@@ -232,7 +233,7 @@ export const Grid = <Type,>(
     } else if (typeof filter.value === "boolean") {
       return (
         <>
-          <Column />
+          <Label content={Column} />
           {" "}{operator}{" "}
           {filter.value ? t("filters.boolean.true") : t("filters.boolean.false")}
         </>
@@ -240,7 +241,7 @@ export const Grid = <Type,>(
     } else if (typeof filter.value === "number") {
       return (
         <>
-          <Column />
+          <Label content={Column} />
           {" "}{operator}{" "}
           {filter.value.toString()}
         </>
@@ -250,7 +251,7 @@ export const Grid = <Type,>(
     const value = filter.value;
     return (
       <>
-        <Column />
+        <Label content={Column} />
         {" "}{operator}{" "}
         {value?.toString()}
       </>

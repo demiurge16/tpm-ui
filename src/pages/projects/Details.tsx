@@ -20,10 +20,10 @@ export const Details = () => {
     throw new Error('Project ID is required');
   }
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const tpmClient = useTpmClient();
 
-  const { loading, refdata, refdataError } = useRefdata(
+  const { loading, refdata } = useRefdata(
     {
       project: tpmClient.projects().withId(id).get(),
     },

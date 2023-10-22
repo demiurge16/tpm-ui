@@ -4,12 +4,11 @@ import { FormControl, FormHelperText } from "@mui/material";
 
 export interface EditorInputProps {
   name: string;
-  label: string;
   required?: boolean;
 }
 
 export const EditorField = (props: EditorInputProps) => {
-  const { name, label, required } = props;
+  const { name, required } = props;
 
   return <Field name={name}>
     {({ input, meta }) => (

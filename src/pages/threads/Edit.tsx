@@ -16,7 +16,7 @@ import { useValidator } from "../../components/form/useValidator";
 export const Edit = () => {
   const { id } = useParams<{ id: string }>();
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const tpmClient = useTpmClient();
   const navigate = useNavigate();
 
@@ -87,7 +87,7 @@ export const Edit = () => {
         keepDirtyOnReinitialize
         initialValues={initialValues}
         validate={validator}
-        render={({ handleSubmit, submitting, pristine, values, form }) => (
+        render={({ handleSubmit, submitting, pristine, form }) => (
           <form onSubmit={(event) => event.preventDefault()}>
             <Paper elevation={2} sx={{ p: 2 }}>
               <Typography variant="h6">Title & tags</Typography>
@@ -98,9 +98,18 @@ export const Edit = () => {
 
             <Paper elevation={2} sx={{ p: 2 }}>
               <Typography variant="h6">Content</Typography>
-              <EditorField name="content" label="Content" required />
+              <EditorField name="content" required />
             </Paper>
             <Box pb={2} />
+
+            {submitError && (
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">Error: {submitError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
+            )}
 
             <Paper elevation={2} sx={{ p: 2 }}>
               <Box display="flex" justifyContent="flex-end">

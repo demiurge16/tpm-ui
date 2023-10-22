@@ -18,11 +18,21 @@ interface SnackbarContextValues {
 }
 
 const defaultSnackbarContextValues: SnackbarContextValues = {
-  showSnack: (title: string, message: string, severity: Severity) => {},
-  showSuccess: (title: string, message: string) => {},
-  showInfo: (title: string, message: string) => {},
-  showWarning: (title: string, message: string) => {},
-  showError: (title: string, message: string) => {}
+  showSnack: (title: string, message: string, severity: Severity) => {
+    console.warn("showSnack not implemented", title, message, severity);
+  },
+  showSuccess: (title: string, message: string) => {
+    console.warn("showSuccess not implemented", title, message);
+  },
+  showInfo: (title: string, message: string) => {
+    console.warn("showInfo not implemented", title, message);
+  },
+  showWarning: (title: string, message: string) => {
+    console.warn("showWarning not implemented", title, message);
+  },
+  showError: (title: string, message: string) => {
+    console.warn("showError not implemented", title, message);
+  }
 };
 
 export const SnackbarContext = createContext<SnackbarContextValues>(

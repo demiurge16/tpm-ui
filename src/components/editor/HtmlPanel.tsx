@@ -1,5 +1,3 @@
-import sanitizeHtml from "sanitize-html";
-
 interface HtmlPanelProps {
   html: string;
 }

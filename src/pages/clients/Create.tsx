@@ -22,7 +22,7 @@ export const Create = () => {
       countries: tpmClient.countries().all(),
       types: tpmClient.clientTypes().all()
     },
-    (result) => setBreadcrumbs([
+    () => setBreadcrumbs([
       { label: "Clients", path: "/clients" },
       { label: "Create", path: "/clients/create" }
     ])

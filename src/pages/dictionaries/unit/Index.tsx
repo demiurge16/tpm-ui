@@ -29,7 +29,7 @@ export const Index = () => {
     const activate = (id: string, refresh: () => void) => {
       tpmClient.priorities().withId(id).activate()
         .subscribe({
-          next: (response) => {
+          next: () => {
             showSuccess('Success', `Activated ${id}`);
             refresh();
           },
@@ -42,7 +42,7 @@ export const Index = () => {
     const deactivate = (id: string, refresh: () => void) => {
       tpmClient.priorities().withId(id).deactivate()
         .subscribe({
-          next: (response) => {
+          next: () => {
             showSuccess('Success', `Deactivated ${id}`);
             refresh();
           },

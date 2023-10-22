@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Editor as TinyMceEditor } from '@tinymce/tinymce-react';
 import { useThemeContext } from '../../contexts/ThemeContext';
 
@@ -11,10 +10,7 @@ export const Editor = (props: EditorProps) => {
   const { theme } = useThemeContext();
   const { initialContent, onChange } = props;
 
-  const [content, setContent] = useState(initialContent);
-
   const handleEditorChange = (content: string, editor: any) => {
-    setContent(content);
     onChange(content, editor);
   };
 

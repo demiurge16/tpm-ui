@@ -1,5 +1,4 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Label } from "../../utils/Label";
 
@@ -10,11 +9,9 @@ export interface FieldPickerProps {
 }
 
 export const FieldPicker = ({ selectedField, fields, onChange }: FieldPickerProps) => {
-  const [state, setState] = useState<string>(selectedField);
   const { t } = useTranslation("translation", { keyPrefix: "components.grid" });
 
   const handleChange = (field: string) => {
-    setState(field);
     onChange(field);
   };
 

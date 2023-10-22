@@ -238,10 +238,8 @@ interface FilterProps {
 
 const FilterInput = (props: FilterProps) => {
   const { id, label, type, multiple, value, options, valueChanged } = props;
-  const [state, setState] = useState<FilterValue | null>(value);
 
   const updateFilter = (value: FilterValue | null) => {
-    setState(value);
     valueChanged(value);
   };
 

@@ -52,7 +52,7 @@ export const MoveStartDialog = ({ open, onClose }: MoveStartDialogProps) => {
         initialValues={{
           expectedStart: task.expectedStart
         }}
-        render={({ handleSubmit, form, submitting, pristine }) => (
+        render={({ handleSubmit, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogTitle id="move-start-dialog-title">Move start date</DialogTitle>
             <DialogContent>

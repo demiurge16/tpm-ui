@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import TpmClient from "../client/TpmClient";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { LoadingScreen } from "../pages/utils/LoadingScreen";
 
@@ -24,7 +23,6 @@ const TpmClientContextProvider = (
   props: TpmClientContextProviderProps
 ) => {
   const [initialized, setInitialized] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     axios.interceptors.response.use(
@@ -32,11 +30,6 @@ const TpmClientContextProvider = (
         return Promise.resolve(response);
       },
       (error) => {
-        // if (error.response.status === 403) {
-        //   navigate('/forbidden');
-        // } else if (error.response.status === 404) {
-        //   navigate('/not-found');
-        // }
         return Promise.reject(error);
       }
     );
@@ -44,9 +37,7 @@ const TpmClientContextProvider = (
   }, []);
 
   return (
-    <TpmClientContext.Provider
-      value={{ tpmClient: TpmClient.getInstance() }}
-    >
+    <TpmClientContext.Provider value={{ tpmClient: TpmClient.getInstance() }}>
       {initialized ? props.children : <LoadingScreen />}
     </TpmClientContext.Provider>
   );

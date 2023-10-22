@@ -38,7 +38,7 @@ export const ProjectExpenses = () => {
     }).subscribe({
         next: (data) => {
           const { currencies, expenseCategories, users } = data;
-          setGridConfig(prev => {
+          setGridConfig(() => {
             setLoading(false);
             return {
               page: 0,

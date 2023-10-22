@@ -17,9 +17,9 @@ export const Create = () => {
   const { showSuccess } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  const { loading, refdata, refdataError } = useRefdata(
+  useRefdata(
     {},
-    (result) => setBreadcrumbs([
+    () => setBreadcrumbs([
       { label: "Service types", path: "/service-types" },
       { label: "Create", path: "/service-types/create" },
     ])

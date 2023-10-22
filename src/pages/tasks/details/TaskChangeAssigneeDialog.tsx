@@ -62,7 +62,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
       .withId(task.id)
       .unassignTeamMember()
       .subscribe({
-        next: (response) => {
+        next: () => {
           showSuccess("Success", "Assignee removed");
           setTask({
             ...task,
@@ -90,7 +90,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
         initialValues={{
           userId: task.assignee?.userId
         }}
-        render={({ handleSubmit, form, submitting, pristine }) => (
+        render={({ handleSubmit, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogTitle id="change-assignee-dialog-title">Change assignee</DialogTitle>
             <DialogContent>

@@ -44,7 +44,7 @@ export const ProjectTasks = () => {
       next: (data) => {
         const { languages, currencies, accuracies, industries, priorities, statuses, units, users } = data;
 
-        setGridConfig(prev => {
+        setGridConfig(() => {
           setLoading(false);
           return {
             page: 0,

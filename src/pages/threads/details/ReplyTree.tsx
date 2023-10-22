@@ -213,7 +213,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
       .withId(replyId)
       .delete()
       .subscribe({
-        next: (response) => {
+        next: () => {
           replies = replies.filter((e) => e.id !== replyId);
           setRerenderCounter(rerenderCounter + 1);
 

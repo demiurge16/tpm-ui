@@ -9,6 +9,7 @@ import { MoveStartDialog } from "./TaskMoveStartDialog";
 import { MoveDeadlineDialog } from "./TaskMoveDeadlineDialog";
 import { ChangeAssigneeDialog } from "./TaskChangeAssigneeDialog";
 import { createStatusTransitionHandler } from "./TaskStatusTransitionHandlers";
+import { ChangePriorityDialog } from "./TaskChangePriorityDialog";
 
 export const TaskDetails = () => {
   const { task, setTask } = useTaskContext();
@@ -170,6 +171,20 @@ export const TaskDetails = () => {
           onClose={closeAssignDialog}
         />
 
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={openChangePriorityDialog}
+          sx={{
+            marginRight: 1,
+          }}
+        >
+          Change priority
+        </Button>
+        <ChangePriorityDialog
+          open={changePriorityDialogOpen}
+          onClose={closeChangePriorityDialog}
+        />
 
         {
             Object.entries(statusTransitionHandlers[task.status.status])
