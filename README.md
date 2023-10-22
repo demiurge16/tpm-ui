@@ -1003,6 +1003,89 @@ Konfiguracja instancji MinIO pozwala na szybkie wdrożenie lokalnego rozwiązani
 
 #### Konfiguracja instancji Keycloak
 
+Keycloak to otwarte oprogramowanie do zarządzania tożsamością i dostępem, które umożliwia uwierzytelnianie i autoryzację użytkowników. W systemie organizacji pracy dla biura tłumaczeń, Keycloak służy jako centralny serwer uwierzytelniania, który zarządza tożsamościami użytkowników i zapewnia bezpieczny dostęp do zasobów.
+
+Przejdźmy przez konfigurację:
+
+1. **Plik Dockerfile**
+
+    Plik `auth-server.Dockerfile` w katalogu `auth-server` definiuje obraz kontenera dla instancji Keycloak:
+
+    ```Dockerfile
+    FROM quay.io/keycloak/keycloak:22.0.1 AS builder
+
+    ENV KC_HEALTH_ENABLED=true
+    ENV KC_METRICS_ENABLED=true
+    ENV KC_DB=postgres
+
+    WORKDIR /opt/keycloak
+    # use proper certificate for production
+    RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
+    RUN /opt/keycloak/bin/kc.sh build
+
+    FROM quay.io/keycloak/keycloak:22.0.1
+    COPY --from=builder /opt/keycloak /opt/keycloak
+
+    ENV KC_PROXY=edge
+    ENV KC_HOSTNAME_STRICT=false
+    ENV KC_HOSTNAME_STRICT_HTTPS=false
+
+    ENV KC_DB=postgres
+    ENV KC_DB_URL=jdbc:postgresql://db:5432/tpm
+    ENV KC_DB_SCHEMA=keycloak
+    ENV KC_DB_USERNAME=keycloak
+    ENV KC_DB_PASSWORD=1qaz@WSX
+
+    ENV KEYCLOAK_ADMIN=admin
+    ENV KEYCLOAK_ADMIN_PASSWORD=1qaz@WSX
+
+    COPY ./realm.json /opt/keycloak/data/import/realm.json
+
+    EXPOSE 8080
+    EXPOSE 8443
+
+    ENTRYPOINT [ \
+        "/opt/keycloak/bin/kc.sh", \
+        "start", \
+        "--optimized", \
+        "--import-realm" \
+    ]
+    ```
+
+    Ważne elementy tego Dockerfile to:
+
+    - Używanie dwóch etapów budowy: `builder` do tworzenia klucza i budowy, oraz głównego obrazu, który kopi
+    uje wyniki z etapu budowy.
+    - Generowanie klucza dla serwera za pomocą `keytool`.
+    - Ustawianie zmiennych środowiskowych dla konfiguracji Keycloak, takich jak parametry bazy danych, nazwa i hasło administratora, oraz parametry związane z proxy i certyfikatami.
+    - Kopiowanie konfiguracji domeny (realm) z pliku `realm.json`.
+    - Określenie punktu wejścia, który uruchamia Keycloak z optymalizacjami i importuje konfigurację domeny.
+
+2. **Definicja serwisu**
+
+    Definicja serwisu w pliku `docker-compose.yml` dla instancji Keycloak:
+
+    ```yaml
+    services:
+      auth-server:
+        container_name: auth-server
+        build:
+          context: ./auth-server
+          dockerfile: ./auth-server.Dockerfile
+        ports:
+          - "8081:8080"
+          - "8082:8443"
+        networks:
+          - tpm-network
+        depends_on:
+          - db
+          - logstash
+    ```
+
+    Warto zauważyć, że serwis `auth-server` zależy od serwisów `db` i `logstash`.
+
+Za pomocą powyższej konfiguracji, Keycloak zostanie skonfigurowany do działania jako serwer uwierzytelniania w środowisku Docker. Zostały uwzględnione ważne aspekty takie jak konfiguracja bazy danych, administratora, certyfikatów oraz zależności serwisów. Dzięki Dockerowi, proces wdrożenia i zarządzania instancją Keycloak staje się znacznie bardziej uproszczony i łatwy w utrzymaniu.
+
 #### Konfiguracja stosu ELK
 
 ### Interfejs użytkownika
