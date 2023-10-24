@@ -6,7 +6,7 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const Edit = () => {
@@ -18,15 +18,14 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
-  const tpmClient = useTpmClient();
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.expenseCategories()
+    applicationClient.expenseCategories()
       .withId(id)
       .get()
       .subscribe({
@@ -44,12 +43,12 @@ export const Edit = () => {
           setServerError(error);
         }
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const handleSubmit = (values: UpdateExpenseCategory) => {
     if (!id) return;
 
-    tpmClient.expenseCategories()
+    applicationClient.expenseCategories()
       .withId(id)
       .update(values)
       .subscribe({

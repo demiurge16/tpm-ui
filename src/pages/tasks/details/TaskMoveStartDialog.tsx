@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { useTaskContext } from "./TaskContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { TaskMoveStart } from "../../../client/types/task/Task";
@@ -14,13 +14,12 @@ export interface MoveStartDialogProps {
 
 export const MoveStartDialog = ({ open, onClose }: MoveStartDialogProps) => {
   const { task, setTask } = useTaskContext();
-  const tpmClient = useTpmClient();
   const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
 
   const handleSubmit = (data: TaskMoveStart) =>
-    tpmClient.tasks()
+    applicationClient.tasks()
       .withId(task.id)
       .moveStart(data)
       .subscribe({

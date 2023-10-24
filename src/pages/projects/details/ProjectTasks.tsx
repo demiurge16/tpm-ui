@@ -9,10 +9,10 @@ import { Grid } from '../../../components/grid/Grid';
 import EditIcon from '@mui/icons-material/Edit';
 import { forkJoin } from 'rxjs';
 import { formatDate } from '../../../utils/dateFormatters';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { Link } from 'react-router-dom';
 import { GridConfig } from '../../../components/grid/GridConfig';
 import { LoadingScreen } from '../../utils/LoadingScreen';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const ProjectTasks = () => {
   const gridRef = useRef<GridHandle>(null);
@@ -26,20 +26,19 @@ export const ProjectTasks = () => {
 
   const { showError } = useSnackbarContext();
   const { project } = useProjectContext();
-  const tpmClient = useTpmClient();
 
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     forkJoin({
-      languages: tpmClient.languages().all(),
-      currencies: tpmClient.currencies().all(),
-      accuracies: tpmClient.accuracies().all(),
-      industries: tpmClient.industries().all(),
-      units: tpmClient.units().all(),
-      priorities: tpmClient.priorities().all(),
-      statuses: tpmClient.tasks().refdata().statuses(),
-      users: tpmClient.users().all(),
+      languages: applicationClient.languages().all(),
+      currencies: applicationClient.currencies().all(),
+      accuracies: applicationClient.accuracies().all(),
+      industries: applicationClient.industries().all(),
+      units: applicationClient.units().all(),
+      priorities: applicationClient.priorities().all(),
+      statuses: applicationClient.tasks().refdata().statuses(),
+      users: applicationClient.users().all(),
     }).subscribe({
       next: (data) => {
         const { languages, currencies, accuracies, industries, priorities, statuses, units, users } = data;
@@ -199,7 +198,7 @@ export const ProjectTasks = () => {
         showError("Failed to load project tasks", error.message);
       }
     });
-  }, [showError, tpmClient]);
+  }, [showError, applicationClient]);
 
   return (
     <Box>
@@ -216,8 +215,8 @@ export const ProjectTasks = () => {
               innerRef={gridRef}
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
-              fetch={tpmClient.projects().withId(project.id).tasks().all}
-              exportData={tpmClient.projects().withId(project.id).tasks().export}
+              fetch={applicationClient.projects().withId(project.id).tasks().all}
+              exportData={applicationClient.projects().withId(project.id).tasks().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

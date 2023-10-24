@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
 import { ThreadNewStatus, ThreadStatusCode } from "../../../client/types/thread/Thread";
-import TpmClient from "../../../client/TpmClient";
+import { ApplicationClient } from "../../../client/ApplicationClient";
 
 export type ThreadStatusTransition = {
   [key in ThreadStatusCode]: {
@@ -11,18 +11,18 @@ export type ThreadStatusTransition = {
   }
 };
 
-export const createStatusTransitionHandler = (tpmClient: TpmClient, threadId: string): ThreadStatusTransition => {
+export const createStatusTransitionHandler = (applicationClient: ApplicationClient, threadId: string): ThreadStatusTransition => {
   return {
     "DRAFT": {
       "ACTIVE": {
         name: "Activate",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .activate(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -30,19 +30,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, threadId: st
     "ACTIVE": {
       "FREEZE": {
         name: "Freeze",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .freeze(),
       },
       "CLOSED": {
         name: "Close",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .close(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -50,19 +50,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, threadId: st
     "FREEZE": {
       "ACTIVE": {
         name: "Activate",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .activate(),
       },
       "CLOSED": {
         name: "Close",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .close(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -70,19 +70,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, threadId: st
     "CLOSED": {
       "ACTIVE": {
         name: "Activate",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .activate(),
       },
       "ARCHIVED": {
         name: "Archive",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .archive(),
       },
       "DELETED": {
         name: "Delete",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .delete(),
       }
@@ -90,7 +90,7 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, threadId: st
     "ARCHIVED": {
       "DELETED": {
         name: "Delete",
-        action: () => tpmClient.threads()
+        action: () => applicationClient.threads()
           .withId(threadId)
           .delete(),
       }

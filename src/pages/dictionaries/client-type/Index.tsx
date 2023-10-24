@@ -11,7 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Index = () => {
   const startPage = 0;
@@ -19,10 +19,8 @@ export const Index = () => {
 
   const gridRef = useRef<GridHandle>(null);
 
-  const tpmClient = useTpmClient();
-
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Client types', path: '/client-types' }
@@ -83,7 +81,7 @@ export const Index = () => {
   ];
 
   const activate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
-    tpmClient.clientTypes().withId(id).activate()
+    applicationClient.clientTypes().withId(id).activate()
       .subscribe({
         next: (response) => {
           showSuccess("Success", `Activated ${id}`);
@@ -95,7 +93,7 @@ export const Index = () => {
       });
 
   const deactivate = (id: string, refresh: (data: ClientTypeStatus) => void) => 
-    tpmClient.clientTypes().withId(id).deactivate()
+    applicationClient.clientTypes().withId(id).deactivate()
       .subscribe({
         next: (response) => {
           showSuccess("Success", `Deactivated ${id}`);
@@ -122,8 +120,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={tpmClient.clientTypes().all}
-        exportData={tpmClient.clientTypes().export}
+        fetch={applicationClient.clientTypes().all}
+        exportData={applicationClient.clientTypes().export}
         filters={filters}
         columnDefinitions={columnDefs}
         elevation={2}

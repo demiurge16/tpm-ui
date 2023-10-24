@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { Thread, UpdateThread } from "../../client/types/thread/Thread";
 import { array, object, string } from "yup";
 import { Box, Button, Paper, Typography } from "@mui/material";
@@ -17,7 +17,6 @@ export const Edit = () => {
   const { id } = useParams<{ id: string }>();
   const { showSuccess, showError } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
-  const tpmClient = useTpmClient();
   const navigate = useNavigate();
 
   if (!id) {
@@ -36,7 +35,7 @@ export const Edit = () => {
       return;
     }
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(id)
       .get()
       .subscribe({
@@ -56,10 +55,10 @@ export const Edit = () => {
         },
         error: (error) => showError(error.message, error.response.data.message)
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const { handleSubmit, submitError } = useSubmitHandler<UpdateThread, Thread>({
-    handleSubmit: (values) => tpmClient.threads().withId(id).update(values),
+    handleSubmit: (values) => applicationClient.threads().withId(id).update(values),
     successHandler: (thread) => {
       showSuccess('Success', 'Thread updated successfully');
       navigate(`/threads/${thread.id}`);

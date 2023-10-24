@@ -9,7 +9,7 @@ import { ProjectFiles } from "./details/ProjectFiles";
 import { ProjectExpenses } from "./details/ProjectExpenses";
 import { ProjectTasks } from "./details/ProjectTasks";
 import { ProjectThreads } from "./details/ProjectThreads";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { useRefdata } from "../../components/form/useRefdata";
 
@@ -21,11 +21,10 @@ export const Details = () => {
   }
 
   const { setBreadcrumbs } = useBreadcrumbsContext();
-  const tpmClient = useTpmClient();
 
   const { loading, refdata } = useRefdata(
     {
-      project: tpmClient.projects().withId(id).get(),
+      project: applicationClient.projects().withId(id).get(),
     },
     (result) => setBreadcrumbs([
       { label: "Projects", path: "/projects" },

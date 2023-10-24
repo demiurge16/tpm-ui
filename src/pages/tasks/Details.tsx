@@ -3,14 +3,13 @@ import { Task } from "../../client/types/task/Task";
 import { useParams } from "react-router-dom";
 import { Paper } from "@mui/material";
 import { LoadingScreen } from "../utils/LoadingScreen";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import TaskContextProvider from "./details/TaskContext";
 import { TaskDetails } from "./details/TaskDetails";
 
 export const Details = () => {
   const { id } = useParams<{ id: string }>();
-  const tpmClient = useTpmClient();
   const { showError } = useSnackbarContext();
 
   const [task, setTask] = useState<Task>({} as Task);
@@ -21,7 +20,7 @@ export const Details = () => {
       return;
     }
 
-    tpmClient.tasks()
+    applicationClient.tasks()
       .withId(id)
       .get()
       .subscribe({
@@ -34,7 +33,7 @@ export const Details = () => {
           setLoading(false);
         }
       })
-  }, [id, showError, tpmClient]);
+  }, [id, showError, applicationClient]);
 
   return loading ? (
     <Paper elevation={2} sx={{ p: 2 }}>

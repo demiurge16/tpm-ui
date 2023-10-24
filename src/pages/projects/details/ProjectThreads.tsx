@@ -6,13 +6,12 @@ import { Thread } from "../../../client/types/thread/Thread";
 import { Link } from "react-router-dom";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
 import { formatDate } from "../../../utils/dateFormatters";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const ProjectThreads = () => {
   const { showError } = useSnackbarContext();
   const { project } = useProjectContext();
-  const tpmClient = useTpmClient();
 
   const [threads, setThreads] = useState<Thread[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -20,7 +19,7 @@ export const ProjectThreads = () => {
   useEffect(() => {
     if (!project) return;
 
-    tpmClient.projects()
+    applicationClient.projects()
       .withId(project.id)
       .threads()
       .all()
@@ -31,7 +30,7 @@ export const ProjectThreads = () => {
         },
         error: (error) => showError('Error loading threads', error.message)
       });
-  }, [project, project.id, showError, tpmClient]);
+  }, [project, project.id, showError, applicationClient]);
 
   return ( 
     <Box>

@@ -4,7 +4,7 @@ import { ClientType } from "../../../client/types/client/ClientType";
 import { Link, useParams } from "react-router-dom";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const Details = () => {
@@ -18,15 +18,14 @@ export const Details = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const { id } = useParams();
-  const tpmClient = useTpmClient();
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.clientTypes()
+    applicationClient.clientTypes()
       .withId(id)
       .get()
       .subscribe({
@@ -40,12 +39,12 @@ export const Details = () => {
         },
         error: (error) => showError(`Error loading client type ${id}`, error.message)
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const activate = () => {
     if (!id) return;
 
-    tpmClient.clientTypes()
+    applicationClient.clientTypes()
       .withId(id)
       .activate()
       .subscribe({
@@ -60,7 +59,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    tpmClient.clientTypes()
+    applicationClient.clientTypes()
       .withId(id)
       .deactivate()
       .subscribe({

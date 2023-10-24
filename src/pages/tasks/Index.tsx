@@ -10,7 +10,7 @@ import { Grid } from "../../components/grid/Grid";
 import { Tasks } from "./Tasks";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { formatDate } from "../../utils/dateFormatters";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Index = () => {
@@ -20,25 +20,23 @@ export const Index = () => {
   const gridRef = useRef<GridHandle>(null);
 
   const { showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Task>[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const tpmClient = useTpmClient();
-
   useEffect(() => {
     forkJoin({
-      languages: tpmClient.languages().all(),
-      currencies: tpmClient.currencies().all(),
-      accuracies: tpmClient.accuracies().all(),
-      industries: tpmClient.industries().all(),
-      units: tpmClient.units().all(),
-      priorities: tpmClient.priorities().all(),
-      statuses: tpmClient.tasks().refdata().statuses(),
-      users: tpmClient.users().all(),
-      projects: tpmClient.projects().all(),
+      languages: applicationClient.languages().all(),
+      currencies: applicationClient.currencies().all(),
+      accuracies: applicationClient.accuracies().all(),
+      industries: applicationClient.industries().all(),
+      units: applicationClient.units().all(),
+      priorities: applicationClient.priorities().all(),
+      statuses: applicationClient.tasks().refdata().statuses(),
+      users: applicationClient.users().all(),
+      projects: applicationClient.projects().all(),
     }).subscribe({
       next: (data) => {
         const { languages, currencies, accuracies, industries, priorities, statuses, units, users, projects } = data;
@@ -193,7 +191,7 @@ export const Index = () => {
     setBreadcrumbs([
       { label: 'Tasks', path: '/tasks' }
     ]);
-  }, [setBreadcrumbs, showError, tpmClient]);
+  }, [setBreadcrumbs, showError, applicationClient]);
 
   return (
     <Box>
@@ -210,8 +208,8 @@ export const Index = () => {
             innerRef={gridRef}
             startPage={startPage}
             pageSize={pageSize}
-            fetch={tpmClient.tasks().all}
-            exportData={tpmClient.tasks().export}
+            fetch={applicationClient.tasks().all}
+            exportData={applicationClient.tasks().export}
             filters={filterDefs}
             columnDefinitions={columnDefs}
             elevation={2}

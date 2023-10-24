@@ -4,15 +4,14 @@ import { Link, useParams } from "react-router-dom";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
-import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
+import { applicationClient } from "../../client/ApplicationClient";
 
 export const Details = () => {
   const { id } = useParams();
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const [client, setClient] = useState<Client>({} as Client);
   const [loading, setLoading] = useState<boolean>(true);
@@ -20,7 +19,7 @@ export const Details = () => {
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.clients()
+    applicationClient.clients()
       .withId(id)
       .get()
       .subscribe({
@@ -34,12 +33,12 @@ export const Details = () => {
         },
         error: (error) => showError(`Error loading client ${id}`, error.message)
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const activate = () => {
     if (!id) return;
 
-    tpmClient.clients()
+    applicationClient.clients()
       .withId(id)
       .activate()
       .subscribe({
@@ -54,7 +53,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    tpmClient.clients()
+    applicationClient.clients()
       .withId(id)
       .deactivate()
       .subscribe({

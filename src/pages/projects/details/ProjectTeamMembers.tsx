@@ -8,15 +8,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Form } from 'react-final-form';
 import { AsyncSelectField } from '../../../components/form-controls/AsyncSelectField';
 import { SelectField } from '../../../components/form-controls/SelectField';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 import { SecuredComponent } from '../../../components/security/SecuredComponent';
 import { User } from '../../../client/types/user/User';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const ProjectTeamMembers = () => {
   const { showSuccess, showError } = useSnackbarContext();
   const { project } = useProjectContext();
-  const tpmClient = useTpmClient();
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [roles, setRoles] = useState<ProjectRole[]>([]);
@@ -28,15 +27,15 @@ export const ProjectTeamMembers = () => {
     if (!project) return;
 
     forkJoin({
-      teamMembers: tpmClient.projects()
+      teamMembers: applicationClient.projects()
         .withId(project.id)
         .teamMembers()
         .all(),
-      roles: tpmClient.projects()
+      roles: applicationClient.projects()
         .refdata()
         .teamMembers()
         .roles(),
-      users: tpmClient.users().all()
+      users: applicationClient.users().all()
     }).subscribe({
       next: (response) => {
         setTeamMembers(response.teamMembers.items);
@@ -46,10 +45,10 @@ export const ProjectTeamMembers = () => {
       },
       error: (error) => showError('Error loading reference data', error.message)
     });
-  }, [project, project.id, showError, tpmClient]);
+  }, [project, project.id, showError, applicationClient]);
 
   const addTeamMember = (teamMember: CreateTeamMember) =>
-    tpmClient.projects()
+    applicationClient.projects()
       .withId(project.id)
       .teamMembers()
       .add(teamMember)
@@ -62,7 +61,7 @@ export const ProjectTeamMembers = () => {
       });
 
   const removeTeamMember = (teamMember: TeamMemberProjectRole) =>
-    tpmClient.projects()
+    applicationClient.projects()
       .withId(project.id)
       .teamMembers()
       .remove(teamMember.projectRoleId)

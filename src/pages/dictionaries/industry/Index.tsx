@@ -11,7 +11,7 @@ import { Industry } from "../../../client/types/dictionaries/Industry";
 import { Link } from "react-router-dom";
 import { Grid } from "../../../components/grid/Grid";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 
 export const Index = () => {
   const startPage = 0;
@@ -21,7 +21,6 @@ export const Index = () => {
 
   const { showSuccess, showError } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
-  const tpmClient = useTpmClient();
 
   useEffect(() => {
     setBreadcrumbs([
@@ -81,7 +80,7 @@ export const Index = () => {
   ];
 
   const activate = (id: string, refresh: () => void) => {
-    tpmClient.industries().withId(id).activate()
+    applicationClient.industries().withId(id).activate()
       .subscribe({
         next: () => {
           showSuccess('Success', `Activated ${id}`);
@@ -94,7 +93,7 @@ export const Index = () => {
   };
 
   const deactivate = (id: string, refresh: () => void) => {
-    tpmClient.industries().withId(id).deactivate()
+    applicationClient.industries().withId(id).deactivate()
       .subscribe({
         next: () => {
           showSuccess('Success', `Deactivated ${id}`);
@@ -121,8 +120,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={tpmClient.industries().all}
-        exportData={tpmClient.industries().export}
+        fetch={applicationClient.industries().all}
+        exportData={applicationClient.industries().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
         elevation={2}

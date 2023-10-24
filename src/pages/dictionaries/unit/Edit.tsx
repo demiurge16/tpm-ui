@@ -9,8 +9,8 @@ import { TextField } from '../../../components/form-controls/TextField';
 import { NumberField } from '../../../components/form-controls/NumberField';
 import { SelectField } from '../../../components/form-controls/SelectField';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Edit = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
@@ -24,17 +24,16 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
-  const tpmClient = useTpmClient();
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const { showError } = useSnackbarContext();
 
   useEffect(() => {
     if (!id) return;
 
     forkJoin({
-      unit: tpmClient.units().withId(id).get(),
-      measurements: tpmClient.units().refdata().measurements()
+      unit: applicationClient.units().withId(id).get(),
+      measurements: applicationClient.units().refdata().measurements()
     }).subscribe({
       next: ({unit, measurements}) => {
         setUnit({
@@ -56,12 +55,12 @@ export const Edit = () => {
         setServerError(error.message);
       }
     });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const handleSubmit = (values: UpdateUnit) => {
     if (!id) return;
 
-    tpmClient.units()
+    applicationClient.units()
       .withId(id)
       .update(values)
       .subscribe({

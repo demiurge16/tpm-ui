@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 
 export const Details = () => {
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Country', path: '/countries' },

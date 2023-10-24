@@ -3,7 +3,7 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { useProjectContext } from "./context/ProjectContext";
 import { formatDate } from "../../../utils/dateFormatters";
 import { createStatusTransitionHandler } from "./handlers/ProjectStatusTransitionHandlers";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { MoveStartDialog } from "./dialogs/ProjectMoveStartDialog";
 import { MoveDeadlinesDialog } from "./dialogs/ProjectMoveDeadlinesDialog";
@@ -13,8 +13,7 @@ import { SecuredComponent } from "../../../components/security/SecuredComponent"
 export const ProjectDetails = () => {
   const { showSuccess, showError } = useSnackbarContext();
   const { project, setProject } = useProjectContext();
-  const tpmClient = useTpmClient();
-  const statusTransitionHandlers = createStatusTransitionHandler(tpmClient, project.id);
+  const statusTransitionHandlers = createStatusTransitionHandler(applicationClient, project.id);
 
   const [moveStartDialogOpen, setMoveStartDialogOpen] = useState(false);
   const [moveDeadlinesDialogOpen, setMoveDeadlinesDialogOpen] = useState(false);

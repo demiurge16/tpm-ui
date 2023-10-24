@@ -8,16 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { CreateClientType } from "../../../client/types/client/ClientType";
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
-
+import { applicationClient } from "../../../client/ApplicationClient";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const tpmClient = useTpmClient();
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   useEffect(() => {
     setBreadcrumbs([
@@ -27,7 +25,7 @@ export const Create = () => {
   }, [setBreadcrumbs]);
 
   const handleSubmit = async (values: CreateClientType) =>
-    tpmClient.clientTypes()
+    applicationClient.clientTypes()
       .create(values)
       .subscribe({
         next: () => {

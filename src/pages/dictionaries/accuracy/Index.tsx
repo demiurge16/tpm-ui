@@ -11,7 +11,7 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Grid } from "../../../components/grid/Grid";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 
 export const Index = () => {
   const startPage = 0;
@@ -20,8 +20,7 @@ export const Index = () => {
   const gridRef = useRef<GridHandle>(null);
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   useEffect(() => {
     setBreadcrumbs([
@@ -81,7 +80,7 @@ export const Index = () => {
   ];
 
   const activate = (id: string, refresh: () => void) => 
-    tpmClient.accuracies().withId(id).activate()
+    applicationClient.accuracies().withId(id).activate()
       .subscribe({
         next: () => {
           showSuccess("Success", `Activated ${id}`);
@@ -93,7 +92,7 @@ export const Index = () => {
       });
 
   const deactivate = (id: string, refresh: () => void) => 
-    tpmClient.accuracies().withId(id).deactivate()
+    applicationClient.accuracies().withId(id).deactivate()
       .subscribe({
         next: () => {
           showSuccess("Success", `Deactivated ${id}`);
@@ -119,8 +118,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={tpmClient.accuracies().all}
-        exportData={tpmClient.accuracies().export}
+        fetch={applicationClient.accuracies().all}
+        exportData={applicationClient.accuracies().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
         elevation={2}

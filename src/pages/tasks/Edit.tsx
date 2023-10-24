@@ -4,7 +4,6 @@ import { Industry } from '../../client/types/dictionaries/Industry';
 import { Unit } from '../../client/types/dictionaries/Unit';
 import { ServiceType } from '../../client/types/dictionaries/ServiceType';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTpmClient } from '../../contexts/TpmClientContext';
 import { useSnackbarContext } from '../../contexts/SnackbarContext';
 import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { Task, UpdateTask } from '../../client/types/task/Task';
@@ -21,6 +20,7 @@ import { Language } from '../../client/types/dictionaries/Language';
 import { Currency } from '../../client/types/project/Project';
 import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { useValidator } from '../../components/form/useValidator';
+import { applicationClient } from '../../client/ApplicationClient';
 
 export const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -35,7 +35,6 @@ export const Edit = () => {
   const [currencies, setCurrencies] = useState<Array<Currency>>([]);
 
   const navigate = useNavigate();
-  const tpmClient = useTpmClient();
   const { id } = useParams();
 
   if (!id) {
@@ -43,7 +42,7 @@ export const Edit = () => {
   }
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const [initialValues, setInitialValues] = useState<UpdateTask>({
     title: '',
@@ -61,13 +60,13 @@ export const Edit = () => {
 
   useEffect(() => {
     forkJoin({
-      task: tpmClient.tasks().withId(id).get(),
-      accuracies: tpmClient.accuracies().all(),
-      industries: tpmClient.industries().all(),
-      units: tpmClient.units().all(),
-      serviceTypes: tpmClient.serviceTypes().all(),
-      languages: tpmClient.languages().all(),
-      currencies: tpmClient.currencies().all()
+      task: applicationClient.tasks().withId(id).get(),
+      accuracies: applicationClient.accuracies().all(),
+      industries: applicationClient.industries().all(),
+      units: applicationClient.units().all(),
+      serviceTypes: applicationClient.serviceTypes().all(),
+      languages: applicationClient.languages().all(),
+      currencies: applicationClient.currencies().all()
     }).subscribe({
       next: (response) => {
         const { task, accuracies, industries, units, serviceTypes, languages, currencies } = response;
@@ -105,10 +104,10 @@ export const Edit = () => {
         showError('Error loading reference data', error.message);
       }
     });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const { handleSubmit, submitError } = useSubmitHandler<UpdateTask, Task>({
-    handleSubmit: (values) => tpmClient.tasks().withId(id).update(values),
+    handleSubmit: (values) => applicationClient.tasks().withId(id).update(values),
     successHandler: (task) => {
       showSuccess('Success', 'Task updated successfully');
       navigate(`/tasks/${task.id}`);

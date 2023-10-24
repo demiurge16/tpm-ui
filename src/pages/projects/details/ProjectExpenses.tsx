@@ -10,9 +10,9 @@ import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { forkJoin } from 'rxjs';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { GridConfig } from '../../../components/grid/GridConfig';
 import { LoadingScreen } from '../../utils/LoadingScreen';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const ProjectExpenses = () => {
   const gridRef = useRef<GridHandle>(null);
@@ -26,15 +26,14 @@ export const ProjectExpenses = () => {
 
   const { showError } = useSnackbarContext();
   const { project } = useProjectContext();
-  const tpmClient = useTpmClient();
 
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     forkJoin({
-      currencies: tpmClient.currencies().all(),
-      expenseCategories: tpmClient.expenseCategories().all(),
-      users: tpmClient.users().all()
+      currencies: applicationClient.currencies().all(),
+      expenseCategories: applicationClient.expenseCategories().all(),
+      users: applicationClient.users().all()
     }).subscribe({
         next: (data) => {
           const { currencies, expenseCategories, users } = data;
@@ -146,7 +145,7 @@ export const ProjectExpenses = () => {
         },
         error: (error) => showError(error.message, error.response.data.message)
       });
-    }, [showError, tpmClient]);
+    }, [showError, applicationClient]);
 
   return (
     <Box>
@@ -163,8 +162,8 @@ export const ProjectExpenses = () => {
               innerRef={gridRef}
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
-              fetch={tpmClient.projects().withId(project.id).expenses().all}
-              exportData={tpmClient.projects().withId(project.id).expenses().export}
+              fetch={applicationClient.projects().withId(project.id).expenses().all}
+              exportData={applicationClient.projects().withId(project.id).expenses().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

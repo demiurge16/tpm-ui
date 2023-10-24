@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { useTaskContext } from "./TaskContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
@@ -17,7 +17,6 @@ export const ChangePriorityDialog = (
   { open, onClose }: ChangePriorityDialogProps
 ) => {
   const { task, setTask } = useTaskContext();
-  const tpmClient = useTpmClient();
   const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
@@ -25,7 +24,7 @@ export const ChangePriorityDialog = (
   const [priorities, setPriorities] = useState<Priority[]>([]);
 
   useEffect(() => {
-    tpmClient.priorities()
+    applicationClient.priorities()
       .all()
       .subscribe({
         next: (response) => setPriorities(response.items),
@@ -34,10 +33,10 @@ export const ChangePriorityDialog = (
           setServerError(error.response.data.message || error.message);
         }
       });
-  }, [showError, task.id, tpmClient]);
+  }, [showError, task.id, applicationClient]);
 
   const handleSubmit = (data: ChangePriority) =>
-    tpmClient.tasks()
+    applicationClient.tasks()
       .withId(task.id)
       .changePriority(data)
       .subscribe({

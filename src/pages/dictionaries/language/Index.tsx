@@ -7,8 +7,8 @@ import { Language } from '../../../client/types/dictionaries/Language';
 import { forkJoin } from 'rxjs';
 import { ColumnDefinition } from '../../../components/grid/GridProps';
 import { Languages } from './Languages';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Index = () => {
   const startPage = 0;
@@ -18,12 +18,10 @@ export const Index = () => {
   const [filters, setFilters] = useState<Array<FilterDefinition>>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const tpmClient = useTpmClient();
-
   useEffect(() => {
     forkJoin({
-      scopes: tpmClient.languages().refdata().scopes(),
-      types: tpmClient.languages().refdata().types()
+      scopes: applicationClient.languages().refdata().scopes(),
+      types: applicationClient.languages().refdata().types()
     }).subscribe((response) => {
       const { scopes, types } = response;
 
@@ -64,7 +62,7 @@ export const Index = () => {
       ]);
       setLoading(false);
     });
-  }, [tpmClient]);
+  }, [applicationClient]);
 
   return (
     <Box>
@@ -81,8 +79,8 @@ export const Index = () => {
             <Grid<Language>
               startPage={startPage}
               pageSize={pageSize}
-              fetch={tpmClient.languages().all}
-              exportData={tpmClient.languages().export}
+              fetch={applicationClient.languages().all}
+              exportData={applicationClient.languages().export}
               filters={filters}
               columnDefinitions={columnDefs}
               elevation={2}

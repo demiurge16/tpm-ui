@@ -16,12 +16,12 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import { HtmlPanel } from "../../components/editor/HtmlPanel";
 import { formatDate } from "../../utils/dateFormatters";
-import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
+import { applicationClient } from "../../client/ApplicationClient";
 
 export const Details = () => {
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const { userId } = useAuth();
 
   const { id } = useParams();
@@ -62,10 +62,8 @@ export const Details = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [replyEditorExpanded, setReplyEditorExpanded] = useState<boolean>();
-  
-  const tpmClient = useTpmClient();
 
-  const statusTransitionHandler = createStatusTransitionHandler(tpmClient, id || '');
+  const statusTransitionHandler = createStatusTransitionHandler(applicationClient, id || '');
 
   const threadLiked = () => thread.likes.some((like) => like.author.id === userId);
   const threadDisliked = () => thread.dislikes.some((dislike) => dislike.author.id === userId);
@@ -75,7 +73,7 @@ export const Details = () => {
       return;
     }
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(id)
       .get()
       .subscribe({
@@ -90,7 +88,7 @@ export const Details = () => {
         error: (error) => showError(error.message, error.response.data.message)
       });
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(id)
       .replies()
       .all()
@@ -103,14 +101,14 @@ export const Details = () => {
       });
 
     
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const handleLike = () => {
     if (!thread) {
       return;
     }
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(thread.id)
       .like()
       .subscribe({
@@ -140,7 +138,7 @@ export const Details = () => {
       return;
     }
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(thread.id)
       .unlike()
       .subscribe({
@@ -159,7 +157,7 @@ export const Details = () => {
       return;
     }
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(thread.id)
       .dislike()
       .subscribe({
@@ -190,7 +188,7 @@ export const Details = () => {
       return;
     }
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(thread.id)
       .undislike()
       .subscribe({
@@ -213,7 +211,7 @@ export const Details = () => {
       return;
     }
 
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(thread.id)
       .replies()
       .create({ content, parentReplyId: null })

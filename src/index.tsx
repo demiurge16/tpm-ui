@@ -12,7 +12,6 @@ import AuthContextProvider from "./contexts/AuthContext";
 import BreadcrumbsContextProvider from "./contexts/BreadcrumbsContext";
 import ThemeContextProvider, { useThemeContext } from "./contexts/ThemeContext";
 import SnackbarContextProvider from "./contexts/SnackbarContext";
-import TpmClientContextProvider from "./contexts/TpmClientContext";
 import { CssBaseline } from "@mui/material";
 
 const darkTheme = createTheme({
@@ -68,17 +67,15 @@ const Root = () => {
       <CssBaseline />
       <BrowserRouter>
         <AuthContextProvider>
-          <TpmClientContextProvider>
-            <LocalizationProvider dateAdapter={AdapterLuxon}>
-              <BreadcrumbsContextProvider>
-                <SnackbarContextProvider>
-                  <StrictMode>
-                    <App />
-                  </StrictMode>
-                </SnackbarContextProvider>
-              </BreadcrumbsContextProvider>
-            </LocalizationProvider>
-          </TpmClientContextProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <BreadcrumbsContextProvider>
+              <SnackbarContextProvider>
+                <StrictMode>
+                  <App />
+                </StrictMode>
+              </SnackbarContextProvider>
+            </BreadcrumbsContextProvider>
+          </LocalizationProvider>
         </AuthContextProvider>
       </BrowserRouter>
     </ThemeProvider>
@@ -94,7 +91,4 @@ root.render(
   </ThemeContextProvider>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

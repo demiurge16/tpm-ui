@@ -8,11 +8,11 @@ import { Grid } from '../../../components/grid/Grid';
 import { File as FileDescriptor } from '../../../client/types/file/File';
 import { User } from '../../../client/types/user/User';
 import { forkJoin } from 'rxjs';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { GridConfig } from '../../../components/grid/GridConfig';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 import { Form } from 'react-final-form';
 import { FilePickerField } from '../../../components/form-controls/FilePickerField';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const ProjectFiles = () => {
   const gridRef = useRef<GridHandle>(null);
@@ -27,7 +27,6 @@ export const ProjectFiles = () => {
 
   const { showSuccess, showError } = useSnackbarContext();
   const { project } = useProjectContext();
-  const tpmClient = useTpmClient();
 
   const handleUpload = (values: any) => {
     const formData = new FormData();
@@ -35,7 +34,7 @@ export const ProjectFiles = () => {
       formData.append('file', file as File);
     });
 
-    tpmClient.projects().withId(project.id).files().create(formData).subscribe({
+    applicationClient.projects().withId(project.id).files().create(formData).subscribe({
       next: () => {
         gridRef.current?.refresh();
         showSuccess('Files uploaded successfully', '');
@@ -44,11 +43,9 @@ export const ProjectFiles = () => {
     });
   };
 
-
-
   useEffect(() => {
     forkJoin({
-      users: tpmClient.users().all()
+      users: applicationClient.users().all()
     }).subscribe({
       next: (result) => {
         const users = result.users.items as User[];
@@ -94,7 +91,7 @@ export const ProjectFiles = () => {
                 cellRenderer: (params: any) => {
                   const file = params.data as FileDescriptor;
                   const handleDownload = () => {
-                    tpmClient.files().withId(file.id).download().subscribe({
+                    applicationClient.files().withId(file.id).download().subscribe({
                       next: (data) => {
                         const blob = new Blob([data as any], { type: 'text/csv' });
                         const url = window.URL.createObjectURL(blob);
@@ -132,7 +129,7 @@ export const ProjectFiles = () => {
       },
       error: (error) => showError(error.message, error.response.data.message),
     });
-  }, [showError, tpmClient]);
+  }, [showError, applicationClient]);
 
   return (
     <Box>
@@ -149,8 +146,8 @@ export const ProjectFiles = () => {
               innerRef={gridRef}
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
-              fetch={tpmClient.projects().withId(project.id).files().all}
-              exportData={tpmClient.projects().withId(project.id).files().export}
+              fetch={applicationClient.projects().withId(project.id).files().all}
+              exportData={applicationClient.projects().withId(project.id).files().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

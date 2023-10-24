@@ -11,7 +11,7 @@ import { GridHandle } from "../../../components/grid/GridProps";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 
 export const Index = () => {
   const startPage = 0;
@@ -21,7 +21,6 @@ export const Index = () => {
 
   const { showSuccess, showError } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
-  const tpmClient = useTpmClient();
 
   useEffect(() => {
     setBreadcrumbs([
@@ -83,7 +82,7 @@ export const Index = () => {
   ];
 
   const activate = (id: string, refresh: () => void) => {
-    tpmClient.priorities().withId(id).activate()
+    applicationClient.priorities().withId(id).activate()
       .subscribe({
         next: () => {
           showSuccess('Success', `Activated ${id}`);
@@ -96,7 +95,7 @@ export const Index = () => {
   };
 
   const deactivate = (id: string, refresh: () => void) => {
-    tpmClient.priorities().withId(id).deactivate()
+    applicationClient.priorities().withId(id).deactivate()
       .subscribe({
         next: () => {
           showSuccess('Success', `Deactivated ${id}`);
@@ -124,8 +123,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={tpmClient.priorities().all}
-        exportData={tpmClient.priorities().export}
+        fetch={applicationClient.priorities().all}
+        exportData={applicationClient.priorities().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
         elevation={2}

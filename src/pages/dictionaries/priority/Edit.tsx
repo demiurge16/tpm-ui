@@ -8,7 +8,7 @@ import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
 export const Edit = () => {
@@ -22,15 +22,14 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
-  const tpmClient = useTpmClient();
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const { showSuccess, showError } = useSnackbarContext();
 
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.priorities()
+    applicationClient.priorities()
       .withId(id)
       .get()
       .subscribe({
@@ -48,12 +47,12 @@ export const Edit = () => {
           setServerError(error.message);
         }
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const handleSubmit = (values: UpdatePriority) => {
     if (!id) return;
 
-    tpmClient.priorities()
+    applicationClient.priorities()
       .withId(id)
       .update(values)
       .subscribe({

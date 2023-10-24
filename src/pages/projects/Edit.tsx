@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTpmClient } from '../../contexts/TpmClientContext';
 import { useSnackbarContext } from '../../contexts/SnackbarContext';
 import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { Project, UpdateProject } from '../../client/types/project/Project';
@@ -14,6 +13,7 @@ import { LoadingScreen } from '../utils/LoadingScreen';
 import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { useValidator } from '../../components/form/useValidator';
 import { useRefdata } from '../../components/form/useRefdata';
+import { applicationClient } from '../../client/ApplicationClient';
 
 export const Edit = () => {
   const { id } = useParams();
@@ -22,21 +22,19 @@ export const Edit = () => {
     throw new Error('Project id is required');
   }
 
-  const tpmClient = useTpmClient();
-
   const { showSuccess } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const { loading, refdata, refdataError } = useRefdata(
     {
-      project: tpmClient.projects().withId(id).get(),
-      accuracies: tpmClient.accuracies().all(),
-      industries: tpmClient.industries().all(),
-      units: tpmClient.units().all(),
-      serviceTypes: tpmClient.serviceTypes().all(),
-      clients: tpmClient.clients().all(),
-      languages: tpmClient.languages().all(),
-      currencies: tpmClient.currencies().all()
+      project: applicationClient.projects().withId(id).get(),
+      accuracies: applicationClient.accuracies().all(),
+      industries: applicationClient.industries().all(),
+      units: applicationClient.units().all(),
+      serviceTypes: applicationClient.serviceTypes().all(),
+      clients: applicationClient.clients().all(),
+      languages: applicationClient.languages().all(),
+      currencies: applicationClient.currencies().all()
     },
     (result) => setBreadcrumbs([
       { label: 'Projects', path: '/projects' },
@@ -49,7 +47,7 @@ export const Edit = () => {
 
   const navigate = useNavigate();
   const { handleSubmit, submitError } = useSubmitHandler<UpdateProject, Project>({
-    handleSubmit: (project) => tpmClient.projects().withId(id).update(project),
+    handleSubmit: (project) => applicationClient.projects().withId(id).update(project),
     successHandler: (project) => {
       showSuccess('Project updated', `Project ${project.title} was updated successfully`);
       navigate(`/projects/${project.id}`);

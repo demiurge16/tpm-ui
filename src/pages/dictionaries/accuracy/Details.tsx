@@ -4,23 +4,22 @@ import { Link, useParams } from 'react-router-dom';
 import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Details = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [accuracy, setAccuracy] = useState<Accuracy>({} as Accuracy);
 
   const { id } = useParams();
-  const tpmClient = useTpmClient();
 
   const { showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.accuracies()
+    applicationClient.accuracies()
       .withId(id)
       .get()
       .subscribe({
@@ -34,12 +33,12 @@ export const Details = () => {
         },
         error: (error) => showError(`Error loading accuracy ${id}`, error.message)
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const activate = () => {
     if (!id) return;
 
-    tpmClient.accuracies()
+    applicationClient.accuracies()
       .withId(id)
       .activate()
       .subscribe({
@@ -51,7 +50,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    tpmClient.accuracies()
+    applicationClient.accuracies()
       .withId(id)
       .deactivate()
       .subscribe({

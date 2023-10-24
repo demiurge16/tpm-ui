@@ -7,7 +7,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Users } from "./Users";
 import { Grid } from "../../components/grid/Grid";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 
 export const Index = () => {
   const startPage = 0;
@@ -15,9 +15,7 @@ export const Index = () => {
 
   const gridRef = useRef<GridHandle>(null);
 
-  const tpmClient = useTpmClient();
-
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<User>[]>([]);
@@ -73,8 +71,8 @@ export const Index = () => {
         innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
-        fetch={tpmClient.users().all}
-        exportData={tpmClient.users().export}
+        fetch={applicationClient.users().all}
+        exportData={applicationClient.users().export}
         filters={filterDefs}
         columnDefinitions={columnDefs}
         elevation={2}

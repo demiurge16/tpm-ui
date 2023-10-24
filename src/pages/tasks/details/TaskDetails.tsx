@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTaskContext } from "./TaskContext";
 import { Box, Button, Link, Paper, Typography } from "@mui/material";
@@ -13,9 +13,8 @@ import { ChangePriorityDialog } from "./TaskChangePriorityDialog";
 
 export const TaskDetails = () => {
   const { task, setTask } = useTaskContext();
-  const tpmClient = useTpmClient();
   const { showSuccess, showError } = useSnackbarContext();
-  const statusTransitionHandlers = createStatusTransitionHandler(tpmClient, task.id);
+  const statusTransitionHandlers = createStatusTransitionHandler(applicationClient, task.id);
 
   const [moveStartDialogOpen, setMoveStartDialogOpen] = useState(false);
   const [moveDeadlinesDialogOpen, setMoveDeadlinesDialogOpen] = useState(false);

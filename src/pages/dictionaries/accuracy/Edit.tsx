@@ -6,8 +6,8 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
+import { applicationClient } from "../../../client/ApplicationClient";
 
 export const Edit = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,15 +18,14 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
-  const tpmClient = useTpmClient();
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const { showSuccess, showError } = useSnackbarContext();
 
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.accuracies()
+    applicationClient.accuracies()
       .withId(id)
       .get()
       .subscribe({
@@ -44,12 +43,12 @@ export const Edit = () => {
           setServerError(error.message);
         }
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const handleSubmit = (values: UpdateAccuracy) => {
     if (!id) return;
 
-    tpmClient.accuracies()
+    applicationClient.accuracies()
       .withId(id)
       .update(values)
       .subscribe({

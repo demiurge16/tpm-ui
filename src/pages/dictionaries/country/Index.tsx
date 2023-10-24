@@ -3,7 +3,7 @@ import { Grid } from '../../../components/grid/Grid';
 import { Country } from '../../../client/types/dictionaries/Country';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Countries } from './Countries';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Index = () => {
   const startPage = 0;
@@ -96,8 +96,6 @@ export const Index = () => {
     FilterDefinition.string('name', 'Name')
   ];
 
-  const tpmClient = useTpmClient();
-
   return (
     <Box>
       <Typography variant="h4">{Countries.title}</Typography>
@@ -106,8 +104,8 @@ export const Index = () => {
       <Grid<Country>
         startPage={startPage}
         pageSize={pageSize}
-        fetch={tpmClient.countries().all}
-        exportData={tpmClient.countries().export}
+        fetch={applicationClient.countries().all}
+        exportData={applicationClient.countries().export}
         filters={filters}
         columnDefinitions={columnDefs}
         elevation={2}
@@ -115,5 +113,3 @@ export const Index = () => {
     </Box>
   );
 }
-
-

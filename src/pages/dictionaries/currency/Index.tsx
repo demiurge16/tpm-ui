@@ -4,7 +4,7 @@ import { Grid } from '../../../components/grid/Grid';
 import { Currency } from '../../../client/types/dictionaries/Currency';
 import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Currencies } from './Currencies';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Index = () => {
 
@@ -21,8 +21,6 @@ export const Index = () => {
     FilterDefinition.string('name', 'Name')
   ];
 
-  const tpmClient = useTpmClient();
-
   return (
     <Box>
       <Typography variant="h4">{Currencies.title}</Typography>
@@ -31,8 +29,8 @@ export const Index = () => {
       <Grid<Currency>
         startPage={startPage}
         pageSize={pageSize}
-        fetch={tpmClient.currencies().all}
-        exportData={tpmClient.currencies().export}
+        fetch={applicationClient.currencies().all}
+        exportData={applicationClient.currencies().export}
         filters={filters}
         columnDefinitions={columnDefs}
         elevation={2}

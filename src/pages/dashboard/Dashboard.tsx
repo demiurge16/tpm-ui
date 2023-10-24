@@ -3,7 +3,7 @@ import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { Box, Paper, Typography } from "@mui/material";
 
 export const Dashboard = () => {
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   useEffect(() => {
     setBreadcrumbs([]);

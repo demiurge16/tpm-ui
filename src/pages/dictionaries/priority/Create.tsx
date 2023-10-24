@@ -7,7 +7,7 @@ import { NumberField } from "../../../components/form-controls/NumberField";
 import { EmojiPickerField } from "../../../components/form-controls/EmojiPickerField";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
 import { Priority } from "../../../client/types/task/Task";
 import { useValidator } from "../../../components/form/useValidator";
@@ -28,9 +28,8 @@ export const Create = () => {
   );
 
   const { showSuccess } = useSnackbarContext();
-  const tpmClient = useTpmClient();
   const { handleSubmit, submitError } = useSubmitHandler<CreatePriority, Priority>({
-    handleSubmit: (values) => tpmClient.priorities().create(values),
+    handleSubmit: (values) => applicationClient.priorities().create(values),
     successHandler: (priority) => {
       showSuccess("Success", "Priority created successfully");
       navigate(`/priorities/${priority.id}`);

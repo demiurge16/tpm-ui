@@ -6,15 +6,14 @@ import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 
 export const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const tpmClient = useTpmClient();
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   useEffect(() => {
     setBreadcrumbs([
@@ -24,7 +23,7 @@ export const Create = () => {
   }, [setBreadcrumbs]);
 
   const handleSubmit = (data: CreateAccuracy) =>
-    tpmClient.accuracies()
+    applicationClient.accuracies()
       .create(data)
       .subscribe({
         next: () => {

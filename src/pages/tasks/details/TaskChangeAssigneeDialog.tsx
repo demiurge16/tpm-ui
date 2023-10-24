@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { useTaskContext } from "./TaskContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { Assign } from "../../../client/types/task/Task";
@@ -15,7 +15,6 @@ export interface ChangeAssigneeDialogProps {
 
 export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProps) => {
   const { task, setTask } = useTaskContext();
-  const tpmClient = useTpmClient();
   const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
@@ -23,7 +22,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
-    tpmClient.projects()
+    applicationClient.projects()
       .withId(task.project.id)
       .teamMembers()
       .all()
@@ -36,10 +35,10 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
           setServerError(error.response.data.message || error.message);
         }
       });
-  }, [showError, task.project.id, tpmClient]);
+  }, [showError, task.project.id, applicationClient]);
 
   const handleSubmit = (data: Assign) =>
-    tpmClient.tasks()
+    applicationClient.tasks()
       .withId(task.id)
       .assignTeamMember(data)
       .subscribe({
@@ -58,7 +57,7 @@ export const ChangeAssigneeDialog = ({ open, onClose }: ChangeAssigneeDialogProp
       });
   
   const handleUnassign = () =>
-    tpmClient.tasks()
+    applicationClient.tasks()
       .withId(task.id)
       .unassignTeamMember()
       .subscribe({

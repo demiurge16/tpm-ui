@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
 import { ProjectNewStatus, StatusCode } from "../../../../client/types/project/Project";
-import TpmClient from "../../../../client/TpmClient";
+import { ApplicationClient } from "../../../../client/ApplicationClient";
 
 export type StatusTransition = {
   [key in StatusCode]: {
@@ -11,12 +11,12 @@ export type StatusTransition = {
   }
 };
 
-export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: string): StatusTransition => {
+export const createStatusTransitionHandler = (applicationClient: ApplicationClient, projectId: string): StatusTransition => {
   return {
     "DRAFT": {
       "READY_TO_START": {
         name: 'Finish draft',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .finishDraft()
       }
@@ -24,19 +24,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "READY_TO_START": {
       "DRAFT": {
         name: 'Back to draft',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .backToDraft()
       },
       "ACTIVE": {
         name: 'Start project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .startProgress()
       },
       "CANCELLED": {
         name: 'Cancel project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .cancel()
       }
@@ -44,19 +44,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "ACTIVE": {
       "REVIEW": {
         name: 'Start review',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .startReview()
       },
       "ON_HOLD": {
         name: 'Put on hold',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .putOnHold()
       },
       "CANCELLED": {
         name: 'Cancel project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .cancel()
       }
@@ -64,13 +64,13 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "ON_HOLD": {
       "ACTIVE": {
         name: 'Resume project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .resume()
       },
       "CANCELLED": {
         name: 'Cancel project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .cancel()
       }
@@ -78,7 +78,7 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "CANCELLED": {
       "DRAFT": {
         name: 'Reopen project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .reopen()
       }
@@ -86,25 +86,25 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "REVIEW": {
       "READY_TO_DELIVER": {
         name: 'Approve project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .approve()
       },
       "ACTIVE": {
         name: 'Reject project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .reject()
       },
       "ON_HOLD": {
         name: 'Put on hold',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .putOnHold()
       },
       "CANCELLED": {
         name: 'Cancel project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .cancel()
       }
@@ -112,19 +112,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "READY_TO_DELIVER": {
       "ACTIVE": {
         name: 'Reject project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .reject()
       },
       "DELIVERED": {
         name: 'Deliver project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .deliver()
       },
       "CANCELLED": {
         name: 'Cancel project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .cancel()
       }
@@ -132,13 +132,13 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "DELIVERED": {
       "INVOICED": {
         name: 'Create invoice',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .invoice()
       },
       "CANCELLED": {
         name: 'Cancel project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .cancel()
       }
@@ -146,13 +146,13 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, projectId: s
     "INVOICED": {
       "PAID": {
         name: 'Mark as paid',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .pay()
       },
       "CANCELLED": {
         name: 'Cancel project',
-        action: () => tpmClient.projects()
+        action: () => applicationClient.projects()
           .withId(projectId)
           .cancel()
       }

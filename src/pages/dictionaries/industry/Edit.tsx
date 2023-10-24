@@ -5,8 +5,8 @@ import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, TextField, Typography } from '@mui/material';
 import { Form } from 'react-final-form';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Edit = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -17,14 +17,13 @@ export const Edit = () => {
   });
   const navigate = useNavigate();
   const { id } = useParams();
-  const {  setBreadcrumbs } = useBreadcrumbsContext();;
+  const {  setBreadcrumbs } = useBreadcrumbsContext();
   const { showSuccess, showError } = useSnackbarContext();
-  const tpmClient = useTpmClient();
 
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.industries()
+    applicationClient.industries()
       .withId(id)
       .get()
       .subscribe({
@@ -42,12 +41,12 @@ export const Edit = () => {
           setServerError(error.message);
         }
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const handleSubmit = (values: UpdateIndustry) => {
     if (!id) return;
 
-    tpmClient.industries()
+    applicationClient.industries()
       .withId(id)
       .update(values)
       .subscribe({

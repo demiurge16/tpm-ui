@@ -4,8 +4,8 @@ import { Link, useParams } from 'react-router-dom';
 import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { useTpmClient } from '../../../contexts/TpmClientContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
+import { applicationClient } from '../../../client/ApplicationClient';
 
 export const Details = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -14,13 +14,12 @@ export const Details = () => {
   const { id } = useParams();
 
   const { showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   
   useEffect(() => {
     if (!id) return;
 
-    tpmClient.priorities()
+    applicationClient.priorities()
       .withId(id)
       .get()
       .subscribe({
@@ -34,12 +33,12 @@ export const Details = () => {
         },
         error: (error) => showError(`Error loading priority ${id}`, error.message)
       });
-  }, [id, setBreadcrumbs, showError, tpmClient]);
+  }, [id, setBreadcrumbs, showError, applicationClient]);
 
   const activate = () => {
     if (!id) return;
 
-    tpmClient.priorities()
+    applicationClient.priorities()
       .withId(id)
       .activate()
       .subscribe({
@@ -51,7 +50,7 @@ export const Details = () => {
   const deactivate = () => {
     if (!id) return;
 
-    tpmClient.priorities()
+    applicationClient.priorities()
       .withId(id)
       .deactivate()
       .subscribe({

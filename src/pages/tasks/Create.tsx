@@ -9,13 +9,13 @@ import { DateTimeField } from '../../components/form-controls/DateTimeField';
 import { object, string, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
 import { CreateTask } from '../../client/types/project/Task';
-import { useTpmClient } from '../../contexts/TpmClientContext';
 import { LoadingScreen } from '../utils/LoadingScreen';
 import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { Task } from '../../client/types/task/Task';
 import { useValidator } from '../../components/form/useValidator';
 import { useRefdata } from '../../components/form/useRefdata';
 import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
+import { applicationClient } from '../../client/ApplicationClient';
 
 export const Create = () => {
   const { projectId } = useParams();
@@ -28,18 +28,17 @@ export const Create = () => {
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const navigate = useNavigate();
-  const tpmClient = useTpmClient();
 
   const { loading, refdata, refdataError } = useRefdata(
     {
-      accuracies: tpmClient.accuracies().all(),
-      industries: tpmClient.industries().all(),
-      units: tpmClient.units().all(),
-      priorities: tpmClient.priorities().all(),
-      serviceTypes: tpmClient.serviceTypes().all(),
-      languages: tpmClient.languages().all(),
-      currencies: tpmClient.currencies().all(),
-      project: tpmClient.projects().withId(projectId).get()
+      accuracies: applicationClient.accuracies().all(),
+      industries: applicationClient.industries().all(),
+      units: applicationClient.units().all(),
+      priorities: applicationClient.priorities().all(),
+      serviceTypes: applicationClient.serviceTypes().all(),
+      languages: applicationClient.languages().all(),
+      currencies: applicationClient.currencies().all(),
+      project: applicationClient.projects().withId(projectId).get()
     },
     (result) => {
       setBreadcrumbs([
@@ -53,7 +52,7 @@ export const Create = () => {
   const { accuracies, industries, units, priorities, serviceTypes, languages, currencies } = refdata;
 
   const { handleSubmit, submitError } = useSubmitHandler<CreateTask, Task>({
-    handleSubmit: (values) => tpmClient.projects().withId(projectId).tasks().create(values),
+    handleSubmit: (values) => applicationClient.projects().withId(projectId).tasks().create(values),
     successHandler: (task) => {
       showSuccess('Success', 'Task created successfully');
       navigate(`/tasks/${task.id}`);

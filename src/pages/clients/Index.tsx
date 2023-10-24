@@ -13,8 +13,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
-import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
+import { applicationClient } from "../../client/ApplicationClient";
 
 export const Index = () => {
   const startPage = 0;
@@ -24,19 +24,18 @@ export const Index = () => {
   const [filters, setFilters] = useState<FilterDefinition[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const { showSuccess, showError } = useSnackbarContext();
-  const tpmClient = useTpmClient();
   const gridRef = useRef<GridHandle>(null);
 
   useEffect(() => {
     forkJoin({
-      countries: tpmClient.countries().all(),
-      types: tpmClient.clientTypes().all(),
+      countries: applicationClient.countries().all(),
+      types: applicationClient.clientTypes().all(),
     }).subscribe({
       next: (data) => {
         const activate = (id: string,refresh: (data: ClientStatus) => void) =>
-          tpmClient.clients()
+          applicationClient.clients()
             .withId(id)
             .activate()
             .subscribe({
@@ -50,7 +49,7 @@ export const Index = () => {
             });
 
         const deactivate = (id: string, refresh: (data: ClientStatus) => void) =>
-          tpmClient.clients()
+          applicationClient.clients()
             .withId(id)
             .deactivate()
             .subscribe({
@@ -177,7 +176,7 @@ export const Index = () => {
         showError("Error fetching client types", error.message);
       },
     });
-  }, [setBreadcrumbs, showError, showSuccess, tpmClient]);
+  }, [setBreadcrumbs, showError, showSuccess, applicationClient]);
 
   return (
     <Box>
@@ -196,8 +195,8 @@ export const Index = () => {
               innerRef={gridRef}
               startPage={startPage}
               pageSize={pageSize}
-              fetch={tpmClient.clients().all}
-              exportData={tpmClient.clients().export}
+              fetch={applicationClient.clients().all}
+              exportData={applicationClient.clients().export}
               filters={filters}
               columnDefinitions={columnDefs}
               elevation={2}

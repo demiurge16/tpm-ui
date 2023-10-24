@@ -13,7 +13,7 @@ import { Currency } from "../../client/types/dictionaries/Currency";
 import { forkJoin } from "rxjs";
 import { User } from "../../client/types/user/User";
 import { Project } from "../../client/types/project/Project";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Index = () => {
@@ -28,8 +28,7 @@ export const Index = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   const { showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const [filterDefs, setFilterDefs] = useState<FilterDefinition[]>([]);
   const [columnDefs, setColumnDefs] = useState<ColumnDefinition<Expense>[]>([]);
@@ -37,10 +36,10 @@ export const Index = () => {
 
   useEffect(() => {
     forkJoin({
-      currencies: tpmClient.currencies().all(),
-      expenseCategories: tpmClient.expenseCategories().all(),
-      users: tpmClient.users().all(),
-      projects: tpmClient.projects().all(),
+      currencies: applicationClient.currencies().all(),
+      expenseCategories: applicationClient.expenseCategories().all(),
+      users: applicationClient.users().all(),
+      projects: applicationClient.projects().all(),
     }).subscribe({
       next: (data) => {
         setCurrencies(data.currencies.items);
@@ -143,7 +142,7 @@ export const Index = () => {
     setBreadcrumbs([
       { label: "Expenses", path: "/expenses" },
     ]);
-  }, [currencies, expenseCategories, projects, setBreadcrumbs, showError, tpmClient, users]);
+  }, [currencies, expenseCategories, projects, setBreadcrumbs, showError, applicationClient, users]);
 
   return loading ? (
     <Paper elevation={2} sx={{ p: 2 }}>
@@ -159,8 +158,8 @@ export const Index = () => {
           innerRef={gridRef}
           startPage={startPage}
           pageSize={pageSize}
-          fetch={tpmClient.expenses().all}
-          exportData={tpmClient.expenses().export}
+          fetch={applicationClient.expenses().all}
+          exportData={applicationClient.expenses().export}
           filters={filterDefs}
           columnDefinitions={columnDefs}
           elevation={2}

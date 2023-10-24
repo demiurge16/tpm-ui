@@ -6,21 +6,20 @@ import { SelectField } from "../../components/form-controls/SelectField";
 import { TextField } from "../../components/form-controls/TextField";
 import { Client, CreateClient } from "../../client/types/client/Client";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
-import { useTpmClient } from "../../contexts/TpmClientContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { useSubmitHandler } from "../../components/form/useSubmitHandler";
 import { useRefdata } from "../../components/form/useRefdata";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { applicationClient } from "../../client/ApplicationClient";
 
 export const Create = () => {
-  const tpmClient = useTpmClient();
   const navigate = useNavigate();
 
   const { setBreadcrumbs } = useBreadcrumbsContext();
   const { loading, refdata, refdataError } = useRefdata(
     {
-      countries: tpmClient.countries().all(),
-      types: tpmClient.clientTypes().all()
+      countries: applicationClient.countries().all(),
+      types: applicationClient.clientTypes().all()
     },
     () => setBreadcrumbs([
       { label: "Clients", path: "/clients" },
@@ -30,7 +29,7 @@ export const Create = () => {
 
   const { showSuccess } = useSnackbarContext();
   const { handleSubmit, submitError } = useSubmitHandler<CreateClient, Client>({
-    handleSubmit: (values: CreateClient) => tpmClient.clients().create(values),
+    handleSubmit: (values: CreateClient) => applicationClient.clients().create(values),
     successHandler: (result: Client) => {
       showSuccess("Success", "Client created");
       navigate(`/clients/${result.id}`);

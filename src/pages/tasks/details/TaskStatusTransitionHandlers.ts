@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import TpmClient from "../../../client/TpmClient";
+import { ApplicationClient } from "../../../client/ApplicationClient";
 import { StatusCode, TaskNewStatus } from "../../../client/types/task/Task";
 
 export type StatusTransition = {
@@ -11,19 +11,19 @@ export type StatusTransition = {
   }
 };
 
-export const createStatusTransitionHandler = (tpmClient: TpmClient, taskId: string): StatusTransition => {
+export const createStatusTransitionHandler = (applicationClient: ApplicationClient, taskId: string): StatusTransition => {
   return {
     "DRAFT": {},
     "ASSIGNED": {
       "IN_PROGRESS": {
         name: "Start",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .start()
       },
       "CANCELLED": {
         name: "Cancel",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .cancel()
       }
@@ -31,19 +31,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, taskId: stri
     "IN_PROGRESS": {
       "IN_REVIEW": {
         name: "Send for review",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .startReview()
       },
       "ON_HOLD": {
         name: "Put on hold",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .putOnHold()
       },
       "CANCELLED": {
         name: "Cancel",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .cancel()
       }
@@ -51,19 +51,19 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, taskId: stri
     "IN_REVIEW": {
       "IN_PROGRESS": {
         name: "Request revision",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .reject()
       },
       "READY_TO_DELIVER": {
         name: "Approve",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .approve()
       },
       "CANCELLED": {
         name: "Cancel",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .cancel()
       }
@@ -71,13 +71,13 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, taskId: stri
     "ON_HOLD": {
       "IN_PROGRESS": {
         name: "Resume",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .resume()
       },
       "CANCELLED": {
         name: "Cancel",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .cancel()
       }
@@ -85,13 +85,13 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, taskId: stri
     "READY_TO_DELIVER": {
       "COMPLETED": {
         name: "Complete",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .complete()
       },
       "CANCELLED": {
         name: "Cancel",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .cancel()
       }
@@ -100,7 +100,7 @@ export const createStatusTransitionHandler = (tpmClient: TpmClient, taskId: stri
     "CANCELLED": {
       "DRAFT": {
         name: "Reopen",
-        action: () => tpmClient.tasks()
+        action: () => applicationClient.tasks()
           .withId(taskId)
           .reopen()
       }

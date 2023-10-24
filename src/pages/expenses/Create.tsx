@@ -13,7 +13,7 @@ import { SelectField } from "../../components/form-controls/SelectField";
 import { NumberField } from "../../components/form-controls/NumberField";
 import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
 import { DateField } from "../../components/form-controls/DateField";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { Currency } from "../../client/types/dictionaries/Currency";
 
@@ -30,8 +30,7 @@ export const Create = () => {
   const navigate = useNavigate();
 
   const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const initialValues: CreateExpense = {
     description: '',
@@ -48,12 +47,12 @@ export const Create = () => {
     }
 
     forkJoin({
-      expenseCategories: tpmClient.expenseCategories().all(),
-      teamMembers: tpmClient.projects()
+      expenseCategories: applicationClient.expenseCategories().all(),
+      teamMembers: applicationClient.projects()
         .withId(projectId)
         .teamMembers()
         .all(),
-      currencies: tpmClient.currencies().all()
+      currencies: applicationClient.currencies().all()
     }).subscribe({
       next: (response) => {
         setExpenseCategories(response.expenseCategories.items);
@@ -71,14 +70,14 @@ export const Create = () => {
       { label: "Expenses", path: "/expenses" },
       { label: "Create", path: "/expenses/create" },
     ]);
-  }, [projectId, setBreadcrumbs, showError, tpmClient]);
+  }, [projectId, setBreadcrumbs, showError, applicationClient]);
 
   const handleSubmit = (values: CreateExpense) => {
     if (!projectId) {
       return;
     }
 
-    tpmClient
+    applicationClient
       .projects()
       .withId(projectId)
       .expenses()

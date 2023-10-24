@@ -8,7 +8,7 @@ import { Form } from "react-final-form";
 import { array, object, string } from "yup";
 import { MultivalueStringField, TextField } from "../../components/form-controls/TextField";
 import { EditorField } from "../../components/form-controls/EditorField";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { useSubmitHandler } from "../../components/form/useSubmitHandler";
 import { Thread } from "../../client/types/thread/Thread";
 import { useValidator } from "../../components/form/useValidator";
@@ -21,8 +21,6 @@ export const Create = () => {
   if (!projectId) {
     throw new Error('Project ID is required');
   }
-
-  const tpmClient = useTpmClient();
 
   const initialValues: CreateThread = {
     title: '',
@@ -48,7 +46,7 @@ export const Create = () => {
   }, [projectId, setBreadcrumbs]);
 
   const { handleSubmit, submitError } = useSubmitHandler<CreateThread, Thread>({
-    handleSubmit: (values) => tpmClient.projects().withId(projectId).threads().create(values),
+    handleSubmit: (values) => applicationClient.projects().withId(projectId).threads().create(values),
     successHandler: (thread) => {
       showSuccess('Success', 'Thread created successfully');
       window.location.href = `/projects/${projectId}/threads/${thread.id}`;

@@ -9,17 +9,16 @@ import { NumberField } from '../../components/form-controls/NumberField';
 import { DateTimeField } from '../../components/form-controls/DateTimeField';
 import { object, string, array, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
-import { useTpmClient } from '../../contexts/TpmClientContext';
 import { LoadingScreen } from '../utils/LoadingScreen';
 import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { useRefdata } from '../../components/form/useRefdata';
 import { useValidator } from '../../components/form/useValidator';
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { useTranslation } from "react-i18next";
+import { applicationClient } from "../../client/ApplicationClient";
 
 export const Create = () => {
   const navigate = useNavigate();
-  const tpmClient = useTpmClient();
 
   const { showSuccess } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
@@ -27,13 +26,13 @@ export const Create = () => {
 
   const { loading, refdata, refdataError } = useRefdata(
     {
-      accuracies: tpmClient.accuracies().all(),
-      industries: tpmClient.industries().all(),
-      units: tpmClient.units().all(),
-      serviceTypes: tpmClient.serviceTypes().all(),
-      clients: tpmClient.clients().all(),
-      currencies: tpmClient.currencies().all(),
-      languages: tpmClient.languages().all()
+      accuracies: applicationClient.accuracies().all(),
+      industries: applicationClient.industries().all(),
+      units: applicationClient.units().all(),
+      serviceTypes: applicationClient.serviceTypes().all(),
+      clients: applicationClient.clients().all(),
+      currencies: applicationClient.currencies().all(),
+      languages: applicationClient.languages().all()
     },
     () => setBreadcrumbs([
       { 
@@ -48,7 +47,7 @@ export const Create = () => {
   );
 
   const { handleSubmit, submitError } = useSubmitHandler<CreateProject, Project>({
-    handleSubmit: (values) => tpmClient.projects().create(values),
+    handleSubmit: (values) => applicationClient.projects().create(values),
     successHandler: (result) => {
       showSuccess('Success', 'Project created successfully');
       navigate(`/projects/${result.id}`);

@@ -9,7 +9,7 @@ import { SelectField } from "../../../components/form-controls/SelectField";
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
 import { useValidator } from "../../../components/form/useValidator";
@@ -19,7 +19,6 @@ export const Create = () => {
   const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const tpmClient = useTpmClient();
 
   const initialValues: CreateUnit = {
     name: '',
@@ -28,10 +27,10 @@ export const Create = () => {
     measurement: 'CHARACTERS'
   };
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
+  const { setBreadcrumbs } = useBreadcrumbsContext();
   const { showSuccess } = useSnackbarContext();
   const { handleSubmit, submitError } = useSubmitHandler<CreateUnit, Unit>({
-    handleSubmit: (values: CreateUnit) => tpmClient.units().create(values),
+    handleSubmit: (values: CreateUnit) => applicationClient.units().create(values),
     successHandler: (result: Unit) => {
       showSuccess("Success", "Unit created");
       navigate(`/units/${result.id}`);
@@ -54,7 +53,7 @@ export const Create = () => {
   );
 
   useEffect(() => {
-    tpmClient.units()
+    applicationClient.units()
       .refdata()
       .measurements()
       .subscribe({
@@ -69,7 +68,7 @@ export const Create = () => {
       { label: "Units", path: "/units" },
       { label: "Create", path: "/units/create" },
     ]);
-  }, [setBreadcrumbs, tpmClient]);
+  }, [setBreadcrumbs, applicationClient]);
 
   return loading ? (
     <Paper elevation={2} sx={{ p: 2 }}>

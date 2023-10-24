@@ -1774,17 +1774,15 @@ const Root = () => {
       <CssBaseline />
       <BrowserRouter>
         <AuthContextProvider>
-          <TpmClientContextProvider>
-            <LocalizationProvider dateAdapter={AdapterLuxon}>
-              <BreadcrumbsContextProvider>
-                <SnackbarContextProvider>
-                  <StrictMode>
-                    <App />
-                  </StrictMode>
-                </SnackbarContextProvider>
-              </BreadcrumbsContextProvider>
-            </LocalizationProvider>
-          </TpmClientContextProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <BreadcrumbsContextProvider>
+              <SnackbarContextProvider>
+                <StrictMode>
+                  <App />
+                </StrictMode>
+              </SnackbarContextProvider>
+            </BreadcrumbsContextProvider>
+          </LocalizationProvider>
         </AuthContextProvider>
       </BrowserRouter>
     </ThemeProvider>
@@ -2402,8 +2400,227 @@ interface BreadcrumbsContextValues {
 Pojedyńcze widoki aplikacji są odpowiedzialne za aktualizację kontekstu nawigacji `BreadcrumbsContext` w zależności od aktualnego widoku aplikacji.
 
 #### Komunikacja z serwerem
+
+Tworzenie odpowiedniej komunikacji między klientem a serwerem jest kluczowe dla każdej aplikacji webowej. W celu zapewnienia wydajnej i skalowalnej komunikacji między klientem a serwerem, w aplikacji został zaimplementowany klient HTTP, który jest odpowiedzialny za wysyłanie żądań HTTP do serwera oraz konwersję odpowiedzi na obiekty JavaScript. 
+
+Klient aplikacji został zaprojektowany w postaci prostej obudowy dla biblioteki Axios, która jest szeroko stosowana w ekosystemie React. Axios jest biblioteką, która pozwala na wykonywanie żądań HTTP w przeglądarce oraz w środowisku Node.js. Biblioteka ta oferuje wiele funkcji, które ułatwiają komunikację z serwerem, takich jak automatyczna konwersja odpowiedzi na obiekty JavaScript, obsługa błędów, anulowanie żądań, obsługa zapytań i odpowiedzi, itp.
+
+Pierwszy krok w implementacji klienta aplikacji to obudowanie metod `get`, `post`, `put`, `patch`, `delete` klienta Axios w celu wykorzystania ich w aplikacji. Zaczynamy od utworzenia pliku `ApplicationClient.ts` w katalogu `src/client` i wprowadzamy następującą implementację:
+
+```ts
+function toObservable<T>(promise: Promise<AxiosResponse<T>>): Observable<T> {
+  return new Observable((observer) => {
+    promise
+      .then((response) => {
+        observer.next(response.data);
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error);
+      });
+  });
+}
+
+function getResource<TResponse>(
+  path: string,
+  search?: Partial<Search>,
+  config?: {
+    responseType?: ResponseType;
+    headers?: object;
+  }
+): Observable<TResponse> {
+  const params = search
+    ? {
+        page: search.page,
+        size: search.pageSize,
+        sort:
+          search.sort &&
+          search.sort.map((s) => `${s.field}:${s.direction}`).join("&"),
+        search:
+          search.filters &&
+          search.filters
+            .map((f) => `${f.field}:${f.operator}:${f.value || ""}`)
+            .join("&"),
+      }
+    : undefined;
+
+  return toObservable(
+    axios.get(`${environment.apiUrl}/${path}`, {
+      params: params,
+      responseType: config?.responseType,
+      headers: config?.headers,
+    })
+  );
+}
+
+function postResource<TRequest, TResponse>(
+  path: string,
+  body: TRequest
+): Observable<TResponse> {
+  return toObservable(
+    axios.post(`${environment.apiUrl}/${path}`, body)
+  );
+}
+
+function postMultipartResource<TResponse>(
+  path: string,
+  body: FormData
+): Observable<TResponse> {
+  return toObservable(
+    axios.post(`${environment.apiUrl}/${path}`, body, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+  );
+}
+
+function putResource<TRequest, TResponse>(
+  path: string,
+  body: TRequest
+): Observable<TResponse> {
+  return toObservable(
+    axios.put(`${environment.apiUrl}/${path}`, body)
+  );
+}
+
+function patchResource<TRequest, TResponse>(
+  path: string,
+  body?: TRequest
+): Observable<TResponse> {
+  return toObservable(
+    axios.patch(`${environment.apiUrl}/${path}`, body)
+  );
+}
+
+function deleteResource(path: string) {
+  return toObservable(
+    axios.delete(`${environment.apiUrl}/${path}`)
+  );
+}
+```
+
+Domyślnie, żądania HTTP wykonane za pomocą Axios zwracają Promise, ale w systemie organizacji pracy dla biura tłumaczeń, zdecydowano się na wykorzystanie Observable z biblioteki RxJS. Ma to na celu wykorzystanie takich zalet RxJS, jak:
+
+1. **Strumienie Danych (Data Streams):** Observables traktują wszelkie dane jako strumienie. W odróżnieniu od promisów, które reprezentują jedno wartość w czasie, Observables mogą emitować wiele wartości w różnych momentach. Pozwala to na efektywną obsługę danych w czasie rzeczywistym, takich jak strumieniowanie wideo, aktualizacje na żywo i inne interaktywne funkcje.
+2. **Operatory (Operators):** Operatory RxJS umożliwiają skomplikowane operacje na strumieniach danych. Dzięki nim, możemy filtrować, mapować, redukować i łączyć strumienie w sposób modularny i złożony. Ułatwiają one również obsługę błędów, retryingów i wielu innych operacji, które byłyby trudne do zaimplementowania przy użyciu tradycyjnych callbacków lub promisów.
+3. **Leniwa Wykonania (Lazy Execution):**
+Observables nie są aktywowane dopóki ktoś na nie nie "subskrybuje". To oznacza, że możemy zdefiniować cały przepływ danych i operacje na nim bez faktycznego przetwarzania danych do momentu, gdy są one rzeczywiście potrzebne. Daje to elastyczność w kontroli nad przepływem danych.
+4. **Wielokrotne Wartości i Łatwość Obsługi Błędów:** Innym kluczowym aspektem Observables jest ich zdolność do emitowania wielu wartości w czasie oraz łatwość w obsłudze błędów. W przypadku wystąpienia błędu w strumieniu, możemy łatwo przechwycić go i zareagować, na przykład poprzez retrying, czy też przekazanie błędu do odpowiedniego mechanizmu obsługi.
+
+Następnie, definiujemy klienta aplikacji, który jest odpowiedzialny za wykonywanie żądań HTTP do serwera oraz konwersję odpowiedzi na obiekty JavaScript. Klient aplikacji jest zaprojektowany w taki sposób, aby zaoferować kolejny poziom abstrakcji i zamiast oferować metody obsługujące żądania HTTP, oferuje metody obsługujące konkretne zasoby. Implementacja klienta aplikacji wygląda następująco:
+
+```ts
+export const applicationClient = {
+  projects() {
+    return {
+      all: (search?: Partial<Search>): Observable<Page<Project>> => getResource("project", search),
+      export: (search?: Partial<Search>): Observable<unknown> => getResource("project/export", search, { responseType: "blob" }),
+      create: (body: CreateProject): Observable<Project> => postResource("project", body),
+      refdata: () => {
+        return {
+          statuses: (): Observable<ProjectStatus[]> => getResource(`project/refdata/status`),
+          teamMembers: () => {
+            return {
+              roles: (): Observable<ProjectRole[]> => getResource(`project/refdata/team-member/role`),
+            };
+          }
+        };
+      },
+      withId: (id: string) => {
+        return {
+          get: (): Observable<Project> => getResource(`project/${id}`),
+          update: (body: UpdateProject): Observable<Project> => putResource(`project/${id}`, body),
+          moveStart: (body: ProjectMoveStart): Observable<ProjectStartMoved> => patchResource(`project/${id}/move-start`, body),
+          moveDeadline: (body: ProjectMoveDeadline): Observable<ProjectDeadlineMoved> => patchResource(`project/${id}/move-deadline`, body),
+          finishDraft: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/finish-draft`),
+          backToDraft: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/back-to-draft`),
+          startProgress: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/start-progress`),
+          startReview: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/start-review`),
+          approve: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/approve`),
+          reject: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/reject`),
+          deliver: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/deliver`),
+          invoice: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/invoice`),
+          pay: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/pay`),
+          putOnHold: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/put-on-hold`),
+          resume: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/resume`),
+          cancel: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/cancel`),
+          reopen: (): Observable<ProjectNewStatus> => patchResource(`project/${id}/reopen`),
+          teamMembers: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<TeamMember>> => getResource(`project/${id}/team-member`, search),
+              add: (body: CreateTeamMember): Observable<TeamMember> => postResource(`project/${id}/team-member`, body),
+              remove: (id: string) => deleteResource(`project/${id}/team-member/${id}`)
+            };
+          },
+          tasks: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<Task>> => getResource(`project/${id}/task`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => getResource(`project/${id}/task/export`, search, { responseType: "blob" }),
+              create: (body: CreateTask): Observable<Task> => postResource(`project/${id}/task`, body),
+            };
+          },
+          expenses: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<Expense>> => getResource(`project/${id}/expense`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => getResource(`project/${id}/expense/export`, search, { responseType: "blob" }),
+              create: (body: CreateExpense): Observable<Expense> => postResource(`project/${id}/expense`, body),
+            };
+          },
+          threads: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<Thread>> => getResource(`project/${id}/thread`, search),
+              create: (body: CreateThread): Observable<Thread> => postResource(`project/${id}/thread`, body),
+            };
+          },
+          files: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<File>> => getResource(`project/${id}/file`, search),
+              export: (search?: Partial<Search>): Observable<unknown> => getResource(`project/${id}/file/export`, search, { responseType: "blob" }),
+              create: (body: FormData) => postMultipartResource(`project/${id}/file`, body),
+            };
+          },
+        };
+      },
+    };
+  },
+  clients() {
+    return {
+      all: (search?: Partial<Search>): Observable<Page<Client>> => getResource(`client`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => getResource(`client/export`, search, { responseType: "blob" }),
+      create: (body: CreateClient): Observable<Client> => postResource(`client`, body),
+      withId: (id: string) => {
+        return {
+          get: (): Observable<Client> => getResource(`client/${id}`),
+          update: (body: UpdateClient): Observable<Client> => putResource(`client/${id}`, body),
+          activate: (): Observable<ClientStatus> => patchResource(`client/${id}/activate`),
+          deactivate: (): Observable<ClientStatus> => patchResource(`client/${id}/deactivate`),
+        };
+      },
+    };
+  },
+  // Pozostałe zasoby...
+};
+```
+
+Co z kolei pozwala na wykonywanie żądań HTTP do serwera w sposób dużo bardziej czytelny i przejrzysty:
+
+```tsx
+const [projects, setProjects] = useState<Project[]>([]);
+
+useEffect(() => {
+  applicationClient.projects().all().subscribe((response) => {
+    setProjects(response.content);
+  });
+}, []);
+```
+
+W wyniku, otrzymaliśmy klient aplikacji, zapełniający wysoki poziom abstrakcji i zapełnia asynchroniczność. To pozwoli na łatwe wykorzystanie klienta aplikacji w widokach i formularzach wszędzie tam, gdzie jest to potrzebne. Z kolei asynchroniczność pozwoli znacznie poprawić wydajność aplikacji, pozwalając na uniknięcie blokowania interfejsu użytkownika w czasie wykonywania żądań HTTP.
+
 #### Implementacja widoków
+
 #### Implementacja formularzy
+
 #### Wdrożenie aplikacji
 
 ### Serwer aplikacji

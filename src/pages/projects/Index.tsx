@@ -9,7 +9,7 @@ import { Grid } from "../../components/grid/Grid";
 import { Link } from "react-router-dom";
 import { forkJoin, of } from "rxjs";
 import { formatDate } from "../../utils/dateFormatters";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { GridConfig } from "../../components/grid/GridConfig";
 import { useAuth } from "../../contexts/AuthContext";
@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 export const Index = () => {
   const gridRef = useRef<GridHandle>(null);
 
-  const tpmClient = useTpmClient();
   const { hasAnyRole } = useAuth();
 
   const { showError } = useSnackbarContext();
@@ -43,13 +42,13 @@ export const Index = () => {
     ]);
 
     forkJoin({
-      languages: tpmClient.languages().all(),
-      accuracies: tpmClient.accuracies().all(),
-      industries: tpmClient.industries().all(),
-      units: tpmClient.units().all(),
-      currencies: tpmClient.currencies().all(),
-      statuses: tpmClient.projects().refdata().statuses(),
-      clients: hasAnyRole(['admin', 'project-manager']) ? tpmClient.clients().all() : of({ items: [] })
+      languages: applicationClient.languages().all(),
+      accuracies: applicationClient.accuracies().all(),
+      industries: applicationClient.industries().all(),
+      units: applicationClient.units().all(),
+      currencies: applicationClient.currencies().all(),
+      statuses: applicationClient.projects().refdata().statuses(),
+      clients: hasAnyRole(['admin', 'project-manager']) ? applicationClient.clients().all() : of({ items: [] })
     }).subscribe({
       next: (response) => {
         setGridConfig(() => {
@@ -271,8 +270,8 @@ export const Index = () => {
               innerRef={gridRef}
               startPage={gridConfig.page}
               pageSize={gridConfig.pageSize}
-              fetch={tpmClient.projects().all}
-              exportData={tpmClient.projects().export}
+              fetch={applicationClient.projects().all}
+              exportData={applicationClient.projects().export}
               filters={gridConfig.filters}
               columnDefinitions={gridConfig.columnDefs}
               elevation={2}

@@ -6,7 +6,7 @@ import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { object, string } from "yup";
 import { CreateServiceType, ServiceType } from "../../../client/types/dictionaries/ServiceType";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
 import { useValidator } from "../../../components/form/useValidator";
 import { useRefdata } from "../../../components/form/useRefdata";
@@ -25,9 +25,8 @@ export const Create = () => {
     ])
   );
 
-  const tpmClient = useTpmClient();
   const { handleSubmit, submitError } = useSubmitHandler<CreateServiceType, ServiceType>({
-    handleSubmit: (values) => tpmClient.serviceTypes().create(values),
+    handleSubmit: (values) => applicationClient.serviceTypes().create(values),
     successHandler: (serviceType) => {
       showSuccess("Success", "Service type created successfully");
       navigate(`/service-types/${serviceType.id}`);

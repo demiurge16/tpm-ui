@@ -12,7 +12,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from "../../../contexts/AuthContext";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
 import { formatDate } from "../../../utils/dateFormatters";
-import { useTpmClient } from "../../../contexts/TpmClientContext";
+import { applicationClient } from "../../../client/ApplicationClient";
 
 interface ReplyTreeProps {
   threadId: string;
@@ -44,13 +44,11 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
   const { showSuccess, showError } = useSnackbarContext();
   const { userId } = useAuth();
 
-  const tpmClient = useTpmClient();
-
   const replyLiked = (reply: Reply) => reply.likes.map((e) => e.author.id).includes(userId);
   const replyDisliked = (reply: Reply) => reply.dislikes.map((e) => e.author.id).includes(userId);
 
   const handleLike = (replyId: string) =>
-    tpmClient.replies()
+    applicationClient.replies()
       .withId(replyId)
       .like()
       .subscribe({
@@ -76,7 +74,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
       });
   
   const handleUnlike = (replyId: string) =>
-    tpmClient.replies()
+    applicationClient.replies()
       .withId(replyId)
       .unlike()
       .subscribe({
@@ -94,7 +92,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
       });
 
   const handleDislike = (replyId: string) =>
-    tpmClient.replies()
+    applicationClient.replies()
       .withId(replyId)
       .dislike()
       .subscribe({
@@ -120,7 +118,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
       });
   
   const handleUndislike = (replyId: string) =>
-    tpmClient.replies()
+    applicationClient.replies()
       .withId(replyId)
       .undislike()
       .subscribe({
@@ -147,7 +145,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
   };
 
   const handleReplySubmit = (parentReplyId: string, content: string) => {
-    tpmClient.threads()
+    applicationClient.threads()
       .withId(threadId)
       .replies()
       .create({
@@ -181,7 +179,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
   };
 
   const handleEditSubmit = (replyId: string, content: string) => {
-    tpmClient.replies()
+    applicationClient.replies()
       .withId(replyId)
       .update({
         content,
@@ -209,7 +207,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
   };
 
   const handleDelete = (replyId: string) =>
-    tpmClient.replies()
+    applicationClient.replies()
       .withId(replyId)
       .delete()
       .subscribe({

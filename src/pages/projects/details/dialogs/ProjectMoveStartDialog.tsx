@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { useTpmClient } from "../../../../contexts/TpmClientContext";
 import { Form } from "react-final-form";
 import { DateTimeField } from "../../../../components/form-controls/DateTimeField";
 import { ProjectMoveStart } from "../../../../client/types/project/Project";
 import { useSnackbarContext } from "../../../../contexts/SnackbarContext";
 import { useProjectContext } from "../context/ProjectContext";
+import { applicationClient } from "../../../../client/ApplicationClient";
 
 export interface MoveStartDialogProps {
   projectId: string;
@@ -15,13 +15,12 @@ export interface MoveStartDialogProps {
 
 export const MoveStartDialog = ({ projectId, open, onClose }: MoveStartDialogProps) => {
   const { project, setProject } = useProjectContext();
-  const tpmClient = useTpmClient();
   const { showSuccess, showError } = useSnackbarContext();
 
   const [serverError, setServerError] = useState<string | null>(null);
 
   const handleSubmit = (data: ProjectMoveStart) =>
-    tpmClient.projects()
+    applicationClient.projects()
       .withId(projectId)
       .moveStart(data)
       .subscribe({

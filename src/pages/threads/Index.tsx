@@ -7,20 +7,18 @@ import { Threads } from "./Threads";
 import { Link } from "react-router-dom";
 import { HtmlPanel } from "../../components/editor/HtmlPanel";
 import { formatDate } from "../../utils/dateFormatters";
-import { useTpmClient } from "../../contexts/TpmClientContext";
+import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
 export const Index = () => {
   const { showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();;
-
-  const tpmClient = useTpmClient();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const [threads, setThreads] = useState<Thread[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    tpmClient.threads()
+    applicationClient.threads()
       .all()
       .subscribe({
         next: (response) => {
@@ -33,7 +31,7 @@ export const Index = () => {
     setBreadcrumbs([
       { label: 'Threads', path: '/threads' }
     ]);
-  }, [setBreadcrumbs, tpmClient, showError]);
+  }, [setBreadcrumbs, applicationClient, showError]);
 
   return (
     <Box>

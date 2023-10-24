@@ -7,11 +7,11 @@ import { TextField } from "../../components/form-controls/TextField";
 import { Client, UpdateClient } from "../../client/types/client/Client";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
-import { useTpmClient } from "../../contexts/TpmClientContext";
 import { useSubmitHandler } from "../../components/form/useSubmitHandler";
 import { useRefdata } from "../../components/form/useRefdata";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
+import { applicationClient } from "../../client/ApplicationClient";
 
 export interface EditParams {
   id: string;
@@ -24,14 +24,13 @@ export const Edit = () => {
     throw new Error("Missing id parameter");
   }
 
-  const tpmClient = useTpmClient();
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
   const { loading, refdata, refdataError } = useRefdata(
     {
-      countries: tpmClient.countries().all(),
-      types: tpmClient.clientTypes().all(),
-      client: tpmClient.clients().withId(id).get()
+      countries: applicationClient.countries().all(),
+      types: applicationClient.clientTypes().all(),
+      client: applicationClient.clients().withId(id).get()
     },
     (result) => setBreadcrumbs([
       { label: "Clients", path: "/clients" },
@@ -46,7 +45,7 @@ export const Edit = () => {
   const navigate = useNavigate();
 
   const { handleSubmit, submitError } = useSubmitHandler<UpdateClient, Client>({
-    handleSubmit: (values: UpdateClient) => tpmClient.clients().withId(id).update(values),
+    handleSubmit: (values: UpdateClient) => applicationClient.clients().withId(id).update(values),
     successHandler: (result: Client) => {
       showSuccess("Success", "Client updated successfully");
       navigate(`/clients/${result.id}`);
