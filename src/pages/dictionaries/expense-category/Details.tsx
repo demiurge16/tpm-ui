@@ -7,7 +7,7 @@ import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
-export const Details = () => {
+const Details = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [expenseCategory, setExpenseCategory] = useState<ExpenseCategory>({} as ExpenseCategory);
 
@@ -103,3 +103,5 @@ export const Details = () => {
     </Box>
   );
 };
+
+export default Details;

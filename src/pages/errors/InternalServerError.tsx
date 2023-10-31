@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 
-export const InternalServerError = () => {
+const InternalServerError = () => {
   return (
     <Box flex={{
       display: "flex",
@@ -13,3 +13,5 @@ export const InternalServerError = () => {
     </Box>
   );
 };
+
+export default InternalServerError;

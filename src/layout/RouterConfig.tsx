@@ -1,3 +1,4 @@
+import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Role } from "../contexts/AuthContext";
 import { Dashboard } from "../pages/dashboard/Dashboard";
@@ -19,6 +20,7 @@ import { Users } from "../pages/users/Users";
 import { ServiceTypes } from "../pages/dictionaries/service-types/ServiceTypes";
 import { SecuredRoute } from "../components/routing/SecuredRoute";
 import { Errors } from "../pages/errors/Errors";
+import { LoadingScreen } from "../pages/utils/LoadingScreen";
 
 type RouteConfig = {
   path: string;
@@ -429,7 +431,11 @@ export const RouterConfig = () => {
               key={`route-${index}`}
               path={item.path}
               element={
-                <SecuredRoute roles={item.roles}>{item.element}</SecuredRoute>
+                <SecuredRoute roles={item.roles}>
+                  <React.Suspense fallback={<LoadingScreen />}>
+                    {item.element}
+                  </React.Suspense>  
+                </SecuredRoute>
               }
             />
           );

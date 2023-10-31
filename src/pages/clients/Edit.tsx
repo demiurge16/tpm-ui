@@ -8,16 +8,12 @@ import { Client, UpdateClient } from "../../client/types/client/Client";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { useSubmitHandler } from "../../components/form/useSubmitHandler";
-import { useRefdata } from "../../components/form/useRefdata";
+import { useData } from "../../components/form/useData";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { AsyncSelectField } from "../../components/form-controls/AsyncSelectField";
 import { applicationClient } from "../../client/ApplicationClient";
 
-export interface EditParams {
-  id: string;
-}
-
-export const Edit = () => {
+const Edit = () => {
   const { id } = useParams();
 
   if (!id) {
@@ -25,8 +21,7 @@ export const Edit = () => {
   }
 
   const { setBreadcrumbs } = useBreadcrumbsContext();
-
-  const { loading, refdata, refdataError } = useRefdata(
+  const { loading, data, loadingError } = useData(
     {
       countries: applicationClient.countries().all(),
       types: applicationClient.clientTypes().all(),
@@ -39,7 +34,7 @@ export const Edit = () => {
     ])
   );
 
-  const { countries, types, client } = refdata;
+  const { countries, types, client } = data;
 
   const { showSuccess } = useSnackbarContext();
   const navigate = useNavigate();
@@ -134,10 +129,10 @@ export const Edit = () => {
             </Paper>
             <Box pb={2} />
             
-            {(refdataError || submitError) && (
+            {(loadingError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {(refdataError || submitError)}</Typography>
+                  <Typography color="error">Error: {(loadingError || submitError)}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>
@@ -158,3 +153,5 @@ export const Edit = () => {
     </Box>
   );
 };
+
+export default Edit;

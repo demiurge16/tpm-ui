@@ -1,10 +1,9 @@
-import { Index as IndexPage } from './Index';
-import { Details as DetailsPage } from './Details';
+import React from 'react';
 
-export namespace Currencies {
-  export const path = '/currencies';
-  export const title = 'Currencies';
-  export const description = 'Here you can see a list of all currencies and their exchange rates.';
-  export const Index = IndexPage;
-  export const Details = DetailsPage;
+export const Currencies = {
+  path: '/currencies',
+  title: 'Currencies',
+  description: 'Here you can see a list of all currencies and their exchange rates.',
+  Index: React.lazy(() => import('./Index')),
+  Details: React.lazy(() => import('./Details'))
 }

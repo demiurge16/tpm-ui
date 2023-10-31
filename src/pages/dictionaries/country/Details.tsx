@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 
-export const Details = () => {
+const Details = () => {
   const { setBreadcrumbs } = useBreadcrumbsContext();
   useEffect(() => {
     setBreadcrumbs([
@@ -16,3 +16,5 @@ export const Details = () => {
     </div>
   );
 };
+
+export default Details;

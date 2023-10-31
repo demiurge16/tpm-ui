@@ -14,7 +14,7 @@ import { LoadingScreen } from "../../utils/LoadingScreen";
 import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
 import { useValidator } from "../../../components/form/useValidator";
 
-export const Create = () => {
+const Create = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -122,3 +122,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

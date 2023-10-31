@@ -19,7 +19,7 @@ import { formatDate } from "../../utils/dateFormatters";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { applicationClient } from "../../client/ApplicationClient";
 
-export const Details = () => {
+const Details = () => {
   const { showSuccess, showError } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
   const { userId } = useAuth();
@@ -366,3 +366,5 @@ export const Details = () => {
     </Box>
   );
 };
+
+export default Details;

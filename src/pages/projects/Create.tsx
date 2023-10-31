@@ -11,20 +11,20 @@ import { object, string, array, number, date } from 'yup';
 import { AsyncSelectField } from '../../components/form-controls/AsyncSelectField';
 import { LoadingScreen } from '../utils/LoadingScreen';
 import { useSubmitHandler } from '../../components/form/useSubmitHandler';
-import { useRefdata } from '../../components/form/useRefdata';
+import { useData } from '../../components/form/useData';
 import { useValidator } from '../../components/form/useValidator';
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
 import { useTranslation } from "react-i18next";
 import { applicationClient } from "../../client/ApplicationClient";
 
-export const Create = () => {
+const Create = () => {
   const navigate = useNavigate();
 
   const { showSuccess } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
   const { t } = useTranslation();
 
-  const { loading, refdata, refdataError } = useRefdata(
+  const { loading, data, loadingError } = useData(
     {
       accuracies: applicationClient.accuracies().all(),
       industries: applicationClient.industries().all(),
@@ -101,17 +101,17 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="industryId" label="Industry" required
-                    options={refdata.industries.items.map((industry) => ({ key: industry.id, value: industry.name }))}
+                    options={data.industries.items.map((industry) => ({ key: industry.id, value: industry.name }))}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="accuracyId" label="Accuracy" required
-                    options={refdata.accuracies.items.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
+                    options={data.accuracies.items.map((accuracy) => ({ key: accuracy.id, value: accuracy.name }))}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <SelectField name="serviceTypeIds" label="Service Types" required multiple
-                    options={refdata.serviceTypes.items.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
+                    options={data.serviceTypes.items.map((serviceType) => ({ key: serviceType.id, value: serviceType.name }))}
                   />
                 </Grid>
               </Grid>
@@ -123,12 +123,12 @@ export const Create = () => {
               <Grid container columnSpacing={2}>
                 <Grid item xs={6}>
                   <AsyncSelectField name="sourceLanguage" label="Source Language" required
-                    options={refdata.languages.items.map((language) => ({ key: language.code, value: language.name }))}
+                    options={data.languages.items.map((language) => ({ key: language.code, value: language.name }))}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <AsyncSelectField name="targetLanguages" label="Target Languages" required multiple
-                    options={refdata.languages.items.map((language) => ({ key: language.code, value: language.name }))}
+                    options={data.languages.items.map((language) => ({ key: language.code, value: language.name }))}
                   />
                 </Grid>
               </Grid>
@@ -159,7 +159,7 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <SelectField name="unitId" label="Unit" required
-                    options={refdata.units.items.map((unit) => ({ key: unit.id, value: unit.name }))}
+                    options={data.units.items.map((unit) => ({ key: unit.id, value: unit.name }))}
                   />
                 </Grid>
               </Grid>
@@ -174,7 +174,7 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <AsyncSelectField name="currencyCode" label="Currency" required
-                    options={refdata.currencies.items.map((currency) => ({ key: currency.code, value: currency.name }))}
+                    options={data.currencies.items.map((currency) => ({ key: currency.code, value: currency.name }))}
                   />
                 </Grid>
               </Grid>
@@ -186,17 +186,17 @@ export const Create = () => {
               <Grid container columnSpacing={2}>
                 <Grid item xs={12}>
                   <SelectField name="clientId" label="Client" required
-                    options={refdata.clients.items.map((client) => ({ key: client.id, value: client.name }))}
+                    options={data.clients.items.map((client) => ({ key: client.id, value: client.name }))}
                   />
                 </Grid>
               </Grid>
             </Paper>
             <Box pb={2} />
 
-            {(refdataError || submitError) && (
+            {(loadingError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {(refdataError || submitError)}</Typography>
+                  <Typography color="error">Error: {(loadingError || submitError)}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>
@@ -218,3 +218,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

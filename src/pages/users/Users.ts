@@ -1,10 +1,9 @@
-import { Index as IndexPage } from './Index';
-import { Details as DetailsPage } from './Details';
+import React from 'react';
 
-export namespace Users {
-  export const path = '/users';
-  export const title = 'Users';
-  export const description = 'This is the users page. It contains a list of users of your application.';
-  export const Index = IndexPage;
-  export const Details = DetailsPage;
+export const Users = {
+  path: '/users',
+  title: 'Users',
+  description: 'This is the users page. It contains a list of users of your application.',
+  Index: React.lazy(() => import('./Index')),
+  Details:  React.lazy(() => import('./Details'))
 }

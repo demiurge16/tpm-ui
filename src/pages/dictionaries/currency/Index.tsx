@@ -6,7 +6,7 @@ import { FilterDefinition } from '../../../components/grid/FilterDefinition';
 import { Currencies } from './Currencies';
 import { applicationClient } from '../../../client/ApplicationClient';
 
-export const Index = () => {
+const Index = () => {
 
   const startPage = 0;
   const pageSize = 25;
@@ -38,3 +38,5 @@ export const Index = () => {
     </Box>
   );
 }
+
+export default Index;

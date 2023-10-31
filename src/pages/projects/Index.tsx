@@ -16,7 +16,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { SecuredComponent } from "../../components/security/SecuredComponent";
 import { useTranslation } from "react-i18next";
 
-export const Index = () => {
+const Index = () => {
   const gridRef = useRef<GridHandle>(null);
 
   const { hasAnyRole } = useAuth();
@@ -293,3 +293,5 @@ export const Index = () => {
     </Box>
   );
 };
+
+export default Index;

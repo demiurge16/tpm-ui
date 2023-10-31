@@ -1,10 +1,9 @@
-import { Index as IndexPage } from './Index';
-import { Details as DetailsPage } from './Details';
+import React from 'react';
 
-export namespace Countries {
-  export const path = '/countries';
-  export const title = 'Countries';
-  export const description = 'Here you can see a list of all countries and their data.';
-  export const Index = IndexPage;
-  export const Details = DetailsPage;
+export const Countries = {
+  path: '/countries',
+  title: 'Countries',
+  description: 'Here you can see a list of all countries and their data.',
+  Index: React.lazy(() => import('./Index')),
+  Details: React.lazy(() => import('./Details'))
 }

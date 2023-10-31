@@ -12,14 +12,14 @@ import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
 import { Priority } from "../../../client/types/task/Task";
 import { useValidator } from "../../../components/form/useValidator";
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { useRefdata } from "../../../components/form/useRefdata";
+import { useData } from "../../../components/form/useData";
 
-export const Create = () => {
+const Create = () => {
   const navigate = useNavigate();
 
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  useRefdata(
+  useData(
     {},
     () => setBreadcrumbs([
       { label: "Priorities", path: "/priorities" },
@@ -95,3 +95,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

@@ -2097,7 +2097,11 @@ export const RouterConfig = () => {
               key={`route-${index}`}
               path={item.path}
               element={
-                <SecuredRoute roles={item.roles}>{item.element}</SecuredRoute>
+                <SecuredRoute roles={item.roles}>
+                  <React.Suspense fallback={<LoadingScreen />}>
+                    {item.element}
+                  </React.Suspense>  
+                </SecuredRoute>
               }
             />
           );
@@ -2618,6 +2622,87 @@ useEffect(() => {
 W wyniku, otrzymaliśmy klient aplikacji, zapełniający wysoki poziom abstrakcji i zapełnia asynchroniczność. To pozwoli na łatwe wykorzystanie klienta aplikacji w widokach i formularzach wszędzie tam, gdzie jest to potrzebne. Z kolei asynchroniczność pozwoli znacznie poprawić wydajność aplikacji, pozwalając na uniknięcie blokowania interfejsu użytkownika w czasie wykonywania żądań HTTP.
 
 #### Implementacja widoków
+
+* Widoki aplikacji są odpowiedzialne za prezentację danych użytkownikowi.
+
+W kontekście systemu organizacji pracy dla biura tłumaczeń, widokiem nazywany jest komponent, odpowidzialny za prezentacje zasobu aplikacji użytkownikowi oraz umożliwiają użytkownikowi interakcje z prezentowanym zasobem. Widoki w aplikacji są zamieszczone w katalogu `src/pages`, który zawiera podkatalogi dla poszczególnych zasobów aplikacji:
+
+```bash
+src/pages
+├── clients
+├── dashboard
+├── dictionaries
+│   ├── accuracy
+│   ├── client-type
+│   ├── country
+│   ├── currency
+│   ├── expense-category
+│   ├── industry
+│   ├── language
+│   ├── priority
+│   ├── service-types
+│   └── unit
+├── errors
+├── expenses
+├── projects
+├── tasks
+├── threads
+├── users
+└── utils
+```
+
+Każdy podkatałog zawiera pliki, odpowiedzialne za pojedyńcze widoki aplikacji. Złożoność takiego widoku jest zależna od złożoności zasobu, który jest prezentowany. W przypadku zasobów, które są proste i mają prostą interakcje, tych plików kilka, jak na przykład w przypadku `country`:
+
+```bash
+src/pages/dictionaries/country
+├── Countries.ts
+├── Details.tsx
+└── Index.tsx
+```
+
+Tak jak w przypadku zasobów, które są bardziej złożone i mają bardziej złożoną interakcje, tych plików może być znacznie więcej, jak na przykład w przypadku `project`:
+
+```bash
+.
+├── Create.tsx
+├── Details.tsx
+├── Edit.tsx
+├── Index.tsx
+├── Projects.ts
+└── details
+    ├── ProjectDetails.tsx
+    ├── ProjectExpenses.tsx
+    ├── ProjectFiles.tsx
+    ├── ProjectTasks.tsx
+    ├── ProjectTeamMembers.tsx
+    ├── ProjectThreads.tsx
+    ├── context
+    │   └── ProjectContext.tsx
+    ├── dialogs
+    │   ├── ProjectMoveDeadlinesDialog.tsx
+    │   └── ProjectMoveStartDialog.tsx
+    └── handlers
+        └── ProjectStatusTransitionHandlers.ts
+```
+
+Taki podział plików pozwala na łatwiejsze zarządzanie kodem źródłowym aplikacji, a także na łatwiejsze zarządzanie złożonością widoków aplikacji. Każdy widok w aplikacji jest zaimplementowany w postaci komponentu funkcyjnego, który wykorzystuje hooki React. Implementacja każdego widoku zaczyna się od utworzenia podstawowego komponentu funkcyjnego.
+Do przykładu, implementacja widoku `src/pages/client/Details.tsx` zaczyna się od:
+
+```tsx
+const Details = () => {
+  return (
+    <h2>Client List</h2>
+  );
+};
+
+export default Details;
+```
+
+Kolejny krok 
+
+* Widoki aplikacji są odpowiedzialne za pobieranie danych z serwera oraz za ich prezentację użytkownikowi.
+* React.lazy oraz React.Suspense są wykorzystywane do ładowania widoków aplikacji asynchronicznie.
+* Widoki aplikacji są zaimplementowane w taki sposób, aby uwzględniały uprawnienia użytkownika do poszczególnych elementów interfejsu użytkownika korzystając z kontekstu autoryzacji.
 
 #### Implementacja formularzy
 

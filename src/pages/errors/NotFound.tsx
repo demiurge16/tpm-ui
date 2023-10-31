@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 
-export const NotFound = () => {
+const NotFound = () => {
   return (
     <Box flex={{
       display: "flex",
@@ -13,3 +13,5 @@ export const NotFound = () => {
     </Box>
   );
 };
+
+export default NotFound;

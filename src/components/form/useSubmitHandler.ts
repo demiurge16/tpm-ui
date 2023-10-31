@@ -23,7 +23,7 @@ export function useSubmitHandler<SubmitPayload, SubmitResult>(
       config.successHandler(result);
     } catch (error: any) {
       switch (error.response.status) {
-        case 400:
+        case 400: {
           const errors = error.response.data as {
             message: string;
             errors: [{ field: string; message: string }];
@@ -38,6 +38,7 @@ export function useSubmitHandler<SubmitPayload, SubmitResult>(
           showError("Error", errors.message);
           setSubmitError(errors.message);
           return formErrors;
+        }
         case 401:
           showError("Error", "Unauthorized");
           setSubmitError("Unauthorized, please login again");

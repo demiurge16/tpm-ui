@@ -12,10 +12,10 @@ import { NumberField } from '../../components/form-controls/NumberField';
 import { LoadingScreen } from '../utils/LoadingScreen';
 import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { useValidator } from '../../components/form/useValidator';
-import { useRefdata } from '../../components/form/useRefdata';
+import { useData } from '../../components/form/useData';
 import { applicationClient } from '../../client/ApplicationClient';
 
-export const Edit = () => {
+const Edit = () => {
   const { id } = useParams();
 
   if (!id) {
@@ -25,7 +25,7 @@ export const Edit = () => {
   const { showSuccess } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  const { loading, refdata, refdataError } = useRefdata(
+  const { loading, data, loadingError } = useData(
     {
       project: applicationClient.projects().withId(id).get(),
       accuracies: applicationClient.accuracies().all(),
@@ -193,10 +193,10 @@ export const Edit = () => {
             </Paper>
             <Box pb={2} />
 
-            {(refdataError || submitError) && (
+            {(loadingError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {refdataError || submitError}</Typography>
+                  <Typography color="error">Error: {loadingError || submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>
@@ -218,3 +218,5 @@ export const Edit = () => {
     </Box>
   );
 };
+
+export default Edit;

@@ -16,7 +16,7 @@ import { Project } from "../../client/types/project/Project";
 import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
-export const Index = () => {
+const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
@@ -168,3 +168,5 @@ export const Index = () => {
     </>
   );
 };
+
+export default Index;

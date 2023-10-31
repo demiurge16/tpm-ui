@@ -8,7 +8,7 @@ import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import TaskContextProvider from "./details/TaskContext";
 import { TaskDetails } from "./details/TaskDetails";
 
-export const Details = () => {
+const Details = () => {
   const { id } = useParams<{ id: string }>();
   const { showError } = useSnackbarContext();
 
@@ -45,3 +45,5 @@ export const Details = () => {
     </TaskContextProvider>
   );
 };
+
+export default Details;

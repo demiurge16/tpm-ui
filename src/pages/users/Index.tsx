@@ -9,7 +9,7 @@ import { Users } from "./Users";
 import { Grid } from "../../components/grid/Grid";
 import { applicationClient } from "../../client/ApplicationClient";
 
-export const Index = () => {
+const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
@@ -80,3 +80,5 @@ export const Index = () => {
     </Box>
   );
 };
+
+export default Index;

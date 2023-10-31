@@ -119,3 +119,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

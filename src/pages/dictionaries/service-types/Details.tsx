@@ -3,67 +3,37 @@ import { Link, useParams } from 'react-router-dom';
 import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
-import { ServiceType } from '../../../client/types/dictionaries/ServiceType';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 import { applicationClient } from '../../../client/ApplicationClient';
+import { ServiceType } from '../../../client/types/dictionaries/ServiceType';
 
-export const Details = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [serviceType, setServiceType] = useState<ServiceType>({} as ServiceType);
-
+const Details = () => {
   const { id } = useParams();
 
-  const { showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();
-  
-  useEffect(() => {
-    if (!id) return;
-
-    applicationClient.serviceTypes()
-      .withId(id)
-      .get()
-      .subscribe({
-        next: (response) => {
-          setServiceType(response);
-          setBreadcrumbs([
-            { label: 'Service types', path: 'service-types' },
-            { label: response.name, path: `service-types/${response.id}` },
-          ]);
-          setLoading(false);
-        },
-        error: (error) => showError(`Error loading service type ${id}`, error.message)
-      });
-  }, [id, setBreadcrumbs, showError, applicationClient]);
-
-  const activate = () => {
-    if (!id) return;
-
-    applicationClient.serviceTypes()
-      .withId(id)
-      .activate()
-      .subscribe({
-        next: (response) => setServiceType({ ...serviceType, active: response.active }),
-        error: (error) => showError(`Error activating service type ${id}`, error.message)
-      });
+  if (!id) {
+    throw new Error('No id provided');
   }
 
-  const deactivate = () => {
-    if (!id) return;
+  const { loading, serviceType, loadingError, activate, deactivate } = useClient(id);
 
-    applicationClient.serviceTypes()
-      .withId(id)
-      .deactivate()
-      .subscribe({
-        next: (response) => setServiceType({ ...serviceType, active: response.active }),
-        error: (error) => showError(`Error deactivating service type ${id}`, error.message)
-      });
+  if (loading) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <LoadingScreen />
+      </Paper>
+    );
   }
 
-  return loading ? (
-    <Paper elevation={2} sx={{ p: 2 }}>
-      <LoadingScreen />
-    </Paper>
-  ) : (
+  if (loadingError) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h4" gutterBottom>Error loading service type {id}</Typography>
+        <Typography variant="body1" gutterBottom>{loadingError}</Typography>
+      </Paper>
+    );
+  }
+
+  return (
     <Box>
       <Typography variant="h4" gutterBottom>{serviceType.name}</Typography>
 
@@ -97,3 +67,64 @@ export const Details = () => {
     </Box>
   );
 };
+
+export default Details;
+
+const useClient = (id: string) => {
+  const { setBreadcrumbs } = useBreadcrumbsContext();
+  const { showError } = useSnackbarContext();
+
+  const [loading, setLoading] = useState(false);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [serviceType, setServiceType] = useState<ServiceType>({} as ServiceType);
+
+  useEffect(() => {
+    setLoading(true);
+    applicationClient.serviceTypes()
+      .withId(id)
+      .get()
+      .subscribe({
+        next: (response) => {
+          setServiceType(response);
+          setLoading(false);
+          setBreadcrumbs([
+            { label: 'Service types', path: 'service-types' },
+            { label: response.name, path: `service-types/${response.id}` },
+          ]);
+        },
+        error: (error) => {
+          setLoadingError(error.message);
+          setLoading(false);
+          setBreadcrumbs([
+            { label: 'Service types', path: 'service-types' }
+          ]);
+        }
+      });
+  }, []);
+
+  const activate = () => 
+    applicationClient.serviceTypes()
+      .withId(id)
+      .activate()
+      .subscribe({
+        next: (response) => setServiceType(prev => ({ ...prev, active: response.active })),
+        error: (error) => showError(`Error activating service type ${id}`, error.message)
+      });
+
+  const deactivate = () => 
+    applicationClient.serviceTypes()
+      .withId(id)
+      .deactivate()
+      .subscribe({
+        next: (response) => setServiceType(prev => ({ ...prev, active: response.active })),
+        error: (error) => showError(`Error deactivating service type ${id}`, error.message)
+      });
+
+  return {
+    loading,
+    serviceType,
+    loadingError,
+    activate,
+    deactivate
+  };
+}

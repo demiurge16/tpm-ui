@@ -13,11 +13,11 @@ import { LoadingScreen } from '../utils/LoadingScreen';
 import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { Task } from '../../client/types/task/Task';
 import { useValidator } from '../../components/form/useValidator';
-import { useRefdata } from '../../components/form/useRefdata';
+import { useData } from '../../components/form/useData';
 import { useBreadcrumbsContext } from '../../contexts/BreadcrumbsContext';
 import { applicationClient } from '../../client/ApplicationClient';
 
-export const Create = () => {
+const Create = () => {
   const { projectId } = useParams();
 
   if (!projectId) {
@@ -29,7 +29,7 @@ export const Create = () => {
 
   const navigate = useNavigate();
 
-  const { loading, refdata, refdataError } = useRefdata(
+  const { loading, data, loadingError } = useData(
     {
       accuracies: applicationClient.accuracies().all(),
       industries: applicationClient.industries().all(),
@@ -49,7 +49,7 @@ export const Create = () => {
     }
   );
 
-  const { accuracies, industries, units, priorities, serviceTypes, languages, currencies } = refdata;
+  const { accuracies, industries, units, priorities, serviceTypes, languages, currencies } = data;
 
   const { handleSubmit, submitError } = useSubmitHandler<CreateTask, Task>({
     handleSubmit: (values) => applicationClient.projects().withId(projectId).tasks().create(values),
@@ -186,10 +186,10 @@ export const Create = () => {
             </Paper>
             <Box pb={2} />
               
-            {(refdataError || submitError) && (
+            {(loadingError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {refdataError || submitError}</Typography>
+                  <Typography color="error">Error: {loadingError || submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>
@@ -211,3 +211,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

@@ -7,7 +7,7 @@ import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { applicationClient } from "../../client/ApplicationClient";
 
-export const Details = () => {
+const Details = () => {
   const { id } = useParams();
 
   const { showSuccess, showError } = useSnackbarContext();
@@ -120,3 +120,5 @@ export const Details = () => {
     </Box>
   );
 };
+
+export default Details;

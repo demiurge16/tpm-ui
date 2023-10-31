@@ -11,9 +11,9 @@ import { ProjectTasks } from "./details/ProjectTasks";
 import { ProjectThreads } from "./details/ProjectThreads";
 import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
-import { useRefdata } from "../../components/form/useRefdata";
+import { useData } from "../../components/form/useData";
 
-export const Details = () => {
+const Details = () => {
   const { id } = useParams();
 
   if (!id) {
@@ -22,7 +22,7 @@ export const Details = () => {
 
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  const { loading, refdata } = useRefdata(
+  const { loading, data } = useData(
     {
       project: applicationClient.projects().withId(id).get(),
     },
@@ -32,7 +32,7 @@ export const Details = () => {
     ])
   );
 
-  const { project } = refdata;
+  const { project } = data;
 
   const [value, setValue] = useState(0);
   const handleChange = (event: SyntheticEvent, newValue: number) => {
@@ -88,6 +88,8 @@ export const Details = () => {
     </ProjectContextProvider>
   );
 };
+
+export default Details;
 
 interface TabPanelProps {
   children?: ReactNode;

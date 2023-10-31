@@ -2,28 +2,22 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "../../../components/form-controls/TextField";
-import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { object, string } from "yup";
 import { CreateServiceType, ServiceType } from "../../../client/types/dictionaries/ServiceType";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
 import { useValidator } from "../../../components/form/useValidator";
-import { useRefdata } from "../../../components/form/useRefdata";
 
-export const Create = () => {
+const Create = () => {
   const navigate = useNavigate();
-
   const { showSuccess } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();
 
-  useRefdata(
-    {},
-    () => setBreadcrumbs([
-      { label: "Service types", path: "/service-types" },
-      { label: "Create", path: "/service-types/create" },
-    ])
-  );
+  useBreadcrumbs([
+    { label: "Service types", path: "/service-types" },
+    { label: "Create", path: "/service-types/create" }
+  ]);
 
   const { handleSubmit, submitError } = useSubmitHandler<CreateServiceType, ServiceType>({
     handleSubmit: (values) => applicationClient.serviceTypes().create(values),
@@ -86,3 +80,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

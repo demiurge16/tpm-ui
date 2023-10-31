@@ -7,7 +7,7 @@ import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
-export const Details = () => {
+const Details = () => {
   const [clientType, setClientType] = useState<ClientType>({
     id: '',
     name: '',
@@ -109,3 +109,5 @@ export const Details = () => {
     </Box>
   );
 }
+
+export default Details;

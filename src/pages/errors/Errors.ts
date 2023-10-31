@@ -1,9 +1,7 @@
-import { Forbidden as ForbiddenPage } from './Forbidden';
-import { NotFound as NotFoundPage } from './NotFound';
-import { InternalServerError as InternalServerErrorPage } from './InternalServerError';
+import React from 'react';
 
-export namespace Errors {
-  export const Forbidden = ForbiddenPage;
-  export const NotFound = NotFoundPage;
-  export const InternalServerError = InternalServerErrorPage;
+export const Errors = {
+  Forbidden: React.lazy(() => import('./Forbidden')),
+  NotFound: React.lazy(() => import('./NotFound')),
+  InternalServerError: React.lazy(() => import('./InternalServerError'))
 }

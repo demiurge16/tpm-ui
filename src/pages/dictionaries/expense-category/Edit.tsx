@@ -9,7 +9,7 @@ import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
-export const Edit = () => {
+const Edit = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [serverError, setServerError] = useState<string | null>(null);
   const [expenseCategory, setExpenseCategory] = useState<UpdateExpenseCategory>({
@@ -107,3 +107,5 @@ export const Edit = () => {
     </Box>
   );
 };
+
+export default Edit;

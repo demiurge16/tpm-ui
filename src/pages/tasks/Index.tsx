@@ -13,7 +13,7 @@ import { formatDate } from "../../utils/dateFormatters";
 import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
-export const Index = () => {
+const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
@@ -219,3 +219,5 @@ export const Index = () => {
     </Box>
   );
 };
+
+export default Index;

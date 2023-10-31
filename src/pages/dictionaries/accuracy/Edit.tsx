@@ -9,7 +9,7 @@ import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 import { applicationClient } from "../../../client/ApplicationClient";
 
-export const Edit = () => {
+const Edit = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [serverError, setServerError] = useState<string | null>(null);
   const [accuracy, setAccuracy] = useState<UpdateAccuracy>({
@@ -106,3 +106,5 @@ export const Edit = () => {
     </Box>
   );
 };
+
+export default Edit;

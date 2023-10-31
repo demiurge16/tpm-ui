@@ -1,14 +1,11 @@
-import { Index as IndexPage } from './Index';
-import { Details as DetailsPage } from './Details';
-import { Create as CreatePage } from './Create';
-import { Edit as EditPage } from './Edit';
+import React from 'react';
 
-export namespace ClientTypes {
-  export const path = '/client-types';
-  export const title = 'Client Types';
-  export const description = 'Here you can define a client type. For example, you can define a client type as "Individual" or "Company". Use this feature to categorize your clients.';
-  export const Index = IndexPage;
-  export const Details = DetailsPage;
-  export const Create = CreatePage;
-  export const Edit = EditPage;
+export const ClientTypes = {
+  path: '/client-types',
+  title: 'Client Types',
+  description: 'Here you can define a client type. For example, you can define a client type as "Individual" or "Company". Use this feature to categorize your clients.',
+  Index: React.lazy(() => import('./Index')),
+  Details: React.lazy(() => import('./Details')),
+  Create: React.lazy(() => import('./Create')),
+  Edit: React.lazy(() => import('./Edit'))
 }

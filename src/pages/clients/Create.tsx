@@ -8,24 +8,24 @@ import { Client, CreateClient } from "../../client/types/client/Client";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { useSubmitHandler } from "../../components/form/useSubmitHandler";
-import { useRefdata } from "../../components/form/useRefdata";
-import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
+import { useData } from "../../components/form/useData";
+import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
 import { applicationClient } from "../../client/ApplicationClient";
 
-export const Create = () => {
+const Create = () => {
   const navigate = useNavigate();
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();
-  const { loading, refdata, refdataError } = useRefdata(
+  const { loading, data, loadingError } = useData(
     {
       countries: applicationClient.countries().all(),
       types: applicationClient.clientTypes().all()
-    },
-    () => setBreadcrumbs([
-      { label: "Clients", path: "/clients" },
-      { label: "Create", path: "/clients/create" }
-    ])
+    }
   );
+
+  useBreadcrumbs([
+    { label: "Clients", path: "/clients" },
+    { label: "Create", path: "/clients/create" }
+  ]);
 
   const { showSuccess } = useSnackbarContext();
   const { handleSubmit, submitError } = useSubmitHandler<CreateClient, Client>({
@@ -60,7 +60,7 @@ export const Create = () => {
                 <Grid item xs={6}>
                   <SelectField name="clientTypeId" label="Client type" required
                     options={
-                      refdata.types.items.map(
+                      data.types.items.map(
                         (e) => (
                           { 
                             key: e.id, value: e.name + (e.corporate ? " (corporate)" : "")
@@ -107,16 +107,16 @@ export const Create = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <SelectField name="countryCode" label="Country" required
-                    options={refdata.countries.items.map((e) => ({ key: e.code, value: e.name.common }))} />
+                    options={data.countries.items.map((e) => ({ key: e.code, value: e.name.common }))} />
                 </Grid>
               </Grid>
             </Paper>
             <Box pb={2} />
             
-            {(refdataError || submitError) && (
+            {(loadingError || submitError) && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {refdataError || submitError}</Typography>
+                  <Typography color="error">Error: {loadingError || submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>
@@ -137,3 +137,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

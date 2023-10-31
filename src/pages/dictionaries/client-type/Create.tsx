@@ -10,7 +10,7 @@ import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { applicationClient } from "../../../client/ApplicationClient";
 
-export const Create = () => {
+const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -80,3 +80,5 @@ export const Create = () => {
     </Box>
   );
 }
+
+export default Create;

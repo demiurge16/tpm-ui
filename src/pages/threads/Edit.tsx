@@ -13,7 +13,7 @@ import { EditorField } from "../../components/form-controls/EditorField";
 import { useSubmitHandler } from "../../components/form/useSubmitHandler";
 import { useValidator } from "../../components/form/useValidator";
 
-export const Edit = () => {
+const Edit = () => {
   const { id } = useParams<{ id: string }>();
   const { showSuccess, showError } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
@@ -135,3 +135,5 @@ export const Edit = () => {
     </Paper>
   );
 };
+
+export default Edit;

@@ -10,7 +10,7 @@ import { formatDate } from "../../utils/dateFormatters";
 import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
-export const Index = () => {
+const Index = () => {
   const { showError } = useSnackbarContext();
   const { setBreadcrumbs } = useBreadcrumbsContext();
 
@@ -91,3 +91,5 @@ export const Index = () => {
     </Box>
   );
 };
+
+export default Index;

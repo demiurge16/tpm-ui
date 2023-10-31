@@ -10,7 +10,7 @@ import { Languages } from './Languages';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 import { applicationClient } from '../../../client/ApplicationClient';
 
-export const Index = () => {
+const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
@@ -91,3 +91,5 @@ export const Index = () => {
     </Box>
   );
 }
+
+export default Index;

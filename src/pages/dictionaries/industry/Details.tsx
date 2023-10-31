@@ -7,7 +7,7 @@ import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { LoadingScreen } from '../../utils/LoadingScreen';
 import { applicationClient } from '../../../client/ApplicationClient';
 
-export const Details = () => {
+const Details = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [industry, setIndustry] = useState<Industry>({} as Industry);
 
@@ -103,3 +103,5 @@ export const Details = () => {
     </Box>
   );
 };
+
+export default Details;

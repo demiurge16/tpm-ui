@@ -1,14 +1,11 @@
-import { Index as IndexPage } from './Index';
-import { Details as DetailsPage } from './Details';
-import { Create as CreatePage } from './Create';
-import { Edit as EditPage } from './Edit';
+import React from 'react';
 
-export namespace Threads {
-  export const path = '/threads';
-  export const title = 'Threads';
-  export const description = 'This is the threads page. There are all the threads from all the projects.';
-  export const Index = IndexPage;
-  export const Details = DetailsPage;
-  export const Create = CreatePage;
-  export const Edit = EditPage;
+export const Threads = {
+  path: '/threads',
+  title: 'Threads',
+  description: 'This is the threads page. There are all the threads from all the projects.',
+  Index: React.lazy(() => import('./Index')),
+  Details: React.lazy(() => import('./Details')),
+  Create: React.lazy(() => import('./Create')),
+  Edit: React.lazy(() => import('./Edit'))
 }

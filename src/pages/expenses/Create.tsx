@@ -17,7 +17,7 @@ import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { Currency } from "../../client/types/dictionaries/Currency";
 
-export const Create = () => {
+const Create = () => {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const [expenseCategories, setExpenseCategories] = useState<Array<ExpenseCategory>>([]);
@@ -162,3 +162,5 @@ export const Create = () => {
     </Box>
   );
 };
+
+export default Create;

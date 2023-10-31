@@ -22,7 +22,7 @@ import { useSubmitHandler } from '../../components/form/useSubmitHandler';
 import { useValidator } from '../../components/form/useValidator';
 import { applicationClient } from '../../client/ApplicationClient';
 
-export const Edit = () => {
+const Edit = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -245,3 +245,5 @@ export const Edit = () => {
     </Box>
   );
 };
+
+export default Edit;

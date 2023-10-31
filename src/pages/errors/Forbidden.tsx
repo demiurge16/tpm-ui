@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 
-export const Forbidden = () => {
+const Forbidden = () => {
   return (
     <Box flex={{
       display: "flex",
@@ -13,3 +13,5 @@ export const Forbidden = () => {
     </Box>
   );
 };
+
+export default Forbidden;

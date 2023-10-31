@@ -1,14 +1,11 @@
-import { Index as IndexPage } from './Index';
-import { Details as DetailsPage } from './Details';
-import { Create as CreatePage } from './Create';
-import { Edit as EditPage } from './Edit';
+import React from 'react';
 
-export namespace Projects {
-  export const path = '/projects';
-  export const title = 'Projects';
-  export const description = 'This is the heart of your business. Here you can see and manage all your projects.';
-  export const Index = IndexPage;
-  export const Details = DetailsPage;
-  export const Create = CreatePage;
-  export const Edit = EditPage;
+export const Projects = {
+  path: '/projects',
+  title: 'Projects',
+  description: 'This is the heart of your business. Here you can see and manage all your projects.',
+  Index: React.lazy(() => import('./Index')),
+  Details: React.lazy(() => import('./Details')),
+  Create: React.lazy(() => import('./Create')),
+  Edit: React.lazy(() => import('./Edit'))
 }

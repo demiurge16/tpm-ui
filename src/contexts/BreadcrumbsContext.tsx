@@ -46,3 +46,8 @@ export const useBreadcrumbsContext = () => {
 
   return context;
 }
+
+export const useBreadcrumbs = (breadcrumbs: Breadcrumb[]) => {
+  const { setBreadcrumbs } = useBreadcrumbsContext();
+  setBreadcrumbs(breadcrumbs);
+}

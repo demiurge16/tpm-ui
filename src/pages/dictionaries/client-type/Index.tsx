@@ -13,7 +13,7 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import { useSnackbarContext } from '../../../contexts/SnackbarContext';
 import { applicationClient } from '../../../client/ApplicationClient';
 
-export const Index = () => {
+const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
@@ -136,3 +136,5 @@ export const Index = () => {
     </Box>
   );
 }
+
+export default Index;
