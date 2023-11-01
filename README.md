@@ -2621,8 +2621,6 @@ W wyniku, otrzymaliśmy klient aplikacji, zapełniający wysoki poziom abstrakcj
 
 #### Implementacja widoków
 
-* Widoki aplikacji są odpowiedzialne za prezentację danych użytkownikowi.
-
 W kontekście systemu organizacji pracy dla biura tłumaczeń, widokiem nazywany jest komponent, odpowidzialny za prezentacje zasobu aplikacji użytkownikowi oraz umożliwiają użytkownikowi interakcje z prezentowanym zasobem. Widoki w aplikacji są zamieszczone w katalogu `src/pages`, który zawiera podkatalogi dla poszczególnych zasobów aplikacji:
 
 ```bash
