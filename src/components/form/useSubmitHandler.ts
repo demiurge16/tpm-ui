@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Observable, firstValueFrom } from "rxjs";
 import { useSnackbarContext } from "../../contexts/SnackbarContext";
 import { SubmissionErrors } from "final-form";
+import { useTranslation } from "react-i18next";
 
 export interface SubmitHandlerParams<SubmitPayload, SubmitResult> {
   handleSubmit: (values: SubmitPayload) => Observable<SubmitResult>;
@@ -15,6 +16,8 @@ export function useSubmitHandler<SubmitPayload, SubmitResult>(
   submitError: string | null;
 } {
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const { t } = useTranslation("translation", { keyPrefix: "errors" });
   const { showError } = useSnackbarContext();
 
   const handleSubmit = async (values: SubmitPayload) => {
@@ -35,24 +38,24 @@ export function useSubmitHandler<SubmitPayload, SubmitResult>(
             formErrors[e.field] = e.message;
           });
   
-          showError("Error", errors.message);
+          showError(t("error"), errors.message);
           setSubmitError(errors.message);
           return formErrors;
         }
         case 401:
-          showError("Error", "Unauthorized");
-          setSubmitError("Unauthorized, please login again");
+          showError(t("error"), t("unauthorized"));
+          setSubmitError(t("unauthorizedDescription"));
           break;
         case 403:
-          showError("Error", "Forbidden");
-          setSubmitError("You don't have permission to perform this action");
+          showError(t("error"), t("forbidden"));
+          setSubmitError(t("forbiddenDescription"));
           break;
         case 500:
-          showError("Error", error.response.data.message);
-          setSubmitError(`Internal server error: ${error.response.data.message}`);
+          showError(t("error"), error.response.data.message);
+          setSubmitError(`${t('internalServerError')}: ${error.response.data.message}`);
           break;
         default:
-          showError("Error", error.message);
+          showError(t("error"), error.message);
           setSubmitError(error.message);
       }
     }

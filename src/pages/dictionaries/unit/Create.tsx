@@ -1,24 +1,43 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreateUnit, Measurement, Unit } from "../../../client/types/dictionaries/Unit";
+import { CreateUnit, Unit } from "../../../client/types/dictionaries/Unit";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import { TextField } from "../../../components/form-controls/TextField";
 import { NumberField } from "../../../components/form-controls/NumberField";
 import { SelectField } from "../../../components/form-controls/SelectField";
-import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { number, object, string } from "yup";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
 import { useValidator } from "../../../components/form/useValidator";
+import { useTranslation } from "react-i18next";
+import { Translate } from "../../../components/i18n/Translate";
+import { useMeasurements } from "./hooks/useMeasurements";
 
 const Create = () => {
-  const [measurements, setMeasurements] = useState<Measurement[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation('translation', { keyPrefix: 'units.create' });
+  const { showSuccess } = useSnackbarContext();
+
+  useBreadcrumbs([
+    { label: () => <Translate t={t} tKey='index' />, path: "/units" },
+    { label: () => <Translate t={t} tKey='create' />, path: "/units/create" }
+  ]);
+
+  const { measurements, loading, loadingError } = useMeasurements();
+
+  const { handleSubmit, submitError } = useSubmitHandler<CreateUnit, Unit>({
+    handleSubmit: (values: CreateUnit) => applicationClient.units().create(values),
+    successHandler: (result: Unit) => {
+      showSuccess(
+        t('successTitle'),
+        t('successMessage', { id: result.id })
+      );
+      navigate(`/units/${result.id}`);
+    }
+  });
 
   const initialValues: CreateUnit = {
     name: '',
@@ -27,56 +46,42 @@ const Create = () => {
     measurement: 'CHARACTERS'
   };
 
-  const { setBreadcrumbs } = useBreadcrumbsContext();
-  const { showSuccess } = useSnackbarContext();
-  const { handleSubmit, submitError } = useSubmitHandler<CreateUnit, Unit>({
-    handleSubmit: (values: CreateUnit) => applicationClient.units().create(values),
-    successHandler: (result: Unit) => {
-      showSuccess("Success", "Unit created");
-      navigate(`/units/${result.id}`);
-    }
-  });
   const validate = useValidator(
     object({
-      name: string().required("Name is required")
-        .min(3, "Name must be at least 3 characters long")
-        .max(50, "Name must be at most 50 characters long"),
-      description: string().required("Description is required")
-        .min(3, "Description must be at least 3 characters long")
-        .max(1000, "Description must be at most 1000 characters long"),
-      volume: number().required("Volume is required")
-        .integer("Volume must be an integer")
-        .min(0, "Volume must be at least 0")
-        .max(1000000, "Volume must be at most 1000000"),
-      measurement: string().required("Measurement is required")
+      name: string().required(t('validation.nameRequired'))
+        .min(3, t('validation.nameMinLength'))
+        .max(50, t('validation.nameMaxLength')),
+      description: string().required(t('validation.descriptionRequired'))
+        .min(3, t('validation.descriptionMinLength'))
+        .max(1000, t('validation.descriptionMaxLength')),
+      volume: number().required(t('validation.volumeRequired'))
+        .integer(t('validation.volumeInteger'))
+        .min(0, t('validation.volumeMin'))
+        .max(1000000, t('validation.volumeMax')),
+      measurement: string().required(t('validation.measurementRequired'))
     })
   );
 
-  useEffect(() => {
-    applicationClient.units()
-      .refdata()
-      .measurements()
-      .subscribe({
-        next: (data) => {
-          setMeasurements(data);
-          setLoading(false);
-        },
-        error: (error) => setServerError(error.message),
-      });
+  if (loading) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <LoadingScreen />
+      </Paper>
+    );
+  }
 
-    setBreadcrumbs([
-      { label: "Units", path: "/units" },
-      { label: "Create", path: "/units/create" },
-    ]);
-  }, [setBreadcrumbs, applicationClient]);
+  if (loadingError) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h4" gutterBottom>{t('loadingError')}</Typography>
+        <Typography variant="body1" gutterBottom>{loadingError}</Typography>
+      </Paper>
+    );
+  }
 
-  return loading ? (
-    <Paper elevation={2} sx={{ p: 2 }}>
-      <LoadingScreen />
-    </Paper>
-  ) : (
+  return (
     <Box>
-      <Typography variant="h4">Create new unit</Typography>
+      <Typography variant="h4">{t('title')}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
@@ -85,10 +90,10 @@ const Create = () => {
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <Paper elevation={2} sx={{ p: 2 }}>
-              <TextField name="name" label="Name" required />
-              <TextField name="description" label="Description" multiline rows={4} required />
-              <NumberField name="volume" label="Volume" required />
-              <SelectField name="measurement" label="Measurement" required
+              <TextField name="name" label={t('field.name')} required />
+              <TextField name="description" label={t('field.description')} multiline rows={4} required />
+              <NumberField name="volume" label={t('field.volume')} required />
+              <SelectField name="measurement" label={t('field.measurement')} required
                 options={
                   measurements.map((e) => ({ key: e.code, value: e.name }))
                 }
@@ -97,10 +102,10 @@ const Create = () => {
 
             <Box pb={2} />
 
-            {(serverError || submitError) && (
+            {submitError && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError || submitError}</Typography>
+                  <Typography color="error">{t('submitError')}: {submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>
@@ -109,10 +114,10 @@ const Create = () => {
             <Paper elevation={2} sx={{ p: 2 }}>
               <Box display="flex" justifyContent="flex-end">
                 <Button type="submit" disabled={submitting || pristine}>
-                  Submit
+                  {t('submit')}
                 </Button>
                 <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
-                  Reset
+                  {t('reset')}
                 </Button>
               </Box>
             </Paper>

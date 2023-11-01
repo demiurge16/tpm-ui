@@ -2985,7 +2985,290 @@ export const RouterConfig = () => {
 }
 ```
 
+Podsumowując, opracowano efektywną podejście do tworzenia widoków w aplikacji. Zastosowanie komponentów funkcyjnych, hooków i zaawansowanego routingu owocuje modułową i skalowalną architekturą, która sprzyja utrzymaniu porządku w kodzie i ułatwia rozwój aplikacji.
+
 #### Implementacja formularzy
+
+* Formularze służą do wprowadzenia danych przez użytkownika.
+
+Formularze są jednym z najważniejszych elementów aplikacji. Są one odpowiedzialne za wprowadzanie danych przez użytkownika. Rozbudowane formularze mogą być bardzo złożone i wymagać wielu elementów, takich jak:
+
+* **Pola formularza** - pola formularza są odpowiedzialne za prezentacje danych użytkownikowi oraz za ich wprowadzanie. W zależności od typu danych, pola formularza mogą być różne. Na przykład, pole formularza, które jest odpowiedzialne za wprowadzanie daty, będzie miało inną implementację niż pole formularza, które jest odpowiedzialne za wprowadzanie tekstu.
+* **Walidacja formularza** - walidacja formularza jest odpowiedzialna za sprawdzenie poprawności wprowadzonych danych przez użytkownika. W zależności od typu danych, walidacja formularza może być różna. Na przykład, walidacja formularza, która jest odpowiedzialna za sprawdzenie poprawności wprowadzonej daty, będzie miała inną implementację niż walidacja formularza, która jest odpowiedzialna za sprawdzenie poprawności wprowadzonego tekstu.
+* **Ładowanie danych pomocniczych do formularza** - w zależności od złożoności formularza, może być konieczne załadowanie danych pomocniczych do formularza. Na przykład, w przypadku formularza, który jest odpowiedzialny za wprowadzanie danych klienta, może być konieczne załadowanie listy krajów, które są dostępne w systemie.
+* **Obsługa błędów z serwera** - w przypadku wystąpienia błędów z serwera, użytkownik powinien otrzymać odpowiednią informację o błędzie. Na przykład, w przypadku formularza, który jest odpowiedzialny za wprowadzanie danych klienta, jeśli serwer zwróci błąd, że klient o podanym identyfikatorze już istnieje, użytkownik powinien otrzymać odpowiednią informację o błędzie.
+
+Przykładem implementacji formularza jest widok `src/pages/dictionaries/units/edit.tsx`, który jest odpowiedzialny za edycję zasobu aplikacji:
+
+```tsx
+const Edit = () => {
+  const { id } = useParams();
+
+  if (!id) {
+    throw new Error('No id provided');
+  }
+
+  const { t } = useTranslation('translation', { keyPrefix: 'units.edit' });
+  const navigate = useNavigate();
+  const { setBreadcrumbs } = useBreadcrumbsContext();
+  const { showSuccess } = useSnackbarContext();
+
+  const { measurements, loading: measurementsLoading, loadingError: measurementsLoadingError } = useMeasurements();
+  const { unit, loading: unitLoading, loadingError: unitLoadingError } =
+    useUnit(id, (unit) => {
+      setBreadcrumbs([
+        { label: () => <Translate t={t} tKey='index' />, path: '/units' },
+        { label: unit.name, path: `/units/${unit.id}` },
+        { label: () => <Translate t={t} tKey='edit' />, path: `/units/${unit.id}/edit` }
+      ]);
+    });
+
+  const { handleSubmit, submitError } = useSubmitHandler<UpdateUnit, Unit>({
+    handleSubmit: (values: UpdateUnit) => applicationClient.units().withId(id).update(values),
+    successHandler: (result: Unit) => {
+      showSuccess(
+        t('successTitle'),
+        t('successMessage', { id: result.id })
+      );
+      navigate(`/units/${result.id}`);
+    }
+  });
+
+  const validate = useValidator(
+    object({
+      name: string().required(t('validation.nameRequired'))
+        .min(3, t('validation.nameMinLength'))
+        .max(50, t('validation.nameMaxLength')),
+      description: string().required(t('validation.descriptionRequired'))
+        .min(3, t('validation.descriptionMinLength'))
+        .max(1000, t('validation.descriptionMaxLength')),
+      volume: number().required(t('validation.volumeRequired'))
+        .integer(t('validation.volumeInteger'))
+        .min(0, t('validation.volumeMin'))
+        .max(1000000, t('validation.volumeMax')),
+      measurement: string().required(t('validation.measurementRequired'))
+    })
+  );
+
+  if (measurementsLoading || unitLoading) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <LoadingScreen />
+      </Paper>
+    );
+  }
+
+  if (measurementsLoadingError || unitLoadingError) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h4" gutterBottom>{t('loadingError')} {id}</Typography>
+        {measurementsLoadingError && <Typography variant="body1" gutterBottom>{measurementsLoadingError}</Typography>}
+        {unitLoadingError && <Typography variant="body1" gutterBottom>{unitLoadingError}</Typography>}
+      </Paper>
+    );
+  }
+
+  return (
+    <Box>
+      <Typography variant="h4">{t('edit')} {unit.name}</Typography>
+      <Box pb={2} />
+      <Form onSubmit={handleSubmit}
+        keepDirtyOnReinitialize
+        initialValues={{
+          name: unit.name,
+          description: unit.description,
+          volume: unit.volume,
+          measurement: unit.measurement
+        }}
+        validate={validate}
+        render={({ handleSubmit, form, submitting, pristine }) => (
+          <form onSubmit={handleSubmit} noValidate>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <TextField name="name" label={t('field.name')} required />
+              <TextField name="description" label={t('field.description')} multiline rows={4} required />
+              <NumberField name="volume" label={t('field.volume')} required />
+              <SelectField name="measurement" label={t('field.measurement')} required
+                options={
+                  measurements.map((e) => ({ key: e.code as string, value: e.name,}))
+                }
+              />
+            </Paper>
+            <Box pb={2} />
+
+            {submitError && (
+              <>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                  <Typography color="error">{t('submitError')}: {submitError}</Typography>
+                </Paper>
+                <Box pb={2} />
+              </>
+            )}
+
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button type="submit" disabled={submitting || pristine}>
+                  {t('submit')}
+                </Button>
+                <Button type="button" disabled={submitting || pristine} onClick={() => form.reset()}>
+                  {t('reset')}
+                </Button>
+              </Box>
+            </Paper>
+          </form>
+        )}
+      />
+    </Box>
+  );
+};
+
+export default Edit;
+```
+
+Implementacja formularza posiada wiele już znanych elementów, takich jak pobieranie parametrów z adresu URL, pobieranie danych z serwera, ustawianie ścieżki nawigacji, obsługa błędów, itp. Warto zwrócić uwagę na elementy, które są nowe:
+
+1. **Hook `useSubmitHandler`** - hook, który jest odpowiedzialny za obsługę wysyłania formularza. Hook dostarcza funkcję `handleSubmit`, która jest później używana do obsługi wysyłania formularza oraz obsługi błędów. `submitError` jest zmienną, która przechowuje informacje o błędzie, który wystąpił podczas wysyłania formularza. Implementacja hooka `useSubmitHandler` wygląda następująco:
+
+    ```tsx
+    export interface SubmitHandlerParams<SubmitPayload, SubmitResult> {
+      handleSubmit: (values: SubmitPayload) => Observable<SubmitResult>;
+      successHandler: (result: SubmitResult) => void;
+    }
+
+    export function useSubmitHandler<SubmitPayload, SubmitResult>(
+      config: SubmitHandlerParams<SubmitPayload, SubmitResult>
+    ): {
+      handleSubmit: (values: SubmitPayload) => Promise<SubmissionErrors | undefined>;
+      submitError: string | null;
+    } {
+      const [submitError, setSubmitError] = useState<string | null>(null);
+
+      const { t } = useTranslation("translation", { keyPrefix: "errors" });
+      const { showError } = useSnackbarContext();
+
+      const handleSubmit = async (values: SubmitPayload) => {
+        try {
+          const result = await firstValueFrom(config.handleSubmit(values));
+          config.successHandler(result);
+        } catch (error: any) {
+          switch (error.response.status) {
+            case 400: {
+              const errors = error.response.data as {
+                message: string;
+                errors: [{ field: string; message: string }];
+              };
+      
+              const formErrors: SubmissionErrors = {};
+      
+              errors.errors.forEach((e) => {
+                formErrors[e.field] = e.message;
+              });
+      
+              showError(t("error"), errors.message);
+              setSubmitError(errors.message);
+              return formErrors;
+            }
+            case 401:
+              showError(t("error"), t("unauthorized"));
+              setSubmitError(t("unauthorizedDescription"));
+              break;
+            case 403:
+              showError(t("error"), t("forbidden"));
+              setSubmitError(t("forbiddenDescription"));
+              break;
+            case 500:
+              showError(t("error"), error.response.data.message);
+              setSubmitError(`${t('internalServerError')}: ${error.response.data.message}`);
+              break;
+            default:
+              showError(t("error"), error.message);
+              setSubmitError(error.message);
+          }
+        }
+      }
+
+      return { handleSubmit, submitError };
+    }
+    ```
+
+    Warto zwrócić uwagę na obsługę błędów, która jest zaimplementowana w hooku `useSubmitHandler`. W zależności od błędu, który wystąpił podczas wysyłania formularza, użytkownik otrzyma odpowiednią informację o błędzie. Na przykład, w przypadku błędu 400, użytkownik otrzyma informację o błędzie walidacji formularza, a w przypadku błędu 500, użytkownik otrzyma informację o błędzie serwera.
+
+2. **Hook `useValidator`** - hook, który jest odpowiedzialny za walidację formularza. Hook dostarcza funkcję `validate`, która jest później używana do walidacji formularza. Implementacja hooka `useValidator` wygląda następująco:
+
+    ```tsx
+    type Validator = (values: any) => ValidationErrors;
+
+    export function useValidator(validationSchema: ObjectSchema<any>): Validator {
+      return (values: any) => {
+        try {
+          validationSchema.validateSync(values, { abortEarly: false });
+          return {};
+        } catch (error: any) {
+          return error.inner.reduce((errors: any, error: any) => {
+            return {
+              ...errors,
+              [error.path]: error.message
+            };
+          }, {});
+        }
+      };
+    }
+    ```
+
+    Walidacja formularza jest zaimplementowana za pomocą biblioteki `yup`, która pozwala w sposób delkaratywny zdefiniować reguły walidacji formularza. Implementacja hooka `useValidator` obudowuje walidację formularza z biblioteki `yup` i dostarcza funkcję, która jest później używana do walidacji formularza i zwraca błędy walidacji, które potem są wyświetlane użytkownikowi.
+
+3. **Komponent `Form` z biblioteki `react-final-form`** - komponent, który jest odpowiedzialny obsługę stanu i cyklu życia formularza. `react-final-form` rozwiązuje wiele typowych problemów związanych z formularzami w React, takich jak walidacja, zarządzanie stanem pól formularza, obsługę przesyłania formularzy oraz obsługę błędów i stanów pola. Biblioteka jest również lekka i nie wymaga zewnętrznych zależności stanu, co sprawia, że jest łatwa w integracji z istniejącymi projektami bez obciążania ich nadmiernie.
+
+4. **Pola formularza** - elementy, które pozwalają użytkownikowi na wprowadzanie danych. W aplikacji pola formularza są zaimplementowane w postaci komponentów, takich jak `TextField`, `SelectField` czy `NumberField` i łączą komponent `Field` z biblioteki `react-final-form` z odpowiednimi komponentami z biblioteki `mui`. Na przykład, implementacja komponentu `SelectField` wygląda następująco:
+
+    ```tsx
+    export interface SelectFieldProps {
+      name: string;
+      label: string;
+      multiple?: boolean;
+      required?: boolean;
+      defaultValue?: [];
+      options: { key: string, value: string }[];
+    }
+
+    export const SelectField = (props: SelectFieldProps) => {
+      const { name, label, multiple, required, options } = props;
+      const labelId = `${name}-label`;
+
+      return (
+        <Field name={name}>
+          {({ input, meta }) => (
+            <FormControl variant="outlined" fullWidth margin="normal" error={meta.error && meta.touched}>
+              <InputLabel id={labelId}>{label}</InputLabel>
+              <Select
+                {...input}
+                label={label}
+                labelId={labelId}
+                displayEmpty
+                multiple={multiple}
+                required={required}
+                inputProps={{ name: label, id: label }}
+                error={(meta.error && meta.touched) || meta.submitError}
+                value={input.value || (multiple ? [] : '')}
+              >
+                {
+                  options.map(option => (
+                    <MenuItem key={option.key} value={option.key}>
+                      {option.value}
+                    </MenuItem>
+                  ))
+                }
+              </Select>
+              <FormHelperText error={(meta.error && meta.touched) || meta.submitError}>
+                {(meta.touched && meta.error) || meta.submitError}
+              </FormHelperText>
+            </FormControl>
+          )}
+        </Field>
+      );
+    }
+    ```
+
+Podsumowując, połaczenie wyżej wspomnianych komponentów poskutkowało otrzymanie prostego, ale zupełnie zadowalającego potrzeby aplikacji systemu trworzenia formularzy. W zależności od złożoności formularza, implementacja może być bardziej lub mniej złożona, ale zawsze będzie opierać się na tych samych elementach.
 
 #### Wdrożenie aplikacji
 
