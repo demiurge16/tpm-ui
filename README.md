@@ -2989,8 +2989,6 @@ Podsumowując, opracowano efektywną podejście do tworzenia widoków w aplikacj
 
 #### Implementacja formularzy
 
-* Formularze służą do wprowadzenia danych przez użytkownika.
-
 Formularze są jednym z najważniejszych elementów aplikacji. Są one odpowiedzialne za wprowadzanie danych przez użytkownika. Rozbudowane formularze mogą być bardzo złożone i wymagać wielu elementów, takich jak:
 
 * **Pola formularza** - pola formularza są odpowiedzialne za prezentacje danych użytkownikowi oraz za ich wprowadzanie. W zależności od typu danych, pola formularza mogą być różne. Na przykład, pole formularza, które jest odpowiedzialne za wprowadzanie daty, będzie miało inną implementację niż pole formularza, które jest odpowiedzialne za wprowadzanie tekstu.
@@ -3271,6 +3269,105 @@ Implementacja formularza posiada wiele już znanych elementów, takich jak pobie
 Podsumowując, połaczenie wyżej wspomnianych komponentów poskutkowało otrzymanie prostego, ale zupełnie zadowalającego potrzeby aplikacji systemu trworzenia formularzy. W zależności od złożoności formularza, implementacja może być bardziej lub mniej złożona, ale zawsze będzie opierać się na tych samych elementach.
 
 #### Wdrożenie aplikacji
+
+Finalnie, aplikacja musi zostać wdrożona. W przypadku systemu organizacji pracy dla biura tłumaczeń, aplikacja musi zostac przygotowana do wdrożenia za pomocą narzędzia Docker. W tym celu, należy utworzyć plik `Dockerfile`, który będzie zawierał skrypt, który będzie odpowiedzialny za budowanie oraz za uruchomienie kontenera z aplikacją:
+
+```dockerfile
+FROM node:18-alpine as builder
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json package-lock.json postinstall.ts ./
+COPY assets ./assets
+RUN npm ci
+COPY . ./
+RUN npm run build
+
+FROM nginx:stable-alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+Zbudowanie obrazu aplikacji za pomocą pliku `Dockerfile` sklada się z dwóch etapów:
+
+1. **Budowanie aplikacji** - na etapie budowania, aplikacja jest budowana, co przekształca kod źródłowy aplikacji do statycznych plików, które będą gotowe do serwowania przez serwer HTTP.
+2. **Uruchomienie aplikacji** - na etapie uruchomienia, aplikacja jest uruchamiana w kontenerze, który jest oparty na serwerze HTTP Nginx.
+
+Należy dodatkowo nadpisać domyślną konfigurację serwera HTTP Nginx, aby umożliwić poprawne serwowanie aplikacji oraz poprawne działanie routingu aplikacji. W tym celu, należy utworzyć plik `nginx.conf`, który będzie zawierał konfigurację serwera HTTP Nginx:
+
+```nginx
+events {}
+
+http {
+  include /etc/nginx/mime.types;
+  
+  server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+      root   /usr/share/nginx/html;
+      index  index.html;
+      try_files $uri $uri/ /index.html;
+
+      # Add CORS headers
+      if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+        add_header 'Access-Control-Max-Age' 1728000;
+        add_header 'Content-Type' 'text/plain; charset=utf-8';
+        add_header 'Content-Length' 0;
+        return 204;
+      }
+      add_header 'Access-Control-Allow-Origin' '*';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+      add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+      root   /usr/share/nginx/html;
+    }
+  }
+}
+```
+
+Po utworzeniu pliku `nginx.conf`, należy zbudować obraz aplikacji za pomocą polecenia:
+
+```bash
+docker build -t tpm-api:1.0.0-BETA . --no-cache
+```
+
+Zbudowany obraz aplikacji dostępny jest w lokalnym repozytorium obrazów Docker. Następnie, do pliku `docker-compose.yml` w projekcie `tpm-infrastructure` należy dodać konfigurację aplikacji:
+
+```yaml
+services:
+  ui:
+    container_name: ui
+    build:
+      context: ./ui
+      dockerfile: ./ui.Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - tpm-network
+```
+
+Oraz utworzyć plik `ui.Dockerfile`, który będzie zawierał jedną linię, która będzie odpowiedzialna za uruchomienie kontenera z aplikacją:
+
+```dockerfile
+FROM tpm-ui:1.0.0-BETA
+```
+
+Po dodaniu konfiguracji aplikacji do pliku `docker-compose.yml`, należy uruchomić aplikację za pomocą polecenia:
+
+```bash
+docker-compose up -d
+```
+
+Po uruchomieniu, aplikacja będzie dostępna pod adresem `http://localhost`.
 
 ### Serwer aplikacji
 #### Tworzenie projektu za pomocą Spring Initializr
