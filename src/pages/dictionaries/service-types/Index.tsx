@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
@@ -9,17 +9,17 @@ import { IdRenderer } from "./components/IdRenderer";
 import { ActionsRenderer } from "./components/ActionsRenderer";
 import { useTranslation } from "react-i18next";
 import { Translate } from "../../../components/i18n/Translate";
+import { SecuredComponent } from "../../../components/security/SecuredComponent";
 
 const Index = () => {
-  const startPage = 0;
-  const pageSize = 25;
-
   const { t } = useTranslation("translation", { keyPrefix: "serviceTypes.index" });
 
   useBreadcrumbs([
     { label: () => <Translate t={t} tKey='breadcrumbs.index'/>, path: "/service-types" }
   ]);
 
+  const startPage = 0;
+  const pageSize = 25;
   const columnDefs = [
     {
       headerComponent: () => <Translate t={t} tKey='grid.id'/>,
@@ -60,7 +60,6 @@ const Index = () => {
       cellRenderer: ActionsRenderer
     }
   ];
-
   const filterDefs = [
     FilterDefinition.uniqueToken("id", () => <Translate t={t} tKey='grid.filters.id' />),
     FilterDefinition.string("name", () => <Translate t={t} tKey='grid.filters.name' />),
@@ -83,7 +82,12 @@ const Index = () => {
         elevation={2}
       />
       <Box pb={2} />
-      <Button variant="contained" component={Link} to="create">{t('actions.create')}</Button>
+
+      <SecuredComponent roles={['admin', 'project-manager']}>
+        <Paper elevation={2} sx={{ p: 2 }}>
+          <Button variant="contained" component={Link} to="create">{t('actions.create')}</Button>
+        </Paper>
+      </SecuredComponent>
     </Box>
   );
 };

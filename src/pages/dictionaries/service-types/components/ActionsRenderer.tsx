@@ -45,7 +45,6 @@ export const ActionsRenderer = ({ data: serviceType, api }: ICellRendererParams<
           rowNode && rowNode.setData(
             { ...serviceType, active: response.active }
           );
-          console.log(api);
           api.refreshCells();
         },
         error: (error) => {

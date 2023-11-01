@@ -5,6 +5,7 @@ import { useServiceType } from './hooks/useServiceType';
 import { useBreadcrumbsContext } from '../../../contexts/BreadcrumbsContext';
 import { useTranslation } from 'react-i18next';
 import { Translate } from '../../../components/i18n/Translate';
+import { SecuredComponent } from '../../../components/security/SecuredComponent';
 
 const Details = () => {
   const { id } = useParams();
@@ -58,20 +59,22 @@ const Details = () => {
       </Paper>
       <Box sx={{ pt: 2 }} />
 
-      <Paper elevation={2} sx={{ p: 2 }}>
-        <Typography variant="h5" gutterBottom>{t('actions')}</Typography>
+      <SecuredComponent roles={['admin', 'project-manager']}>
+        <Paper elevation={2} sx={{ p: 2 }}>
+          <Typography variant="h5" gutterBottom>{t('actions')}</Typography>
 
-        <Box component="span" pr={2}>
-          <Button variant="contained" color="primary" component={Link} to="edit">{t('edit')}</Button>
-        </Box>
-        <Box component="span" pr={2}>
-          {
-            serviceType.active ? 
-              <Button variant="contained" color="secondary" onClick={deactivate}>{t('deactivate')}</Button> :
-              <Button variant="contained" color="secondary" onClick={activate}>{t('activate')}</Button>
-          }
-        </Box>
-      </Paper>
+          <Box component="span" pr={2}>
+            <Button variant="contained" color="primary" component={Link} to="edit">{t('edit')}</Button>
+          </Box>
+          <Box component="span" pr={2}>
+            {
+              serviceType.active ? 
+                <Button variant="contained" color="secondary" onClick={deactivate}>{t('deactivate')}</Button> :
+                <Button variant="contained" color="secondary" onClick={activate}>{t('activate')}</Button>
+            }
+          </Box>
+        </Paper>
+      </SecuredComponent>
     </Box>
   );
 };

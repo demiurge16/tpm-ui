@@ -280,11 +280,9 @@ const Index = () => {
 
             <SecuredComponent roles={['admin', 'project-manager']}>
               <Paper elevation={2} sx={{ p: 2 }}>
-                <SecuredComponent roles={['admin', 'project-manager']}>
-                  <Button variant="contained" component={Link} to="create">
-                    {t('actions.create')}
-                  </Button>
-                </SecuredComponent>
+                <Button variant="contained" component={Link} to="create">
+                  {t('actions.create')}
+                </Button>
               </Paper>
             </SecuredComponent>
           </>

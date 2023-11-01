@@ -2097,9 +2097,7 @@ export const RouterConfig = () => {
               path={item.path}
               element={
                 <SecuredRoute roles={item.roles}>
-                  <React.Suspense fallback={<LoadingScreen />}>
-                    {item.element}
-                  </React.Suspense>  
+                  {item.element}
                 </SecuredRoute>
               }
             />
@@ -2211,6 +2209,7 @@ export const NavigationDrawer = (props: NavigationDrawerProps) => {
 
   const drawerWidth = 280;
   const theme = useTheme();
+  const menuConfig = useMenuConfig();
   const { hasAnyRole } = useAuth();
 
   const drawerOpenAnimation = theme.transitions.create("width", {
@@ -2685,23 +2684,308 @@ Tak jak w przypadku zasobów, które są bardziej złożone i mają bardziej zł
 ```
 
 Taki podział plików pozwala na łatwiejsze zarządzanie kodem źródłowym aplikacji, a także na łatwiejsze zarządzanie złożonością widoków aplikacji. Każdy widok w aplikacji jest zaimplementowany w postaci komponentu funkcyjnego, który wykorzystuje hooki React. Implementacja każdego widoku zaczyna się od utworzenia podstawowego komponentu funkcyjnego.
-Do przykładu, implementacja widoku `src/pages/client/Details.tsx` zaczyna się od:
+Do przykładu, implementacja widoku `src/pages/dictionaries/service-types/Index.tsx` zaczyna się od:
+
+```tsx
+const Index = () => {
+  return (
+    <h2>Client List</h2>
+  );
+};
+
+export default Index;
+```
+
+Na bazie podstawowego komponentu funkcyjnego, implementacja widoku jest rozwijana o kolejne elementy, takie jak:
+
+1. **Użycie hooka `useTranslation` z biblioteki `react-i18next` do tłumaczenia tekstu w widoku:**
+
+    ```tsx
+    const Index = () => {
+      const { t } = useTranslation("translation", { keyPrefix: "serviceTypes.index" });
+
+      // Pozostałe elementy widoku...
+
+      return (
+        <h2>{t("title")}</h2>
+      );
+    };
+    ```
+
+2. **Dalej widok ustawia odpowiednią ścieżkę nawigacji w kontekście nawigacji `BreadcrumbsContext`, używając hooka `useBreadcrumbs`:**
+
+    ```tsx
+    const Index = () => {
+      // Pozostałe elementy widoku...
+
+      useBreadcrumbs([
+        { label: () => <Translate t={t} tKey='breadcrumbs.index'/>, path: "/service-types" }
+      ]);
+
+      // Pozostałe elementy widoku...
+
+      return (
+        <h2>{t("title")}</h2>
+      );
+    };
+    ```
+
+3. **Następnie jest umieszczona konfiguracja siatki danych, która jest wykorzystywana do wyświetlenia informacji na widoku:**
+
+    ```tsx
+    const Index = () => {
+      // Pozostałe elementy widoku...
+
+      const startPage = 0;
+      const pageSize = 25;
+      const columnDefs = [
+        {
+          headerComponent: () => <Translate t={t} tKey='grid.id'/>,
+          field: "id",
+          resizable: true,
+          lockVisible: true,
+          cellRenderer: IdRenderer
+        },
+        {
+          headerComponent: () => <Translate t={t} tKey='grid.name' />,
+          field: "name",
+          resizable: true
+        },
+        {
+          headerComponent: () => <Translate t={t} tKey='grid.description' />,
+          field: "description",
+          resizable: true
+        },
+        {
+          headerComponent: () => <Translate t={t} tKey='grid.active' />,
+          field: "active",
+          resizable: true
+        },
+        {
+          headerComponent: () => <Translate t={t} tKey='grid.value' />,
+          field: "value",
+          resizable: true
+        },
+        {
+          headerComponent: () => <Translate t={t} tKey='grid.emoji' />,
+          field: "emoji",
+          resizable: true
+        },
+        {
+          headerComponent: () => <Translate t={t} tKey='grid.actions.columnTitle' />,
+          resizable: true,
+          lockVisible: true,
+          cellRenderer: ActionsRenderer
+        }
+      ];
+      const filterDefs = [
+        FilterDefinition.uniqueToken("id", () => <Translate t={t} tKey='grid.filters.id' />),
+        FilterDefinition.string("name", () => <Translate t={t} tKey='grid.filters.name' />),
+        FilterDefinition.boolean("active", () => <Translate t={t} tKey='grid.filters.active' />)
+      ];
+
+      // Pozostałe elementy widoku...
+
+      return (
+        <h2>{t("title")}</h2>
+      );
+    };
+    ```
+
+4. **Na koniec, kod TSX odpowiedzialny za renderowanie widoku:**
+
+    ```tsx
+    const Index = () => {
+      // Pozostałe elementy widoku...
+
+      return (
+        <Box>
+          <Typography variant="h4">{t('title')}</Typography>
+          <Typography variant="subtitle1">{t('description')}</Typography>
+          <Box pb={2} />
+          <Grid<ServiceType>
+            startPage={startPage}
+            pageSize={pageSize}
+            getRowId={(row) => row.data.id}
+            fetch={applicationClient.serviceTypes().all}
+            exportData={applicationClient.serviceTypes().export}
+            filters={filterDefs}
+            columnDefinitions={columnDefs}
+            elevation={2}
+          />
+          <Box pb={2} />
+
+          <SecuredComponent roles={['admin', 'project-manager']}>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Button variant="contained" component={Link} to="create">{t('actions.create')}</Button>
+            </Paper>
+          </SecuredComponent>
+        </Box>
+      );
+    };
+    ```
+
+    Warto zwrócić uwagę na komponent `SecuredComponent`, który w kontekście omawianego widoku jest odpowiedzialny za wyświetlenie przycisku do tworzenia nowego zasobu aplikacji tylko dla użytkowników, którzy posiadają odpowiednie uprawnienia administartora lub kierownika projektu.
+
+W wyniku, otrzymaliśmy widok, który prezentuje listę zasobów aplikacji użytkownikowi oraz umożliwia użytkownikowi interakcje z prezentowanym zasobem. Skomplikowaność implementacji takiego widoku może różnić się mniej lub bardziej, w zależności od złożoności zasobu i interakcji z nim.
+
+Minimalne różnice posiada widok `src/pages/dictionaries/service-types/Details.tsx`, który prezentuje szczegóły zasobu aplikacji użytkownikowi oraz umożliwia użytkownikowi interakcje z prezentowanym zasobem. Implementacja widoku `src/pages/dictionaries/service-types/Details.tsx` wygląda następująco:
 
 ```tsx
 const Details = () => {
+  const { id } = useParams();
+
+  if (!id) {
+    throw new Error('No id provided');
+  }
+
+  const { t } = useTranslation('translation', { keyPrefix: 'serviceTypes.details' });
+  const { setBreadcrumbs } = useBreadcrumbsContext();
+
+  const { loading, loadingError, serviceType, activate, deactivate } =
+    useServiceType(id, (serviceType) => {
+      setBreadcrumbs([
+        { label: () => <Translate t={t} tKey='index'/>, path: '/service-types' },
+        { label: serviceType.name, path: `/service-types/${serviceType.id}` }
+      ]);
+    });
+
+  if (loading) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <LoadingScreen />
+      </Paper>
+    );
+  }
+
+  if (loadingError) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h4" gutterBottom>{t('loadingError')} {id}</Typography>
+        <Typography variant="body1" gutterBottom>{loadingError}</Typography>
+      </Paper>
+    );
+  }
+
   return (
-    <h2>Client List</h2>
+    <Box>
+      <Typography variant="h4" gutterBottom>{serviceType.name}</Typography>
+
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h5" gutterBottom>{t('description')}</Typography>
+        <Typography variant="body1" gutterBottom>{serviceType.description}</Typography>
+      </Paper>
+      <Box sx={{ pt: 2 }} />
+
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h5" gutterBottom>{t('details')}</Typography>
+        <Typography variant="body1">{t('id')}: {serviceType.id}</Typography>
+        <Typography variant="body1" gutterBottom>{t('active')}: {serviceType.active ? t('yes') : t('no')}</Typography>
+      </Paper>
+      <Box sx={{ pt: 2 }} />
+
+      <SecuredComponent roles={['admin', 'project-manager']}>
+        <Paper elevation={2} sx={{ p: 2 }}>
+          <Typography variant="h5" gutterBottom>{t('actions')}</Typography>
+
+          <Box component="span" pr={2}>
+            <Button variant="contained" color="primary" component={Link} to="edit">{t('edit')}</Button>
+          </Box>
+          <Box component="span" pr={2}>
+            {
+              serviceType.active ? 
+                <Button variant="contained" color="secondary" onClick={deactivate}>{t('deactivate')}</Button> :
+                <Button variant="contained" color="secondary" onClick={activate}>{t('activate')}</Button>
+            }
+          </Box>
+        </Paper>
+      </SecuredComponent>
+    </Box>
   );
 };
 
 export default Details;
 ```
 
-Kolejny krok 
+Różnice w implementacji nie są trudne do wychwycenia:
 
-* Widoki aplikacji są odpowiedzialne za pobieranie danych z serwera oraz za ich prezentację użytkownikowi.
-* React.lazy oraz React.Suspense są wykorzystywane do ładowania widoków aplikacji asynchronicznie.
-* Widoki aplikacji są zaimplementowane w taki sposób, aby uwzględniały uprawnienia użytkownika do poszczególnych elementów interfejsu użytkownika korzystając z kontekstu autoryzacji.
+1. **useParams** - hook z biblioteki React Router DOM, który pozwala na pobranie parametrów z adresu URL. W przypadku widoku `src/pages/dictionaries/service-types/Details.tsx`, parametr `id` jest wykorzystywany do pobrania szczegółów zasobu aplikacji z serwera.
+2. **useServiceType** - hook, który jest odpowiedzialny za pobranie szczegółów zasobu aplikacji z serwera. Hook dostarcza informacje o stanie pobierania danych, błędach pobierania danych oraz o samych danych, a także dostarcza funkcje, które pozwalają na interakcje z zasobem aplikacji.
+3. **useBreadcrumbsContext** - hook, który jest odpowiedzialny za dostarczenie informacji o kontekście nawigacji `BreadcrumbsContext`. Hook dostarcza funkcję `setBreadcrumbs`, która pozwala na ustawienie ścieżki nawigacji. `setBreadcrumbs` jest zaimplementowany w celu użycia go w przypadkach bardziej złożonych, np. w przypadku, gdy ścieżka nawigacji jest zależna od danych pobranych z serwera, na które trzeba poczekać.
+4. **Różne widoki w zależności od stanu komponentu** - widok może prezentować różne informacje użytkownikowi. Na etapie pobierania danych, użytkownik zobaczy ekran ładowania, w przypadku błędu pobierania danych, użytkownik zobaczy informacje o błędzie, a w przypadku poprawnego pobrania danych, użytkownik zobaczy szczegóły zasobu aplikacji.
+
+Dalej należy uwzględnić routing i zaimplementować widoki w kontekście aplikacji. W tym celu, najpierw tworzymy plik `src/pages/dictionaries/service-types/ServiceTypes.tsx`, który jest odpowiedzialny za zgrupowanie wszystkich widoków związanych z zasobem:
+
+```tsx
+export const ServiceTypes = {
+  path: '/service-types',
+  Index: React.lazy(() => import('./Index')),
+  Details: React.lazy(() => import('./Details')),
+  Create: React.lazy(() => import('./Create')),
+  Edit: React.lazy(() => import('./Edit'))
+}
+```
+
+Użycie `React.lazy` oraz dynamicznych importów pozwala na ładowanie widoków asynchronicznie, co pozwala na poprawę wydajności aplikacji. Na koniec, należy uwzględnić routing w kontekście aplikacji. W tym celu, powrócimy na chwilę do komponentu `RouterConfig.tsx`, omawianego wcześniej, i dodajmy odpowiednią konfigurację:
+
+```tsx
+const routerConfig: RouteConfig[] = [
+  // Pozostałe elementy konfiguracji...
+  {
+    path: "/service-types",
+    roles: ["admin", "project-manager"],
+    element: <ServiceTypes.Index />,
+  },
+  {
+    path: "/service-types/create",
+    roles: ["admin", "project-manager"],
+    element: <ServiceTypes.Create />,
+  },
+  {
+    path: "/service-types/:id/edit",
+    roles: ["admin", "project-manager"],
+    element: <ServiceTypes.Edit />,
+  },
+  {
+    path: "/service-types/:id",
+    roles: ["admin", "project-manager"],
+    element: <ServiceTypes.Details />,
+  },
+  // Pozostałe elementy konfiguracji...
+];
+```
+
+Komponent `RouterConfig` należy zaktulizować, dodając możliwość renderowania komponentów asynchronicznie. W tym celu należy użyć komponentu `Suspense` z biblioteki React:
+
+```tsx
+export const RouterConfig = () => {
+  return (
+    <Routes>
+      {
+        routerConfig.map((item, index) => {
+          return (
+            <Route
+              key={`route-${index}`}
+              path={item.path}
+              element={
+                <SecuredRoute roles={item.roles}>
+                  { /* Komponent Suspense jest odpowiedzialny za ładowanie widoków asynchronicznie */ }
+                  <React.Suspense fallback={<LoadingScreen />}>
+                    {item.element}
+                  </React.Suspense>  
+                </SecuredRoute>
+              }
+            />
+          );
+        })
+      }
+      <Route path="/forbidden" element={<Errors.Forbidden />} />
+      <Route path="/internal-server-error" element={<Errors.InternalServerError />} />
+      <Route path="*" element={<Errors.NotFound />} />
+    </Routes>
+  );
+}
+```
 
 #### Implementacja formularzy
 
