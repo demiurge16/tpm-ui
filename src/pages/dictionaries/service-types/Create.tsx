@@ -40,11 +40,11 @@ const Create = () => {
 
   return (
     <Box>
-      <Typography variant="h4">Create new priority</Typography>
+      <Typography variant="h4">Create new service type</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
-        initialValues={{ name: '', description: '', value: 0, emoji: '' }}
+        initialValues={{ name: '', description: '' }}
         validate={validator}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate> 

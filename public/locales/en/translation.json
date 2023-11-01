@@ -124,5 +124,50 @@
         "create": "Create new project"
       }
     }
+  },
+  "serviceTypes": {
+    "index": {
+      "title": "Service Types",
+      "description": "Here you can see and manage all your service types.",
+      "breadcrumbs": {
+        "index": "Service Types"
+      },
+      "grid": {
+        "id": "Id",
+        "name": "Name",
+        "description": "Description",
+        "value": "Value",
+        "emoji": "Emoji",
+        "active": "Active",
+        "actions": {
+          "columnTitle": "Actions",
+          "edit": "Edit",
+          "deactivate": "Deactivate",
+          "activate": "Activate"
+        },
+        "filters": {
+          "id": "Id",
+          "description": "Description",
+          "active": "Active"
+        }
+      },
+      "actions": {
+        "create": "Create new service type"
+      }
+    },
+    "details": {
+      "index": "Service Types",
+      "loadingError": "Error while loading service type",
+      "description": "Description",
+      "details": "Details",
+      "id": "Id",
+      "active": "Active",
+      "yes": "Yes",
+      "no": "No",
+      "actions": "Actions",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    }
   }
 }

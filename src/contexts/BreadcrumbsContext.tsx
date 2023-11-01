@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface Breadcrumb {
   label: React.ReactNode | React.ComponentType;
@@ -49,5 +49,8 @@ export const useBreadcrumbsContext = () => {
 
 export const useBreadcrumbs = (breadcrumbs: Breadcrumb[]) => {
   const { setBreadcrumbs } = useBreadcrumbsContext();
-  setBreadcrumbs(breadcrumbs);
+
+  useEffect(() => {
+    setBreadcrumbs(breadcrumbs);
+  }, []);
 }

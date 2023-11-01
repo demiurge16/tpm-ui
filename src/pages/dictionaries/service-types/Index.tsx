@@ -1,128 +1,81 @@
-import { useEffect, useRef } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import { ServiceTypes } from "./ServiceTypes";
-import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
-import { Priority } from "../../../client/types/dictionaries/Priority";
 import { Link } from "react-router-dom";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import { GridHandle } from "../../../components/grid/GridProps";
 import { FilterDefinition } from "../../../components/grid/FilterDefinition";
 import { Grid } from "../../../components/grid/Grid";
-import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { ServiceType } from "../../../client/types/dictionaries/ServiceType";
 import { applicationClient } from "../../../client/ApplicationClient";
+import { useBreadcrumbs } from "../../../contexts/BreadcrumbsContext";
+import { IdRenderer } from "./components/IdRenderer";
+import { ActionsRenderer } from "./components/ActionsRenderer";
+import { useTranslation } from "react-i18next";
+import { Translate } from "../../../components/i18n/Translate";
 
 const Index = () => {
   const startPage = 0;
   const pageSize = 25;
 
-  const gridRef = useRef<GridHandle>(null);
+  const { t } = useTranslation("translation", { keyPrefix: "serviceTypes.index" });
 
-  const { showSuccess, showError } = useSnackbarContext();
-  const { setBreadcrumbs } = useBreadcrumbsContext();
-
-  useEffect(() => {
-    setBreadcrumbs([
-      { label: 'Service types', path: '/service-types' }
-    ]);
-  }, [setBreadcrumbs]);
+  useBreadcrumbs([
+    { label: () => <Translate t={t} tKey='breadcrumbs.index'/>, path: "/service-types" }
+  ]);
 
   const columnDefs = [
     {
-      headerName: "Id",
+      headerComponent: () => <Translate t={t} tKey='grid.id'/>,
       field: "id",
       resizable: true,
       lockVisible: true,
-      cellRenderer: (params: any) => {
-        const priority = params.data as Priority;
-        return (
-          <Box>
-            <Button variant="text" component={Link} to={`${priority.id}`}>{priority.id}</Button>
-          </Box>
-        );
-      },
+      cellRenderer: IdRenderer
     },
-    { headerName: "Name", field: "name", resizable: true },
-    { headerName: "Description", field: "description", resizable: true },
-    { headerName: "Active", field: "active", resizable: true },
-    { headerName: "Value", field: "value", resizable: true },
-    { headerName: "Emoji", field: "emoji", resizable: true },
     {
-      headerName: "Actions",
-      field: "actions",
+      headerComponent: () => <Translate t={t} tKey='grid.name' />,
+      field: "name",
+      resizable: true
+    },
+    {
+      headerComponent: () => <Translate t={t} tKey='grid.description' />,
+      field: "description",
+      resizable: true
+    },
+    {
+      headerComponent: () => <Translate t={t} tKey='grid.active' />,
+      field: "active",
+      resizable: true
+    },
+    {
+      headerComponent: () => <Translate t={t} tKey='grid.value' />,
+      field: "value",
+      resizable: true
+    },
+    {
+      headerComponent: () => <Translate t={t} tKey='grid.emoji' />,
+      field: "emoji",
+      resizable: true
+    },
+    {
+      headerComponent: () => <Translate t={t} tKey='grid.actions.columnTitle' />,
       resizable: true,
       lockVisible: true,
-      cellRenderer: (params: any) => {
-        const priority = params.data as Priority;
-
-        const refresh = () => {
-          gridRef.current?.refresh();
-        };
-
-        return (
-          <Box>
-            <Box component="span" pr={2}>
-              <Button variant="text" startIcon={<EditIcon />} component={Link} to={`${priority.id}/edit`}>Edit</Button>
-            </Box>
-
-            {
-              priority.active ?
-                <Box component="span" pr={2}>
-                  <Button variant="text" startIcon={<DeleteIcon />} onClick={() => deactivate(priority.id, refresh)}>Delete</Button>
-                </Box> :
-                <Box component="span" pr={2}>
-                  <Button variant="text" startIcon={<RestoreFromTrashIcon />} onClick={() => activate(priority.id, refresh)}>Restore</Button>
-                </Box>
-            }
-          </Box>
-        );
-      }
+      cellRenderer: ActionsRenderer
     }
   ];
 
-  const activate = (id: string, refresh: () => void) => {
-    applicationClient.serviceTypes().withId(id).activate()
-      .subscribe({
-        next: () => {
-          showSuccess('Success', `Activated ${id}`);
-          refresh();
-        },
-        error: (error) => {
-          showError(`Error activating ${id}`, error.message);
-        }
-      });
-  };
-
-  const deactivate = (id: string, refresh: () => void) => {
-    applicationClient.serviceTypes().withId(id).deactivate()
-      .subscribe({
-        next: () => {
-          showSuccess('Success', `Deactivated ${id}`);
-          refresh();
-        },
-        error: (error) => {
-          showError(`Error deactivating ${id}`, error.message);
-        }
-      });
-  };
-
   const filterDefs = [
-    FilterDefinition.uniqueToken("id", "Id"),
-    FilterDefinition.string("name", "Name"),
-    FilterDefinition.boolean("active", "Active")
+    FilterDefinition.uniqueToken("id", () => <Translate t={t} tKey='grid.filters.id' />),
+    FilterDefinition.string("name", () => <Translate t={t} tKey='grid.filters.name' />),
+    FilterDefinition.boolean("active", () => <Translate t={t} tKey='grid.filters.active' />)
   ];
 
   return (
     <Box>
-      <Typography variant="h4">{ServiceTypes.title}</Typography>
-      <Typography variant="subtitle1">{ServiceTypes.description}</Typography>
+      <Typography variant="h4">{t('title')}</Typography>
+      <Typography variant="subtitle1">{t('description')}</Typography>
       <Box pb={2} />
       <Grid<ServiceType>
-        innerRef={gridRef}
         startPage={startPage}
         pageSize={pageSize}
+        getRowId={(row) => row.data.id}
         fetch={applicationClient.serviceTypes().all}
         exportData={applicationClient.serviceTypes().export}
         filters={filterDefs}
@@ -130,7 +83,7 @@ const Index = () => {
         elevation={2}
       />
       <Box pb={2} />
-      <Button variant="contained" component={Link} to="create">Create</Button>
+      <Button variant="contained" component={Link} to="create">{t('actions.create')}</Button>
     </Box>
   );
 };

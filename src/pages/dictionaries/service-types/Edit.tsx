@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useBreadcrumbsContext } from "../../../contexts/BreadcrumbsContext";
 import { Box, Button, Paper, Typography } from "@mui/material";
@@ -8,75 +7,79 @@ import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { UpdateServiceType } from "../../../client/types/dictionaries/ServiceType";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
+import { useServiceType } from "./hooks/useServiceType";
+import { useSubmitHandler } from "../../../components/form/useSubmitHandler";
+import { ServiceType } from "../../../client/types/project/Project";
+import { useValidator } from "../../../components/form/useValidator";
+import { object, string } from "yup";
 
 const Edit = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [priority, setPriority] = useState<UpdateServiceType>({
-    name: '',
-    description: ''
-  });
   const navigate = useNavigate();
   const { id } = useParams();
 
+  if (!id) {
+    throw new Error('No id provided');
+  }
+
   const { setBreadcrumbs } = useBreadcrumbsContext();
-  const { showSuccess, showError } = useSnackbarContext();
+  const { showSuccess } = useSnackbarContext();
 
-  useEffect(() => {
-    if (!id) return;
+  const { loading, loadingError, serviceType } =
+    useServiceType(id, (serviceType) => {
+      setBreadcrumbs([
+        { label: "Service types", path: "/service-types" },
+        { label: serviceType.name, path: `/service-types/${serviceType.id}` },
+        { label: "Edit", path: `/service-types/${serviceType.id}/edit` }
+      ]);
+    });
 
-    applicationClient.serviceTypes()
-      .withId(id)
-      .get()
-      .subscribe({
-        next: (response) => {
-          setPriority(response);
-          setBreadcrumbs([
-            { label: 'Service type', path: '/service-types' },
-            { label: response.name, path: `/service-types/${response.id}` },
-            { label: 'Edit', path: `/service-types/${response.id}/edit` }
-          ]);
-          setLoading(false);
-        },
-        error: (error) => {
-          showError(`Error loading priority ${id}`, error.message);
-          setServerError(error.message);
-        }
-      });
-  }, [id, setBreadcrumbs, showError, applicationClient]);
+  const { handleSubmit, submitError } = useSubmitHandler<UpdateServiceType, ServiceType>({
+    handleSubmit: (values) => applicationClient.serviceTypes().withId(id).update(values),
+    successHandler: () => {
+      showSuccess("Success", "Service type updated successfully");
+      navigate(`/service-types/${id}`);
+    },
+  });
 
-  const handleSubmit = (values: UpdateServiceType) => {
-    if (!id) return;
+  const validator = useValidator(
+    object({
+      name: string().required("Name is required")
+        .min(3, "Name must be at least 3 characters long")
+        .max(50, "Name must be at most 50 characters long"),
+      description: string().required("Description is required")
+        .min(3, "Description must be at least 3 characters long")
+        .max(1000, "Description must be at most 1000 characters long")
+    })
+  );
 
-    applicationClient.serviceTypes()
-      .withId(id)
-      .update(values)
-      .subscribe({
-        next: () => {
-          showSuccess('Success', 'Service type updated');
-          navigate('/service-types');
-        },
-        error: (error) => {
-          showError("Error updating service type", error.message);
-          setServerError(error);
-        }
-      });
-  };
+  if (loading) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <LoadingScreen />
+      </Paper>
+    );
+  }
 
-  return loading ? (
-    <Paper elevation={2} sx={{ p: 2 }}>
-      <LoadingScreen />
-    </Paper>
-  ) : (
+  if (loadingError) {
+    return (
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h4" gutterBottom>Error loading service type {id}</Typography>
+        <Typography variant="body1" gutterBottom>{loadingError}</Typography>
+      </Paper>
+    );
+  }
+
+  return (
     <Box>
-      <Typography variant="h4">Edit {priority.name}</Typography>
+      <Typography variant="h4">Edit {serviceType.name}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={{
-          name: priority.name,
-          description: priority.description
+          name: serviceType.name,
+          description: serviceType.description
         }}
+        validate={validator}
         render={({ handleSubmit, form, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <Paper elevation={2} sx={{ p: 2 }}>
@@ -85,10 +88,10 @@ const Edit = () => {
             </Paper>
             <Box pb={2} />
 
-            {serverError && (
+            {submitError && (
               <>
                 <Paper elevation={2} sx={{ p: 2 }}>
-                  <Typography color="error">Error: {serverError}</Typography>
+                  <Typography color="error">Error: {submitError}</Typography>
                 </Paper>
                 <Box pb={2} />
               </>

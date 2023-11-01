@@ -41,7 +41,17 @@ import { useTranslation } from "react-i18next";
 import { Label } from "../utils/Label";
 
 export const Grid = <Type,>(
-  { startPage, pageSize, columnDefinitions, filters, fetch, exportData, innerRef, elevation }: GridProps<Type>
+  {
+    startPage,
+    pageSize,
+    columnDefinitions,
+    filters,
+    getRowId,
+    fetch,
+    exportData,
+    innerRef,
+    elevation
+  }: GridProps<Type>
 ) => {
   const gridRef = useRef<AgGridReact<Type>>(null);
   const theme = useTheme();
@@ -344,6 +354,7 @@ export const Grid = <Type,>(
         !redraw && (
         <div className={`ag-theme-alpine ${styles.grid}`}>
           <AgGridReact<Type>
+            getRowId={getRowId}
             domLayout="autoHeight"
             ref={gridRef}
             rowData={data.items}

@@ -14,7 +14,6 @@ import jp from '../public/locales/jp/translation.json';
 
 i18n.use(initReactI18next).init({
   lng: 'en',
-  debug: true,
   resources: {
     en: {
       translation: en
