@@ -17,9 +17,6 @@
     * [Jako kierownik projektu, chcę:](#jako-kierownik-projektu-chcę)
     * [Jako tłumacz, redaktor, korektor, ekspert merytoryczny czy edytor chcę:](#jako-tłumacz-redaktor-korektor-ekspert-merytoryczny-czy-edytor-chcę)
     * [Jako inżynier wsparcia, chcę:](#jako-inżynier-wsparcia-chcę)
-  * [Diagram klas](#diagram-klas)
-  * [Diagramy stanów](#diagramy-stanów)
-  * [Diagram infrastruktury](#diagram-infrastruktury)
   * [Zasady projektowania systemu](#zasady-projektowania-systemu)
     * [Domain-driven design (DDD)](#domain-driven-design-ddd)
     * [Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)](#architektura-heksagonalna-czyli-wzorzec-porty-i-adaptery-ha)
@@ -355,10 +352,6 @@ Aplikacja będzie zawierała następujące funkcje:
 1. Posiadać widok siatki logów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć log, którego szukam.
 2. Mieć możliwość eksportowania danych z widoku siatki, tak aby móc je wykorzystać w innych aplikacjach.
 3. Mieć możliwość monitorowania wydajności aplikacji, dzięki czemu mogę się upewnić, że działa ona prawidłowo.
-
-### Diagram klas
-
-### Diagramy stanów
 
 ### Wzorce i zasady projektowe
 
@@ -3370,9 +3363,440 @@ docker-compose up -d
 Po uruchomieniu, aplikacja będzie dostępna pod adresem `http://localhost`.
 
 ### Serwer aplikacji
+
 #### Tworzenie projektu za pomocą Spring Initializr
+
+Pracę nad serwerem aplikacji rozpoczynamy od utworzenia projektu za pomocą Spring Initializr. Spring Initializr jest narzędziem, które pozwala na wygenerowanie szkieletu projektu Spring Boot. W tym celu, należy przejść na stronę internetową [https://start.spring.io/](https://start.spring.io/) i wybrać odpowiednie opcje zgodnie z założeniami projektu:
+
+[![Spring Initializr](./docs/spring-initializr.png)](./docs/spring-initializr.png)
+
+W projekcie, wykorzystano następujące opcje:
+
+* **Project**: Gradle - Kotlin. Wybór tej opcji mówi o tym, że projekt będzie budowany za pomocą narzędzia Gradle wykorzystującym Kotlin DSL.
+* **Language**: Kotlin. Wybór tej opcji ustala Kotlin jako język programowania, który będzie domyślnie wykorzystywany w projekcie.
+* **Spring Boot**: 3.1.5. Wybór wersji Spring Boot, która będzie wykorzystywana w projekcie.
+* **Project Metadata**: Nazwa projektu, nazwa grupy oraz pakiet, w którym będą znajdować się klasy projektu.
+* **Dependencies**: Wybór zależności, które będą wykorzystywane w projekcie. Na powyższym rysunku przedstawione są przykładowe zależności, które będą wykorzystywane w projekcie.
+
+Po wybraniu odpowiednich opcji, należy kliknąć przycisk `Generate` i pobrać wygenerowany projekt. Archiwum z projektem należy rozpakować i otworzyć za pomocą Intellij IDEA. Intellij IDEA automatycznie skonfiguruje potrzebną dystrybucję JDK na podstawie plików projektu i przygotuje wszystko do uruchomienia aplikacji. Otrzymany projekt w swojej postaci już jest gotową aplikacją Spring Boot, która jest gotowa do dalszego rozwoju.
+
 #### Narzędzie Gradle
+
+Narzędzie Gradle to potężny i elastyczny system automatyzacji budowania, który stał się standardem w projektach Java, w tym w projektach Spring Boot. Wykorzystuje on DSL (Domain-Specific Language) oparty na Groovy lub Kotlin do definiowania zadań budowania i zarządzania zależnościami. Oto kilka kluczowych cech i funkcji Gradle:
+
+1. **Elastyczność i Skalowalność**: Gradle zapewnia dużą elastyczność, umożliwiając tworzenie niestandardowych skryptów i zadań, które mogą być skalowane dla małych i dużych projektów.
+2. **Wydajność**: Gradle używa mechanizmu incrementation build oraz cache'owania, co znacząco przyspiesza proces budowania aplikacji, szczególnie w dużych projektach.
+3. **Zarządzanie Zależnościami**: Gradle pozwala na łatwe zarządzanie zależnościami bibliotek z Maven Central, Google, jCenter i innych repozytoriów. 
+4. **Wsparcie dla Wielu Języków i Platform**: Chociaż jest powszechnie stosowany w projektach Java, Gradle obsługuje również inne języki programowania, takie jak Kotlin, Groovy, Scala oraz platformy jak Android.
+5. **Integracja z IDE i Inne Narzędzia**: Gradle współpracuje z popularnymi środowiskami programistycznymi takimi jak IntelliJ IDEA, Eclipse, oraz NetBeans, co ułatwia importowanie projektów i zarządzanie nimi.
+6. **Plugins**: Gradle oferuje bogaty zestaw wtyczek, które rozszerzają jego funkcjonalność i ułatwiają integrację z różnymi ramami, serwerami aplikacji i narzędziami CI/CD.
+7. **Build Scans**: Funkcja ta pozwala na analizę budowy aplikacji i identyfikację problemów dzięki tworzeniu szczegółowych raportów o budowaniu.
+8. **Dokumentacja**: Gradle posiada obszerną i dobrze napisaną dokumentację, która jest dużym atutem dla deweloperów na każdym poziomie zaawansowania.
+
+W kontekście serwera aplikacji, Gradle zostanie wykorzystany do budowania aplikacji, zarządzania zależnościami oraz do uruchamiania aplikacji. Initializr automatycznie skonfigurował projekt do wykorzystania Gradle, więc nie ma potrzeby dodatkowej konfiguracji. Konfiguracja Gradle składa się z dwóch plików:
+
+1. **build.gradle.kts** - kluczowy element konfiguracji Gradle w projekcie Spring Boot, definiującym zależności i zadania budowania. Przykład zawartości tego pliku dla projektu wygląda następująco:
+
+    ```kotlin
+    import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+    // Konfiguracja wtyczek
+    plugins {
+        id("org.springframework.boot") version "3.1.2"
+        id("io.spring.dependency-management") version "1.1.0"
+        kotlin("jvm") version "1.7.22"
+        kotlin("plugin.spring") version "1.7.22"
+        kotlin("plugin.jpa") version "1.7.22"
+    }
+
+    group = "net.nuclearprometheus.tpm"
+    version = "1.0.0-BETA"
+    java.sourceCompatibility = JavaVersion.VERSION_17
+
+    // Konfiguracja zależności
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+    
+    // Wersje zależności
+    val springCloudVersion: String by extra { "2022.0.4" }
+    val liquibaseVersion: String by extra { "4.20.0" }
+    val springdocVersion: String by extra { "2.1.0" }
+    val minioVersion: String by extra { "8.5.2" }
+    val keycloakVersion: String by extra { "22.0.1" }
+    val openCsvVersion: String by extra { "5.8" }
+    val logstashLogbackEncoderVersion: String by extra { "7.4" }
+
+    // Poszczególne zależności
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
+        implementation("org.springframework.boot:spring-boot-starter-cache")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("org.springframework.boot:spring-boot-starter-data-redis")
+        implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+        implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+        implementation("org.springframework.boot:spring-boot-starter-security")
+        implementation("org.springframework.boot:spring-boot-starter-validation")
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+        implementation("org.keycloak:keycloak-core:$keycloakVersion")
+        implementation("org.keycloak:keycloak-policy-enforcer:$keycloakVersion")
+        implementation("org.keycloak:keycloak-admin-client:$keycloakVersion")
+        implementation("org.keycloak:keycloak-authz-client:$keycloakVersion")
+        implementation("org.liquibase:liquibase-core:$liquibaseVersion")
+        implementation("org.liquibase.ext:liquibase-hibernate6:$liquibaseVersion")
+        implementation("com.opencsv:opencsv:$openCsvVersion")
+        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
+        implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
+        implementation("io.minio:minio:$minioVersion")
+        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+        runtimeOnly("org.postgresql:postgresql")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("io.projectreactor:reactor-test")
+        testImplementation("org.springframework.security:spring-security-test")
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+        }
+    }
+
+    // Konfiguracja zadań
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "17"
+        }
+    }
+
+    tasks.named<Jar>("jar") {
+        enabled = false
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+    ```
+
+2. **settings.gradle.kts** - plik, który zawiera konfigurację projektu. W tym pliku, są zdefiniowane moduły, które są wykorzystywane w projekcie. Przykładowy plik `settings.gradle.kts` wygląda następująco:
+
+    ```kotlin
+    rootProject.name = "project-hermes-api"
+    ```
+
+Konfiguracja Gradle w projekcie Spring Boot jest zwykle prosta i nie wymaga dodatkowych zmian po wygenerowaniu projektu za pomocą Spring Initializr. Plik build.gradle.kts zawiera wszystkie niezbędne informacje dotyczące zależności i zadań budowania, podczas gdy settings.gradle.kts określa nazwę i konfigurację projektu. Użycie Gradle w projekcie Spring Boot zapewnia deweloperom potężne narzędzie do zarządzania zależnościami, budowania aplikacji oraz automatyzacji wielu innych zadań związanych z cyklem życia oprogramowania.
+
 #### Warstwa domeny aplikacji
+
+Warstwa domeny aplikacji jest odpowiedzialna za definicję modelu domeny aplikacji oraz za implementację logiki biznesowej. Zgodnie z zasadami DDD i HA, warstwa domeny aplikacji powinna być niezależna od innych warstw aplikacji i nie powinna zawierać żadnych zależności od innych warstw aplikacji. Dodatkowo, warstwa domeny aplikacji powinna być niezależna od frameworków i bibliotek, które są wykorzystywane w aplikacji.
+
+Implementacja warstwy domeny aplikacji rozpoczyna się od utworzenia pakietu `net.nuclearprometheus.tpm.applicationserver.domain`, który z kolei będzie podzielony na następujące podpakiety:
+
+* **exceptions** - pakiet, który zawiera wyjątki, które są wykorzystywane w warstwie domeny aplikacji.
+* **model** - pakiet, który zawiera model domeny aplikacji.
+* **ports** - pakiet, który zawiera serwisy oraz repozytoria domeny aplikacji.
+* **queries** - definicja interfejsów zapewniających filtrowanie, sortowanie i paginację wyników zapytań oraz ich domyślne implementacje.
+* **validator** - pakiet, który zawiera walidator, który jest wykorzystywany w warstwie domeny aplikacji.
+
+Kolejnym krokiem jest zdefiniowanie modelu domeny aplikacji. Model domeny zawiera wszystkie encje, które są wykorzystywane w aplikacji. Dla każdej encji, należy zdefiniować jej atrybuty oraz relacje z innymi encjami. W przypadku systemu organizacji pracy dla biura tłumaczeń, model domeny aplikacji wygląda następująco:
+
+[![Model domeny aplikacji](./docs/domain-model.png)](./docs/domain-model.png)
+
+Zdefiniowanie modelu zaczniemy od tworzenia podstawowych klas bazowych, które będą wykorzystywane w modelu domeny aplikacji. W tym celu, należy utworzyć pakiet `net.nuclearprometheus.tpm.applicationserver.domain.model.common`, który będzie zawierał podstawowe klasy bazowe:
+
+* **Id** - klasa, która jest odpowiedzialna za reprezentację identyfikatora encji. Klasa jest generyczna, co pozwala na definiowanie różnych typów identyfikatorów dla różnych encji:
+
+    ```kotlin
+    open class Id<T>(val value: T): Comparable<Id<T>> where T : Comparable<T>, T : Any {
+        override fun compareTo(other: Id<T>) = value.compareTo(other.value)
+        override fun equals(other: Any?) = other is Id<*> && value == other.value
+        override fun hashCode() = value.hashCode()
+        override fun toString() = value.toString()
+    }
+    ```
+* **Entity** - klasa, która jest odpowiedzialna za podstawową reprezentację encji. Klasa jest generyczna, co pozwala na definiowanie różnych typów identyfikatorów dla różnych encji:
+
+    ```kotlin
+    open class Entity<TId>(val id: TId) where TId : Id<*>
+    ```
+
+Rozpatrzmy implementację modelu domeny aplikacji na przykładzie encji `Client`. Encja `Client` jest odpowiedzialna za reprezentację klienta w systemie organizacji pracy dla biura tłumaczeń. W tym celu, należy utworzyć pakiet `net.nuclearprometheus.tpm.applicationserver.domain.model.client`, który będzie zawierał klasę `Client`:
+
+```kotlin
+class Client(
+    id: ClientId = ClientId(),
+    name: String,
+    email: String,
+    phone: String,
+    address: String,
+    city: String,
+    state: String,
+    zip: String,
+    country: Country,
+    vat: String? = null,
+    notes: String,
+    type: ClientType,
+    active: Boolean = true
+): Entity<ClientId>(id) {
+
+    init {
+        validate {
+            assert { name.isNotBlank() } otherwise {
+                ValidationError("name", "Name cannot be blank")
+            }
+            assert { email.isNotBlank() } otherwise {
+                ValidationError("email", "Email cannot be blank")
+            }
+            // Pozostałe walidacje...
+        }
+    }
+
+    var name: String = name; private set
+    var email: String = email; private set
+    // Pozostałe atrybuty...
+
+    fun update(
+        name: String,
+        email: String,
+        phone: String,
+        address: String,
+        city: String,
+        state: String,
+        zip: String,
+        country: Country,
+        vat: String?,
+        notes: String,
+        type: ClientType
+    ) {
+        val typeChanged = { this.type.id != type.id }
+
+        validate {
+            assert { name.isNotBlank() } otherwise {
+                ValidationError("name", "Name cannot be blank")
+            }
+            assertIf(typeChanged) { type.corporate && !vat.isNullOrBlank() } otherwise {
+                ValidationError("vat", "VAT cannot be blank for corporate clients")
+            }
+            // Pozostałe walidacje...
+        }
+
+        this.name = name
+        this.email = email
+        this.phone = phone
+        this.address = address
+        this.city = city
+        this.state = state
+        this.zip = zip
+        this.country = country
+        this.vat = vat
+        this.notes = notes
+        this.type = type
+    }
+
+    fun activate() {
+        active = true
+    }
+
+    fun deactivate() {
+        active = false
+    }
+}
+```
+
+Klasa zawiera wszystkie atrybuty encji `Client`, oraz metody, które pozwalają na modyfikację stanu encji. Identyfikator encji jest reprezentowany przez klasę `ClientId`, która wygląda następująco:
+
+```kotlin
+class ClientId(value: UUID = UUID.randomUUID()): Id<UUID>(value)
+```
+
+Walidacja encji `Client` jest zaimplementowana za pomocą walidatora, który jest zdefiniowany w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.validator`. Walidator jest odpowiedzialny za walidację encji oraz za zgłaszanie błędów walidacji. Implementacja walidatora wygląda następująco:
+
+* **Validator.kt**
+    ```kotlin
+    class Validator {
+        private val assertions = mutableListOf<() -> ValidationError>()
+
+        class Assertion(val validator: Validator, val assertion: () -> Boolean) {
+            infix fun otherwise(error: () -> ValidationError): Validator {
+                if (!assertion()) {
+                    validator.assertions.add { error() }
+                }
+                return validator
+            }
+        }
+
+        fun assert(assertion: () -> Boolean): Assertion {
+            return Assertion(this, assertion)
+        }
+
+        fun assertIf(condition: () -> Boolean, assertion: () -> Boolean): Assertion {
+            return Assertion(this) { condition() && assertion() }
+        }
+
+        fun validate(): List<ValidationError> {
+            return assertions.map { it() }
+        }
+    }
+    ```
+* **ValidatorDsl.kt**
+    ```kotlin
+    fun validate(block: Validator.() -> Unit) {
+        val validator = Validator()
+        validator.block()
+
+        val errors = validator.validate()
+        if (errors.isNotEmpty()) {
+            throw ValidationException(errors)
+        }
+    }
+    ```
+
+Klasy `ValidationError` i `ValidationException` są odpowiedzialne za reprezentację błędów walidacji oraz za reprezentację wyjątku, który jest rzucany w przypadku wystąpienia błędów walidacji. Klasy te są zdefiniowane w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.exceptions.common` i wyglądają następująco:
+
+* **ValidationError.kt**
+    ```kotlin
+    data class ValidationError(val field: String, val message: String)
+    ```
+
+* **ValidationException.kt**
+    ```kotlin
+    class ValidationException(val errors: List<ValidationError>) : Exception()
+    ```
+
+Kolejny krok to zdefiniowanie serwisów domeny aplikacji. Serwisy domeny aplikacji są odpowiedzialne za implementację logiki biznesowej. W przypadku systemu organizacji pracy dla biura tłumaczeń, serwisy domeny aplikacji są zdefiniowane w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports`. Dla encji `Client`, serwis domeny aplikacji jest zdefiniowany w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports.services.client` w postaci interfejsu `ClientService` oraz jego domyślnej implementacji `ClientServiceImpl`:
+
+* **ClientService.kt**
+    ```kotlin
+    interface ClientService {
+        fun create(
+            name: String,
+            email: String,
+            clientTypeId: ClientTypeId,
+            // Pozostałe atrybuty...
+        ): Client
+
+        fun update(
+            id: ClientId,
+            name: String,
+            clientTypeId: ClientTypeId,
+            // Pozostałe atrybuty...
+        ): Client
+
+        fun activate(id: ClientId): Client
+        fun deactivate(id: ClientId): Client
+    }
+    ```
+
+* **ClientServiceImpl.kt**
+    ```kotlin
+    class ClientServiceImpl(
+        private val repository: ClientRepository,
+        private val clientTypeRepository: ClientTypeRepository,
+        private val countryRespository: CountryRepository,
+        private val logger: Logger
+    ) : ClientService {
+
+        override fun create(
+            name: String,
+            email: String,
+            phone: String,
+            address: String,
+            city: String,
+            state: String,
+            zip: String,
+            countryCode: CountryCode,
+            vat: String,
+            notes: String,
+            clientTypeId: ClientTypeId
+        ): Client {
+            val clientType = clientTypeRepository.get(clientTypeId) ?: throw NotFoundException("Client type not found")
+
+            val client = Client(
+                name = name,
+                email = email,
+                phone = phone,
+                address = address,
+                city = city,
+                state = state,
+                zip = zip,
+                country = countryRespository.getByCode(countryCode.value) ?: UnknownCountry(countryCode),
+                vat = vat,
+                notes = notes,
+                type = clientType
+            )
+
+            return repository.create(client)
+        }
+
+        override fun activate(id: ClientId): Client {
+            val client = repository.get(id) ?: throw NotFoundException("Client not found")
+            client.activate()
+
+            return repository.update(client)
+        }
+
+        // Pozostałe metody...
+    }
+    ```
+
+Serwis domeny aplikacji jest odpowiedzialny za implementację logiki biznesowej. `ClientServiceImpl` polega z kolei na repozytorium domeny aplikacji, które jest odpowiedzialne za dostęp do danych. Repozytorium domeny aplikacji jest zdefiniowane w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports.repositories.client` w postaci interfejsu `ClientRepository`:
+
+```kotlin
+interface ClientRepository : BaseRepository<Client, ClientId>
+```
+
+`BaseRepository` jest interfejsem, który jest odpowiedzialny za definicje podstawowych operacji, takie jak tworzenie, odczyt, aktualizacja oraz usuwanie encji:
+
+```kotlin
+interface BaseRepository<TEntity : Entity<TEntityId>, TEntityId : Id<*>> {
+
+    fun getAll(): List<TEntity>
+    fun get(id: TEntityId): TEntity?
+    fun get(ids: List<TEntityId>): List<TEntity>
+    fun get(query: Query<TEntity>): Page<TEntity>
+    fun create(entity: TEntity): TEntity
+    fun createAll(entities: List<TEntity>): List<TEntity>
+    fun update(entity: TEntity): TEntity
+    fun updateAll(entities: List<TEntity>): List<TEntity>
+    fun delete(id: TEntityId)
+    fun deleteAll(ids: List<TEntityId>)
+}
+```
+
+Ostatnim elementem warstwy domeny aplikacji są zapytania domeny aplikacji. Zapytania domeny aplikacji są odpowiedzialne za filtrowanie, sortowanie oraz paginację wyników zapytań. W pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports.queries` zdefiniowane są klasy `Query` oraz `Page`, które są odpowiedzialne za reprezentację zapytań oraz wyników zapytań:
+
+```kotlin
+data class Query<TEntity : Any>(
+    val page: Int? = null,
+    val size: Int? = null,
+    val sort: List<Sort> = unsorted(),
+    val search: Search<TEntity> = nonFiltered()
+)
+
+data class Page<T>(val items: List<T>, val currentPage: Int, val totalPages: Int, val totalItems: Long) {
+    val hasNextPage = currentPage < totalPages
+    val hasPreviousPage = currentPage > 1
+
+    fun <R> map(mapper: (T) -> R): Page<R> {
+        return Page(items.map(mapper), currentPage, totalPages, totalItems)
+    }
+}
+```
+
+Podsumowując, otrzymany model domeny aplikacji jest odpowiedzialny za reprezentację encji, które są wykorzystywane w aplikacji oraz za implementację logiki biznesowej. Model domeny aplikacji jest niezależny od innych warstw aplikacji oraz od frameworków i bibliotek, które są wykorzystywane w aplikacji, co spełnia założenia DDD i HA.
+
 #### Uwierzytelnianie i kontrola dostępu
 #### Komunikacja z bazą danych
 #### Komunikacja z serwisami zewnętrznymi
