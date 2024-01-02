@@ -18,19 +18,19 @@ export const AsyncSelectField = (
   { name, label, multiple, required, options }: AsyncSelectFieldProps
 ) => {
   return (
-    <Field name={name}>
+    <Field name={name} multiple={multiple} required={required}>
       {({ input, meta }) => {
         const onChange = (event: any, newValue: Option | Option[] | null) => {
-          if (newValue instanceof Array) {
+          if (input.multiple) {
             input.onChange(newValue.map((option) => option.key));
           } else {
             input.onChange(newValue?.key);
           }
         };
 
-        const value = input.value instanceof Array
+        const value = input.multiple
           ? options.filter((option) => input.value.includes(option.key))
-          : options.find((option) => option.key === input.value) || null;
+          : options.find((option) => option.key === input.value);
 
         return (
           <FormControl 

@@ -52,10 +52,10 @@ const Index = () => {
       ]);
 
       setFilters([
-        FilterDefinition.string('id.value', 'Code (ISO 639-3)'),
-        FilterDefinition.string('iso6392t', 'Code (ISO 639-2/T)'),
-        FilterDefinition.string('iso6392b', 'Code (ISO 639-2/B)'),
-        FilterDefinition.string('iso6391', 'Code (ISO 639-1)'),
+        FilterDefinition.uniqueToken('code', 'Code (ISO 639-3)'),
+        FilterDefinition.uniqueToken('iso6392t', 'Code (ISO 639-2/T)'),
+        FilterDefinition.uniqueToken('iso6392b', 'Code (ISO 639-2/B)'),
+        FilterDefinition.uniqueToken('iso6391', 'Code (ISO 639-1)'),
         FilterDefinition.string('name', 'Name'),
         FilterDefinition.select('scope', 'Scope', scopes.map(scope => ({ value: scope.code, label: scope.name }))),
         FilterDefinition.select('type', 'Type', types.map(type => ({ value: type.code, label: type.name }))),

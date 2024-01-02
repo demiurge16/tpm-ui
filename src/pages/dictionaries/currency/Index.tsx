@@ -17,7 +17,7 @@ const Index = () => {
   ];
 
   const filters = [
-    FilterDefinition.string('id.value', 'Code'),
+    FilterDefinition.uniqueToken('code', 'Code'),
     FilterDefinition.string('name', 'Name')
   ];
 

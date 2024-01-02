@@ -16,7 +16,7 @@ export const Editor = (props: EditorProps) => {
 
   return (
     <>
-      <TinyMceEditor tinymceScriptSrc={import.meta.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
+      <TinyMceEditor tinymceScriptSrc={'/tinymce/tinymce.min.js'}
         init={{
           plugins: 'preview paste importcss searchreplace autolink autosave directionality code visualblocks visualchars image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
           imagetools_cors_hosts: [

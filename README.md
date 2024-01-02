@@ -62,10 +62,17 @@
   * [Serwer aplikacji](#serwer-aplikacji-1)
     * [Tworzenie projektu za pomocą Spring Initializr](#tworzenie-projektu-za-pomocą-spring-initializr)
     * [Narzędzie Gradle](#narzędzie-gradle)
-    * [Warstwa domeny aplikacji](#warstwa-domeny-aplikacji)
-    * [Uwierzytelnianie i kontrola dostępu](#uwierzytelnianie-i-kontrola-dostępu-1)
-    * [Komunikacja z bazą danych](#komunikacja-z-bazą-danych)
-    * [Komunikacja z serwisami zewnętrznymi](#komunikacja-z-serwisami-zewnętrznymi)
+    * [Warstwa domeny - encje](#warstwa-domeny---encje)
+    * [Warstwa domeny - repozytoria](#warstwa-domeny---repozytoria)
+    * [Warstwa domeny - serwisy](#warstwa-domeny---serwisy)
+    * [Warstwa domeny - specyfikacje](#warstwa-domeny---specyfikacje)
+    * [Warstwa aplikacji - persystencja](#warstwa-aplikacji---persystencja)
+    * [Warstwa aplikacji - serwisy aplikacyjne](#warstwa-aplikacji---serwisy-aplikacyjne)
+    * [Warstwa aplikacji - kontrolery](#warstwa-aplikacji---kontrolery)
+    * [Warstwa aplikacji - specyfikacje](#warstwa-aplikacji---specyfikacje)
+    * [Warstwa aplikacji - zewnętrzne API](#warstwa-aplikacji---zewnętrzne-api)
+    * [Warstwa aplikacji - DTO](#warstwa-aplikacji---dto)
+    * [Warstwa aplikacji - uwierzytelnianie i autoryzacja](#warstwa-aplikacji---uwierzytelnianie-i-autoryzacja)
     * [Implementacja logowania i monitorowania](#implementacja-logowania-i-monitorowania)
     * [Testowanie](#testowanie-1)
     * [Wdrożenie aplikacji](#wdrożenie-aplikacji-1)
@@ -3498,308 +3505,17 @@ W kontekście serwera aplikacji, Gradle zostanie wykorzystany do budowania aplik
 
 Konfiguracja Gradle w projekcie Spring Boot jest zwykle prosta i nie wymaga dodatkowych zmian po wygenerowaniu projektu za pomocą Spring Initializr. Plik build.gradle.kts zawiera wszystkie niezbędne informacje dotyczące zależności i zadań budowania, podczas gdy settings.gradle.kts określa nazwę i konfigurację projektu. Użycie Gradle w projekcie Spring Boot zapewnia deweloperom potężne narzędzie do zarządzania zależnościami, budowania aplikacji oraz automatyzacji wielu innych zadań związanych z cyklem życia oprogramowania.
 
-#### Warstwa domeny aplikacji
-
-Warstwa domeny aplikacji jest odpowiedzialna za definicję modelu domeny aplikacji oraz za implementację logiki biznesowej. Zgodnie z zasadami DDD i HA, warstwa domeny aplikacji powinna być niezależna od innych warstw aplikacji i nie powinna zawierać żadnych zależności od innych warstw aplikacji. Dodatkowo, warstwa domeny aplikacji powinna być niezależna od frameworków i bibliotek, które są wykorzystywane w aplikacji.
-
-Implementacja warstwy domeny aplikacji rozpoczyna się od utworzenia pakietu `net.nuclearprometheus.tpm.applicationserver.domain`, który z kolei będzie podzielony na następujące podpakiety:
-
-* **exceptions** - pakiet, który zawiera wyjątki, które są wykorzystywane w warstwie domeny aplikacji.
-* **model** - pakiet, który zawiera model domeny aplikacji.
-* **ports** - pakiet, który zawiera serwisy oraz repozytoria domeny aplikacji.
-* **queries** - definicja interfejsów zapewniających filtrowanie, sortowanie i paginację wyników zapytań oraz ich domyślne implementacje.
-* **validator** - pakiet, który zawiera walidator, który jest wykorzystywany w warstwie domeny aplikacji.
-
-Kolejnym krokiem jest zdefiniowanie modelu domeny aplikacji. Model domeny zawiera wszystkie encje, które są wykorzystywane w aplikacji. Dla każdej encji, należy zdefiniować jej atrybuty oraz relacje z innymi encjami. W przypadku systemu organizacji pracy dla biura tłumaczeń, model domeny aplikacji wygląda następująco:
-
-[![Model domeny aplikacji](./docs/domain-model.png)](./docs/domain-model.png)
-
-Zdefiniowanie modelu zaczniemy od tworzenia podstawowych klas bazowych, które będą wykorzystywane w modelu domeny aplikacji. W tym celu, należy utworzyć pakiet `net.nuclearprometheus.tpm.applicationserver.domain.model.common`, który będzie zawierał podstawowe klasy bazowe:
-
-* **Id** - klasa, która jest odpowiedzialna za reprezentację identyfikatora encji. Klasa jest generyczna, co pozwala na definiowanie różnych typów identyfikatorów dla różnych encji:
-
-    ```kotlin
-    open class Id<T>(val value: T): Comparable<Id<T>> where T : Comparable<T>, T : Any {
-        override fun compareTo(other: Id<T>) = value.compareTo(other.value)
-        override fun equals(other: Any?) = other is Id<*> && value == other.value
-        override fun hashCode() = value.hashCode()
-        override fun toString() = value.toString()
-    }
-    ```
-* **Entity** - klasa, która jest odpowiedzialna za podstawową reprezentację encji. Klasa jest generyczna, co pozwala na definiowanie różnych typów identyfikatorów dla różnych encji:
-
-    ```kotlin
-    open class Entity<TId>(val id: TId) where TId : Id<*>
-    ```
-
-Rozpatrzmy implementację modelu domeny aplikacji na przykładzie encji `Client`. Encja `Client` jest odpowiedzialna za reprezentację klienta w systemie organizacji pracy dla biura tłumaczeń. W tym celu, należy utworzyć pakiet `net.nuclearprometheus.tpm.applicationserver.domain.model.client`, który będzie zawierał klasę `Client`:
-
-```kotlin
-class Client(
-    id: ClientId = ClientId(),
-    name: String,
-    email: String,
-    phone: String,
-    address: String,
-    city: String,
-    state: String,
-    zip: String,
-    country: Country,
-    vat: String? = null,
-    notes: String,
-    type: ClientType,
-    active: Boolean = true
-): Entity<ClientId>(id) {
-
-    init {
-        validate {
-            assert { name.isNotBlank() } otherwise {
-                ValidationError("name", "Name cannot be blank")
-            }
-            assert { email.isNotBlank() } otherwise {
-                ValidationError("email", "Email cannot be blank")
-            }
-            // Pozostałe walidacje...
-        }
-    }
-
-    var name: String = name; private set
-    var email: String = email; private set
-    // Pozostałe atrybuty...
-
-    fun update(
-        name: String,
-        email: String,
-        phone: String,
-        address: String,
-        city: String,
-        state: String,
-        zip: String,
-        country: Country,
-        vat: String?,
-        notes: String,
-        type: ClientType
-    ) {
-        val typeChanged = { this.type.id != type.id }
-
-        validate {
-            assert { name.isNotBlank() } otherwise {
-                ValidationError("name", "Name cannot be blank")
-            }
-            assertIf(typeChanged) { type.corporate && !vat.isNullOrBlank() } otherwise {
-                ValidationError("vat", "VAT cannot be blank for corporate clients")
-            }
-            // Pozostałe walidacje...
-        }
-
-        this.name = name
-        this.email = email
-        this.phone = phone
-        this.address = address
-        this.city = city
-        this.state = state
-        this.zip = zip
-        this.country = country
-        this.vat = vat
-        this.notes = notes
-        this.type = type
-    }
-
-    fun activate() {
-        active = true
-    }
-
-    fun deactivate() {
-        active = false
-    }
-}
-```
-
-Klasa zawiera wszystkie atrybuty encji `Client`, oraz metody, które pozwalają na modyfikację stanu encji. Identyfikator encji jest reprezentowany przez klasę `ClientId`, która wygląda następująco:
-
-```kotlin
-class ClientId(value: UUID = UUID.randomUUID()): Id<UUID>(value)
-```
-
-Walidacja encji `Client` jest zaimplementowana za pomocą walidatora, który jest zdefiniowany w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.validator`. Walidator jest odpowiedzialny za walidację encji oraz za zgłaszanie błędów walidacji. Implementacja walidatora wygląda następująco:
-
-* **Validator.kt**
-    ```kotlin
-    class Validator {
-        private val assertions = mutableListOf<() -> ValidationError>()
-
-        class Assertion(val validator: Validator, val assertion: () -> Boolean) {
-            infix fun otherwise(error: () -> ValidationError): Validator {
-                if (!assertion()) {
-                    validator.assertions.add { error() }
-                }
-                return validator
-            }
-        }
-
-        fun assert(assertion: () -> Boolean): Assertion {
-            return Assertion(this, assertion)
-        }
-
-        fun assertIf(condition: () -> Boolean, assertion: () -> Boolean): Assertion {
-            return Assertion(this) { condition() && assertion() }
-        }
-
-        fun validate(): List<ValidationError> {
-            return assertions.map { it() }
-        }
-    }
-    ```
-* **ValidatorDsl.kt**
-    ```kotlin
-    fun validate(block: Validator.() -> Unit) {
-        val validator = Validator()
-        validator.block()
-
-        val errors = validator.validate()
-        if (errors.isNotEmpty()) {
-            throw ValidationException(errors)
-        }
-    }
-    ```
-
-Klasy `ValidationError` i `ValidationException` są odpowiedzialne za reprezentację błędów walidacji oraz za reprezentację wyjątku, który jest rzucany w przypadku wystąpienia błędów walidacji. Klasy te są zdefiniowane w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.exceptions.common` i wyglądają następująco:
-
-* **ValidationError.kt**
-    ```kotlin
-    data class ValidationError(val field: String, val message: String)
-    ```
-
-* **ValidationException.kt**
-    ```kotlin
-    class ValidationException(val errors: List<ValidationError>) : Exception()
-    ```
-
-Kolejny krok to zdefiniowanie serwisów domeny aplikacji. Serwisy domeny aplikacji są odpowiedzialne za implementację logiki biznesowej. W przypadku systemu organizacji pracy dla biura tłumaczeń, serwisy domeny aplikacji są zdefiniowane w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports`. Dla encji `Client`, serwis domeny aplikacji jest zdefiniowany w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports.services.client` w postaci interfejsu `ClientService` oraz jego domyślnej implementacji `ClientServiceImpl`:
-
-* **ClientService.kt**
-    ```kotlin
-    interface ClientService {
-        fun create(
-            name: String,
-            email: String,
-            clientTypeId: ClientTypeId,
-            // Pozostałe atrybuty...
-        ): Client
-
-        fun update(
-            id: ClientId,
-            name: String,
-            clientTypeId: ClientTypeId,
-            // Pozostałe atrybuty...
-        ): Client
-
-        fun activate(id: ClientId): Client
-        fun deactivate(id: ClientId): Client
-    }
-    ```
-
-* **ClientServiceImpl.kt**
-    ```kotlin
-    class ClientServiceImpl(
-        private val repository: ClientRepository,
-        private val clientTypeRepository: ClientTypeRepository,
-        private val countryRespository: CountryRepository,
-        private val logger: Logger
-    ) : ClientService {
-
-        override fun create(
-            name: String,
-            email: String,
-            phone: String,
-            address: String,
-            city: String,
-            state: String,
-            zip: String,
-            countryCode: CountryCode,
-            vat: String,
-            notes: String,
-            clientTypeId: ClientTypeId
-        ): Client {
-            val clientType = clientTypeRepository.get(clientTypeId) ?: throw NotFoundException("Client type not found")
-
-            val client = Client(
-                name = name,
-                email = email,
-                phone = phone,
-                address = address,
-                city = city,
-                state = state,
-                zip = zip,
-                country = countryRespository.getByCode(countryCode.value) ?: UnknownCountry(countryCode),
-                vat = vat,
-                notes = notes,
-                type = clientType
-            )
-
-            return repository.create(client)
-        }
-
-        override fun activate(id: ClientId): Client {
-            val client = repository.get(id) ?: throw NotFoundException("Client not found")
-            client.activate()
-
-            return repository.update(client)
-        }
-
-        // Pozostałe metody...
-    }
-    ```
-
-Serwis domeny aplikacji jest odpowiedzialny za implementację logiki biznesowej. `ClientServiceImpl` polega z kolei na repozytorium domeny aplikacji, które jest odpowiedzialne za dostęp do danych. Repozytorium domeny aplikacji jest zdefiniowane w pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports.repositories.client` w postaci interfejsu `ClientRepository`:
-
-```kotlin
-interface ClientRepository : BaseRepository<Client, ClientId>
-```
-
-`BaseRepository` jest interfejsem, który jest odpowiedzialny za definicje podstawowych operacji, takie jak tworzenie, odczyt, aktualizacja oraz usuwanie encji:
-
-```kotlin
-interface BaseRepository<TEntity : Entity<TEntityId>, TEntityId : Id<*>> {
-
-    fun getAll(): List<TEntity>
-    fun get(id: TEntityId): TEntity?
-    fun get(ids: List<TEntityId>): List<TEntity>
-    fun get(query: Query<TEntity>): Page<TEntity>
-    fun create(entity: TEntity): TEntity
-    fun createAll(entities: List<TEntity>): List<TEntity>
-    fun update(entity: TEntity): TEntity
-    fun updateAll(entities: List<TEntity>): List<TEntity>
-    fun delete(id: TEntityId)
-    fun deleteAll(ids: List<TEntityId>)
-}
-```
-
-Ostatnim elementem warstwy domeny aplikacji są zapytania domeny aplikacji. Zapytania domeny aplikacji są odpowiedzialne za filtrowanie, sortowanie oraz paginację wyników zapytań. W pakiecie `net.nuclearprometheus.tpm.applicationserver.domain.ports.queries` zdefiniowane są klasy `Query` oraz `Page`, które są odpowiedzialne za reprezentację zapytań oraz wyników zapytań:
-
-```kotlin
-data class Query<TEntity : Any>(
-    val page: Int? = null,
-    val size: Int? = null,
-    val sort: List<Sort> = unsorted(),
-    val search: Search<TEntity> = nonFiltered()
-)
-
-data class Page<T>(val items: List<T>, val currentPage: Int, val totalPages: Int, val totalItems: Long) {
-    val hasNextPage = currentPage < totalPages
-    val hasPreviousPage = currentPage > 1
-
-    fun <R> map(mapper: (T) -> R): Page<R> {
-        return Page(items.map(mapper), currentPage, totalPages, totalItems)
-    }
-}
-```
-
-Podsumowując, otrzymany model domeny aplikacji jest odpowiedzialny za reprezentację encji, które są wykorzystywane w aplikacji oraz za implementację logiki biznesowej. Model domeny aplikacji jest niezależny od innych warstw aplikacji oraz od frameworków i bibliotek, które są wykorzystywane w aplikacji, co spełnia założenia DDD i HA.
-
-#### Uwierzytelnianie i kontrola dostępu
-#### Komunikacja z bazą danych
-#### Komunikacja z serwisami zewnętrznymi
+#### Warstwa domeny - encje
+#### Warstwa domeny - repozytoria
+#### Warstwa domeny - serwisy
+#### Warstwa domeny - specyfikacje
+#### Warstwa aplikacji - persystencja
+#### Warstwa aplikacji - serwisy aplikacyjne
+#### Warstwa aplikacji - kontrolery
+#### Warstwa aplikacji - specyfikacje
+#### Warstwa aplikacji - zewnętrzne API
+#### Warstwa aplikacji - DTO
+#### Warstwa aplikacji - uwierzytelnianie i autoryzacja
 #### Implementacja logowania i monitorowania
 #### Testowanie
 #### Wdrożenie aplikacji

@@ -123,6 +123,13 @@
       "actions": {
         "create": "Create new project"
       }
+    },
+    "create": {
+      "title": "Create new project",
+      "breadcrumbs": {
+        "index": "Projects",
+        "create": "Create new project"
+      }
     }
   },
   "serviceTypes": {

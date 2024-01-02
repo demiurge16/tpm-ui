@@ -36,11 +36,11 @@ const Create = () => {
     },
     () => setBreadcrumbs([
       { 
-        label: t('projects.breadcrumbs.index'),
+        label: t('projects.create.breadcrumbs.index'),
         path: "/projects"
       },
       { 
-        label: t('projects.breadcrumbs.create'),
+        label: t('projects.create.breadcrumbs.create'),
         path: "/projects/create"
       }
     ])
