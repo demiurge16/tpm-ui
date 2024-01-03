@@ -4267,6 +4267,38 @@ class MinioStorageService(
 }
 ```
 
+Parametry połaczenia z MinIO są konfigurowane w pliku `application.yml`:
+
+```yaml
+app:
+  file-storage:
+    minio:
+      endpoint: http://localhost:9000
+      access-key: admin
+      secret-key: 1qaz@WSX
+      bucket-name: tpm
+```
+
+Dalej klient MinIO jest konfigurowany i rejestrowany w kontekście Spring w klasie `MinioClientConfig`:
+
+```kotlin
+@Configuration
+@ConfigurationProperties(prefix = "app.file-storage.minio")
+class MinioClientConfig(
+    var endpoint: String = "",
+    var accessKey: String = "",
+    var secretKey: String = "",
+) {
+
+    @Bean
+    fun minioClient(): MinioClient = MinioClient.builder()
+        .endpoint(endpoint)
+        .credentials(accessKey, secretKey)
+        .build()
+
+}
+```
+
 Podsumowując, implementacja warstwy persystencji w projekcie jest bardzo prosta i przejrzysta, nie łamie czystości architektury i jest w pełni zgodna z zasadami DDD. Użycie Spring Data JPA pozwala na uniknięcie wielu powszechnych błędów i znacząco upraszcza implementację warstwy persystencji. W połączeniu z Liquibase, implementacja warstwy persystencji jest bardzo prosta i nie wymaga dużo wysiłku, a też jest odporna na błędy i łatwa w utrzymaniu. Równie prosta jest implementacja schowka plików, która ze względu na swoją prostotę też jest przejrzysta i czytelna.
 
 #### Warstwa aplikacji - serwisy aplikacyjne
