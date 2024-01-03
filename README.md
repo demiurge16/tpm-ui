@@ -3929,7 +3929,7 @@ class Query<TEntity : Any>(
 )
 ```
 
-Który z kolei jest przekazywany do repozytoriów, które wykorzystują go do zapytań do bazy danyc, na przykład:
+Który z kolei jest przekazywany do repozytoriów, które wykorzystują go do zapytań do bazy danych, na przykład:
 
 ```kotlin
 val query = Query(
@@ -3946,6 +3946,75 @@ W projekcie zapytania są rzadko definiowane bezpośrednio w kodzie, a częście
 Podsumowując, mechanizm zapytań i specyfikacji w projekcie stanowi fundamentalny element architektury systemu, umożliwiając tworzenie wydajnych, elastycznych i czytelnych zapytań, które są niezbędne dla efektywnego zarządzania danymi w aplikacji.
 
 #### Warstwa domeny - serwisy
+
+Serwisy w DDD są kluczowe dla implementacji logiki biznesowej. Stanowią one warstwę pośrednią między warstwą prezentacji a warstwą domeny, odpowiadając za orkiestrację i wykonanie złożonych operacji biznesowych. Serwisy pozwalają na oddzielenie logiki biznesowej od encji, co sprzyja czystości modelu domenowego i ułatwia utrzymanie kodu.
+
+Implementacja serwisów zaczyna się od definicji interfejsu. Interfejsy serwisów definiują kontrakt, który musi być spełniony przez ich implementacje. Zawierają one deklaracje metod odpowiadających za realizację określonych funkcji biznesowych. Dzięki wykorzystaniu interfejsów, serwisy mogą być łatwiej testowane i utrzymywane. Pozwala to również na większą modularność systemu, umożliwiając na przykład łatwą zamianę implementacji serwisów.
+
+
+``` kotlin
+interface TeamMemberService {
+    fun giveRoleToUser(userId: UserId, role: ProjectRole, projectId: ProjectId): TeamMember
+    fun removeRoleFromUser(id: TeamMemberRoleId)
+}
+```
+
+Kolejny krok - implementacja interfejsu. Implementacje serwisów zawierają konkretną logikę biznesową, wykorzystując do tego encje i repozytoria z warstwy domeny. Przykładem implementacji serwisu jest `TeamMemberServiceImpl`, który wygląda następująco:
+
+``` kotlin
+class TeamMemberServiceImpl(
+    private val teamMemberRoleRepository: TeamMemberRoleRepository,
+    private val teamMemberRepository: TeamMemberRepository,
+    private val userRepository: UserRepository,
+    private val userContextProvider: UserContextProvider,
+    private val projectRepository: ProjectRepository,
+    private val logger: Logger
+) : TeamMemberService {
+
+    override fun giveRoleToUser(userId: UserId, role: ProjectRole, projectId: ProjectId): TeamMember {
+        logger.info("Creating team member for user $userId with role $role for project $projectId")
+
+        val currentUser = userContextProvider.getCurrentUser()
+        val project = projectRepository.get(projectId) ?: throw NotFoundException("Project does not exist")
+        userRepository.get(userId) ?: throw NotFoundException("User does not exist")
+
+        if (!currentUser.hasRole(UserRole.ADMIN) && !project.hasTeamMemberWithRole(currentUser.id, ProjectRole.PROJECT_MANAGER)) {
+            throw ProjectAccessException("Only admin or project manager can add team members and assign project roles")
+        }
+
+        if (project.hasTeamMemberWithRole(userId, role)) {
+            throw ProjectTeamMemberAlreadyHasRoleException("User $userId already has role $role for project $projectId")
+        }
+
+        teamMemberRoleRepository.create(
+            TeamMemberRole(
+                role = role,
+                userId = userId,
+                projectId = projectId
+            )
+        )
+
+        return teamMemberRepository.get(TeamMemberId(userId.value)) ?: throw NotFoundException("Team member not found")
+    }
+
+    override fun removeRoleFromUser(id: TeamMemberRoleId) {
+        logger.info("Removing team member role $id")
+        teamMemberRoleRepository.delete(id)
+    }
+}
+```
+
+Szczególną uwagę w tym przykładzie należy zwrócić na następujące aspekty:
+
+1. **Transakcje**: Mechanizm tranzakcji zależy od konkretnej technologii i jego realizacja jest odpowiedzialnością warstwy aplikacji. Jest to poza zakresem odpowiedzilaności odpowiedzialności serwisu, żeby zachować czystość architektury. 
+2. **Walidacja**: Przed wykonaniem operacji, serwis sprawdza, czy użytkownik ma odpowiednie uprawnienia, czy encje istnieją, czy użytkownik już nie ma przypisanej roli itp. Jest to kluczowe dla zapewnienia spójności modelu domenowego i integralności danych. Takich walidacji nie da się zaimplementować na poziomie encji, ponieważ nie posiada ona informacji o kontekście, w którym jest wykorzystywana.
+3. **Wyjątki**: Serwis rzucą wyjątki, które są zdefiniowane w warstwie domeny. Obsługa wyjątków jest zdefiniowana w warstwie aplikacji. W tym przykładzie serwis nie nadaje brakujących uprawnień użytkownikowi - jest to poza jego zakresem odpowiedzialności.
+4. **Zależności**: Serwis wykorzystuje repozytoria i inne serwisy do realizacji swoich funkcji. Zależności są wstrzykiwane przez konstruktor i nigdy nie są to konkretne implementacje, tylko interfejsy. Jest to kluczowe dla utrzymania czystości i modularności architektury systemu.
+5. **Podział odpowiedzialności**: Serwis jest odpowiedzialny za realizację tylko określonej funkcji biznesowej i 
+6. **Logowanie**: Serwis loguje wszystkie operacje, które wykonuje. Jest to kluczowe dla monitorowania pracy systemu i debugowania problemów.
+
+Serwisy w warstwie domeny są niezbędne dla efektywnej implementacji i orkiestracji logiki biznesowej w systemie. Zapewniają one jasne oddzielenie logiki biznesowej od encji i repozytoriów, co przyczynia się do lepszej organizacji kodu, łatwiejszego utrzymania i testowania. Właściwie zaprojektowane serwisy są kluczowe dla zachowania czystości architektury systemu i jego skalowalności.
+
 #### Warstwa aplikacji - persystencja
 #### Warstwa aplikacji - serwisy aplikacyjne
 #### Warstwa aplikacji - kontrolery
