@@ -4016,7 +4016,7 @@ Serwisy w warstwie domeny są niezbędne dla efektywnej implementacji i orkiestr
 
 #### Warstwa aplikacji - persystencja
 
-Do implementacji warstwy persystencji został użyty moduł frameworku Spring - Spring Data JPA. Spring Data JPA znacząco upraszcza implementację repozytoriów, dostarczając gotowych rozwiązań dla wielu typowych przypadków użycia - takich jak CRUD, paginacja, sortowanie, specyfikacje, audytowanie i wiele innych. Użycie Spring Data JPA ukrywa wiele nudnych i powtarzalnych zadań, w tym zarządzanie transakcjami i generowanie zapytań SQL. Dzięki temu implementacja warstwy persystencji została zredukowana do prostego mapowania encji domenowych na modele bazodanowe i odwrotnie, oraz implementacji repozytoriów Spring Data JPA. Przykładowym odpowiednikem encji domenowej w warstwie persystencji jest klasa `ClientDatabaseModel`, która zawiera definicję encji wraz z adnotacjami JPA:
+Implementacja warstwy persystencji w architekturze heksagonalnej jest odpowiedzialnością warstwy aplikacji. Implementacja persystencji jest częścia implementacji portów wyjściowych. Do implementacji warstwy persystencji został użyty moduł frameworku Spring - Spring Data JPA. Spring Data JPA znacząco upraszcza implementację repozytoriów, dostarczając gotowych rozwiązań dla wielu typowych przypadków użycia - takich jak CRUD, paginacja, sortowanie, specyfikacje, audytowanie i wiele innych. Użycie Spring Data JPA ukrywa wiele nudnych i powtarzalnych zadań, w tym zarządzanie transakcjami i generowanie zapytań SQL. Dzięki temu implementacja warstwy persystencji została zredukowana do prostego mapowania encji domenowych na modele bazodanowe i odwrotnie, oraz implementacji repozytoriów Spring Data JPA. Przykładowym odpowiednikem encji domenowej w warstwie persystencji jest klasa `ClientDatabaseModel`, która zawiera definicję encji wraz z adnotacjami JPA:
 
 ```kotlin
 @Entity(name = "Client")
@@ -4229,13 +4229,306 @@ Taką migrację włączamy do głownego pliku migracji `db.changelog-master.xml`
 
 Spring Data JPA automatycznie wykryje plik migracji i wykona go podczas uruchamiania aplikacji. W przypadku gdy schemat bazy danych nie będzie zgodny ze schematem JPA, aplikacja nie uruchomi się i wyświetli stosowny komunikat o błędzie. W innym przypadku, aplikacja uruchomi się i będzie gotowa do pracy.
 
-Podsumowując, implementacja warstwy persystencji w projekcie jest bardzo prosta i przejrzysta, nie łamie czystości architektury i jest w pełni zgodna z zasadami DDD. Użycie Spring Data JPA pozwala na uniknięcie wielu powszechnych błędów i znacząco upraszcza implementację warstwy persystencji. W połączeniu z Liquibase, implementacja warstwy persystencji jest bardzo prosta i nie wymaga dużo wysiłku, a też jest odporna na błędy i łatwa w utrzymaniu.
+Analogicznie, zostaje zaimplementowana inna część warstwy persystencji - schowek plików. Jest on równie prosty i przejrzysty jak repozytoria domenowe i w zasadzie jest prostą obudową nad klientem MinIO:
+
+```kotlin
+@Service
+class MinioStorageService(
+    private val minioClient: MinioClient
+) : FileStorageService {
+
+    override fun load(location: String, name: String): InputStream {
+        return minioClient.getObject(
+            GetObjectArgs.builder()
+                .bucket(location)
+                .`object`(name)
+                .build()
+        )
+    }
+
+    override fun store(location: String, name: String, dataStream: InputStream) {
+        minioClient.putObject(
+            PutObjectArgs.builder()
+                .bucket(location)
+                .`object`(name)
+                .stream(dataStream, dataStream.available().toLong(), -1)
+                .build()
+        )
+    }
+
+    override fun delete(location: String, name: String) {
+        minioClient.removeObject(
+            RemoveObjectArgs.builder()
+                .bucket(location)
+                .`object`(name)
+                .build()
+        )
+    }
+}
+```
+
+Podsumowując, implementacja warstwy persystencji w projekcie jest bardzo prosta i przejrzysta, nie łamie czystości architektury i jest w pełni zgodna z zasadami DDD. Użycie Spring Data JPA pozwala na uniknięcie wielu powszechnych błędów i znacząco upraszcza implementację warstwy persystencji. W połączeniu z Liquibase, implementacja warstwy persystencji jest bardzo prosta i nie wymaga dużo wysiłku, a też jest odporna na błędy i łatwa w utrzymaniu. Równie prosta jest implementacja schowka plików, która ze względu na swoją prostotę też jest przejrzysta i czytelna.
 
 #### Warstwa aplikacji - serwisy aplikacyjne
 
-* Dla każdego serwisu domenowego jest serwis aplikacyjny
-* Implementacja serwisów aplikacyjnych
-* Mapowanie encji na widoki
+Jeśli warstwa persystencji w aplikacji jest implementacją portów wyjściowych, to warstwa serwisów aplikacyjnych i kontrolerów jest implementacją portów wejściowych. Serwisy aplikacyjne są odpowiednikiem adapterów z warstwy persystencji - są odpowiedzialne za mapowanie modeli domenowych na modele widoków oraz przetłumaczenie żądań tak, żeby były zgodne z interfejsami serwisów i repozytoriów domenowych. Serwisy aplikacyjne dodatkowo odpawiadają za transakcje, możliwe cache'owanie i inne aspekty, które są związane z warstwą aplikacji. Implementacja serwisów aplikacyjnych jest bardzo prosta i przejrzysta, na przykład:
+
+```kotlin
+@Service
+@Transactional(propagation = Propagation.REQUIRED)
+class ClientApplicationService(
+    private val service: ClientService,
+    private val repository: ClientRepository,
+    private val specificationBuilder: SpecificationBuilder<Client>
+) {
+
+    private val logger = loggerFor(this::class.java)
+
+    @Cacheable("clients-cache")
+    fun getClients(query: FilteredRequest<Client>): Page<ClientResponse> {
+        logger.info("getClients($query)")
+        return repository.get(query.toQuery(specificationBuilder)).map { it.toView() }
+    }
+
+    @Cacheable("clients-cache")
+    fun getClient(id: UUID): ClientResponse {
+        logger.info("getClient($id)")
+        return repository.get(ClientId(id))?.toView() ?: throw NotFoundException("Client with id $id not found")
+    }
+
+    @CacheEvict("clients-cache", allEntries = true)
+    fun createClient(request: CreateClient): ClientResponse {
+        logger.info("createClient($request)")
+        val client = service.create(
+            request.name,
+            request.email,
+            request.phone,
+            request.address,
+            request.city,
+            request.state,
+            request.zip,
+            CountryCode(request.countryCode),
+            request.vat,
+            request.notes,
+            ClientTypeId(request.clientTypeId)
+        )
+        return client.toView()
+    }
+
+    @CacheEvict("clients-cache", allEntries = true)
+    fun updateClient(id: UUID, request: UpdateClient): ClientResponse {
+        logger.info("updateClient($id, $request)")
+        val client = service.update(
+            ClientId(id),
+            request.name,
+            request.email,
+            request.phone,
+            request.address,
+            request.city,
+            request.state,
+            request.zip,
+            CountryCode(request.countryCode),
+            request.vat,
+            request.notes,
+            ClientTypeId(request.clientTypeId)
+        )
+        return client.toView()
+    }
+
+    @CacheEvict("clients-cache", allEntries = true)
+    fun activateClient(id: UUID): ClientStatus {
+        logger.info("activateClient($id)")
+        return service.activate(ClientId(id)).toActivityStatus()
+    }
+
+    @CacheEvict("clients-cache", allEntries = true)
+    fun deactivateClient(id: UUID): ClientStatus {
+        logger.info("deactivateClient($id)")
+        return service.deactivate(ClientId(id)).toActivityStatus()
+    }
+}
+```
+
+Ważne aspekty:
+
+1. **Transakcje**: Serwisy aplikacyjne są odpowiedzialne za zarządzanie transakcjami. W tym przykładzie, cały serwis jest oznaczony adnotacją `@Transactional`, która definiuje, że wszystkie metody w serwisie będą wykonywane w ramach jednej transakcji. Jest to kluczowe dla zapewnienia spójności danych i integralności modelu domenowego. Cała odpowiedzialność za poprawną implementację transakcyjności leży po stronie Spring Data JPA.
+2. **Cache'owanie**: Serwisy aplikacyjne mogą być oznaczone adnotacją `@Cacheable`, która definiuje, że wynik metody będzie cache'owany. Jest to przydatne w przypadku, gdy wynik metody jest zawsze taki sam dla tych samych parametrów. Jest to przydatne dla metod, które są wywoływane bardzo często i zwracają te same wyniki. Prykładem może być np. lista klięntów, która jest zmieniana bardzo rzadko, a jest wyświetlana bardzo często. Cache'owanie pozwala na uniknięcie wielu zapytań do bazy danych i znacząco poprawia wydajność aplikacji. Cache'owanie w aplikacji używa systemu Redis, który jest bardzo wydajny i łatwy w konfiguracji. Należy po prostu dodać odpowiednią konfigurację do pliku `application.yml`:
+
+    ```yaml
+    spring:
+      data:
+        redis:
+          host: localhost
+          port: 6379
+          password: 1qaz@WSX
+          timeout: 60000
+    ```
+
+    Po tym trzeba odpowiednio skonfigurować cache'owanie w aplikacji, dodając konfigurację: 
+
+    ```kotlin
+    @ConfigurationProperties(prefix = "app")
+    class RedisCacheProperties(cacheConfigurations: List<CacheProperties>) {
+        val caches = cacheConfigurations
+
+        data class CacheProperties(
+            var ttl: Long = 86400,
+            var name: String = "cache",
+            var unit: String = "SECONDS"
+        )
+    }
+
+    @Configuration
+    class RedisCacheConfig(private val cacheProperties: RedisCacheProperties) {
+
+        private val logger = loggerFor(this::class.java)
+
+        @Bean
+        fun cacheConfiguration() = RedisCacheConfiguration.defaultCacheConfig()
+
+        @Bean
+        fun redisCacheManagerBuilderCustomizer() =
+            RedisCacheManagerBuilderCustomizer { builder ->
+                logger.info("Configuring Redis cache manager")
+                cacheProperties.caches.forEach { (ttl, name, unit) ->
+                    logger.info("Configuring Redis cache: $name with TTL: $ttl $unit")
+                    builder.defaultFor(name, ttl, ChronoUnit.valueOf(unit))
+                }
+            }
+
+        private val kotlinModule = KotlinModule.Builder()
+            .withReflectionCacheSize(512)
+            .configure(KotlinFeature.NullToEmptyCollection, false)
+            .configure(KotlinFeature.NullToEmptyMap, false)
+            .configure(KotlinFeature.NullIsSameAsDefault, false)
+            .configure(KotlinFeature.SingletonSupport, false)
+            .configure(KotlinFeature.StrictNullChecks, false)
+            .build()
+
+        private val javaTimeModule = JavaTimeModule()
+
+        private val typeValidator = BasicPolymorphicTypeValidator.builder()
+            .allowIfBaseType(Any::class.java)
+            .build()
+
+        private val objectMapper = ObjectMapper()
+            .registerModule(kotlinModule)
+            .registerModule(javaTimeModule)
+            .activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.EVERYTHING)
+
+        private fun duration(seconds: Long, unit: TemporalUnit) = Duration.of(seconds, unit)
+
+        private fun RedisCacheManagerBuilder.defaultFor(name: String, ttl: Long, unit: TemporalUnit) =
+            withCacheConfiguration(
+                name,
+                RedisCacheConfiguration.defaultCacheConfig()
+                    .entryTtl(duration(ttl, unit))
+                    .disableCachingNullValues()
+                    .serializeValuesWith(
+                        SerializationPair.fromSerializer(
+                            GenericJackson2JsonRedisSerializer(objectMapper)
+                        )
+                    )
+            )
+    }
+    ```
+
+    Po tym, można wygodnie dodawać i usuwać cache'y w aplikacji, dodając lub usuwając wpisy w pliku `application.yml` i dodając odpowiednią adnotację do metody serwisu jak w przykładzie powyżej. Przykładowa konfiguracja cache'owania w pliku `application.yml` wygląda następująco:
+
+    ```yaml
+    app:
+      cache-configurations:
+        - name: countries-client-cache
+          ttl: 7
+          unit: DAYS
+        - name: languages-client-cache
+          ttl: 7
+          unit: DAYS
+        - name: currencies-client-cache
+          ttl: 1
+          unit: DAYS
+        - name: client-types-cache
+          ttl: 86400
+        - name: clients-cache
+          ttl: 86400
+      ```
+
+3. **Mapowanie modeli**: Serwisy aplikacyjne są odpowiedzialne za mapowanie żadań na modele domenowe i modeli domenowych na odpowiedzi, które będą zgodne z interfejsami serwisów i repozytoriów domenowych. przykładem takiego żądania jest wspomniany w serwisie `CreateClient`:
+
+    ```kotlin
+    data class CreateClient(
+        @field:[NotBlank(message = "Name is required")] val name: String,
+        @field:[NotBlank(message = "Email is required") Email] val email: String,
+        @field:[NotBlank(message = "Phone is required")] val phone: String,
+        @field:[NotBlank(message = "Address is required")] val address: String,
+        @field:[NotBlank(message = "City is required")] val city: String,
+        @field:[NotBlank(message = "State is required")] val state: String,
+        @field:[NotBlank(message = "Zip is required")] val zip: String,
+        @field:[NotBlank(message = "Country code is required")] val countryCode: String,
+        val vat: String,
+        val notes: String,
+        val clientTypeId: UUID
+    )
+    ```
+
+    W serwisie aplikacji, ten obiekt jest rozkłdany na poszczególne parametry metody `create` serwisu domenowego. Zauważalne są dodatkowe adnotację walidacyjne, które odpowiadają za walidację żądania. Walidacja ta jest wykonywana jeszcze przed wywołaniem metody serwisu aplikacyjnego w kontrolerze.
+
+    Z kolei, przykładem mapowania modelu domenowego na odpowiedź są metody `toView` i `toActivityStatus` rozszerzające klasę `Client`:
+
+    ```kotlin 
+    object ClientMapper {
+
+        fun Client.toView() = ClientResponse(
+            id = id.value,
+            name = name,
+            email = email,
+            phone = phone,
+            address = address,
+            city = city,
+            state = state,
+            zip = zip,
+            country = country.toView(),
+            vat = vat,
+            notes = notes,
+            type = type.toView(),
+            active = active
+        )
+
+        fun Client.toActivityStatus() = ClientStatus(
+            id = id.value,
+            active = active
+        )
+    }
+    ```
+
+    Takie mapowanie jest potrzebne, bo chcemy oddzielić model domenowy od modelu odpowiedzi i uniknąć przypadkowego ujawnienia wrażliwych danych. Takie metody mapujące są bardzo czytelne, szczególnie w miejscu ich wywołania. Każda encja domenowa, która jest udostępniana przez aplikację, ma co najmniej jedną metodę mapującą na odpowiedź, która jest wykorzystywana w serwisach aplikacyjnych.
+
+Ostatnim krokiem serwis domenowy ma być zarajestrowany w kontekśie Springa, żeby mógł być wstrzykiwany w serwisy aplikacyjne. Do tego należy stworzyć klasę konfiguracyjną, która będzie odpowiedzialna za konfigurację serwisu i jego rejestrację:
+
+```kotlin
+@Configuration
+class ClientConfig(
+    private val clientRepository: ClientRepository,
+    private val clientTypeRepository: ClientTypeRepository,
+    private val countryRepository: CountryRepository
+) {
+
+    @Bean
+    fun clientService(): ClientService = ClientServiceImpl(
+        clientRepository,
+        clientTypeRepository,
+        countryRepository,
+        loggerFor(ClientService::class.java)
+    )
+
+    @Bean
+    fun clientSpecificationBuilder() = ClientSpecificationBuilder
+}
+```
+
+Taka konfiguracja zbiera i wstrykuje wszystkie zależności w serwis i zwraca go jako bean Springa. Dzięki temu, serwis będzie mógł być wstrzykiwany w serwisy aplikacyjne i kontrolery.
+
+Podsumowując, serwisy aplikacji są odpowiedzialne za oddzielenie domeny aplikacji od zewnetrznęgo świata. Są one odpowiedzialne za mapowanie modeli domenowych na modele widoków, przetłumaczenie żądań na żądania domenowe, zarządzanie transakcjami i cache'owaniem. Prostotę implementacji zapewniają możliwości frameworku Spring, który zapewnia między innym mechanizm wstrzykiwania zależności. Implementacja serwisów aplikacyjnych jest bardzo prosta i przejrzysta, a ich odpowiedzialności są dobrze zdefiniowane i jasne.
 
 #### Warstwa aplikacji - kontrolery
 
