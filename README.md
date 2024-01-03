@@ -64,8 +64,8 @@
     * [Narzędzie Gradle](#narzędzie-gradle)
     * [Warstwa domeny - encje](#warstwa-domeny---encje)
     * [Warstwa domeny - repozytoria](#warstwa-domeny---repozytoria)
+    * [Warstwa domeny - zapytania i specyfikacje](#warstwa-domeny---zapytania-i-specyfikacje)
     * [Warstwa domeny - serwisy](#warstwa-domeny---serwisy)
-    * [Warstwa domeny - specyfikacje](#warstwa-domeny---specyfikacje)
     * [Warstwa aplikacji - persystencja](#warstwa-aplikacji---persystencja)
     * [Warstwa aplikacji - serwisy aplikacyjne](#warstwa-aplikacji---serwisy-aplikacyjne)
     * [Warstwa aplikacji - kontrolery](#warstwa-aplikacji---kontrolery)
@@ -3505,10 +3505,447 @@ W kontekście serwera aplikacji, Gradle zostanie wykorzystany do budowania aplik
 
 Konfiguracja Gradle w projekcie Spring Boot jest zwykle prosta i nie wymaga dodatkowych zmian po wygenerowaniu projektu za pomocą Spring Initializr. Plik build.gradle.kts zawiera wszystkie niezbędne informacje dotyczące zależności i zadań budowania, podczas gdy settings.gradle.kts określa nazwę i konfigurację projektu. Użycie Gradle w projekcie Spring Boot zapewnia deweloperom potężne narzędzie do zarządzania zależnościami, budowania aplikacji oraz automatyzacji wielu innych zadań związanych z cyklem życia oprogramowania.
 
-#### Warstwa domeny - encje
+#### Warstwa domeny - model
+
+Model domenowy jest kluczowym elementem w projektowaniu oprogramowania, szczególnie w metodologii Domain-Driven Design (DDD). Jest to abstrakcyjna reprezentacja aspektów biznesowych systemu, która ułatwia rozumienie i zarządzanie złożonością biznesową. Model domeny w pryzpadku systemu organizacji pracy dla biura tłumaczeń jest reprezentowany przez obiekty wartości oraz encje:
+
+* **Obiekty wartości (value objects)** - proste obiekty, które są definiowane przez ich atrybuty i nie posiadają własnej tożsamości. Są niemutowalne, co oznacza, że ich stan nie zmienia się po utworzeniu. Obiekty wartości są wykorzystywane do reprezentowania koncepcji, takich jak kwoty pieniężne, daty, identyfikatory itp. Są one kluczowe dla wyrażenia szczegółów biznesowych i zapewnienia integralności modelu domenowego.
+* **Encje (entities)** - obiekty, które mają unikalną tożsamość i są rozpoznawalne niezależnie od swoich atrybutów. Tożsamość ta pozwala na śledzenie i interakcję z encją przez cały cykl życia aplikacji. Encje są opisane poprzez atrybuty (stan) i metody (zachowanie). Atrybuty reprezentują właściwości encji, natomiast metody definiują sposób interakcji z encją i zmiany jej stanu. Encje często zawierają obiekty wartości jako część swojej struktury, wykorzystując je do reprezentowania określonych aspektów bez potrzeby nadawania im unikalnej tożsamości.
+
+Rozpatrzmy przykład encji na podstawie klasy `net.nuclearprometheus.tpm.applicationserver.domain.model.client.Client`:
+
+```kotlin
+class Client(
+    id: ClientId = ClientId(),
+    name: String,
+    email: String,
+    phone: String,
+    address: String,
+    city: String,
+    state: String,
+    zip: String,
+    country: Country,
+    vat: String? = null,
+    notes: String,
+    type: ClientType,
+    active: Boolean = true
+): Entity<ClientId>(id) {
+
+    init {
+        validate {
+            assert { name.isNotBlank() } otherwise {
+                ValidationError("name", "Name cannot be blank")
+            }
+            assert { email.isNotBlank() } otherwise {
+                ValidationError("email", "Email cannot be blank")
+            }
+            assert { phone.isNotBlank() } otherwise {
+                ValidationError("phone", "Phone cannot be blank")
+            }
+            assert { address.isNotBlank() } otherwise {
+                ValidationError("address", "Address cannot be blank")
+            }
+            assert { city.isNotBlank() } otherwise {
+                ValidationError("city", "City cannot be blank")
+            }
+            assert { state.isNotBlank() } otherwise {
+                ValidationError("state", "State cannot be blank")
+            }
+            assert { zip.isNotBlank() } otherwise {
+                ValidationError("zip", "Zip cannot be blank")
+            }
+            assert { type.corporate && !vat.isNullOrBlank() } otherwise {
+                ValidationError("vat", "VAT cannot be blank for corporate clients")
+            }
+            assert { type.active } otherwise {
+                ValidationError("type", "Client type cannot be inactive")
+            }
+        }
+    }
+
+    var name: String = name; private set
+    var email: String = email; private set
+    var phone: String = phone; private set
+    var address: String = address; private set
+    var city: String = city; private set
+    var state: String = state; private set
+    var zip: String = zip; private set
+    var country: Country = country; private set
+    var vat: String? = vat; private set
+    var notes: String = notes; private set
+    var type: ClientType = type; private set
+    var active: Boolean = active; private set
+
+    fun update(
+        name: String,
+        email: String,
+        phone: String,
+        address: String,
+        city: String,
+        state: String,
+        zip: String,
+        country: Country,
+        vat: String?,
+        notes: String,
+        type: ClientType
+    ) {
+        val typeChanged = { this.type.id != type.id }
+
+        validate {
+            assert { name.isNotBlank() } otherwise {
+                ValidationError("name", "Name cannot be blank")
+            }
+            assert { email.isNotBlank() } otherwise {
+                ValidationError("email", "Email cannot be blank")
+            }
+            assert { phone.isNotBlank() } otherwise {
+                ValidationError("phone", "Phone cannot be blank")
+            }
+            assert { address.isNotBlank() } otherwise {
+                ValidationError("address", "Address cannot be blank")
+            }
+            assert { city.isNotBlank() } otherwise {
+                ValidationError("city", "City cannot be blank")
+            }
+            assert { state.isNotBlank() } otherwise {
+                ValidationError("state", "State cannot be blank")
+            }
+            assert { zip.isNotBlank() } otherwise {
+                ValidationError("zip", "Zip cannot be blank")
+            }
+            assertIf(typeChanged) { type.corporate && !vat.isNullOrBlank() } otherwise {
+                ValidationError("vat", "VAT cannot be blank for corporate clients")
+            }
+            assertIf(typeChanged) { type.active } otherwise {
+                ValidationError("type", "Client type cannot be inactive")
+            }
+        }
+
+        this.name = name
+        this.email = email
+        this.phone = phone
+        this.address = address
+        this.city = city
+        this.state = state
+        this.zip = zip
+        this.country = country
+        this.vat = vat
+        this.notes = notes
+        this.type = type
+    }
+
+    fun activate() {
+        active = true
+    }
+
+    fun deactivate() {
+        active = false
+    }
+}
+```
+
+Klasa `Client` dziedziczy po klasie `Entity`, która jest abstrakcyjną klasą bazową dla wszystkich encji w systemie. Klasa `Entity` jest odpowiedzialna za zapewnienie, że każda encja ma unikalny identyfikator, który jest używany do rozpoznawania i różnicowania encji. Klasa `Entity` wygląda następująco:
+
+```kotlin
+open class Entity<TId>(val id: TId) where TId : Id<*>
+```
+
+Identyfikator encji jest reprezentowany przez klasę `Id`, która jest abstrakcyjną klasą bazową dla wszystkich identyfikatorów w systemie. Klasa `Id` jest odpowiedzialna za zapewnienie, że każdy identyfikator jest unikalny. Klasa `Id` wygląda następująco:
+
+```kotlin
+open class Id<T>(val value: T): Comparable<Id<T>> where T : Comparable<T>, T : Any {
+    override fun compareTo(other: Id<T>) = value.compareTo(other.value)
+    override fun equals(other: Any?) = other is Id<*> && value == other.value
+    override fun hashCode() = value.hashCode()
+    override fun toString() = value.toString()
+}
+```
+
+Identyfikatorem encji `Client` jest klasa `ClientId`, która wygląda następująco:
+
+```kotlin
+class ClientId(value: UUID = UUID.randomUUID()): Id<UUID>(value)
+```
+
+Klasa `Client` reprezentuje klienta w systemie z atrybutami takimi jak nazwa, email, telefon itp. Metody klasy umożliwiają aktualizację danych klienta, aktywację, czy dezaktywację. Kluczowe aspekty modelu domenowego, które są widoczne w tej klasie to:
+
+1. **Tożsamość Encji**: Encja `Client` ma unikalny identyfikator `ClientId`, który służy jako jej tożsamość. Jest to zgodne z zasadą DDD, gdzie encje są rozpoznawane i różnicowane przez ich tożsamość.
+2. **Atrybuty i Stan**: Klasa zawiera atrybuty, takie jak name, email, phone, address, które reprezentują stan encji. Stan ten może się zmieniać, ale tożsamość encji pozostaje stała.
+3. **Zachowania Encji**: Metody takie jak update, activate, deactivate reprezentują zachowania encji. Pozwalają one na zmianę stanu encji w kontrolowany sposób, co jest kluczowym elementem zarządzania stanem w DDD.
+4. **Walidacja Stanu**: W konstruktorze i metodzie update używane są asercje do walidacji stanu encji. Jest to istotne, aby upewnić się, że encja zawsze pozostaje w spójnym i ważnym stanie.
+5. **Enkapsulacja**: Stan encji jest prywatny, a zmiany mogą być wprowadzane tylko za pomocą zdefiniowanych metod. Zapewnia to, że wszystkie zmiany stanu są poprawne i zgodne z regułami biznesowymi.
+6. **Reagowanie na Zmiany**: Metoda update pozwala na zmianę wielu atrybutów encji jednocześnie, co jest przydatne w przypadkach, gdy zmiany są powiązane i muszą być wykonane razem.
+7. **Proaktywne Zarządzanie Stanem**: Metody activate i deactivate są prostymi przykładami zarządzania stanem encji, pokazując jak encja może mieć wewnętrzne logiki zmieniające jej stan.
+
+Dotrzymując reprezentowanych przez klasę `Client` zasad DDD, zostały zaimplementowane pozostałe encje w systemie, takie jak `Project`, `Task`, `TaskStatus`, `TimeEntry` i inne. Warto też wspomnieć jednak o pozostałych zasadach DDD, takich jak agregaty czy fabryki, które nie są dotrzymywane w projekcie. W przypadku agregatów, nie ma potrzeby ich stosowania, ponieważ encje rzadko są powiązane ze sobą w sposób, który wymagałby ich grupowania. W przypadku fabryk - encje są tworzone w sposób relatywnie prosty, bez potrzeby wykorzystywania zewnętrznych zasobów. Warto pamiętać, że metodologię powinne pomagać w rozwiązywaniu problemów, a nie je tworzyć, i wprowadzenie agregatów i fabryk w tym przypadku nie wniosłoby niczego wartościowego do projektu, a jedynie zwiększyło by jego złożoność. W podsumowaniu, model domeny wygląda następująco:
+
+[![Model domeny](./docs/domain-model.png)](./docs/domain-model.png)
+
 #### Warstwa domeny - repozytoria
+
+Repozytoria w DDD pełnią kluczową rolę w dostarczaniu encji z bazy danych. Są one odpowiedzialne za abstrakcję i enkapsulację sposobu, w jaki obiekty domenowe są przechowywane i odzyskiwane, co pozwala na oddzielenie logiki biznesowej od szczegółów przechowywania danych. Repozytoria są integralną częścią warstwy domeny, ponieważ bezpośrednio współpracują z encjami, które stanowią rdzeń modelu domenowego. Dostarczają one niezbędnych operacji do zapisywania, odzyskiwania i zarządzania życiem encji.
+
+W projekcie dotrzymywane są zasady architektury heksagonalnej, która zakłada, że warstwa domeny nie powinna zależeć od żadnych innych warstw. W przypadku repozytoriów taka implementacja nie jest możliwa, więc zastosowano podejście, w którym interfejsy repozytoriów są częścią warstwy domeny, natomiast ich implementacje są częścią warstwy aplikacji. Interfejsy repozytoriów definiują kontrakt, który musi być spełniony przez ich implementacje. Określają one dostępne operacje, takie jak wyszukiwanie, dodawanie, usuwanie oraz aktualizacja encji, bez ujawniania szczegółów implementacji. Interfejsy repozytoriów, jako część warstwy domeny, zapewniają spójny i modularny sposób na dostęp do obiektów domenowych, co jest kluczowe dla utrzymania czystości i jasności modelu domenowego.
+
+Więksość repozytoriów w projekcie dziedziczy po interfejsie `BaseRepository`. Interfejs ten jest intefejsem generycznym, który definiuje podstawowe operacje dla wszystkich encji w systemie. Interfejs `BaseRepository` wygląda następująco:
+
+```kotlin
+interface BaseRepository<TEntity : Entity<TEntityId>, TEntityId : Id<*>> {
+
+    fun getAll(): List<TEntity>
+    fun get(id: TEntityId): TEntity?
+    fun get(ids: List<TEntityId>): List<TEntity>
+    fun get(query: Query<TEntity>): Page<TEntity>
+    fun create(entity: TEntity): TEntity
+    fun createAll(entities: List<TEntity>): List<TEntity>
+    fun update(entity: TEntity): TEntity
+    fun updateAll(entities: List<TEntity>): List<TEntity>
+    fun delete(id: TEntityId)
+    fun deleteAll(ids: List<TEntityId>)
+}
+```
+
+Taka definicja pozwala na krótką i zwięzłą definicje interfejsów repozytoriów dla poszczególnych encji. Przykładem takiego interfejsu jest interfejs `ClientRepository`, który wygląda następująco:
+
+```kotlin
+interface ClientRepository : BaseRepository<Client, ClientId>
+```
+
+W przypadku repozytoriów, które wymagają bardziej złożonych operacji, można zdefiniować dodatkowe metody w interfejsie repozytorium, jak w `ProjectRepository`, które wygląda następująco:
+
+```kotlin
+interface ProjectRepository : BaseRepository<Project, ProjectId> {
+
+    fun getProjectsForUser(userId: UserId, query: Query<Project>): Page<Project>
+}
+```
+
+Takie dodatkowe metody pomagają zdefiniować operacje specyficzne dla danej encji, które mogą być wymagane w różnych kontekstach. W miarę rozwoju projektu, interfejsy repozytoriów mogą być rozszerzane o dodatkowe metody bez konieczności przebudowywania całej architektury systemu. Te metody umożliwiają realizację bardziej złożonych operacji, które mogą wymagać integracji wielu encji lub specyficznych reguł biznesowych. Dodatkowo, przenoszą one realizację złożonych zapytań do repozytoriów, przez co serwisy mogą się skupić na realizacji logiki biznesowej. Dzięki możliwości definiowania specyficznych metod, repozytoria mogą implementować optymalizacje zapytań, co jest kluczowe w przypadkach, gdy standardowe metody CRUD nie są wystarczająco wydajne dla określonych przypadków użycia.
+
+Repozytoria są niezbędne do utrzymania czystości i modułowości architektury, zapewniając, że zmiany w modelu domenowym lub w warstwie danych nie wpływają negatywnie na pozostałe części systemu. Ich elastyczność i możliwość rozszerzania są kluczowe dla skalowalności i ewolucji systemu, umożliwiając adaptację do zmieniających się wymagań biznesowych i technologicznych. Repozytoria w DDD stanowią zatem nie tylko techniczne rozwiązanie dla dostępu do danych, ale są integralną częścią architektury systemu, odgrywającą kluczową rolę w utrzymaniu jego integralności, elastyczności i skalowalności.
+
+#### Warstwa domeny - zapytania i specyfikacje
+
+Specyfikacje w Domain-Driven Design (DDD) służą do definiowania złożonych reguł biznesowych w sposób deklaratywny. Wzorzec Specification pozwala na oddzielenie logiki zapytań od encji biznesowych. Specyfikacje są wykorzystywane do tworzenia elastycznych i czytelnych kryteriów zapytań, co pozwala na efektywniejsze i bardziej zorganizowane operacje na danych. Implementacja specyfikacji w warstwie domeny jest w pełni abstrakcyjna i deleguję interpretację specyfikacji do warstwy aplikacji. Pozwala to na zachowanie czystości i modularności modelu domenowego, jednocześnie zapewniając elastyczność i skalowalność w warstwie aplikacji. Podczas implementacji specyfikacji w projekcie, zostały wykorzystane zalety języka Kotlin, takie jak funkcje wyższego rzędu, funkcje rozszerzające, funkcje lokalne, funkcje infixowe, wyrażenia lambda i wiele innych, co pozwoliło na stworzenie czytelnego i łatwego w obsłudze DSL (Domain-Specific Language) do tworzenia specyfikacji.
+
+W projekcie specyfikacje są zaimplementowane w postaci abstrakcyjnej klasy `Specification` i jej pochodnych:
+
+```kotlin
+sealed class Specification<TEntity : Any> {
+    class AndSpecification<TEntity : Any>(val left: Specification<TEntity>, val right: Specification<TEntity>) : Specification<TEntity>() {
+        // hashCode i equals jak w ParameterizedSpecification
+    }
+
+    // OrSpecification, NotSpecification, TrueSpecification, FalseSpecification analogicznie do AndSpecification
+
+    abstract class ParameterizedSpecification<TEntity : Any>(val name: String) : Specification<TEntity>() {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is ParameterizedSpecification<*>) return false
+
+            if (name != other.name) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return name.hashCode()
+        }
+    }
+}
+```
+
+Widzimy tutaj podstawowe specyfikacje reprezentujące operatory logiczne, takie jak `AndSpecification`, `OrSpecification`, `NotSpecification` i wartości logiczne `TrueSpecification` oraz `FalseSpecification`. Operatory logiczne pozwalają na kompozycję prostych zapytań w bardziej złożone. Z kolei `ParameterizedSpecification` jest klasą podstawową dla konkretnych specyfikacji, takich jak `BooleanSpecification`, `ComparableSpecification`, `CollectionSpecification` i inne:
+
+```kotlin
+sealed class ComparableSpecification {
+    class Eq<TEntity : Any, TValue : Comparable<TValue>>(name: String, val value: TValue) : Specification.ParameterizedSpecification<TEntity>(name)
+    class IsNull<TEntity : Any>(name: String) : Specification.ParameterizedSpecification<TEntity>(name)
+    // Gt, Gte, Lt, Lte, AnyElement, NoneElement analogicznie do powyższych
+}
+```
+
+Taka architektura pozwala stworzyć abstrakcyjną specyfikację, interpretację której można zdelegować do warstwy aplikacji. Żeby zapewnić jeszcze większą wygodę w tworzeniu specyfikacji, został stworzony `SpecificationBuilder`:
+
+```kotlin
+abstract class SpecificationBuilder<TEntity : Any> {
+
+    protected val specificationFactories = mutableMapOf<String, SpecificationFactory<TEntity>>()
+
+    protected fun registerSpecificationFactory(name: String, specificationBuilder: SpecificationFactory<TEntity>) {
+        specificationFactories[name] = specificationBuilder
+    }
+
+    fun createSpecification(field: String, operator: Operator, value: String?): Specification<TEntity> {
+        val builder = specificationFactories[field] ?: throw IllegalArgumentException("Unknown field $field")
+        return builder.createSpecification(field, operator, value)
+    }
+
+    infix fun <TEntity : Any> Specification<TEntity>.and(other: Specification<TEntity>): Specification<TEntity> {
+        return Specification.AndSpecification(this, other)
+    }
+
+    infix fun <TEntity : Any> Specification<TEntity>.or(other: Specification<TEntity>): Specification<TEntity> {
+        return Specification.OrSpecification(this, other)
+    }
+
+    fun <TEntity : Any> not(specification: Specification<TEntity>): Specification<TEntity> {
+        return Specification.NotSpecification(specification)
+    }
+
+    fun <TValue : Comparable<TValue>> comparable(name: String, valueClass: KClass<TValue>): ComparableSpecificationBuilder<TValue> {
+        val builder = ComparableSpecificationBuilder(name, valueClass)
+        registerSpecificationFactory(name, builder)
+        return builder
+    }
+
+    inner class ComparableSpecificationBuilder<TValue : Comparable<TValue>>(val name: String, val valueClass: KClass<TValue>): SpecificationFactory<TEntity> {
+
+        override fun createSpecification(field: String, operator: Operator, value: String?): Specification<TEntity> {
+            val valueParser = ValueParserFactory.getParser(valueClass)
+            return when (operator) {
+                Operator.EQUALS -> {
+                    val parsedValue = requireNotNull(valueParser.parse(value)) { "Value must not be null for specification $field:$operator. For null values use IS_NULL operator" }
+                    eq(parsedValue)
+                }
+                Operator.GREATER_THAN -> {
+                    val parsedValue = requireNotNull(valueParser.parse(value)) { "Value must not be null for specification $field:$operator. For null values use IS_NULL operator" }
+                    gt(parsedValue)
+                }
+                // Pozostałe operatory
+                else -> throw IllegalArgumentException("Unknown operator $operator")
+            }
+        }
+
+        infix fun eq(value: TValue): Specification<TEntity> {
+            return ComparableSpecification.Eq(name, value)
+        }
+
+        infix fun gt(value: TValue): Specification<TEntity> {
+            return ComparableSpecification.Gt(name, value)
+        }
+
+        // Pozostałe operatory
+    }
+
+    // Wszystkie pozostałe specyfikacje
+}
+```
+
+Przykładem użycia SpecificationBuilder jest `ProjectSpecificationBuilder`, który wygląda następująco:
+
+```kotlin
+object ProjectSpecificationBuilder : SpecificationBuilder<Project>() {
+    val id = uniqueValue("id", UUID::class)
+    val title = string("title")
+    val sourceLanguage = uniqueValue("sourceLanguage", String::class)
+    val targetLanguages = collection("targetLanguages", String::class)
+    val accuracyId = uniqueValue("accuracyId", UUID::class)
+    val industryId = uniqueValue("industryId", UUID::class)
+    val unitId = uniqueValue("unitId", UUID::class)
+    val amount = comparable("amount", Int::class)
+    val expectedStart = comparable("expectedStart", ZonedDateTime::class)
+    val internalDeadline = comparable("internalDeadline", ZonedDateTime::class)
+    val externalDeadline = comparable("externalDeadline", ZonedDateTime::class)
+    val budget = comparable("budget", BigDecimal::class)
+    val currency = uniqueValue("currency", String::class)
+    val status = enum("status", ProjectStatus::class)
+    val clientId = uniqueValue("clientId", UUID::class)
+    
+    val finishedProject = status any listOf(ProjectStatus.CANCELLED, ProjectStatus.DELIVERED, ProjectStatus.INVOICED, ProjectStatus.PAID)
+    val overdueProject = externalDeadline lt ZonedDateTime.now() and not(finishedProject)
+}
+```
+
+Sortowanie w projekcie jest dużo prostsze i też wykorzystuje swój własny DSL, choć nie jest on tak rozbudowany jak w przypadku specyfikacji:
+
+```kotlin
+abstract class OrderByBuilder<TEntity : Any> {
+
+    fun sort(name: String): SortBuilder<TEntity> {
+        return SortBuilder(name)
+    }
+
+    class SortBuilder<TEntity : Any>(private val name: String) {
+
+        val ascending: Order<TEntity>
+            get() = Order(name, Direction.ASC)
+
+        val descending: Order<TEntity>
+            get() = Order(name, Direction.DESC)
+    }
+
+    infix fun Order<TEntity>.and(other: Order<TEntity>): Sort<TEntity> {
+        return Sort(listOf(this, other))
+    }
+
+    infix fun Sort<TEntity>.and(other: Order<TEntity>): Sort<TEntity> {
+        return Sort(this.order + other)
+    }
+}
+```
+
+Same sortowania też są znacząco prostsze niż specyfikacje, i są reprezentowane przez następujące klasy:
+
+1. **Sort** - reprezentuje sortowanie, które jest listą porządków
+    ```kotlin
+    data class Sort<TEntity : Any>(val order: List<Order<TEntity>>)
+    ```
+
+2. **Order** - reprezentuje porządek, który jest parą nazwy pola i kierunku sortowania
+    ```kotlin
+    data class Order<TEntity : Any>(val name: String, val direction: Direction)
+    ```
+
+3. **Direction** - reprezentuje kierunek sortowania, który jest typem wyliczeniowym
+    ```kotlin
+    enum class Direction {
+        ASC, DESC
+    }
+    ```
+
+Analogicznie do specyfikacji, jest to tylko abstrakcja, której zadanie jest opisać sortowanie i przekazać jego interpretację do warstwy aplikacji. Przykładem użycia OrderByBuilder jest `ProjectOrderByBuilder`, który wygląda następująco:
+
+```kotlin
+object ProjectOrderByBuilder : OrderByBuilder<Project>() {
+    val title = sort("title")
+    val expectedStart = sort("expectedStart")
+    val internalDeadline = sort("internalDeadline")
+    val externalDeadline = sort("externalDeadline")
+    val status = sort("status")
+    
+    val byDeadline = externalDeadline.ascending and internalDeadline.ascending
+}
+```
+
+Parametry paginacji z kolei można wyrazić za pomocą dwóch liczb całkowitych, które reprezentują numer strony oraz rozmiar strony. Specyfikację, sortowanie i paginację można połączyć w jeden obiekt, który jest przekazywany do repozytoriów - `Query`:
+
+```kotlin
+class Query<TEntity : Any>(
+    val specification: Specification<TEntity> = nonFiltered(),
+    val sort: Sort<TEntity> = unsorted(),
+    val page: Int? = null,
+    val size: Int? = null
+)
+```
+
+Który z kolei jest przekazywany do repozytoriów, które wykorzystują go do zapytań do bazy danyc, na przykład:
+
+```kotlin
+val query = Query(
+  specification = ProjectSpecificationBuilder.finishedProject
+  orderBy = ProjectOrderByBuilder.byDeadline,
+  page = 0,
+  size = 25  
+)
+val finishedProjects = projectRepository.get(query)
+```
+
+W projekcie zapytania są rzadko definiowane bezpośrednio w kodzie, a częściej są budowane dynamicznie na podstawie parametrów przekazanych do API aplikacji. Ta elastyczność pozwala na dostosowanie zapytań do różnorodnych wymagań użytkowników i scenariuszy użycia.
+
+Podsumowując, mechanizm zapytań i specyfikacji w projekcie stanowi fundamentalny element architektury systemu, umożliwiając tworzenie wydajnych, elastycznych i czytelnych zapytań, które są niezbędne dla efektywnego zarządzania danymi w aplikacji.
+
 #### Warstwa domeny - serwisy
-#### Warstwa domeny - specyfikacje
 #### Warstwa aplikacji - persystencja
 #### Warstwa aplikacji - serwisy aplikacyjne
 #### Warstwa aplikacji - kontrolery
