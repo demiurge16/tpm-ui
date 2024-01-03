@@ -4694,9 +4694,264 @@ Podsumowując, kontrolery są wygodnym sposobem zdefiniowania wejścia do aplika
 
 #### Warstwa aplikacji - specyfikacje
 
-* Mapowanie specyfikacji domenowych na Spring Data Specifications
-* Użycie specyfikacji w repozytoriach Spring Data
-* Wykonanie zapytań w pamieci zamiast mapowań na specyfikacje
+W rozdzdiale omawiającym wzorzec specyfikacji i jego implementację w warstwie domeny zwrócono uwagę na to, że interpretacja specyfikacji została odpowiedzilanością warstwy aplikacji. Zostało to zrobione w celu opdoiwedniego podziału warstw i zachowania czystości architektury. Dodatkowo, umożliwia to implementację interpretatorów specyfikacji korzystając z dowolnej technologii bez wpływu na warstwę domeny. Poprawnie zaimplementowany intepretator w dobrze dobranej technologii będzie miał minimalny wpływ na wydajność aplikacji.
+
+W aplikacji, specyfikacje są interpretowane za pomocą mechanizmu Criteria API, który jest dostarczony jako część Spring Data JPA. Criteria API często jest używany w wypadkach, gdy nie można zdfiniować zapytania JPQL - na przykład, gdy zapytanie jest budowane dynamicznie. Criteria API pozwala w łatwy sposób zinterpretować specyfikację domenową w postaci takiego dynamicznego zapytania. Interpretator specyfikacji w aplikacji jest zaimplementowany w postaci klasy `SpecificationFactory`:
+
+```kotlin
+abstract class SpecificationFactory<TEntity : Any, TDatabaseModel : Any> {
+
+    fun create(query: Query<TEntity>): SpringSpecification<TDatabaseModel> {
+        return SpringSpecification { root, criteriaQuery, criteriaBuilder ->
+            createPredicate(query.specification, root, criteriaQuery, criteriaBuilder)
+        }
+    }
+
+    private fun createPredicate(
+        specification: Specification<TEntity>,
+        root: Root<TDatabaseModel>,
+        criteriaQuery: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate {
+        return when (specification) {
+            is Specification.AndSpecification -> {
+                val left = createPredicate(specification.left, root, criteriaQuery, criteriaBuilder)
+                val right = createPredicate(specification.right, root, criteriaQuery, criteriaBuilder)
+                criteriaBuilder.and(left, right)
+            }
+            is Specification.OrSpecification -> {
+                val left = createPredicate(specification.left, root, criteriaQuery, criteriaBuilder)
+                val right = createPredicate(specification.right, root, criteriaQuery, criteriaBuilder)
+                criteriaBuilder.or(left, right)
+            }
+            is Specification.NotSpecification -> {
+                val spec = createPredicate(specification.specification, root, criteriaQuery, criteriaBuilder)
+                criteriaBuilder.not(spec)
+            }
+            is Specification.TrueSpecification -> {
+                criteriaBuilder.isTrue(criteriaBuilder.literal(true))
+            }
+            is Specification.FalseSpecification -> {
+                criteriaBuilder.isFalse(criteriaBuilder.literal(false))
+            }
+            is Specification.ParameterizedSpecification -> {
+                filterPredicates[specification.name].createPredicate(root, criteriaQuery, criteriaBuilder, specification)
+            }
+        }
+    }
+
+    abstract val filterPredicates: FilterPredicates<TEntity, TDatabaseModel>
+}
+```
+
+Konkretne encje z kolei muszą tylko zdefiniować w jaki sposób mają być interpretowane poszczególne specyfikacje. Na przykład, specyfikacja `ClientSpecificationFactory`:
+
+```kotlin
+@Component
+class ClientSpecificationFactory : SpecificationFactory<Client, ClientDatabaseModel>() {
+
+    override val filterPredicates = filterPredicates<Client, ClientDatabaseModel> {
+        uniqueValue("id") { root, _, _ -> root.get<UUID>("id") }
+        string("name") { root, _, _ -> root.get("name") }
+        string("email") { root, _, _ -> root.get("email") }
+        string("phone") { root, _, _ -> root.get("phone") }
+        string("address") { root, _, _ -> root.get("address") }
+        string("city") { root, _, _ -> root.get("city") }
+        string("state") { root, _, _ -> root.get("state") }
+        string("zip") { root, _, _ -> root.get("zip") }
+        uniqueValue("countryCode") { root, _, _ -> root.get<String>("countryCode") }
+        string("vat") { root, _, _ -> root.get("vat") }
+        boolean("active") { root, _, _ -> root.get("active") }
+        uniqueValue("clientTypeId") { root, _, _ -> root.join<ClientDatabaseModel, ClientTypeDatabaseModel>("type").get<UUID>("id") }
+    }
+}
+```
+
+Odpowiedzialnościa każdej konkretnej implementacji jest zdefiniowanie, jaki jest typ konkretnej specyfikacji oraz gdzie znajduje się jej wartość w modelu bazy danych. Typ konkretnej specyfikacji wyznacza jakie operacje są dostępne na tej wartości - na przykład, specyfikacja typu `uniqueValue` pozwala na sprawdzenie czy wartość jest równa wartości w specyfikacji (`Eq`), zawiera się czy nie zawiera w podanym zbiorze wartości (`AnyElement` i `NoneElement`) oraz czy wartość jest równa `null` (`IsNull`):
+
+```kotlin
+class UniqueValuePredicateFactory<TEntity : Any, TDatabaseModel : Any, TValue : Any>(
+    private val expressionSupplier: (Root<TDatabaseModel>, CriteriaQuery<*>, CriteriaBuilder) -> Expression<TValue>
+) : PredicateFactory<TEntity, TDatabaseModel>() {
+
+    override fun createPredicate(
+        root: Root<TDatabaseModel>,
+        query: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder,
+        specification: Specification.ParameterizedSpecification<TEntity>
+    ): Predicate {
+        val expression = expressionSupplier(root, query, criteriaBuilder)
+        return when (specification) {
+            is UniqueValueSpecification.Eq<*, *> -> criteriaBuilder.equal(expression, specification.value)
+            is UniqueValueSpecification.AnyElement<*, *> -> expression.`in`(specification.value)
+            is UniqueValueSpecification.NoneElement<*, *> -> criteriaBuilder.not(expression.`in`(specification.value))
+            is UniqueValueSpecification.IsNull -> criteriaBuilder.isNull(expression)
+            else -> throw IllegalArgumentException("Invalid specification type")
+        }
+    }
+}
+```
+
+Podobnie jak w domenie, interpretator specyfikacji dostał wygodny w użyciu DSL, który pozwala na zdefiniowanie konfiguracji interpretatora w czytelny i przejrzysty sposób.
+
+Takie podejście zapełnia spójność interpretacji specyfikacji dla każdej encji, a także pozwala na łatwe rozszeranie mechanizmu specyfikacji. Wystarczy dodać nową implementację `PredicateFactory` i odpowiednią konfigurację w DSL, podobnie jak w warstwie domeny.
+
+Sortowania i paginacja interpretowane są za pomocą mechanizmu `Sort` i `Pageable` Spring Data JPA. Implementacja sortowania i paginacji jest bardzo prosta i przejrzysta i nie wymaga szczegółowego omawiania:
+
+```kotlin
+fun <TEntity : Any> Query<TEntity>.toPageable(): Pageable =
+    PageRequest.of(
+        page ?: 0,
+        size ?: Int.MAX_VALUE,
+        Sort.by(
+            sort.order.map {
+                when (it.direction) {
+                    Direction.ASC -> Sort.Order.asc(it.name)
+                    Direction.DESC -> Sort.Order.desc(it.name)
+                }
+            }
+        )
+    )
+```
+
+Inny sposób interpretacji polega na wykonaniu filtrowań i sortowań w pamięci. Jest to używane w przypadku gdy żródło danych nie pozwala na wykonanie zapytań - często przy użyciu zewnętrznych API. Implementacja interpretatora ad-hoc jest analogiczna do interpretatora mapującego specyfikacje na zapytania SQL:
+
+```kotlin
+typealias ValueGetter<TEntity, TValue> = (TEntity) -> TValue?
+
+abstract class QueryExecutor<TEntity : Any> {
+
+    protected abstract val querySorters: SortExecutors<TEntity>
+    protected abstract val specificationExecutors: SpecificationExecutors<TEntity>
+
+    private fun sortComparator(sort: Sort<TEntity>): Comparator<TEntity> {
+        if (sort.order.isEmpty()) {
+            return Comparator { _, _ -> 0 }
+        }
+
+        return sort.order.map {
+            val (field, direction) = it
+            val sortComparator = querySorters[field]
+            if (direction == Direction.DESC) {
+                sortComparator.reversed()
+            } else {
+                sortComparator
+            }
+        }.reduce { acc, comparator -> acc.thenComparing(comparator) }
+    }
+
+    private fun filterPredicate(search: Specification<TEntity>): (TEntity) -> Boolean {
+        return { entity: TEntity ->
+            when (search) {
+                is Specification.AndSpecification -> {
+                    val left = filterPredicate(search.left)
+                    val right = filterPredicate(search.right)
+                    left(entity) && right(entity)
+                }
+                is Specification.OrSpecification -> {
+                    val left = filterPredicate(search.left)
+                    val right = filterPredicate(search.right)
+                    left(entity) || right(entity)
+                }
+                is Specification.NotSpecification -> {
+                    val spec = filterPredicate(search.specification)
+                    !spec(entity)
+                }
+                is Specification.TrueSpecification -> {
+                    true
+                }
+                is Specification.FalseSpecification -> {
+                    false
+                }
+                is Specification.ParameterizedSpecification -> {
+                    specificationExecutors[search.name].execute(entity, search)
+                }
+            }
+        }
+    }
+
+    fun execute(query: Query<TEntity>, items: List<TEntity>): Page<TEntity> {
+        return execute(query) { items }
+    }
+
+    fun execute(query: Query<TEntity>, supplier: () -> List<TEntity>): Page<TEntity> {
+        val filteredItems = supplier().asSequence()
+            .filter(filterPredicate(query.specification))
+            .sortedWith(sortComparator(query.sort))
+            .toList()
+
+        val totalItems = filteredItems.size
+        val totalPages = totalItems / (query.size ?: 1)
+        val currentPage = query.page ?: 0
+
+        return Page(
+            items = filteredItems.drop(currentPage * (query.size ?: 0)).take(query.size ?: Int.MAX_VALUE),
+            currentPage = currentPage,
+            totalPages = totalPages,
+            totalItems = totalItems.toLong()
+        )
+    }
+}
+```
+
+Konkretne specyfikacje są interpretowane w pamięci:
+
+```kotlin
+class BooleanSpecificationExecutor<TEntity : Any>(valueGetter: ValueGetter<TEntity, Boolean>) : SpecificationExecutor<TEntity, Boolean>(valueGetter) {
+    override fun execute(entity: TEntity, specification: Specification.ParameterizedSpecification<TEntity>): Boolean {
+        return when (specification) {
+            is BooleanSpecification.Eq -> {
+                valueGetter(entity) == specification.value
+            }
+            is BooleanSpecification.IsNull -> {
+                valueGetter(entity) == null
+            }
+            else -> {
+                throw IllegalArgumentException("Invalid filter expression: ${specification.name}")
+            }
+        }
+    }
+}
+```
+
+Zauwazamy różnicę - żadne zapytania nie są budowane, tylko wykonywane na dostarczonej kolekcji. Podobnie jak w przypadku interpretatora mapującego specyfikacje na zapytania SQL, interpretator ad-hoc musi wiedzieć jak interpretować specyfikacje, więc musimy zdefiniować konfigurację dla każdej encji osobno:
+
+```kotlin
+@Component
+class LanguageQueryExecutor : QueryExecutor<Language>() {
+
+    override val querySorters = sortExecutors<Language> {
+        sort("code", compareBy { it.id.value })
+        sort("name", compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+        sort("iso6392t", compareBy(nullsLast(String.CASE_INSENSITIVE_ORDER)) { it.iso6392T })
+        sort("iso6392b", compareBy(nullsLast(String.CASE_INSENSITIVE_ORDER)) { it.iso6392B })
+        sort("iso6391", compareBy(nullsLast(String.CASE_INSENSITIVE_ORDER)) { it.iso6391 })
+    }
+
+    override val specificationExecutors = specificationExecutors<Language> {
+        uniqueValue("code") { it.id.value }
+        string("name") { it.name }
+        uniqueValue("iso6392t") { it.iso6392T }
+        uniqueValue("iso6392b") { it.iso6392B }
+        uniqueValue("iso6391") { it.iso6391 }
+        enum("type") { it.type }
+        enum("scope") { it.scope }
+    }
+}
+```
+
+W rozdziale omawiającym specyfikację w warstwie domeny wspomniano, że specyfikacje są rządko definiowane w kodzie, a częto pochodzą z zapytań do API aplikacji. System organizacji pracy dla biura tłumaczeń posiada swój język zapytań do API, który jest parsowany i przetwarzany na specyfikacje:
+
+```kotlin
+!(name:eq:"tom" | name:eq:"jerry")
+& middlename:null
+& lastname:eq:"smith"
+| (age:gt:18 & age:lt:30)
+& occupations:in:"programmer","developer"
+& countries:in:"USA","UK"
+```
+
+Takie dynamiczne podejście pozwala na łatwe tworzenie zapytań i filtrowanie danych - wystarczy odpowiednio skonfigurować interpretator specyfikacji dla encji. Takie podejście jest idealne dla systemu i zapewnia wsparcie siatek danych dla użykowników, którzy mogą tworzyć dowolne zapytania za pomocą interfejsu użytkownika.
 
 #### Warstwa aplikacji - zewnętrzne API
 
