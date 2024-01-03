@@ -4564,8 +4564,133 @@ Podsumowując, serwisy aplikacji są odpowiedzialne za oddzielenie domeny aplika
 
 #### Warstwa aplikacji - kontrolery
 
-* Czym są kontrolery i dlaczego są potrzebne
-* Implementacja kontrolerów
+Podobnie jak repozytoria Spring Data JPA, które ukrywają szczególy pracy z bazą danych, kontrolery Spring REST API odpowiadają za uproszczenie pracy z HTTP. Kontrolery Spring Boot definiują endpointy HTTP, metody HTTP, parametry i ciało żądania, a także zwracają odpowiedzi HTTP. Dzięki nim, można zdefiniować API aplikacji w postaci kodu i nie myśleć o szczegółach implementacyjnych, takich jak parsowanie żądań, nagłowków, parametrów, serializacja odpowiedzi i wiele innych. Kontrolery Spring Boot są bardzo proste w implementacji i nie wymagają dużo wysiłku. implementacja jak i w wielu innych miejscach polega na poprawnym zdefiniowaniu adnotacji w odpowiednich miejscach. Przykładem kontrolera jest `ClientController`:
+
+```kotlin
+@RestController
+@RequestMapping("/api/v1/client")
+class ClientController(private val service: ClientApplicationService) {
+
+    private val logger = loggerFor(this::class.java)
+
+    @GetMapping("")
+    fun getClients(query: ListClients): ResponseEntity<Page<Client>> {
+        logger.info("GET /api/v1/client")
+        return ResponseEntity.ok().body(service.getClients(query))
+    }
+
+    @GetMapping("/export", produces = ["text/csv"])
+    fun export(query: ListClients): ResponseEntity<InputStreamResource> {
+        logger.info("GET /api/v1/client/export")
+
+        val accuracies = service.getClients(query)
+
+        val output = PipedOutputStream()
+        val input = PipedInputStream(output)
+
+        thread {
+            val writer = OutputStreamWriter(output)
+            val beanToCsv = StatefulBeanToCsvBuilder<ClientResponse>(writer).build()
+            beanToCsv.write(accuracies.items)
+            writer.flush()
+            writer.close()
+            output.close()
+        }
+
+        val name = "clients-${LocalDate.now()}.csv"
+
+        val resource = InputStreamResource(input)
+
+        return ResponseEntity.ok()
+            .headers(
+                HttpHeaders().apply {
+                    add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$name")
+                    add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                    add(HttpHeaders.PRAGMA, "no-cache")
+                    add(HttpHeaders.EXPIRES, "0")
+                }
+            )
+            .contentType(MediaType.parseMediaType("text/csv"))
+            .body(resource)
+    }
+
+    @GetMapping("/{clientId}")
+    fun getClientById(@PathVariable(name = "clientId") id: UUID): ResponseEntity<Client> {
+        logger.info("GET /api/v1/client/$id")
+        return ResponseEntity.ok().body(service.getClient(id))
+    }
+
+    @PostMapping("")
+    fun createClient(@RequestBody @Valid request: CreateClient): ResponseEntity<Client> {
+        logger.info("POST /api/v1/client")
+        return ResponseEntity.ok().body(service.createClient(request))
+    }
+
+    @PutMapping("/{clientId}")
+    fun updateClient(@PathVariable(name = "clientId") id: UUID, @RequestBody request: UpdateClient): ResponseEntity<Client> {
+        logger.info("PUT /api/v1/client/$id")
+        return ResponseEntity.ok().body(service.updateClient(id, request))
+    }
+
+    @PatchMapping("/{clientId}/activate")
+    fun activate(@PathVariable(name = "clientId") id: UUID): ResponseEntity<ClientStatus> {
+        logger.info("PATCH /api/v1/client/$id/activate")
+        return ResponseEntity.ok().body(service.activateClient(id))
+    }
+
+    @PatchMapping("/{clientId}/deactivate")
+    fun deactivate(@PathVariable(name = "clientId") id: UUID): ResponseEntity<ClientStatus> {
+        logger.info("PATCH /api/v1/client/$id/deactivate")
+        return ResponseEntity.ok().body(service.deactivateClient(id))
+    }
+
+    @ExceptionHandler(NotFoundException::class)
+    fun handleNotFoundException(e: NotFoundException): ResponseEntity<Unit> {
+        logger.warn("NotFoundException: ${e.message}")
+        return ResponseEntity.notFound().build()
+    }
+
+    @ExceptionHandler(ValidationException::class)
+    fun handleValidationException(e: ValidationException): ResponseEntity<ValidationErrorResponse> {
+        logger.warn("ValidationException: ${e.message}")
+        return ResponseEntity.badRequest().body(ValidationErrorResponse("Validation failed", e.errors))
+    }
+
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleIllegalStateException(e: IllegalStateException): ResponseEntity<ErrorResponse> {
+        logger.warn("IllegalStateException: ${e.message}")
+        return ResponseEntity.internalServerError().body(ErrorResponse(e.message ?: "Illegal state"))
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ValidationErrorResponse> {
+        logger.warn("MethodArgumentNotValidException: ${e.message}")
+        return ResponseEntity.badRequest().body(
+            ValidationErrorResponse(
+                "Validation failed",
+                e.fieldErrors.map { ValidationError(it.field, it.defaultMessage ?: "Validation failed" ) }
+            )
+        )
+    }
+}
+```
+
+Każdy kontroler jest oznaczony adnotacją `@RestController`, która definiuje, że klasa jest kontrolerem Spring REST API. Adnotacja `@RequestMapping` definiuje prefix endpointów kontrolera. W tym przykładzie, wszystkie endpointy kontrolera będą miały prefix `/api/v1/client`.
+
+Dalej są zaimplementowane metody kontrolera, które w swojej istocie są mapowaniami żądań HTTP na opdowiednie metody serwisów aplikacyjnych. Osiąga się to za pomocą adnotacji `@GetMapping`, `@PostMapping`, `@PutMapping`, `@PatchMapping` i `@DeleteMapping`, które definiują metodę HTTP, endpoint i inne szczegóły żądania. Wszystkie metody kontrolera zwracają obiekt `ResponseEntity`, który jest odpowiedzią HTTP. Wszystkie odpowiedzi są zwracane w postaci JSON i posiadają status HTTP 200.
+
+Kolejna odpowiedzialność kontrolera to obsługa błędów. Metody do obsługi błędów są oznaczone adnotacją `@ExceptionHandler`, która definiuje, że metoda jest odpowiedzialna za obsługę błędu i to jaki błąd obsługuje. W tym przykładzie, kontroler obsługuje cztery rodzaje wyjątków:
+
+1. `NotFoundException` - wyjątek, który jest rzucany w przypadku, gdy żądany zasób nie został znaleziony. W takim przypadku, kontroler zwraca odpowiedź HTTP 404.
+2. `ValidationException` - wyjątek, który jest rzucany w przypadku, gdy żądanie nie przeszło walidacji. W takim przypadku, kontroler zwraca odpowiedź HTTP 400.
+3. `IllegalStateException` - wyjątek, który jest rzucany w przypadku, gdy żądanie jest nieprawidłowe. W takim przypadku, kontroler zwraca odpowiedź HTTP 500.
+4. `MethodArgumentNotValidException` - wyjątek, który jest rzucany w przypadku, gdy żądanie nie przeszło walidacji. W takim przypadku, kontroler zwraca odpowiedź HTTP 400.
+
+Poprawne obsłużenie wyjątków zapewnia że praca z udpostępnionym API jest intuitywna i prosta. Jest to zapełnione poprzez poprawne użycie kodów odpowiedzi HTTP i odpowiednich komunikatów błędów. Dodatkowo pozytywnie to wpływa na bezpieczeństwo aplikacji - taka obsługa wyjątków zapobiega przypadkowemu ujawnieniu stacktrace'a, który może ujawniać architekturę aplikacji i wrażliwe dane.
+
+Trzecia odpowiedzialność - wstępna walidacja danych. Umieszczenie adnotacji walidacyjnych w klasach żądań i parametrach metod kontrolera powoduje, że Spring automatycznie waliduje żądanie przed wywołaniem metody kontrolera. W przypadku, gdy żądanie nie przeszło walidacji, kontroler rzuci wyjątek `MethodArgumentNotValidException`.
+
+Podsumowując, kontrolery są wygodnym sposobem zdefiniowania wejścia do aplikacji. Jak i w przypadku repozytoriów i serwisów aplikacyjnych, użycie Spring znacząco upracza implementację kontrolerów i gwarantuje uniknięcie wielu powszechnych błędów.
 
 #### Warstwa aplikacji - specyfikacje
 
