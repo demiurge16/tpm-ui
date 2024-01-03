@@ -4016,10 +4016,220 @@ Serwisy w warstwie domeny są niezbędne dla efektywnej implementacji i orkiestr
 
 #### Warstwa aplikacji - persystencja
 
-* Spring data JPA
-* Modele bazodanowe
-* Mapowanie encji na modele bazodanowe
-* Liquibase
+Do implementacji warstwy persystencji został użyty moduł frameworku Spring - Spring Data JPA. Spring Data JPA znacząco upraszcza implementację repozytoriów, dostarczając gotowych rozwiązań dla wielu typowych przypadków użycia - takich jak CRUD, paginacja, sortowanie, specyfikacje, audytowanie i wiele innych. Użycie Spring Data JPA ukrywa wiele nudnych i powtarzalnych zadań, w tym zarządzanie transakcjami i generowanie zapytań SQL. Dzięki temu implementacja warstwy persystencji została zredukowana do prostego mapowania encji domenowych na modele bazodanowe i odwrotnie, oraz implementacji repozytoriów Spring Data JPA. Przykładowym odpowiednikem encji domenowej w warstwie persystencji jest klasa `ClientDatabaseModel`, która zawiera definicję encji wraz z adnotacjami JPA:
+
+```kotlin
+@Entity(name = "Client")
+@Table(name = "client")
+open class ClientDatabaseModel(
+    @Id() open var id: UUID,
+    @Column(nullable = false, length = 255) open var name: String,
+    @Column(nullable = false, length = 255) open var email: String,
+    @Column(nullable = false, length = 64) open var phone: String,
+    @Column(nullable = false, length = 512) open var address: String,
+    @Column(nullable = false, length = 255) open var city: String,
+    @Column(nullable = false, length = 255) open var state: String,
+    @Column(nullable = false, length = 32) open var zip: String,
+    @Column(nullable = false, length = 16) open var countryCode: String,
+    @Column(nullable = true, length = 64) open var vat: String?,
+    @Column(nullable = false, length = 512) open var notes: String,
+    @Column(nullable = false) open var active: Boolean,
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) @JoinColumn(nullable = false) open var type: ClientTypeDatabaseModel
+)
+```
+
+Adnotacje JPA pozwalają na definiowanie mapowania pól na kolumny w bazie danych, relacji między encjami, a także sposobu ładowania danych. Poprawne zdefiniowanie mapowań znacząco upraszcza implemetację warstwy persystencji, ukrywając wiele szczegółow implementacyjnych, w tym kaskadowanie operacji, ładowanie leniwe i wiele innych. Implementacja repozytoriów Spring Data JPA jest równie prosta: wystarczy zdefiniować interfejs rozszerzający jeden z interfejsów Spring Data JPA, na przykład `JpaRepository`:
+
+```kotlin
+interface ClientJpaRepository : JpaRepository<ClientDatabaseModel, UUID>, JpaSpecificationExecutor<ClientDatabaseModel>
+```
+
+Mechanizmy Spring Data JPA automatycznie zgenerują wszystkie operacje na podstawie zdefiniowanego interfejsu na etapie uruchamiania aplikacji. W przypadku repozytoriów które wymagają bardziej złożonych operacji, można zdefiniować dodatkowe metody w interfejsie repozytorium, na przykład:
+
+```kotlin
+interface TeamMemberRoleJpaRepository : JpaRepository<TeamMemberRoleDatabaseModel, UUID>, JpaSpecificationExecutor<TeamMemberRoleDatabaseModel> {
+    fun findAllByProjectId(projectId: UUID): List<TeamMemberRoleDatabaseModel>
+    fun findAllByUserId(userId: UUID): List<TeamMemberRoleDatabaseModel>
+    fun deleteAllByProjectId(projectId: UUID)
+    fun deleteAllByUserId(userId: UUID)
+    fun findByUserIdAndProjectId(userId: UUID, projectId: UUID): List<TeamMemberRoleDatabaseModel>
+}
+```
+
+Tak samo jak w przypadku nierozszeroznych repozytoriów, Spring Data JPA automatycznie zaimplementuje wszystkie metody zdefiniowane w interfejsie na podstawie ich nazw. Jeśli tego nie wystarczy, metodę można opisać za pomocą adnotacji `@Query`, która pozwala na definiowanie zapytań SQL:
+
+```kotlin
+interface ReplyJpaRepository : JpaRepository<ReplyDatabaseModel, UUID>, JpaSpecificationExecutor<ReplyDatabaseModel> {
+
+    @Query("SELECT r FROM Reply r WHERE r.threadId = :threadId")
+    fun findAllByThreadId(@Param("threadId") threadId: UUID): List<ReplyDatabaseModel>
+}
+```
+
+Implementacja repozytoria domenowego jest realizowana w postaci prostego adaptera, który implementuje odpowiedni interfejs repozytorium domenowego. Odpowiedzialnością tego adaptera jest głownie zmapowanie encji domenowych na modele bazodanowe i odwrotnie w celu połączenia warstwy domeny z warstwą persystencji. Przykładem implementacji repozytorium domenowego jest `ClientRepositoryImpl`:
+
+```kotlin
+@Repository
+class ClientRepositoryImpl(
+    private val jpaRepository: ClientJpaRepository,
+    private val countryRepository: CountryRepository,
+    private val clientSpecificationBuilder: ClientSpecificationFactory
+) : ClientRepository {
+
+    override fun getAll() = jpaRepository.findAll().map { it.toDomain(countryRepository) }
+    override fun get(id: ClientId): Client? = jpaRepository.findById(id.value).map { it.toDomain(countryRepository) }.orElse(null)
+    override fun get(ids: List<ClientId>) = jpaRepository.findAllById(ids.map { it.value }).map { it.toDomain(countryRepository) }
+
+    override fun get(query: Query<Client>): Page<Client> {
+        val page = jpaRepository.findAll(clientSpecificationBuilder.create(query), query.toPageable())
+
+        return Page(
+            items = page.content.map { it.toDomain(countryRepository) },
+            currentPage = page.number,
+            totalPages = page.totalPages,
+            totalItems = page.totalElements
+        )
+    }
+
+    override fun create(entity: Client) = jpaRepository.save(entity.toDatabaseModel()).toDomain(countryRepository)
+    override fun createAll(entities: List<Client>) = jpaRepository.saveAll(entities.map { it.toDatabaseModel() }).map { it.toDomain(countryRepository) }
+    override fun update(entity: Client) = jpaRepository.save(entity.toDatabaseModel()).toDomain(countryRepository)
+    override fun updateAll(entities: List<Client>) = jpaRepository.saveAll(entities.map { it.toDatabaseModel() }).map { it.toDomain(countryRepository) }
+    override fun delete(id: ClientId) = jpaRepository.deleteById(id.value)
+    override fun deleteAll(ids: List<ClientId>) = jpaRepository.deleteAllById(ids.map { it.value })
+
+    companion object Mapping {
+        fun ClientDatabaseModel.toDomain(countryRepository: CountryRepository) = Client(
+            id = ClientId(id),
+            name = name,
+            email = email,
+            phone = phone,
+            address = address,
+            city = city,
+            state = state,
+            zip = zip,
+            country = countryRepository.getByCode(countryCode) ?: UnknownCountry(CountryCode(countryCode)),
+            vat = vat,
+            notes = notes,
+            type = type.toDomain(),
+            active = active
+        )
+
+        fun Client.toDatabaseModel() = ClientDatabaseModel(
+            id = id.value,
+            name = name,
+            email = email,
+            phone = phone,
+            address = address,
+            city = city,
+            state = state,
+            zip = zip,
+            countryCode = country.id.value,
+            vat = vat,
+            notes = notes,
+            type = type.toDatabaseModel(),
+            active = active
+        )
+    }
+}
+```
+
+Implementacja takiego repozytorium jest bardzo przejrzysta i czytelna - jest klasycznym przykładem użycia adapterów do połączenia dwóch warstw. Finalnie, musimy upewnić się że aplikacja podczas uruchomienia da rady połączyć się z bazą danych i zweryfikować czy schemat bazy danych jest zgodny ze schematem JPA. Dla tego należy uzupełnić plik `application.yml` o następujące konfiguracje:
+
+```yaml
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tpm
+    username: application
+    password: 1qaz@WSX
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        default_schema: application
+    open-in-view: false
+  liquibase:
+    change-log: db/changelog/db.changelog-master.xml
+    default-schema: application
+```
+
+Plik `application.yml` jest plikiem konfiguracyjnym aplikacji, który zawiera konfiguracje dla wszystkich modułów frameworku Spring. W tym przykładzie aplikacja została skonfigurowana pod użycie bazy danych PostgreSQL z wyłączonym mechanizmem automatycznej generacji schematu bazy danych. Takie podejście pozwala na większą kontrolę nad schematem bazy danych i zapobiega przypadkowym modyfikacjom. Silnikiem migracji w projekcie został wybrany Liquibase ze względu na to że oferuje on wysoką elastyczność i jest w pełni kompatybilny z frameworkiem Spring. Konfiguracja Liquibase jest bardzo prosta - wystarczy zdefiniować plik z migracjami i schemat bazy danych, a framework sam zajmie się resztą. Przykładowy plik migracji, który tworzy tabelę `client` wygląda następująco:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="001-initial-schema-client" author="oleh-shatskyi">
+    <createTable tableName="client">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false" primaryKeyName="clientPK"/>
+      </column>
+      <column name="active" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="address" type="VARCHAR(512)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="city" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="country_code" type="VARCHAR(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notes" type="VARCHAR(512)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="phone" type="VARCHAR(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="state" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="vat" type="VARCHAR(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="zip" type="VARCHAR(32)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type_id" type="UUID">
+        <constraints nullable="false" foreignKeyName="client_typeFK" referencedTableName="client_type" referencedColumnNames="id"/>
+      </column>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>
+```
+
+Taką migrację włączamy do głownego pliku migracji `db.changelog-master.xml`, który jest odpowiedzialny za zdefiniowanie odpowiedniej kolejności migracji:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <include file="initial-schema/000-initial-schema-dictionaries.xml" relativeToChangelogFile="true" />
+  <include file="initial-schema/001-initial-schema-client.xml" relativeToChangelogFile="true" />
+  <include file="initial-schema/002-initial-schema-project.xml" relativeToChangelogFile="true" />
+  <include file="initial-schema/003-initial-schema-task.xml" relativeToChangelogFile="true" />
+  <include file="initial-schema/004-initial-schema-expense.xml" relativeToChangelogFile="true" />
+  <include file="initial-schema/005-initial-schema-file.xml" relativeToChangelogFile="true" />
+  <include file="initial-schema/006-initial-schema-threads.xml" relativeToChangelogFile="true" />
+  <include file="initial-schema/007-initial-schema-default-dictionaries.sql" relativeToChangelogFile="true" />
+</databaseChangeLog>
+```
+
+Spring Data JPA automatycznie wykryje plik migracji i wykona go podczas uruchamiania aplikacji. W przypadku gdy schemat bazy danych nie będzie zgodny ze schematem JPA, aplikacja nie uruchomi się i wyświetli stosowny komunikat o błędzie. W innym przypadku, aplikacja uruchomi się i będzie gotowa do pracy.
+
+Podsumowując, implementacja warstwy persystencji w projekcie jest bardzo prosta i przejrzysta, nie łamie czystości architektury i jest w pełni zgodna z zasadami DDD. Użycie Spring Data JPA pozwala na uniknięcie wielu powszechnych błędów i znacząco upraszcza implementację warstwy persystencji. W połączeniu z Liquibase, implementacja warstwy persystencji jest bardzo prosta i nie wymaga dużo wysiłku, a też jest odporna na błędy i łatwa w utrzymaniu.
 
 #### Warstwa aplikacji - serwisy aplikacyjne
 
