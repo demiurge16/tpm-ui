@@ -71,7 +71,6 @@
     * [Warstwa aplikacji - kontrolery](#warstwa-aplikacji---kontrolery)
     * [Warstwa aplikacji - specyfikacje](#warstwa-aplikacji---specyfikacje)
     * [Warstwa aplikacji - zewnętrzne API](#warstwa-aplikacji---zewnętrzne-api)
-    * [Warstwa aplikacji - DTO](#warstwa-aplikacji---dto)
     * [Warstwa aplikacji - uwierzytelnianie i autoryzacja](#warstwa-aplikacji---uwierzytelnianie-i-autoryzacja)
     * [Implementacja logowania i monitorowania](#implementacja-logowania-i-monitorowania)
     * [Testowanie](#testowanie-1)
@@ -4016,15 +4015,54 @@ Szczególną uwagę w tym przykładzie należy zwrócić na następujące aspekt
 Serwisy w warstwie domeny są niezbędne dla efektywnej implementacji i orkiestracji logiki biznesowej w systemie. Zapewniają one jasne oddzielenie logiki biznesowej od encji i repozytoriów, co przyczynia się do lepszej organizacji kodu, łatwiejszego utrzymania i testowania. Właściwie zaprojektowane serwisy są kluczowe dla zachowania czystości architektury systemu i jego skalowalności.
 
 #### Warstwa aplikacji - persystencja
+
+* Spring data JPA
+* Modele bazodanowe
+* Mapowanie encji na modele bazodanowe
+* Liquibase
+
 #### Warstwa aplikacji - serwisy aplikacyjne
+
+* Dla każdego serwisu domenowego jest serwis aplikacyjny
+* Implementacja serwisów aplikacyjnych
+* Mapowanie encji na widoki
+
 #### Warstwa aplikacji - kontrolery
+
+* Czym są kontrolery i dlaczego są potrzebne
+* Implementacja kontrolerów
+
 #### Warstwa aplikacji - specyfikacje
+
+* Mapowanie specyfikacji domenowych na Spring Data Specifications
+* Użycie specyfikacji w repozytoriach Spring Data
+* Wykonanie zapytań w pamieci zamiast mapowań na specyfikacje
+
 #### Warstwa aplikacji - zewnętrzne API
-#### Warstwa aplikacji - DTO
+
+* Czemu aplikację mogą korzystać z zewnętrznych API
+* Korzystanie z zewnętrznych API w aplikacji
+
 #### Warstwa aplikacji - uwierzytelnianie i autoryzacja
+
+* Konfiguracja Keycloak
+* Konfiguracja Spring Security
+* Implementacja uwierzytelniania i autoryzacji
+
 #### Implementacja logowania i monitorowania
+
+* Logowanie
+* Monitorowanie
+
 #### Testowanie
+
+* JUnit 5 i Mockito
+
 #### Wdrożenie aplikacji
+
+* Dockerfile
+* Publikacja obrazu Docker
+* Docker Compose
 
 ## Prezentacja
 ### Rejestracja nowego użytkownika
