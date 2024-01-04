@@ -70,7 +70,7 @@
     * [Warstwa aplikacji - serwisy aplikacyjne](#warstwa-aplikacji---serwisy-aplikacyjne)
     * [Warstwa aplikacji - kontrolery](#warstwa-aplikacji---kontrolery)
     * [Warstwa aplikacji - specyfikacje](#warstwa-aplikacji---specyfikacje)
-    * [Warstwa aplikacji - zewnętrzne API](#warstwa-aplikacji---zewnętrzne-api)
+    * [Warstwa aplikacji - serwisy zewnętrzne](#warstwa-aplikacji---serwisy-zewnętrzne)
     * [Warstwa aplikacji - uwierzytelnianie i autoryzacja](#warstwa-aplikacji---uwierzytelnianie-i-autoryzacja)
     * [Implementacja logowania i monitorowania](#implementacja-logowania-i-monitorowania)
     * [Testowanie](#testowanie-1)
@@ -4953,10 +4953,66 @@ W rozdziale omawiającym specyfikację w warstwie domeny wspomniano, że specyfi
 
 Takie dynamiczne podejście pozwala na łatwe tworzenie zapytań i filtrowanie danych - wystarczy odpowiednio skonfigurować interpretator specyfikacji dla encji. Takie podejście jest idealne dla systemu i zapewnia wsparcie siatek danych dla użykowników, którzy mogą tworzyć dowolne zapytania za pomocą interfejsu użytkownika.
 
-#### Warstwa aplikacji - zewnętrzne API
+#### Warstwa aplikacji - serwisy zewnętrzne
 
-* Czemu aplikację mogą korzystać z zewnętrznych API
-* Korzystanie z zewnętrznych API w aplikacji
+Czasem zdarzą się, że dużo prościej i wygodniej jest skorzystać z zewnętrznego rozwiązania niż implementować własne i wspierać własne. Przykładem mogą być różne systemy płatności (na przykład, Stripe), wysyłanie wiadomości SMS (Twilio, CloudTalk), różne repozytoria i bazy danych, serwisy konwersji walut, słowniki terminologiczne, narzędzia do tłumaczenia maszynowego i wiele innych. W przypadku systemu organizacji pracy dla biura tłumaczeń, wykorzystano kilka zewnętrznych API:
+
+1. [exchangerate.host](https://exchangerate.host/) - dostarcza zawsze aktualne kursy walut, posiada historyczne dane i wspiera też konwersję walut. Wsparcie dla konwersji walut jest bardzo przydatne w przypadku rozwijanego systemu, bo pozwala na łatwe przeliczanie kosztów projektów na dowolną walutę.
+2. [REST Countries](https://restcountries.com/) - dokładne informacje o krajach - stolice, strefy czasowe, języki i wiele innych. Wsparcie dla takiego API jest przydatne w przypadku systemu, który wspiera wiele języków i krajów.
+3. [SIL International Code Tables](https://iso639-3.sil.org/) - aktualne informacje o wszystkich językach na świecie dostarczane przez organizację SIL International.
+
+Połaczenie z takimi serwisami w frameworku Spring jest równie proste. Do implementacji klientów API użyto rozwiązania OpenFeign, które jest dostarczane przez Spring Cloud. OpenFeign pozwala na łatwe zdefiniowanie klienta API za pomocą interfejsu oznaczonego odpowiednimi adnotacjami:
+
+```kotlin
+@FeignClient(name = "currencies", url = "http://api.exchangerate.host")
+interface CurrencyClient {
+
+    @RequestMapping(method = [RequestMethod.GET], value = ["/live?source={base}&access_key=10fa6bb928862f8f4800b150be047ea9"])
+    @Cacheable(value = ["currencies-client-cache"], key = "'live'")
+    fun getLatest(@PathVariable(name = "source") source: String): CurrencyExchangeRatesExternalModel
+
+    @RequestMapping(method = [RequestMethod.GET], value = ["/list?access_key=10fa6bb928862f8f4800b150be047ea9"])
+    @Cacheable(value = ["currencies-client-cache"], key = "'symbols'")
+    fun getSymbols(): CurrencySymbolsExternalModel
+}
+```
+
+Dodajemy odpowiednie cache'owanie, żeby nie przeciążać API i uniknąć przypadkowego przekroczenia limitów. Dalej wystarczy zdefiniować klasy które będą reprezentować odpowiedzi z API:
+
+```kotlin
+@JsonIgnoreProperties(ignoreUnknown = true)
+class CurrencyExchangeRatesExternalModel(val source: String, val quotes: Map<String, BigDecimal>)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class CurrencySymbolsExternalModel(val success: Boolean, val currencies: Map<String, String>)
+```
+
+I na tym koniec - klient API jest gotowy do użycia. O ile taki klient nie jest jeszcze gotowy do użycia w domenie aplikacji, to musimy dodatkowo dopisać adapter, który będzie mapował odpowiedzi z API na encje domenowe:
+
+```kotlin
+@Repository
+class CurrencyClientAdapter(
+    private val client: CurrencyClient,
+    private val currencyQueryExecutor: CurrencyQueryExecutor
+) : CurrencyRepository {
+
+    override fun getAll() = client.getSymbols()
+        .currencies
+        .map { Currency(CurrencyCode(it.key), it.value) }
+
+    override fun get(query: Query<Currency>) = currencyQueryExecutor.execute(query) { getAll() }
+
+    override fun get(code: CurrencyCode) = client.getSymbols()
+        .currencies
+        .filterKeys { it == code.value.uppercase() }
+        .map { Currency(CurrencyCode(it.key), it.value) }
+        .firstOrNull()
+
+    override fun getExchangeRates(code: CurrencyCode, amount: BigDecimal) = client.getLatest(code.value).toDomain(amount)
+}
+```
+
+Takie podejście jest proste, nie łamie zasad czystej architektury i pozwala na łatwe dodanie nowych klientów API. Wszystkie szczegóły, znowy, zostały rozwiązane przez Spring i Spring Cloud, więc nie ma potrzeby implementowania żadnych dodatkowych mechanizmów.
 
 #### Warstwa aplikacji - uwierzytelnianie i autoryzacja
 
