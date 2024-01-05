@@ -92,12 +92,11 @@
     * [Komunikacja w ramach projektu](#komunikacja-w-ramach-projektu)
   * [Monitorowanie pracy systemu](#monitorowanie-pracy-systemu)
 * [Przyszłość systemu](#przyszłość-systemu)
-  * [Integracja z narzędziami maszynowego tłumaczenia](#integracja-z-narzędziami-maszynowego-tłumaczenia)
-  * [Integracja z narzędziami do analizy tekstu](#integracja-z-narzędziami-do-analizy-tekstu)
-  * [Integracja ze słownikami terminologicznymi](#integracja-ze-słownikami-terminologicznymi)
-  * [Glosariusze](#glosariusze)
+  * [Ważność ciąglej ewolucji systemu](#ważność-ciąglej-ewolucji-systemu)
+  * [Nowe narzędzia dla tłumaczy i kadry redakcyjnej](#nowe-narzędzia-dla-tłumaczy-i-kadry-redakcyjnej)
   * [Rozbudowanie możliwości raportowania](#rozbudowanie-możliwości-raportowania)
-  * [Usprawnienia monitorowania pracy systemu](#podalsze-usprawnienia-monitorowania-pracy-systemu)
+  * [Dostarczenie funkcjonalności dla pracowników działu księgowości](#dostarczenie-funkcjonalności-dla-pracowników-działu-księgowości)
+  * [Usprawnienia monitorowania pracy systemu](#usprawnienia-monitorowania-pracy-systemu)
 
 ## Wprowadzenie
 
@@ -5546,9 +5545,50 @@ Po uruchomieniu, aplikacja będzie dostępna pod adresem `http://localhost:8080`
 ### Monitorowanie pracy systemu
 
 ## Przyszłość systemu
-### Integracja z narzędziami maszynowego tłumaczenia
-### Integracja z narzędziami do analizy tekstu
-### Integracja ze słownikami terminologicznymi
-### Glosariusze
+
+### Ważność ciąglej ewolucji systemu
+
+Od samego początku, jednym z najważniejszych kamieni w fundamencie systemu, tym który wpłynął na wybór technologii, architekturę i podejście do implementacji, jest potrzeba ciągłego rozwoju i ewolucji systemu. System organizacji pracy dla biura tłumaczeń jest systemem, który ma wspierać pracę biura tłumaczeń, a nie być tylko narzędziem do zarządzania projektami. Zakresem projektu w tym stadium było stworzenie podstawowego systemu, który będzie wspierał podstawowe procesy biznesowe - organizację projektów i efektywnej realizacji zleceń. Cele takiego systemu mogą być znacznie szersze i obejmować wiele innych procesów biznesowych, które są niezbędne w biurze tłumaczeń. W tym rozdziale, przedstawione zostaną pomysły na rozwój systemu, które mogą być realizowane w przyszłości.
+
+### Nowe narzędzia dla tłumaczy i kadry redakcyjnej
+
+* Integracja z narzędziami CAT (Computer Assisted Translation)
+  * Narzędzia tłumaczenia maszynowego - np. Google Translate, DeepL, itp.
+  * Narzędzia do automatycznego wykrycia błędów - np. narzędzia do wykrywania powtórzeń, niezgodności terminologicznych, niezgodności stylistycznych, niezgodności z zasadami gramatyki, itp.
+  * Pamięć tłumaczeniowa (Translation Memory) - narzędzie wspomagające tłumaczenie, które przechowuje pary zdań w języku źródłowym i docelowym, które zostały już przetłumaczone. Jeżeli tłumacz napotka zdanie, które zostało już przetłumaczone, to narzędzie podpowie mu tłumaczenie, co znacznie przyspieszy proces tłumaczenia.
+  * Zarządzanie terminologią - podobnie jak pamięc tłumaczeniowa wspomaga tłumaczenie, przechowuje pary terminów w języku źródłowym i docelowym, które zostały już przetłumaczone.
+  * Glossary - narzędzie do zarządzania terminologią, które pozwala na definiowanie terminów i ich tłumaczeń.
+  * Słowniki elektroniczne - narzędzie wspomagające tłumaczenie, które przechowuje tłumaczenia terminów w języku źródłowym i docelowym.
+  * Concordancer - narzędzie wspomagające tłumaczenie, które wyszukuje zdania w języku źródłowym i docelowym, które zawierają podobne słowa i wyrażenia.
+  * Full-text search - narzędzie do wyszukiwania w tekście, które pozwala na wyszukiwanie w tekście na podstawie słów kluczowych. Może być używane do wyszukiwania w dokumentach, które zostały już przetłumaczone.
+  * Narzędzia do rozpoznawania mowy - narzędzie wspomagające tłumaczenie, które pozwala na przetłumaczenie mowy na tekst. Może być używane do przetłumaczenia nagrań z rozmów z klientami.
+  * Narzędzia do OCR (Optical Character Recognition) - narzędzie wspomagające tłumaczenie, które pozwala na przetłumaczenie tekstu z obrazu. Może być używane do przetłumaczenia skanów dokumentów.
+  * Dziesiątki i setki innych
+
+Cel - tworzenie jednej platformy, która będzie integrować wszystkie narzędzia, które są używane przez tłumaczy i kadrę redakcyjną. Integracja z takimi narzędziami pozwoli na znaczne przyspieszenie procesu tłumaczenia i poprawi jakość tłumaczenia.
+
 ### Rozbudowanie możliwości raportowania
+
+* Dodatkowe możliwości generowania raportów w systemie
+  * Raporty o wykorzystaniu zasobów - raporty, które będą pokazywały jakie zasoby są wykorzystywane w systemie i jakie są ich koszty.
+  * Raporty kosztów projektów - raporty, które będą pokazywały koszty realizacji projektów.
+  * Raporty o wykorzystaniu zasobów ludzkich - raporty, które będą pokazywały jakie zasoby ludzkie są wykorzystywane w systemie i jakie są ich koszty.
+  * Raporty o wykorzystaniu zasobów materialnych - raporty, które będą pokazywały jakie zasoby materialne są wykorzystywane.
+  * Raporty o wykorzystaniu zasobów technicznych - raporty, które będą pokazywały jakie zasoby techniczne są wykorzystywane.
+
+Cel - dostarczenie możliwości generowania raportów i wykresów w systemie z minimalną potrzebą skorzystania z zewnętrznych narzędzi.
+
+### Dostarczenie funkcjonalności dla pracowników działu księgowości
+
+* Możliwość wystawiania faktur, proform i rachunków w systemie
+* Integracja z systemami księgowymi
+* Mozliwość wysyłania faktur, proform i rachunków do klientów w systemie
+* Możliwość generowania raportów o kosztach realizacji projektów
+
 ### Usprawnienia monitorowania pracy systemu
+
+* Dodanie metryk do pozostałych części systemu
+* Alertowanie
+* Automatyczne skalowanie
+* Automatyczne restartowanie
+* Zbieranie logow z pozostałych części systemu do centralnego schowka logów
