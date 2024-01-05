@@ -5460,7 +5460,7 @@ class ClientServiceImplTest {
 
 Same w sobie takie testy są bardzo przejrzyste i proste w implementacji, ale przy sporej liczbie scenariuszy potrafią być bardzo czasochłonne. Co prawda, plusy takiego podejścia są znacznie większe niż minusy i warto zainwestować czas w ich implementację. Mimo zwolnienia programisty od potrzeby manualnego przetestowania wszystkich zmian we wszystkich miejsach w systemie, są też formą dokumentacji kodu - test opisuje jak dana funkcjonalność powinna działać.
 
-Aktywne zastosowanie podejścia DDD i architektury heksagonalnej pozwala na łatwe testowanie aplikacji. Ważne szczególy implementacji infrastruktury leżą w odpowiedzialności frameworku Spring, więc można było się skupić wyłącznie na testowaniu domeny aplikacji.
+Aktywne zastosowanie podejścia DDD, wstrzykiwania zależności i architektury heksagonalnej maksymalnie ułatwia testowanie kodu. Wszystkie zależności są wstrzykiwane, więc w testach można je łatwo podmienić na makiety z określonym zachowaniem i testować tylko warstwę domeny. Implementacja warstwy infrastruktury prawię w ogóle nie wymaga testowania, bo jest to kod, który jest dostarczany przez zewnętrzne biblioteki i jakość tych rozwiązań jest zapewniana przez ich twórców.
 
 #### Wdrożenie aplikacji
 
