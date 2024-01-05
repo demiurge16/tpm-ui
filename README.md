@@ -3374,7 +3374,7 @@ Po uruchomieniu, aplikacja będzie dostępna pod adresem `http://localhost`.
 
 Pracę nad serwerem aplikacji rozpoczynamy od utworzenia projektu za pomocą Spring Initializr. Spring Initializr jest narzędziem, które pozwala na wygenerowanie szkieletu projektu Spring Boot. W tym celu, należy przejść na stronę internetową [https://start.spring.io/](https://start.spring.io/) i wybrać odpowiednie opcje zgodnie z założeniami projektu:
 
-[![Spring Initializr](./docs/spring-initializr.png)](./docs/spring-initializr.png)
+![Spring Initializr](./docs/spring-initializr.png)
 
 W projekcie, wykorzystano następujące opcje:
 
@@ -3678,7 +3678,7 @@ Klasa `Client` reprezentuje klienta w systemie z atrybutami takimi jak nazwa, em
 
 Dotrzymując reprezentowanych przez klasę `Client` zasad DDD, zostały zaimplementowane pozostałe encje w systemie, takie jak `Project`, `Task`, `TaskStatus`, `TimeEntry` i inne. Warto też wspomnieć jednak o pozostałych zasadach DDD, takich jak agregaty czy fabryki, które nie są dotrzymywane w projekcie. W przypadku agregatów, nie ma potrzeby ich stosowania, ponieważ encje rzadko są powiązane ze sobą w sposób, który wymagałby ich grupowania. W przypadku fabryk - encje są tworzone w sposób relatywnie prosty, bez potrzeby wykorzystywania zewnętrznych zasobów. Warto pamiętać, że metodologię powinne pomagać w rozwiązywaniu problemów, a nie je tworzyć, i wprowadzenie agregatów i fabryk w tym przypadku nie wniosłoby niczego wartościowego do projektu, a jedynie zwiększyło by jego złożoność. W podsumowaniu, model domeny wygląda następująco:
 
-[![Model domeny](./docs/domain-model.png)](./docs/domain-model.png)
+![Model domeny](./docs/domain-model.png)
 
 #### Warstwa domeny - repozytoria
 
@@ -4967,11 +4967,11 @@ Połaczenie z takimi serwisami w frameworku Spring jest równie proste. Do imple
 @FeignClient(name = "currencies", url = "http://api.exchangerate.host")
 interface CurrencyClient {
 
-    @RequestMapping(method = [RequestMethod.GET], value = ["/live?source={base}&access_key=10fa6bb928862f8f4800b150be047ea9"])
+    @RequestMapping(method = [RequestMethod.GET], value = ["/live?source={base}&access_key=10fa6bb9choojf8deptab150be047ea9"])
     @Cacheable(value = ["currencies-client-cache"], key = "'live'")
     fun getLatest(@PathVariable(name = "source") source: String): CurrencyExchangeRatesExternalModel
 
-    @RequestMapping(method = [RequestMethod.GET], value = ["/list?access_key=10fa6bb928862f8f4800b150be047ea9"])
+    @RequestMapping(method = [RequestMethod.GET], value = ["/list?access_key=10fcheepa8862cip4800b150be0matk4"])
     @Cacheable(value = ["currencies-client-cache"], key = "'symbols'")
     fun getSymbols(): CurrencySymbolsExternalModel
 }
@@ -5016,9 +5016,243 @@ Takie podejście jest proste, nie łamie zasad czystej architektury i pozwala na
 
 #### Warstwa aplikacji - uwierzytelnianie i autoryzacja
 
-* Konfiguracja Keycloak
-* Konfiguracja Spring Security
-* Implementacja uwierzytelniania i autoryzacji
+Każda aplikacja powinna posiadać efektywny mechanizm kontroli dostępu. Architektura systemu organizacji pracy dla biura tłumaczy opiera się w tej kwestji na centralny serwis uwierzytelniania i autoryzacji - Keycloak. Podobnie jak w przypadku interfejsu użytkownika, trzeba zintegrować serwer aplikacji z Keycloak. W tym celu, należy dodać skonfigurować nowego klienta OIDC w Keycloak tak, żeby w wyniku dostać taką konfigurację:
+
+![Keycloak client configuration - general settings](./docs/keycloak-client-api-config-general.png)
+*Keycloak client configuration - general settings*
+
+![Keycloak client configuration - access settings](./docs/keycloak-client-api-config-access.png)
+*Keycloak client configuration - access settings*
+
+![Keycloak client configuration - capability config](./docs/keycloak-client-api-config-capability.png)
+*Keycloak client configuration - capability config*
+
+![Keycloak client configuration - login settings](./docs/keycloak-client-api-config-login.png)
+*Keycloak client configuration - login settings*
+
+![Keycloak client configuration - logout settings](./docs/keycloak-client-api-config-logout.png)
+*Keycloak client configuration - logout settings*
+
+W kolejnym kroku musimy odpowiednio skonfigurować autoryzację dla stworzonego klienta. Pierwszym krokiem jest definicja zakresów autoryzacji (ang. *authorization scopes*). Zakres autoryzacji opisuje jakie akcje może wykonać użytkownik w ramach aplikacji.
+
+W tym celu, należy przejść do zakładki `Authorization`, a następnie do `Scopes` i dodać nowy zakres klikając przycisk `Create authorization scope`. Powinien pojawić się taki formularz, który należy wypełnić nadając nazwę zakresu i ewentulanie opis. Nazwa zakresu powinna być unikalna w skali całego serwera Keycloak, więc najlepiej wybrać sobie konsystentną konwencję nazewnictwa:
+
+![Keycloak new authorization scope configuration](./docs/keycloak-authorization-scope-config.png)
+*Keycloak - new authorization scope configuration*
+
+Kolejnym krokiem jest zdefiniowanie zasobów (ang. *resources*), które będą chronione, i połaćżyć je z odpowiednimi zakresami autoryzacji. Żeby zdefiniować nowy zasób, należy przejść do zakładki `Authorization`, a następnie do `Resources` i dodać nowy zasób klikając przycisk `Create resource`. Powinien pojawić się taki formularz, który należy wypełnić jak na poniższym obrazku:
+
+![Keycloak new resource configuration](./docs/keycloak-resource-config.png)
+*Keycloak - new resource configuration*
+
+Dalej definiujemy polityki dostępu (ang. *access policies*), które określają co jest potrzebne do uzyskania dostępu. Keycloak pozwala na definicję wielu różnych typów polityk dostępu. O ile cały system autoryzacji w systemie jest oparty o role, to wszysktie polityki dostępu też będą opierać się o to, czy użytkownik posiada daną rolę. Żeby zdefiniować nową politykę dostępu, należy przejść do zakładki `Authorization`, a następnie do `Policies` i dodać nową politykę klikając przycisk `Create policy` i wybrać z listy typów typ `Role`. W formularzu definiujemy nową politykę:
+
+![Keycloak new policy configuration](./docs/keycloak-policy-config.png)
+*Keycloak - new policy configuration*
+
+Ostatni krok to użycie połączenie zdefiniowanych polityk dostępu i zakresów autoryzacji. To umożliwi połączenie zasobów z politykami dostępu. W tym celu należy stworzyć nowe uprawnienie (ang. *permission*). Żeby to zrobić, należy przejść do zakładki `Authorization`, a następnie do `Permissions` i dodać nowe uprawnienie typu `Scope-based` klikając przycisk `Create permission`. W formularzu definiujemy nowe uprawnienie:
+
+![Keycloak new permission configuration](./docs/keycloak-permission-config.png)
+*Keycloak - new permission configuration*
+
+Stosując opisanego algorytmu, należy zdefiniować uprawnienia dla wszystkich zasobów. Jest to wyjątkowo czasochłonne, ale w wyniku dostajemy bardzo elastyczny system autoryzacji.
+
+Drugą częscią tej podróży jest konfiguracja Spring Security w aplikacji. Trzeba dodać odpowiednie wpisy w pliku `application.yml`, które będą definiować połączenie z Keycloak:
+
+```yaml
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: tpm-backend
+            client-secret: client-secret
+            authorization-grant-type: authorization_code
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8081/realms/tpm
+            user-info-uri: http://localhost:8081/realms/tpm/protocol/openid-connect/userinfo
+            jwk-set-uri: http://localhost:8081/realms/tpm/protocol/openid-connect/certs
+            authorization-uri: http://localhost:8081/realms/tpm/protocol/openid-connect/auth
+            token-uri: http://localhost:8081/realms/tpm/protocol/openid-connect/token
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/tpm
+          jwk-set-uri: http://localhost:8081/realms/tpm/protocol/openid-connect/certs
+```
+
+Kolejny krok - konfiguracja łąńcuchów filtrów, CORS i CSRF dodając odpowiednie beany do konfiguracji Spring Security:
+
+```kotlin
+@Configuration
+@EnableWebSecurity
+class SecurityConfiguration(
+    private val policyEnforcerPathsProviders: List<PolicyEnforcerPathsProvider>,
+    private val keycloakProperties: KeycloakProperties,
+    @Value("\${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}") private val jwkSetUri: String
+) {
+
+    @Bean
+    @Order(1)
+    fun actuatorFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.securityMatchers { it.requestMatchers("/actuator", "/actuator/**") }
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .cors { it.configurationSource { corsConfiguration() } }
+            .csrf { it.disable() }
+
+        return http.build()
+    }
+
+    @Bean
+    @Order(2)
+    fun swaggerFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.securityMatchers { it.requestMatchers("/swagger-ui", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**") }
+            .authorizeHttpRequests { it.anyRequest().authenticated() }
+            .oauth2Client {  }
+            .oauth2Login {  }
+            .logout { it.logoutSuccessUrl("/") }
+            .cors { it.configurationSource { corsConfiguration() } }
+            .csrf { it.disable() }
+
+        return http.build()
+    }
+
+    @Bean
+    @Order(3)
+    fun apiFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.securityMatchers { it.requestMatchers("/api/**") }
+            .authorizeHttpRequests { it.requestMatchers("/api/**").authenticated() }
+            .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
+            .addFilterAfter(createPolicyEnforcerFilter(), BearerTokenAuthenticationFilter::class.java)
+            .cors { it.configurationSource { corsConfiguration() } }
+            .csrf { it.disable() }
+
+        return http.build()
+    }
+
+    @Bean
+    @Order(4)
+    fun defaultFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.authorizeHttpRequests { it.anyRequest().permitAll() }
+            .cors { it.configurationSource { corsConfiguration() } }
+            .csrf { it.disable() }
+
+        return http.build()
+    }
+
+    private fun corsConfiguration() =
+        CorsConfiguration().apply {
+            allowedOrigins = listOf(
+                "http://localhost",
+                "http://localhost:5173",
+                "http://localhost:8080",
+                "http://localhost:8081",
+                "http://localhost:8082",
+                "http://26.44.49.6",
+                "http://26.44.49.6:5173",
+                "http://26.44.49.6:8080",
+                "http://26.44.49.6:8081",
+                "http://26.44.49.6:8082"
+            )
+            allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+            allowedHeaders = listOf("*")
+            allowCredentials = true
+        }
+
+    private fun createPolicyEnforcerFilter() =
+        ServletPolicyEnforcerFilter {
+            policyEnforcerConfig {
+                realm = keycloakProperties.realm
+                authServerUrl = keycloakProperties.authServerUrl
+                resource = keycloakProperties.resource
+                credentials = mapOf(
+                    "secret" to keycloakProperties.credentials.secret
+                )
+                paths = policyEnforcerPathsProviders.flatMap { it.paths }
+            }
+        }
+
+    @Bean
+    fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build()
+}
+```
+
+Powyższa konfiguracja definiuje cztery łańcuchy filtrów:
+
+1. Pierwszy łańcuch filtrów jest odpowiedzialny za zabezpieczenie endpointów Spring Actuator. W tym przypadku, wszystkie endpointy są dostępne dla wszystkich użytkowników.
+2. Drugi łańcuch filtrów jest odpowiedzialny za zabezpieczenie endpointów Swagger UI. W tym przypadku, wszystkie endpointy są dostępne dla zalogowanych użytkowników.
+3. Trzeci łańcuch filtrów jest odpowiedzialny za zabezpieczenie endpointów API. W tym przypadku, wszystkie endpointy są dostępne dla zalogowanych użytkowników, ale muszą posiadać odpowiednie uprawnienia. W tym celu, filtr `ServletPolicyEnforcerFilter` sprawdza czy użytkownik posiada odpowiednie uprawnienia.
+4. Czwarty łańcuch filtrów jest odpowiedzialny za zabezpieczenie wszystkich pozostałych endpointów. W tym przypadku, wszystkie endpointy są dostępne dla wszystkich użytkowników.
+
+`ServletPolicyEnforcerFilter` jest odpowiedzialny za sprawdzenie czy użytkownik posiada odpowiednie uprawnienia i jest kluczowy w integracji pomiędzy serwerem aplikacji a serwerem autoryzacji. W konfiguracji należy podać konfigurację połączenia z Keycloak, a także zdefiniować mapowania ścieżek i metod na odpowiednie zasoby i zakresy autoryzacji, rejestrując beany implementujące interfejs `PolicyEnforcerPathsProvider`:
+
+```kotlin
+interface PolicyEnforcerPathsProvider {
+    val paths: List<PolicyEnforcerPath>
+}
+
+@Configuration
+class AccuracyConfig(private val accuracyRepository: AccuracyRepository) {
+
+    // rejestracja innych beanów
+
+    @Bean
+    fun accuracyPolicyEnforcerPathsProvider() = object : PolicyEnforcerPathsProvider {
+        override val paths = mutableListOf(
+            pathConfig {
+                path = "/api/v1/accuracy"
+                methods = mutableListOf(
+                    methodConfig {
+                        method = "GET"
+                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:query")
+                    },
+                    methodConfig {
+                        method = "POST"
+                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:create")
+                    }
+                )
+            },
+            pathConfig {
+                path = "/api/v1/accuracy/export"
+                methods = mutableListOf(
+                    methodConfig {
+                        method = "GET"
+                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:export")
+                    }
+                )
+            },
+            pathConfig {
+                path = "/api/v1/accuracy/{accuracyId}"
+                methods = mutableListOf(
+                    methodConfig {
+                        method = "GET"
+                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:read")
+                    },
+                    methodConfig {
+                        method = "PUT"
+                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:update")
+                    }
+                )
+            },
+            pathConfig {
+                path = "/api/v1/accuracy/{accuracyId}/*"
+                methods = mutableListOf(
+                    methodConfig {
+                        method = "PATCH"
+                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:update")
+                    }
+                )
+            }
+        )
+    }
+}
+```
+
+Zaimplementowany system autoryzacji dostarcza idealny dla potrzeb aplikacji balans pomiędzy elastycznością i skomplikowaniem. Definiowanie nowych zasobów i zakresów autoryzacji jest przejrzyste i proste, chociaż czasem może być czasochłonne. W zamian, dostajemy bardzo elastyczny system autoryzacji, który pozwala na łatwe dodawanie nowych uprawnień i zasobów, oraz pozwala na łatwe zarządzanie uprawnieniami użytkowników bez potrzeby ingerencji w kod aplikacji.
 
 #### Implementacja logowania i monitorowania
 
