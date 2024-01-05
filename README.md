@@ -5256,8 +5256,112 @@ Zaimplementowany system autoryzacji dostarcza idealny dla potrzeb aplikacji bala
 
 #### Implementacja logowania i monitorowania
 
-* Logowanie
-* Monitorowanie
+Kolejnym ważnym aspektem implementacji takiej aplikacji jest jej monitorowanie. Podstawą monitorowalności aplikacji jest odpowiedni system logowania i czyste, poprawnie oznaczone logi. Spring używa dla tego celu biblioteki Logback, która cieszy się wysoką popularnością i zapewnia wszystkie potrzebne funkcjonalności. Plikiem konfiguracji dla Logback jest plik `logback.xml`, należy dodać go do katalogu `resources`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread]-[%X{correlationId}]-[%X{scopeId}] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <springProfile name="local">
+    <root level="INFO">
+      <appender-ref ref="STDOUT" />
+    </root>
+  </springProfile>
+
+  <springProfile name="qa">
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+      <destination>logstash:5000</destination>
+      <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+        <providers>
+          <arguments />
+          <callerData />
+          <contextName />
+          <loggerName />
+          <logLevel />
+          <logLevelValue />
+          <logstashMarkers />
+          <mdc />
+          <keyValuePairs />
+          <message />
+          <rawMessage />
+          <rootStackTraceElement />
+          <stackHash />
+          <stackTrace />
+          <tags />
+          <throwableClassName />
+          <throwableMessage />
+          <throwableRootCauseClassName />
+          <throwableRootCauseMessage />
+          <pattern>
+            <pattern>
+              {
+              "correlationId": "%X{correlationId}",
+              "scopeId": "%X{scopeId}",
+              "applicationLabel": "tpm-application-server"
+              }
+            </pattern>
+          </pattern>
+        </providers>
+      </encoder>
+    </appender>
+
+    <root level="INFO">
+      <appender-ref ref="STDOUT" />
+      <appender-ref ref="LOGSTASH" />
+    </root>
+  </springProfile>
+</configuration>
+```
+
+Konfiguracja loggera jest zależna od profilu uruchomienia aplikacji. W przypadku profilu `local`, logi są wypisywane na standardowe wyjście - profil ten jest używany w czasie lokalnego uruchomienia aplikacji. Profil `qa` jest używany w czasie uruchomienia aplikacji w środowisku QA. W tym przypaku logi też są wypisywane do standardowego wyjścia, ale są też wysyłane do Logstash, który jest odpowiedzialny za ich agregację i przetwarzanie, a następnie wysyłanie do centralnego schowka logów - instancji Elasticsearch. W ten sposób, wszystkie logi z wszystkich instancji aplikacji są dostępne w jednym miejscu, co bardzo ułatwia ich analizę. Zabezpieczenie szybkiego i wygodnego dostępu do logów jest bardzo ważne w przypadku aplikacji produkcyjnych, gdzie czasami trzeba szybko zidentyfikować problem i zareagować.
+
+Aplikacja dodatkowo udostępnia aktuator, który pozwala na monitorowanie stanu aplikacji. Aktuator to bardzo przydatne narzędzie, które pozwala na monitorowanie stanu aplikacji i szybkie reagowanie na problemy jeszcze przed tym, zanim zauważy je użytkownik. Aktuator jest dostępny pod adresem `/actuator`, a w nim dostępne są różne endpointy, które pozwalają na monitorowanie stanu aplikacji. Na przykład, endpoint `/actuator/health` zwraca informacje o stanie aplikacji:
+
+```json
+{
+  "status": "UP",
+  "components": {
+    "db": {
+      "status": "UP",
+      "details": {
+        "database": "PostgreSQL",
+        "validationQuery": "isValid()"
+      }
+    },
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 499963174912,
+        "free": 499963174912,
+        "threshold": 10485760
+      }
+    },
+    "ping": {
+      "status": "UP"
+    }
+  }
+}
+```
+
+Za aktuator odpowiada biblioteka Spring Boot Actuator, która dostarcza gotowe endpointy monitorujące stan aplikacji. Spring Boot aktuator jest konfigurowany dodaniem wpisów do pliku `application.yml`:
+
+```yaml
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: on
+    metrics:
+      enabled: on
+```
+
+Podsumowując, aplikacja dostarcza wszystkie potrzebne mechanizmy monitorowania i logowania, które są niezbędne w przypadku aplikacji produkcyjnych. Pozwoli to na szybkie reagowanie na problemy i ich rozwiązywanie.
 
 #### Testowanie
 
