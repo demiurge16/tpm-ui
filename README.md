@@ -5365,7 +5365,102 @@ Podsumowując, aplikacja dostarcza wszystkie potrzebne mechanizmy monitorowania 
 
 #### Testowanie
 
-* JUnit 5 i Mockito
+Nie mniej ważnym niż implementacja jest zapewnienie jakości w projekcie. Wyłapanie i naprawa błędów w systemie odbywa się na wszystkich etapach jego tworzenia i nie jest obowiązkiem wyłącznie testerów. Wszyscy członkowie zespołu powinni być odpowiedzialni za jakość kodu i systemu. Na poziomie kodu, jakość zapewniają automatyczne testy, tworzone przez programistów. Takie testy pozwalają programistom testować zmiany i naprawiać ewentualne błędy jeszcze na etapie tworzenia nowych funkcjonalnosci. W systemie organizacji pracy dla biura tłumaczeń, automatyczne testy są wykonane przy użyciu bibliotek JUnit 5, AssertJ i Mockito.
+
+Zadanie jednego testu jest proste - sprawdzić czy dany scenariusz działa poprawnie. Do przykładu, test dla metody `create` z serwisu `ClientService`, sprawdzający poprawne utworzenie nowego klienta wyglądałby tak:
+
+```kotlin
+class ClientServiceImplTest {
+
+    @Test
+    fun `create() should create a new client`() {
+        // Arrange
+        val clientTypeId = ClientTypeId()
+        val clientType = ClientType(
+            clientTypeId,
+            name = "Test Type",
+            description = "Test Description",
+            corporate = true,
+            active = true
+        )
+        val clientTypeRepository = mock<ClientTypeRepository> {
+            on { get(clientTypeId) } doReturn clientType
+        }
+
+        val country = Country(
+            cca3 = CountryCode(value = "USA"),
+            cca2 = "US",
+            ccn3 = "840",
+            name = Country.Name("United States", "United States", mapOf()),
+            topLevelDomains = listOf(),
+            currencies = mapOf(),
+            internationalDirectDialing = Country.InternationalDirectDialing("", listOf()),
+            capital = listOf(),
+            altSpellings = listOf(),
+            languages = listOf(),
+            translations = mapOf(),
+            flag = "🇺🇸",
+            postalCode = Country.PostalCodeInfo("", "")
+        )
+        val countryRepository = mock<CountryRepository> {
+            on { getByCode("USA") } doReturn country
+        }
+
+        val clientId = ClientId()
+        val client = Client(
+            id = clientId,
+            name = "Test Name",
+            email = "test@test.com",
+            phone = "1234567890",
+            address = "Test Address",
+            city = "Test City",
+            state = "Test State",
+            zip = "12345",
+            country = country,
+            vat = "123456789",
+            notes = "Test Notes",
+            type = clientType
+        )
+        val clientRepository = mock<ClientRepository> {
+            on { create(any()) } doReturn client
+        }
+
+        val logger = mock<Logger> {
+            on { trace(any()) } doAnswer { println(it.arguments[0]) }
+            on { debug(any()) } doAnswer { println(it.arguments[0]) }
+            on { info(any()) } doAnswer { println(it.arguments[0]) }
+            on { warn(any()) } doAnswer { println(it.arguments[0]) }
+            on { error(any()) } doAnswer { println(it.arguments[0]) }
+        }
+
+        val clientService = ClientServiceImpl(clientRepository, clientTypeRepository, countryRepository, logger)
+
+        // Act
+        val createdClient = clientService.create(
+            name = "Test Name",
+            email = "test@test.com",
+            phone = "1234567890",
+            address = "Test Address",
+            city = "Test City",
+            state = "Test State",
+            zip = "12345",
+            countryCode = CountryCode("USA"),
+            vat = "123456789",
+            notes = "Test Notes",
+            clientTypeId = clientTypeId
+        )
+
+        // Assert
+        assertEquals(client, createdClient)
+    }
+
+    // Pozostałe testy
+}
+```
+
+Same w sobie takie testy są bardzo przejrzyste i proste w implementacji, ale przy sporej liczbie scenariuszy potrafią być bardzo czasochłonne. Co prawda, plusy takiego podejścia są znacznie większe niż minusy i warto zainwestować czas w ich implementację. Mimo zwolnienia programisty od potrzeby manualnego przetestowania wszystkich zmian we wszystkich miejsach w systemie, są też formą dokumentacji kodu - test opisuje jak dana funkcjonalność powinna działać.
+
+Aktywne zastosowanie podejścia DDD i architektury heksagonalnej pozwala na łatwe testowanie aplikacji. Ważne szczególy implementacji infrastruktury leżą w odpowiedzialności frameworku Spring, więc można było się skupić wyłącznie na testowaniu domeny aplikacji.
 
 #### Wdrożenie aplikacji
 
