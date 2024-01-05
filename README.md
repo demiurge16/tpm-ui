@@ -3336,7 +3336,7 @@ http {
 Po utworzeniu pliku `nginx.conf`, należy zbudować obraz aplikacji za pomocą polecenia:
 
 ```bash
-docker build -t tpm-api:1.0.0-BETA . --no-cache
+docker build -t tpm-ui:1.0.0-BETA . --no-cache
 ```
 
 Zbudowany obraz aplikacji dostępny jest w lokalnym repozytorium obrazów Docker. Następnie, do pliku `docker-compose.yml` w projekcie `tpm-infrastructure` należy dodać konfigurację aplikacji:
@@ -5464,9 +5464,69 @@ Aktywne zastosowanie podejścia DDD, wstrzykiwania zależności i architektury h
 
 #### Wdrożenie aplikacji
 
-* Dockerfile
-* Publikacja obrazu Docker
-* Docker Compose
+Ostatni krok - dostarczenie aplikacji do użytkowników. Podobie jak reszta części systemu, serwer aplikacji musi być opublikowany w postaci obrazu Docker, a potem uruchomiony w kontenerze. `Dockerfile` - plik, który zawiera instrukcje budowania obrazu Docker - wygląda tak:
+
+```dockerfile
+ARG SPRING_PROFILES_ACTIVE
+
+FROM gradle:jdk17-alpine as builder
+USER root
+WORKDIR /builder
+ADD . /builder
+RUN gradle build --stacktrace
+
+FROM openjdk:17-alpine
+ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+WORKDIR /app
+EXPOSE 8080
+COPY --from=builder /builder/build/libs/tpm-api-*.jar ./app.jar
+ENTRYPOINT java -jar app.jar
+```
+
+Podobnie jak w przypadku interfejsu użytkownika, budowanie obrazu jest podzielone na dwa etapy. W pierwszym etapie, aplikacja jest budowana i testowana. W tym celu użyto obrazu `gradle:jdk17-alpine`, który zawiera wszystkie potrzebne narzędzia do budowania aplikacji. W drugim etapie, aplikacja jest uruchamiana w kontenerze opartym o obraz `openjdk:17-alpine`, który zawiera tylko Javę i jest bardzo lekki. Publikacja obrazu jest prosta - wystarczy wywołać komendę `docker build`:
+
+```bash
+docker build -t tpm-apii:1.0.0-BETA . --no-cache
+```
+
+Zbudowany obraz aplikacji dostępny jest w lokalnym repozytorium obrazów Docker. Następnie, do pliku `docker-compose.yml` w projekcie `tpm-infrastructure` należy dodać konfigurację aplikacji:
+
+```yaml
+services:
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: ./api.Dockerfile
+      args:
+        SPRING_PROFILES_ACTIVE: qa
+    ports:
+      - "8080:8080"
+    networks:
+      - tpm-network
+    depends_on:
+      - db
+      - cache
+      - logstash
+```
+
+Oraz utworzyć plik `api.Dockerfile`, który będzie zawierał jedną linię, która będzie odpowiedzialna za uruchomienie kontenera z aplikacją i przekazanie do niego zmiennej środowiskowej `SPRING_PROFILES_ACTIVE`, która będzie zawierała nazwę profilu uruchomienia aplikacji:
+
+```dockerfile
+FROM tpm-api:1.0.0-BETA
+
+ARG SPRING_PROFILES_ACTIVE
+ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+```
+
+Po dodaniu konfiguracji aplikacji do pliku `docker-compose.yml`, należy uruchomić aplikację za pomocą polecenia:
+
+```bash
+docker-compose up -d
+```
+
+Po uruchomieniu, aplikacja będzie dostępna pod adresem `http://localhost:8080`.
+
 
 ## Prezentacja
 ### Rejestracja nowego użytkownika
