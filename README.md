@@ -5612,10 +5612,27 @@ Ponadto, integracja funkcjonalności księgowych z innymi aspektami działalnoś
 
 Podsumowując, rozbudowa systemu zarządzania biurem tłumaczeń o funkcjonalności księgowe jest ważnym krokiem w kierunku zwiększenia efektywności operacyjnej, poprawy zarządzania finansami i uproszczenia procesów administracyjnych. Jest to kluczowe dla zapewnienia długoterminowego sukcesu i stabilności finansowej biura tłumaczeń.
 
-### Usprawnienia monitorowania pracy systemu
+### Usprawnienia Monitorowania Pracy Systemu
 
-* Dodanie metryk do pozostałych części systemu
-* Alertowanie
-* Automatyczne skalowanie
-* Automatyczne restartowanie
-* Zbieranie logow z pozostałych części systemu do centralnego schowka logów
+W celu zapewnienia ciągłej i efektywnej pracy systemu zarządzania biurem tłumaczeń, konieczne są usprawnienia w zakresie monitorowania i zarządzania systemem informatycznym. Zwiększają one stabilność, wydajność oraz bezpieczeństwo systemu, co ma kluczowe znaczenie dla płynnego funkcjonowania biura tłumaczeń.
+
+Główne usprawnienia systemu obejmowałyby:
+
+1. **Dodanie Metryk do Pozostałych Części Systemu**: Rozszerzenie systemu o dodatkowe metryki umożliwi bardziej szczegółowy monitoring i analizę wydajności poszczególnych komponentów. Metryki te mogą obejmować dane dotyczące czasu przetwarzania zadań, wykorzystania zasobów systemowych, ilości zapytań do bazy danych oraz innych kluczowych wskaźników wydajności.
+
+2. **System Alertowania**: Implementacja systemu alertowania pozwoli na szybką reakcję na potencjalne problemy i anomalie. Może to obejmować powiadomienia o błędach systemowych, przekroczeniu zasobów, nienormalnych wzorcach ruchu w sieci oraz innych krytycznych zdarzeniach.
+
+3. **Automatyczne Skalowanie**: Wprowadzenie funkcji automatycznego skalowania zapewni elastyczność systemu w zakresie dostosowywania zasobów do aktualnego obciążenia. Pozwoli to na optymalizację wydajności i kosztów, szczególnie w przypadku nieregularnych wzorców użytkowania.
+
+4. **Automatyczne Restartowanie**: Automatyczne restartowanie komponentów systemowych w przypadku ich awarii zapewni większą stabilność i ciągłość działania systemu. Dzięki temu, nawet w przypadku wystąpienia błędów, system będzie mógł szybko powrócić do normalnego funkcjonowania.
+
+5. **Centralny Schowek Logów**: Zbieranie logów z różnych części systemu do centralnego schowka pozwoli na łatwiejszą analizę i identyfikację problemów. Dzięki temu, administratorzy systemu będą mieli szybki dostęp do kompleksowych informacji o działaniu i ewentualnych błędach systemu.
+
+#### Korzyści z Usprawnień:
+
+- **Lepsza Wydajność i Stabilność**: Usprawnienia te zapewniają wyższą wydajność i stabilność systemu, co jest kluczowe dla zapewnienia ciągłości działalności biura tłumaczeń.
+- **Szybka Reakcja na Problemy**: Dzięki systemowi alertowania i automatycznemu restartowaniu, możliwa jest szybka reakcja na problemy i minimalizacja ich wpływu na działanie systemu.
+- **Optymalizacja Kosztów**: Automatyczne skalowanie zasobów pozwala na optymalizację kosztów operacyjnych poprzez dostosowanie zasobów do aktualnych potrzeb.
+- **Lepsza Diagnostyka i Analiza**: Centralny schowek logów ułatwia diagnostykę i analizę problemów, umożliwiając szybkie identyfikowanie i rozwiązywanie błędów.
+
+Podsumowując, usprawnienia monitorowania pracy systemu mają zasadnicze znaczenie dla zapewnienia wysokiej dostępności i niezawodności systemu zarządzania biurem tłumaczeń. Są one kluczowe dla utrzymania ciągłości pracy i zapewnienia wysokiej jakości usług tłumaczeniowych.
