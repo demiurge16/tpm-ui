@@ -20,29 +20,30 @@ export const AsyncSelectField = (
   return (
     <Field name={name} multiple={multiple} required={required}>
       {({ input, meta }) => {
-        const onChange = (event: any, newValue: Option | Option[] | null) => {
-          if (input.multiple) {
-            input.onChange(newValue.map((option) => option.key));
-          } else {
-            input.onChange(newValue?.key);
-          }
-        };
-
-        const value = input.multiple
-          ? options.filter((option) => input.value.includes(option.key))
-          : options.find((option) => option.key === input.value);
-
-        return (
-          <FormControl 
-            variant="outlined"
-            fullWidth
-            margin="normal"
-          >
-            <Autocomplete
-              multiple={multiple}
-              value={value}
+        return input.multiple ? (
+          <FormControl variant="outlined" fullWidth margin="normal">
+            <Autocomplete multiple
+              value={options.filter((option) => input.value.includes(option.key))}
               options={options}
-              onChange={onChange}
+              onChange={(event, newValue) => input.onChange(newValue.map((option) => option.key))}
+              getOptionLabel={(option) => option.value}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={label + (required ? " *" : "")}
+                  variant="outlined"
+                  error={(meta.error && meta.touched) || meta.submitError}
+                  helperText={meta.error || meta.submitError}
+                />
+              )}
+            />
+          </FormControl>
+        ) : (
+          <FormControl variant="outlined" fullWidth margin="normal">
+            <Autocomplete
+              value={options.find((option) => option.key === input.value)}
+              options={options}
+              onChange={(event, newValue) => input.onChange(newValue?.key)}
               getOptionLabel={(option) => option.value}
               renderInput={(params) => (
                 <TextField

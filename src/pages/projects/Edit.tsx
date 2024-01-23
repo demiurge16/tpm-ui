@@ -43,7 +43,7 @@ const Edit = () => {
     ])
   );
 
-  const { project, accuracies, industries, units, serviceTypes, clients, languages, currencies } = refdata;
+  const { project, accuracies, industries, units, serviceTypes, clients, languages, currencies } = data;
 
   const navigate = useNavigate();
   const { handleSubmit, submitError } = useSubmitHandler<UpdateProject, Project>({
