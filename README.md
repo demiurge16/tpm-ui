@@ -17,13 +17,6 @@
     * [Jako kierownik projektu, chcę:](#jako-kierownik-projektu-chcę)
     * [Jako tłumacz, redaktor, korektor, ekspert merytoryczny czy edytor chcę:](#jako-tłumacz-redaktor-korektor-ekspert-merytoryczny-czy-edytor-chcę)
     * [Jako inżynier wsparcia, chcę:](#jako-inżynier-wsparcia-chcę)
-  * [Zasady projektowania systemu](#zasady-projektowania-systemu)
-    * [Domain-driven design (DDD)](#domain-driven-design-ddd)
-    * [Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)](#architektura-heksagonalna-czyli-wzorzec-porty-i-adaptery-ha)
-    * [Wstrzykiwanie zależności (DI)](#wstrzykiwanie-zależności-di)
-    * [Logowanie i monitorowanie](#logowanie-i-monitorowanie)
-    * [Kombinacja DDD, HA, DI i logowania/monitorowania](#kombinacja-ddd-ha-di-i-logowaniamonitorowania)
-    * [Architektura wielowarstwowa](#architektura-wielowarstwowa)
 * [Stos technologiczny](#stos-technologiczny)
   * [Postanowienia ogólne w wyborze technologii](#postanowienia-ogólne-w-wyborze-technologii)
   * [Interfejs użytkownika](#interfejs-użytkownika)
@@ -300,147 +293,340 @@ Aplikacja będzie zawierała następujące funkcje:
 
 ## Projekt aplikacji
  
-### Przypadki użycia i historyjki użytkownika
+### Role użytkowników
 
-#### Jako użytkownik, chcę:
+1. **Administrator** to kluczowa postać w ekosystemie aplikacji, dysponująca pełnym dostępem do wszystkich jej funkcji. Odpowiada za najwyższy poziom zarządzania systemem, w tym projektami, analizami i raportami, a także konfiguracją ustawień bezpieczeństwa i autentykacji. Jego rola umożliwia tworzenie, edytowanie i zarządzanie kontami użytkowników, przydzielanie ról oraz kontrolowanie uprawnień.
+2. **Kierownik projektu** to osoba z pełnym zaufaniem do nadzorowania projektów tłumaczeniowych, posiadająca uprawnienia do zarządzania nimi, komunikacji i współpracy w zespole, zarządzania zasobami, a także dostępu do raportów i analiz. Jego kompetencje obejmują również zarządzanie zespołem projektowym i centralnym repozytorium dokumentów projektu, a także bazą danych klientów.
+3. **Tłumacz** to profesjonalista odpowiedzialny za realizację zadań tłumaczeniowych w ramach projektów, do których ma dostęp. Użytkownik ten korzysta z funkcji zarządzania projektami, komunikacji, współpracy i zarządzania zasobami. Tłumacz współpracuje z zespołem projektowym, mając wpływ na centralne repozytorium plików projektu.
+4. **Redaktor** to specjalista od dopracowywania treści tłumaczeniowych, zapewniający ich wysoką jakość i spójność. Posiada dostęp do narzędzi niezbędnych do efektywnej pracy nad projektami, współpracy z zespołem oraz zarządzania dokumentacją projektową.
+5. **Korektor** zajmuje się finalną weryfikacją tekstów, eliminując błędy i niedociągnięcia. Jego działania są wspierane przez funkcje zarządzania projektami, komunikacji i współpracy, co pozwala na skuteczną poprawę jakości finalnych produktów.
+6. **Ekspert merytoryczny** to osoba dysponująca specjalistyczną wiedzą, kluczowa dla sukcesu projektów tłumaczeniowych. Dzięki dostępowi do narzędzi zarządzania, może aktywnie wspierać zespół projektowy, oferując cenne wskazówki i uwagi merytoryczne.
+7. **Edytor** to osoba odpowiedzialna za edycję treści w ramach projektów tłumaczeniowych, mająca wpływ na końcową formę materiałów. Użytkownik ten korzysta z narzędzi zarządzania projektami, umożliwiających sprawną współpracę i efektywną realizację zadań.
+8. **Obserwator** to użytkownik z ograniczonym dostępem, który może przeglądać projekty, zadania, dokumentację i komunikację, ale nie posiada możliwości wpływania na przebieg prac. Jego rola polega na monitorowaniu postępów i analizie wyników projektów.
 
-1. Zalogować się do systemu, aby móc zacząć korzystać z aplikacji.
-2. Wylogować się z systemu, dzięki czemu mogę skończyć pracę z aplikacją.
-3. Zmienić hasło, dzięki czemu będę mógł zachować bezpieczeństwo swojego konta.
-4. Zresetować hasło, dzięki czemu będę mógł odzyskać dostęp do swojego konta, jeśli je zapomnę.
-5. Zmienić adres e-mail, tak aby moje konto było bezpieczne.
-6. Zresetować adresu e-mail, tak aby odzyskać dostęp do konta, jeśli go zapomnę.
+#### Przepły logowania i resetu hasła
 
-#### Jako administrator, chcę:
+```mermaid
+graph LR
+  Start[Start] -->|Zaloguj się| Login[Logowanie]
+  Start -->|Zapomniałeś hasła?| ResetPassword[Reset hasła]
+```
 
-1. Pełny dostęp do aplikacji, aby móc zarządzać wszystkimi jej funkcjonalnościami.
-2. Dodać nowego użytkownika, aby mógł rozpocząć pracę z aplikacją.
-3. Edytować istniejącego użytkownika, aby móc zaktualizować jego dane.
-4. Mieć mozliwość zarządzania dostępem użytkowników, by móc kontrolować jego uprawnienia.
+System zarządzania projektami tłumaczeniowymi będzie posiadał klasyczny system logowania, który umożliwi użytkownikom dostęp do aplikacji poprzez podanie loginu i hasła. W przypadku zapomnienia hasła, użytkownicy będą mogli skorzystać z funkcji resetu hasła, która pozwoli na ustawienie nowego hasła.
 
-#### Jako kierownik projektu, chcę:
+#### Zarządzanie kontem i sesją
 
-1. Mieć widok siatki dostępnych projektów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć szukany projekt.
-2. Wyeskporotwać dane z widoku siatki, tak aby móc je wykorzystać w innych aplikacjach w celach raportowania i analizy.
-3. Stworzyć nowy projekt, aby móc rozpocząć nad nim pracę.
-4. Mieć pełną kontrolę nad cyklem życia projektu którym zarządzam, aby móc śledzić jego postępy i zidentyfikować problemy.
-5. Zarządzać zespołem projektowym, aby móc kontrolować dostęp do projektu dla poszczególnych użytkowników oraz wiedzieć, kto jaką rolę pełni w projekcie.
-6. Podzielić projekt na zadania, aby móc odpowiednio podzielić pracę między członków zespołu.
-7. Prypisać zadania do członków zespołu, aby wiedzieć, kto jest odpowiedzialny za wykonanie danego zadania.
-8. Monitorować postępy w realizacji zadań, aby móc śledzić postępy projektu.
-9. Zarzadzać plikami projektu, aby móc łatwo udostępniać je innym członkom zespołu.
-10. Śledzić koszty realizacji projektu, aby móc kontrolować budżet.
-11. Komunikować z zespołem projektowym, aby wszyscy członkowie zespołu mogli być na bieżąco z postępami projektu.
-12. Mieć widoki siatek zadań, kosztów realizacji, komunikacji i plików projektu, dzięki czemu mogę łatwo znaleźć szukane dane.
-13. Wyeskporotwać dane z widoków siatek zadań i kosztów realizacji, tak aby móc je wykorzystać w innych aplikacjach w celach raportowania i analizy.
-14. Zarządzać listą klientów, aby móc dodawać nowych klientów i edytować istniejących.
+```mermaid
+graph LR
+  Start[Start] -->|Zmień hasło| ChangePassword[Zmiana hasła]
+  Start -->|Zmień swoje dane użytkownika| UpdateAccount[Edycja danych użytkownika]
+  Start -->|Wyloguj się| Logout[Wylogowanie]
+```
 
-#### Jako tłumacz, redaktor, korektor, ekspert merytoryczny czy edytor chcę:
+Użytkownicy systemu będą mieli możliwość zarządzania swoim kontem i sesją, co pozwoli na dostosowanie ustawień do swoich potrzeb. Będą mogli zmieniać hasło, adres e-mail oraz swoje dane użytkownika, a także wylogować się z aplikacji.
 
-1. Mieć widok siatki projektów, do których jestem przypisany, dzięki czemu mogę łatwo znaleźć projekt, nad którym pracuję.
-2. Mieć widok siatki zadań, do których jestem przypisany, dzięki czemu mogę łatwo znaleźć zadanie, nad którym pracuję.
-3. Kontolować cykl życia zadania, nad którym pracuję, aby móc odpowiednio zarządzać jego postępami.
-4. Mieć widok siatki plików projektu, do którego jestem przypisany, dzięki czemu mogę łatwo znaleźć plik, nad którym pracuję.
-5. Pobrać pliki niezbędne do pracy, aby móc rozpocząć pracę nad zadaniem.
-6. Wgrać pliki z tłumaczeniami, aby móc zakończyć pracę nad zadaniem.
-7. Brać udział w komunikacji zespołu projektowego, aby wszyscy członkowie zespołu mogli być na bieżąco z postępami projektu.
-8. Zaraportować czas poświęcony na realizację zadania, aby móc śledzić postępy projektu.
+#### Przepływ zarządzania użytkownikami
 
-#### Jako obserwator, chcę:
+```mermaid
+graph LR
+  UserManagementPanel[Panel zarządzania użytkownikami] -->|Wybierz użytkownika| UserDetails[Szczegóły użytkownika]
+  UserDetails -->|Wróć| UserManagementPanel
 
-1. Mieć widok siatki projektów, do których mam dostęp, dzięki czemu mogę łatwo znaleźć projekt, który mnie interesuje.
-2. Mieć pełny wgląd w projekty, do których mam dostęp, aby móc śledzić ich postępy.
-3. Brać udział w komunikacji zespołu projektowego, aby wszyscy członkowie zespołu mogli być na bieżąco z postępami projektu.
+  UserDetails -->|Edytuj użytkownika| EditUser[Edycja użytkownika]
+  UserDetails -->|Usuń użytkownika| DeleteUser[Usnięcie użytkownika]
+  UserDetails -->|Przypisz rolę użytkownikowi| AssignRoleToUser[Nadawanie roli]
+  UserDetails -->|Odbierz rolę użytkownikowi| UnassignRoleFromUser[Odbieranie roli]
+  UserDetails -->|Zresetuj hasło użytkownika| ResetUserPassword[Resetowanie hasła użytkownika]
 
-#### Jako inżynier wsparcia, chcę:
+  UserManagementPanel --> |Dodaj nowego użytkownika| AddUser[Dodawanie nowego użytkownika]
+```
 
-1. Posiadać widok siatki logów z rozbudowanymi opcjami filtrowania i sortowania, dzięki czemu mogę łatwo znaleźć log, którego szukam.
-2. Mieć możliwość eksportowania danych z widoku siatki, tak aby móc je wykorzystać w innych aplikacjach.
-3. Mieć możliwość monitorowania wydajności aplikacji, dzięki czemu mogę się upewnić, że działa ona prawidłowo.
+System będzie umożliwiał zarządzanie użytkownikami, co pozwoli na kontrolę nad dostępem do aplikacji oraz nad uprawnieniami poszczególnych użytkowników. Będzie możliwe wyświetlanie, edytowanie, usuwanie, przypisywanie ról oraz resetowanie haseł użytkowników, a także dodawanie nowych użytkowników.
 
-### Wzorce i zasady projektowe
+#### Przepływ procesu zarządzania projektami
 
-Domain-driven design (DDD)
-Domain Driven Design (DDD) to podejście do projektowania oprogramowania, które koncentruje się na modelowaniu biznesowych dziedzin (domen) poprzez głębokie zrozumienie ich reguł, procesów i relacji między nimi. W ramach DDD, dziedziny są uważane za centralny punkt projektowania i są reprezentowane za pomocą obiektów w kodzie źródłowym, które odzwierciedlają ich charakterystyczne cechy [1].
+```mermaid
+graph LR
+  ProjectManagementPanel[Panel zarządzania projektami] -->|Wybierz projekt| ProjectDetails[Szczegóły projektu]
+  ProjectDetails -->|Wróć| ProjectManagementPanel
 
-Jednym z kluczowych celów DDD jest stworzenie tzw. "języka ogólnego" (ang. ubiquitous language) w projektach oprogramowania. Język ogólny to zestaw terminów i pojęć używanych w danym obszarze, które powinny być używane konsekwentnie przez wszystkich uczestników projektu - zarówno w biznesie, jak i w IT [2]. DDD promuje budowanie modelu dziedziny opartego na tym języku ogólnym, co prowadzi do lepszej komunikacji między różnymi zespołami i ekspertami dziedzinowymi.
+  ProjectDetails -->|Edytuj projekt| EditProject[Edycja projektu]
+  ProjectDetails -->|Zmień status projektu| ChangeProjectStatus[Zmiana statusu projektu]
+  ProjectDetails -->|Zmień termin rozpoczęcia projektu| ChangeStartDate[Zmiana terminu rozpoczęcia projektu]
+  ProjectDetails -->|Zmień terminy zakończenia projektu| ChangeEndDates[Zmiana terminów zakończenia projektu]
 
-DDD wyróżnia się wieloma konceptami, takimi jak agregaty, encje, wartości, fabryki, repozytoria, czy usługi domenowe. Każdy z tych konceptów pełni swoją specyficzną rolę w modelowaniu dziedziny, ale razem tworzą one całość, która odzwierciedla rzeczywistość biznesową [3].
+  ProjectDetails -->|Zarządzaj zespołem projektowym| ManageTeam[Zarządzanie zespołem projektowym]
 
-W ostatnich latach DDD zdobyło dużą popularność wśród programistów i architektów oprogramowania pragnących lepiej zrozumieć dziedziny biznesowe oraz tworzyć oprogramowanie, które dokładnie je odzwierciedla. Stosowanie DDD może przyczynić się do tworzenia bardziej elastycznych, skalowalnych i łatwych do utrzymania systemów, które odpowiadają rzeczywistym potrzebom biznesowym [4].
+  ProjectDetails -->|Zarządzaj zadaniami projektowymi| ManageTasks[Zarządzanie zadaniami projektowymi]
 
-Podsumowując, DDD to podejście projektowania oprogramowania, które skupia się na modelowaniu biznesowych dziedzin. Wykorzystuje język ogólny, co sprzyja lepszej komunikacji i zrozumieniu między różnymi uczestnikami projektu. DDD integruje wiele konceptów, które razem tworzą spójny model dziedziny. Dzięki niemu możliwe jest tworzenie bardziej elastycznych i skalowalnych systemów, które w pełni odpowiadają na potrzeby biznesowe.
+  ProjectDetails -->|Przejdź do zarządzania plikami projektowymi| ManageFiles[Zarządzanie plikami projektowymi]
 
-1. Evans, E. (2004). Domain-driven design: Tackling complexity in the heart of software. Addison-Wesley Professional.
-2. Fowler, M. (2013). Domain-specific languages. Addison-Wesley.
-3. Vernon, V. (2011). Implementing Domain-Driven Design. Addison-Wesley Professional.
-4. Ghosh, S., & Misra, S. C. (2014). A survey of domain-driven design in current practice.
+  ProjectDetails -->|Przejdź do zarządzania kosztami projektowymi| ManageCosts[Zarządzanie kosztami projektowymi]
 
-#### Architektura heksagonalna, czyli wzorzec Porty i adaptery (HA)
+  ProjectDetails -->|Przejdź do zarządzania komunikacją projektową| ManageCommunication[Zarządzanie komunikacją projektową]
 
-Architektura Heksagonalna, często nazywana Architekturą Portów i Adapterów, to wzorzec projektowy, który zdobywa na popularności w świecie tworzenia oprogramowania. HA skupia się na oddzieleniu warstwy aplikacji od logiki biznesowej, co redukuje zależności między nimi i ułatwia proces testowania [1].
+  ProjectManagementPanel --> |Dodaj nowy projekt| AddProject[Dodawanie nowego projektu]
+  ProjectManagementPanel --> |Pobierz raport| DownloadReport[Pobieranie raportu]
+```
+__Schema:__ Przepływ zarządzania projektami
 
-Architektura Heksagonalna bazuje na trzech kluczowych elementach: portach, adapterach i rdzeniu. Porty to interfejsy definiujące komunikację między warstwą logiki biznesowej a pozostałymi częściami systemu. Działają jako punkty wejścia i wyjścia do rdzenia systemu, co zwiększa jego elastyczność oraz umożliwia łatwość wprowadzania zmian. Adaptery są natomiast implementacjami tych portów, co pozwala na sprawną integrację warstwy logiki biznesowej z resztą systemu [2].
+W systemie zostanie zaimplementowany rozbudowany system zarządzania projektami, co pozwoli na kontrolę nad wszystkimi aspektami realizacji w jednym miejscu.
 
-Rdzeń jest sercem systemu i zawiera całą logikę biznesową. Właśnie tam realizowane są wszystkie operacje powiązane z funkcjonalnościami systemu. Dzięki oddzieleniu warstwy biznesowej od reszty systemu, HA ułatwia testowanie i rozwijanie aplikacji [3]. Ten wzorzec jest szczególnie wartościowy w dużych i skomplikowanych systemach, gdzie elastyczność i łatwość modyfikacji logiki biznesowej są niezbędne.
+```mermaid
+graph LR
+  ManageTeam[Zarządzanie zespołem projektowym] -->|Dodaj nowego członka zespołu| AddMember[Dodawanie nowego członka zespołu]
+  ManageTeam -->|Usuń członka zespołu| RemoveMember[Usuwanie członka zespołu]
+  ManageTeam -->|Nadaj rolę projektową| AssignRoleToMember[Nadawanie roli]
+  ManageTeam -->|Odbierz rolę projektową| UnassignRoleFromMember[Odbieranie roli]
+```
+__Schema:__ Przepływ zarządzania zespołem projektowym z poziomu projektu
 
-Zastosowania architektury Heksagonalnej można zaobserwować w wielu aplikacjach, w tym w systemach bankowych czy e-commerce. Jest ona wykorzystywana w projektach, gdzie priorytetem jest elastyczność oraz łatwość wprowadzania zmian w logice biznesowej [1]. Umożliwia to programistom skupienie się na kluczowej warstwie biznesowej bez konieczności martwienia się o resztę systemu.
+Zarządzanie zespołem projektowym będzie umożliwiało kontrolę nad składem zespołu projektowego, a także nad nadawaniem i odbieraniem ról projektowych.
 
-Podsumowując, Architektura Heksagonalna to efektywne narzędzie umożliwiające wprowadzanie zmian w logice biznesowej bez negatywnego wpływu na inne segmenty systemu. Ułatwia to programistom prace nad warstwą biznesową, co bezpośrednio przekłada się na większą elastyczność oraz łatwość adaptacji systemu [2].
+```mermaid
+graph LR
+  ManageTasks[Zarządzanie zadaniami projektowymi] -->|Dodaj nowe zadanie| AddTask[Dodawanie nowego zadania]
+  ManageTasks -->|Pobierz raport zadań| DownloadTasksReport[Pobieranie raportu zadań]
+```
+__Schema:__ Przepływ zarządzania zadaniami projektowymi z poziomu projektu
 
-1. A. Włodarczyk, "Hexagonal Architecture w praktyce", https://bulldogjob.pl/articles/806-hexagonal-architecture-w-praktyce, [dostęp: 21.02.2023].
-2. A. Roca, "Hexagonal Architecture: Three principles and an implementation example", https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/Hexagonal-Architecture-Three-principles-and-an-implementation-example, [dostęp: 21.02.2023].
-3. M. Verburg, "Hexagonal Architecture - Practical Example in Java", https://www.baeldung.com/hexagonal-architecture-ddd-spring, [dostęp: 21.02.2023].
+Tworzenie zadań projektowych będzie umożliwiało podział projektu na mniejsze części, co pozwoli na lepszą kontrolę nad realizacją projektu.
 
-#### Wstrzykiwanie zależności (DI)
+```mermaid
+graph LR  
+  ManageFiles[Zarządzanie plikami projektowymi] -->|Dodaj nowy plik| AddFile[Dodawanie nowego pliku]
+  ManageFiles -->|Usuń plik| DeleteFile[Usuwanie pliku]
+  ManageFiles -->|Pobierz plik| DownloadFile[Pobieranie pliku]
+```
+__Schema:__ Przepływ zarządzania plikami projektowymi z poziomu projektu
 
-Wstrzykiwanie zależności (ang. Dependency Injection, DI) to wzorzec projektowy umożliwiający oddzielenie procesu tworzenia obiektów od ich użytkowania. Zamiast inicjowania obiektów bezpośrednio wewnątrz innych obiektów, co może prowadzić do silnego sprzęgnięcia, obiekty są dostarczane z zewnątrz.
+Dla każdego projektu zostanie zaimplementowane centralne repozytorium plików, co pozwoli na przechowywanie i zarządzanie plikami projektowymi w jednym miejscu.
 
-W praktyce oznacza to, że dany obiekt nie jest odpowiedzialny za inicjowanie innych obiektów, których potrzebuje. Zamiast tego otrzymuje je z zewnątrz, za pośrednictwem konstruktora, metod czy właściwości [1]. Takie podejście czyni obiekt bardziej elastycznym oraz ułatwia jego testowanie, umożliwiając badanie jego funkcji niezależnie od innych obiektów, z którymi współpracuje.
+```mermaid
+graph LR
+  ManageCosts[Zarządzanie kosztami projektowymi] -->|Dodaj nowy koszt| AddCost[Dodawanie nowego kosztu]
+  ManageCosts -->|Usuń koszt| DeleteCost[Usuwanie kosztu]
+  ManageCosts -->|Pobierz raport kosztów| DownloadCostsReport[Pobieranie raportu kosztów]
+```
+__Schema:__ Przepływ zarządzania kosztami projektowymi z poziomu projektu
 
-Wstrzykiwanie zależności można realizować na różne sposoby, między innymi poprzez konstruktor, metody czy właściwości. W każdym z tych przypadków obiekty potrzebne do działania klasy dostarczane są z zewnątrz, nie są tworzone bezpośrednio w jej wnętrzu. Dzięki temu, w sytuacji gdy zachodzi potrzeba zmiany obiektów w klasie, nie musimy modyfikować samej klasy – wystarczy podmienić dostarczane obiekty [2].
+Zarządzanie kosztami projektowymi będzie umożliwiało kontrolę nad kosztami związanymi z realizacją projektu, a także nad dodawaniem i usuwaniem kosztów.
 
-DI sprawdza się zwłaszcza w skomplikowanych projektach, gdzie liczba klas i ich wzajemne zależności są duże. Umożliwia ono efektywne zarządzanie tymi zależnościami, co prowadzi do łatwiejszego testowania i rozwijania aplikacji.
+```mermaid
+graph LR
+  ManageCommunication[Zarządzanie komunikacją projektową] -->|Dodaj nowy wątek komunikacyjny| AddThread[Dodawanie nowego wątku komunikacyjnego]
+```
+__Schema:__ Przepływ zarządzania komunikacją projektową z poziomu projektu
 
-Chociaż wstrzykiwanie zależności jest skutecznym sposobem na eliminację silnego sprzęgnięcia, nie jest jedyną metodą osiągnięcia tego celu. Alternatywnym podejściem jest wzorzec fabryki (Factory), który centralizuje tworzenie obiektów i ich dostarczanie do innych klas. W porównaniu jednak z DI, wzorzec fabryki może być bardziej skomplikowany i mniej elastyczny [3].
+Zarządzanie komunikacją projektową będzie umożliwiało kontrolę nad komunikacją w ramach projektu, a także nad dodawaniem nowych wątków komunikacyjnych.
 
-Źródła:
+```mermaid
+stateDiagram-v2
+    Draft: Szkic
+    ReadyToStart: Gotowy do rozpoczęcia
+    Active: Aktywny
+    Review: Recenzja
+    OnHold: Wstrzymany
+    ReadyToDeliver: Gotowy do dostarczenia
+    Delivered: Dostarczony
+    Invoiced: Fakturowany
+    Paid: Opłacony
+    Cancelled: Anulowany
 
-1. M. Fowler, "Inversion of Control Containers and the Dependency Injection pattern", https://martinfowler.com/articles/injection.html, [dostęp: 21.02.2023].
-2. S. Freeman, S. Robson, "Head First Design Patterns", O'Reilly Media, 2004.
-3. E. Gamma, R. Helm, R. Johnson, J. Vlissides, "Design Patterns: Elements of Reusable Object-Oriented Software", Addison-Wesley, 1994.
+    [*] --> Draft: Tworzenie projektu
 
-#### Logowanie i monitorowanie
+    Draft --> ReadyToStart: Zakończ szkic
+    ReadyToStart --> Draft: Wróć do szkicu
+    ReadyToStart --> Active: Rozpocznij projekt
+    ReadyToStart --> Cancelled: Anuluj
 
-Logowanie i monitorowanie to nieodzowne elementy każdej nowoczesnej aplikacji. Poprzez logowanie zbieramy szczegółowe informacje o tym, co dzieje się wewnątrz aplikacji, podczas gdy monitorowanie pozwala śledzić jej działanie w czasie rzeczywistym oraz szybko reagować na ewentualne problemy. Odpowiednie narzędzia i techniki w tych obszarach są kluczem do zapewnienia wysokiej jakości i niezawodności działania systemu.
+    Active --> Review: Rozpocznij recenzję
+    Active --> OnHold: Wstrzymaj projekt
+    Active --> Cancelled: Anuluj
 
-Logowanie, inaczej "logging", polega na rejestrowaniu informacji dotyczących różnych wydarzeń zachodzących w aplikacji [1]. Zwykle koncentruje się ono na danych, które pomogą zdiagnozować i rozwiązać problemy. Do logów trafiają informacje o błędach, ostrzeżeniach, danych diagnostycznych oraz żądaniach i odpowiedziach HTTP. W środowiskach chmurowych, logowanie nabiera szczególnego znaczenia, ponieważ umożliwia śledzenie problemów w skomplikowanych, rozproszonych systemach.
+    OnHold --> Active: Wznów projekt
+    OnHold --> Cancelled: Anuluj
 
-Monitoring, z kolei, polega na zbieraniu, analizie i prezentacji danych dotyczących działania aplikacji oraz zasobów na której jest ona uruchomiona, takich jak infrastruktura czy sieć [2]. Dzięki narzędziom monitorującym, jesteśmy w stanie obserwować takie metryki jak wydajność, zużycie pamięci RAM, obciążenie procesora czy przepustowość sieci. Pozwala to administratorom na ciągłą kontrolę nad systemem i szybką interwencję, zapewniając nieprzerwaną pracę aplikacji i satysfakcję użytkowników.
+    Review --> ReadyToDeliver: Zatwierdź
+    Review --> Active: Odrzuć
+    Review --> OnHold: Wstrzymaj projekt
+    Review --> Cancelled: Anuluj
 
-W skrócie, odpowiednie logowanie i monitorowanie są niezbędne do utrzymania jakości i niezawodności aplikacji. Dobrze zaplanowane i skonfigurowane mechanizmy w obu tych obszarach umożliwiają szybką identyfikację oraz rozwiązanie problemów, zanim wpłyną one negatywnie na doświadczenia użytkowników.
+    ReadyToDeliver --> Delivered: Dostarcz
+    ReadyToDeliver --> Active: Odrzuć
+    ReadyToDeliver --> Cancelled: Anuluj
 
-Źródła:
+    Delivered --> Invoiced: Oznacz jako fakturowane
+    Delivered --> Cancelled: Anuluj
 
-1. M. Shema, "Logging Basics", https://www.loggly.com/ultimate-guide/java-logging-basics/, [dostęp: 21.02.2023].
-2. A. Otocki, "A beginner's guide to monitoring", https://www.datadoghq.com/blog/monitoring-101-a-beginners-guide/, [dostęp: 21.02.2023].
+    Invoiced --> Paid: Oznacz jako opłacone
+    Invoiced --> Cancelled: Anuluj
 
-#### Kombinacja DDD, HA, DI i logowania/monitorowania
+    Cancelled --> Draft: Przywróć projekt
 
-Połączenie podejść Domain-Driven Design (DDD), Architektury Heksagonalnej (HA), Wstrzykiwania Zależności (DI) oraz logowania i monitorowania to koncepcja, która zdobyła duże uznanie we współczesnym programowaniu. DDD skupia się na tworzeniu precyzyjnego modelu biznesowego, pomagając jednocześnie zidentyfikować kluczowe koncepcje biznesowe niezbędne podczas tworzenia aplikacji [1]. HA, z kolei, umożliwia izolację logiki biznesowej od specyfik technologicznych, co sprzyja łatwości wprowadzania zmian [2]. DI sprzyja elastyczności w zarządzaniu zależnościami, co ułatwia testowanie i implementację zmian [3]. Tymczasem systemy logowania i monitorowania odgrywają kluczową rolę w obserwacji i diagnostyce aplikacji, szybkim wykrywaniu oraz rozwiązywaniu problemów.
+    Paid --> [*]: Zakończenie projektu
+```
+__Schema:__ Cykl życia projektu
 
-Integracja tych metodologii jest szczególnie wartościowa dla projektów o dużej skali i potrzebie elastyczności. Pomaga to utrzymać klarowną i spójną architekturę aplikacji, ułatwia testowanie, diagnostykę oraz efektywne wprowadzanie zmian. DI w tym kontekście jest niezwykle ważne, ponieważ umożliwia dynamiczną modyfikację zależności między modułami bez konieczności interwencji w istniejący kod, co znacząco usprawnia zarządzanie projektem.
+Status projektu będzie narzędziem do kontrolowania postępów projektu, co pozwoli na lepszą organizację i zarządzanie realizacją projektu.
 
-Pomimo wielu korzyści, warto podkreślić pewne wyzwania związane z zastosowaniem tych podejść. Wymagają one od programistów głębokiej wiedzy i doświadczenia, ponieważ każda z tych metodologii posiada własne zalecenia i najlepsze praktyki. Jednak, przy prawidłowym zastosowaniu, korzyści z ich wykorzystania w projektach o dużej skali i złożoności są nie do przecenienia [4].
+#### Przepływ zarządzania zadaniami projektowymi
 
-Podsumowując, integracja DDD, HA, DI oraz logowania i monitorowania jest niezwykle efektywna w projektowaniu aplikacji. Umożliwia tworzenie spójnych, elastycznych i łatwych w utrzymaniu systemów, choć wymaga od programistów zaawansowanej wiedzy i umiejętności.
+```mermaid
+graph LR
+  TaskManagementPanel[Panel zarządzania zadaniami projektowymi] -->|Wybierz zadanie| TaskDetails[Szczegóły zadania]
+  TaskDetails -->|Wróć| TaskManagementPanel
 
-Źródła:
+  TaskDetails -->|Przejdź do edycji zadania| EditTask[Edycja zadania]
+  TaskDetails -->|Zmień status zadania| ChangeTaskStatus[Zmiana statusu zadania]
+  TaskDetails -->|Zmień termin rozpoczęcia zadania| ChangeStartDate[Zmiana terminu rozpoczęcia zadania]
+  TaskDetails -->|Zmień termin zakończenia zadania| ChangeEndDate[Zmiana terminu zakończenia zadania]
+  TaskDetails -->|Zmień osobę przypisaną do zadania| ChangeAssignedPerson[Zmiana osoby przypisanej do zadania]
+  TaskDetails -->|Zmień priorytet zadania| ChangeTaskPriority[Zmiana priorytetu zadania]
+  TaskDetails -->|Zaraportuj czas pracy nad zadaniem| ReportTimeSpentOnTask[Raportowanie czasu pracy nad zadaniem]
 
-1. Evans, Eric. "Domain-driven design: tackling complexity in the heart of software." Pearson Education, 2004.
-2. "Hexagonal architecture." Port on Patterns, 2013, https://www.innoq.com/en/portals/hexagonal-architecture/.
-3. Freeman, Adam, and James Turnbull. "Building microservices: designing fine-grained systems." O'Reilly Media, Inc., 2015.
-4. Szewczyk, Paweł. "Combining Domain-Driven Design and Hexagonal Architecture to develop robust and maintainable web applications." Procedia Computer Science 126 (2018): 1191-1200.
+  TaskManagementPanel --> |Dodaj nowe zadanie| AddTask[Dodawanie nowego zadania]
+```
+
+System będzie posiadać rozbudowane narzędzia do zarządzania zadaniami projektowymi, co pozwoli na kontrolę nad wszystkimi aspektami realizacji zadań w ramach projektów tłumaczeniowych. Będzie możliwe wyświetlanie, edytowanie, zmiana statusu, zmiana terminu rozpoczęcia, zmiana terminu zakończenia, zmiana osoby przypisanej oraz zmiana priorytetu zadań, a także dodawanie nowych zadań.
+
+```mermaid
+stateDiagram-v2
+    Draft: Szkic
+    Assigned: Przypisane
+    InProgress: W trakcie
+    OnHold: Wstrzymane
+    Review: Recenzja
+    ReadyToDeliver: Gotowe do dostarczenia
+    Completed: Zakończone
+    Cancelled: Anulowane
+
+    [*] --> Draft: Tworzenie zadania
+
+    Draft --> Assigned: Przypisz tłumacza
+    Assigned --> InProgress: Rozpocznij
+    Assigned --> Cancelled: Anuluj
+
+    InProgress --> Review: Wyślij do recenzji
+    InProgress --> OnHold: Wstrzymaj
+    InProgress --> Cancelled: Anuluj
+
+    Review --> InProgress: Poproś o poprawki
+    Review --> ReadyToDeliver: Zatwierdź
+    Review --> Cancelled: Anuluj
+
+    ReadyToDeliver --> Completed: Zakończ
+    ReadyToDeliver --> Cancelled: Anuluj
+
+    OnHold --> InProgress: Wznów
+    OnHold --> Cancelled: Anuluj
+
+    Cancelled --> Draft: Otwórz ponownie
+
+    Completed --> [*]: Zakończenie zadania
+```
+
+```mermaid
+stateDiagram-v2
+  Draft: Szkic
+  Submitted: Zgłoszone
+  Approved: Zatwierdzone
+  Rejected: Odrzucone
+
+  [*] --> Draft: Tworzenie wpisu
+  Draft --> Submitted: Zgłoszone do zatwierdzenia
+  Submitted --> Approved: Zatwierdzone
+  Submitted --> Rejected: Odrzucone
+```
+
+### Przepływ interakcji z wątkami komunikacyjnymi
+
+```mermaid
+graph LR
+  ThreadManagementPanel[Panel zarządzania wątkami komunikacyjnymi] -->|Wybierz wątek| ThreadDetails[Szczegóły wątku]
+  ThreadDetails -->|Wróć| ThreadManagementPanel
+
+  ThreadDetails -->|Przejdź do edycji wątku| EditThread[Edycja wątku]
+  ThreadDetails -->|Zmień status wątku| ChangeThreadStatus[Zmiana statusu wątku]
+  ThreadDetails -->|Dodaj pozytywną reakcję do wątku| AddPositiveReactionToThread[Dodawanie pozytywnej reakcji]
+  ThreadDetails -->|Dodaj negatywną reakcję do wątku| AddNegativeReactionToThread[Dodawanie negatywnej reakcji]
+  ThreadDetails -->|Usuń reakcję z wątku| RemoveReactionFromThread[Usuwanie reakcji]
+
+  ThreadDetails -->|Dodaj komentarz do wątku| AddCommentToThread[Dodawanie komentarza]
+```
+
+```mermaid
+graph LR
+AddCommentToThread[Komentarz]
+  AddCommentToThread --> |Dodaj pozytywną reakcję do komentarza| AddPositiveReactionToComment[Dodawanie pozytywnej reakcji]
+  AddCommentToThread --> |Dodaj negatywną reakcję do komentarza| AddNegativeReactionToComment[Dodawanie negatywnej reakcji]
+  AddCommentToThread --> |Usuń reakcję z komentarza| RemoveReactionFromComment[Usuwanie reakcji]
+  AddCommentToThread --> |Usuń komentarz| RemoveComment[Usuwanie komentarza]
+  AddCommentToThread --> |Dodaj odpowiedź do komentarza| AddReplyToComment[Dodawanie odpowiedzi]
+```
+
+System będzie posiadać rozbudowane narzędzia do zarządzania wątkami komunikacyjnymi, co pozwoli na kontrolę nad wszystkimi aspektami komunikacji w ramach projektów tłumaczeniowych. Będzie możliwe wyświetlanie, edytowanie, zmiana statusu, dodawanie reakcji, usuwanie reakcji, dodawanie komentarzy, usuwanie komentarzy oraz dodawanie odpowiedzi do komentarzy.
+
+```mermaid
+stateDiagram-v2
+  Draft: Szkic
+  Active: Aktywny
+  Frozen: Zamrożony
+  Closed: Zamknięty
+  Archived: Zarchiwizowany
+  Deleted: Usunięty
+
+  [*] --> Draft: Utworzenie wątku
+
+  Draft --> Active: Aktywuj
+  Draft --> Deleted: Usuń
+
+  Active --> Frozen: Zamroź
+  Active --> Closed: Zamknij
+  Active --> Deleted: Usuń
+
+  Frozen --> Active: Aktywuj
+  Frozen --> Closed: Zamknij
+  Frozen --> Deleted: Usuń
+
+  Closed --> Active: Aktywuj
+  Closed --> Archived: Archiwizuj
+  Closed --> Deleted: Usuń
+
+  Archived --> Deleted: Usuń
+
+  Deleted --> [*]
+```
+
+### Zarządzanie bazą klientów i słownikami
+
+Słowniki w naszym systemie to zaawansowany mechanizm umożliwiający definiowanie i wykorzystanie niestandardowych wartości w wielu aspektach aplikacji. Pozwalają one na precyzyjne dopasowanie funkcjonalności do specyficznych potrzeb, takich jak ustalanie priorytetów zadań czy kategoryzacja kosztów.
+
+Zaimplementowaliśmy następujące słowniki, które wspierają różnorodność i elastyczność operacji w systemie:
+1. **Typ klienta** – umożliwia klasyfikację klientów, np. jako klient indywidualny, firma, instytucja itd.
+2. **Dokładność tłumaczenia** – określa wymagany poziom dokładności tłumaczeń, oferując opcje takie jak dosłowne czy zrozumiałe.
+3. **Kraj** – pozwala na określenie kraju, np. Polska, Niemcy, Francja, co jest kluczowe przy definiowaniu pochodzenia klienta.
+4. **Waluta** – definiuje walutę operacji finansowych, taką jak złoty, euro, dolar, niezbędną przy określaniu waluty kosztów projektu.
+5. **Kategoria kosztów** – umożliwia kategoryzację kosztów realizacji projektów, np. oprogramowanie, usługi kurierskie.
+6. **Branża** – identyfikuje branżę, do której należy projekt, np. medycyna, prawo, technologia, co ułatwia jego klasyfikację.
+7. **Język** – kluczowy dla projektów tłumaczeniowych, definiuje języki, np. polski, niemiecki, francuski.
+8. **Priorytet zadania** – pozwala na określenie ważności zadania, z opcjami takimi jak niski, średni, wysoki.
+9. **Typ usługi** – wskazuje rodzaj świadczonej usługi, np. tłumaczenie, korekta, redakcja.
+10. **Jednostka rozliczeniowa** – definiuje jednostki, na podstawie których rozliczane są usługi, np. słowo, strona, godzina.
+
+Dodatkowo, baza klientów działa jako specjalny typ słownika, przechowujący kompleksowe informacje o klientach, w tym nazwę, adres, kraj pochodzenia, preferowaną walutę, branżę itp. Ta baza znajduje zastosowanie w różnych segmentach aplikacji, na przykład przy definiowaniu klienta dla danego projektu, zapewniając spersonalizowaną i efektywną obsługę.
+
+```mermaid
+graph LR
+  DictionaryManagementPanel[Panel zarządzania słownikiem] -->|Wybierz wartość| DictionaryDetails[Szczegóły wartości]
+  DictionaryDetails -->|Wróć| DictionaryManagementPanel
+
+  DictionaryDetails -->|Edytuj wartość| EditDictionaryValue[Edycja wartości]
+  DictionaryDetails -->|Usuń wartość| DeleteDictionaryValue[Usunięcie wartości]
+  DictionaryDetails -->|Przywróć wartość| RestoreDictionaryValue[Przywrócenie wartości]
+
+  DictionaryManagementPanel -->|Dodaj nową wartość| AddDictionaryValue[Dodawanie nowej wartości]
+```
 
 ## Stos technologiczny
 
@@ -3369,327 +3555,341 @@ Po uruchomieniu, aplikacja będzie dostępna pod adresem `http://localhost`.
 
 ### Serwer aplikacji
 
-#### Tworzenie projektu za pomocą Spring Initializr
+## 1. Modelowanie domeny
 
-Pracę nad serwerem aplikacji rozpoczynamy od utworzenia projektu za pomocą Spring Initializr. Spring Initializr jest narzędziem, które pozwala na wygenerowanie szkieletu projektu Spring Boot. W tym celu, należy przejść na stronę internetową [https://start.spring.io/](https://start.spring.io/) i wybrać odpowiednie opcje zgodnie z założeniami projektu:
+Projektowanie każdej aplikacji zaczyna się od opisania problemu, który ma ona rozwiązać. Szczegółowe zrozumienie problemu pozwala zrozumieć jakie obiekty, reguły i procesy są w nim zaangażowane. Z czasem, w procesie projectowania, powstaną rożnorodne wykresy, diagramy, tabele, które pozwolą zwizualizować problem i jego rozwiązanie. Wśród nich zawarty może zostać diagram klas, opisujący encje oraz relacje pomiędzy nimi i możliwe operacje, które na nich można wykonać. Diagram ten może wyglądać tak:
 
-![Spring Initializr](./docs/spring-initializr.png)
+```mermaid
+classDiagram
+direction TB
+class Project {
 
-W projekcie, wykorzystano następujące opcje:
+  + hasTeamMember(UserId) Boolean
+  + moveStart(ZonedDateTime) Unit
+  + backToDraft() Unit
+  + cancel() Unit
+  + update(String, String, Language, List~Language~, Accuracy, Industry, Unit, List~ServiceType~, Int, BigDecimal, Currency, Client) Unit
+  + startReview() Unit
+  + reject() Unit
+  + invoice() Unit
+  + reopen() Unit
+  + startProgress() Unit
+  + putOnHold() Unit
+  + hasTeamMemberWithRole(UserId, ProjectRole) Boolean
+  + finishDraft() Unit
+  + approve() Unit
+  + deliver() Unit
+  + hasTeamMemberWithAnyRole(UserId, List~ProjectRole~) Boolean
+  + pay() Unit
+  + resume() Unit
+  + moveDeadlines(ZonedDateTime, ZonedDateTime) Unit
 
-* **Project**: Gradle - Kotlin. Wybór tej opcji mówi o tym, że projekt będzie budowany za pomocą narzędzia Gradle wykorzystującym Kotlin DSL.
-* **Language**: Kotlin. Wybór tej opcji ustala Kotlin jako język programowania, który będzie domyślnie wykorzystywany w projekcie.
-* **Spring Boot**: 3.1.5. Wybór wersji Spring Boot, która będzie wykorzystywana w projekcie.
-* **Project Metadata**: Nazwa projektu, nazwa grupy oraz pakiet, w którym będą znajdować się klasy projektu.
-* **Dependencies**: Wybór zależności, które będą wykorzystywane w projekcie. Na powyższym rysunku przedstawione są przykładowe zależności, które będą wykorzystywane w projekcie.
+  String description
+  ZonedDateTime externalDeadline
+  Industry industry
+  Client client
+  Int amount
+  Language sourceLanguage
+  List~Language~ targetLanguages
+  List~File~ files
+  List~Expense~ expenses
+  List~Thread~ threads
+  Unit unit
+  List~ServiceType~ serviceTypes
+  ZonedDateTime expectedStart
+  Accuracy accuracy
+  String title
+  List~Task~ tasks
+  BigDecimal budget
+  ZonedDateTime internalDeadline
+  Currency currency
+  List~TeamMember~ teamMembers
+  ProjectStatus status
+}
 
-Po wybraniu odpowiednich opcji, należy kliknąć przycisk `Generate` i pobrać wygenerowany projekt. Archiwum z projektem należy rozpakować i otworzyć za pomocą Intellij IDEA. Intellij IDEA automatycznie skonfiguruje potrzebną dystrybucję JDK na podstawie plików projektu i przygotuje wszystko do uruchomienia aplikacji. Otrzymany projekt w swojej postaci już jest gotową aplikacją Spring Boot, która jest gotowa do dalszego rozwoju.
+class ProjectRole {
+  <<enumeration>>
 
-#### Narzędzie Gradle
+  + valueOf(String) ProjectRole
+  + values() ProjectRole[]
 
-Narzędzie Gradle to potężny i elastyczny system automatyzacji budowania, który stał się standardem w projektach Java, w tym w projektach Spring Boot. Wykorzystuje on DSL (Domain-Specific Language) oparty na Groovy lub Kotlin do definiowania zadań budowania i zarządzania zależnościami. Oto kilka kluczowych cech i funkcji Gradle:
+  String description
+  String title
+}
+class ProjectStatus {
+  <<enumeration>>
 
-1. **Elastyczność i Skalowalność**: Gradle zapewnia dużą elastyczność, umożliwiając tworzenie niestandardowych skryptów i zadań, które mogą być skalowane dla małych i dużych projektów.
-2. **Wydajność**: Gradle używa mechanizmu incrementation build oraz cache'owania, co znacząco przyspiesza proces budowania aplikacji, szczególnie w dużych projektach.
-3. **Zarządzanie Zależnościami**: Gradle pozwala na łatwe zarządzanie zależnościami bibliotek z Maven Central, Google, jCenter i innych repozytoriów. 
-4. **Wsparcie dla Wielu Języków i Platform**: Chociaż jest powszechnie stosowany w projektach Java, Gradle obsługuje również inne języki programowania, takie jak Kotlin, Groovy, Scala oraz platformy jak Android.
-5. **Integracja z IDE i Inne Narzędzia**: Gradle współpracuje z popularnymi środowiskami programistycznymi takimi jak IntelliJ IDEA, Eclipse, oraz NetBeans, co ułatwia importowanie projektów i zarządzanie nimi.
-6. **Plugins**: Gradle oferuje bogaty zestaw wtyczek, które rozszerzają jego funkcjonalność i ułatwiają integrację z różnymi ramami, serwerami aplikacji i narzędziami CI/CD.
-7. **Build Scans**: Funkcja ta pozwala na analizę budowy aplikacji i identyfikację problemów dzięki tworzeniu szczegółowych raportów o budowaniu.
-8. **Dokumentacja**: Gradle posiada obszerną i dobrze napisaną dokumentację, która jest dużym atutem dla deweloperów na każdym poziomie zaawansowania.
+  + valueOf(String) ProjectStatus
+  + values() ProjectStatus[]
 
-W kontekście serwera aplikacji, Gradle zostanie wykorzystany do budowania aplikacji, zarządzania zależnościami oraz do uruchamiania aplikacji. Initializr automatycznie skonfigurował projekt do wykorzystania Gradle, więc nie ma potrzeby dodatkowej konfiguracji. Konfiguracja Gradle składa się z dwóch plików:
+  String description
+  String title
+}
+class Task {
 
-1. **build.gradle.kts** - kluczowy element konfiguracji Gradle w projekcie Spring Boot, definiującym zależności i zadania budowania. Przykład zawartości tego pliku dla projektu wygląda następująco:
+  + complete() Unit
+  + changePriority(Priority) Unit
+  + update(String, String, Language, Language, Accuracy, Industry, Unit, ServiceType, Int, BigDecimal, Currency) Unit
+  + putOnHold() Unit
+  + start() Unit
+  + reject() Unit
+  + unassign() Unit
+  + reopen() Unit
+  + resume() Unit
+  + moveStart(ZonedDateTime) Unit
+  + startReview() Unit
+  + cancel() Unit
+  + moveDeadline(ZonedDateTime) Unit
+  + approve() Unit
+  + assign(User) Unit
 
-    ```kotlin
-    import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+  String description
+  Industry industry
+  Int amount
+  List~TimeEntry~ timeEntries
+  Language targetLanguage
+  ZonedDateTime deadline
+  Language sourceLanguage
+  Priority priority
+  User? assignee
+  Unit unit
+  TaskStatus status
+  ZonedDateTime expectedStart
+  ProjectId projectId
+  Accuracy accuracy
+  String title
+  ServiceType serviceType
+  BigDecimal budget
+  Currency currency
+}
 
-    // Konfiguracja wtyczek
-    plugins {
-        id("org.springframework.boot") version "3.1.2"
-        id("io.spring.dependency-management") version "1.1.0"
-        kotlin("jvm") version "1.7.22"
-        kotlin("plugin.spring") version "1.7.22"
-        kotlin("plugin.jpa") version "1.7.22"
-    }
+class TaskStatus {
+  <<enumeration>>
 
-    group = "net.nuclearprometheus.tpm"
-    version = "1.0.0-BETA"
-    java.sourceCompatibility = JavaVersion.VERSION_17
+  + valueOf(String) TaskStatus
+  + values() TaskStatus[]
 
-    // Konfiguracja zależności
-    configurations {
-        compileOnly {
-            extendsFrom(configurations.annotationProcessor.get())
-        }
-    }
+  String description
+  String title
+}
+class TeamMember {
+  + hasAnyRole(List~ProjectRole~) Boolean
+  + hasRole(ProjectRole) Boolean
+  ProjectId projectId
+  List~TeamMemberRole~ roles
+  User user
+}
+class TeamMemberRole {
 
-    repositories {
-        mavenCentral()
-    }
-    
-    // Wersje zależności
-    val springCloudVersion: String by extra { "2022.0.4" }
-    val liquibaseVersion: String by extra { "4.20.0" }
-    val springdocVersion: String by extra { "2.1.0" }
-    val minioVersion: String by extra { "8.5.2" }
-    val keycloakVersion: String by extra { "22.0.1" }
-    val openCsvVersion: String by extra { "5.8" }
-    val logstashLogbackEncoderVersion: String by extra { "7.4" }
+  ProjectId projectId
+  UserId userId
+  ProjectRole role
+}
+class TimeEntry {
 
-    // Poszczególne zależności
-    dependencies {
-        implementation("org.springframework.boot:spring-boot-starter-actuator")
-        implementation("org.springframework.boot:spring-boot-starter-cache")
-        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-        implementation("org.springframework.boot:spring-boot-starter-data-redis")
-        implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-        implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-        implementation("org.springframework.boot:spring-boot-starter-security")
-        implementation("org.springframework.boot:spring-boot-starter-validation")
-        implementation("org.springframework.boot:spring-boot-starter-web")
-        implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-        implementation("org.jetbrains.kotlin:kotlin-reflect")
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-        implementation("org.keycloak:keycloak-core:$keycloakVersion")
-        implementation("org.keycloak:keycloak-policy-enforcer:$keycloakVersion")
-        implementation("org.keycloak:keycloak-admin-client:$keycloakVersion")
-        implementation("org.keycloak:keycloak-authz-client:$keycloakVersion")
-        implementation("org.liquibase:liquibase-core:$liquibaseVersion")
-        implementation("org.liquibase.ext:liquibase-hibernate6:$liquibaseVersion")
-        implementation("com.opencsv:opencsv:$openCsvVersion")
-        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
-        implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
-        implementation("io.minio:minio:$minioVersion")
-        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-        runtimeOnly("org.postgresql:postgresql")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("io.projectreactor:reactor-test")
-        testImplementation("org.springframework.security:spring-security-test")
-    }
+  + submit() Unit
+  + update(User, LocalDate, Int, TimeUnit, String) Unit
+  + reject() Unit
+  + approve() Unit
 
-    dependencyManagement {
-        imports {
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
-        }
-    }
+  String description
+  TaskId taskId
+  TimeEntryStatus status
+  LocalDate date
+  Int timeSpent
+  TimeUnit timeUnit
+  User user
+}
+class TimeEntryStatus {
+  <<enumeration>>
 
-    // Konfiguracja zadań
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "17"
-        }
-    }
+  + values() TimeEntryStatus[]
+  + valueOf(String) TimeEntryStatus
 
-    tasks.named<Jar>("jar") {
-        enabled = false
-    }
+  String description
+  String title
+}
+class TimeUnit {
+  <<enumeration>>
 
-    tasks.withType<Test> {
-        useJUnitPlatform()
-    }
-    ```
+  + valueOf(String) TimeUnit
+  + values() TimeUnit[]
 
-2. **settings.gradle.kts** - plik, który zawiera konfigurację projektu. W tym pliku, są zdefiniowane moduły, które są wykorzystywane w projekcie. Przykładowy plik `settings.gradle.kts` wygląda następująco:
+  String description
+  Int multiplier
+  String title
+}
 
-    ```kotlin
-    rootProject.name = "project-hermes-api"
-    ```
+Project "1" *--> "status 1" ProjectStatus
+Project "1" *--> "tasks *" Task
+Project "1" *--> "teamMembers *" TeamMember
+Task "1" *--> "status 1" TaskStatus
+Task "1" *--> "timeEntries *" TimeEntry
+TeamMember "1" *--> "roles *" TeamMemberRole
+TeamMemberRole "1" *--> "role 1" ProjectRole
+TimeEntry "1" *--> "status 1" TimeEntryStatus
+TimeEntry "1" *--> "timeUnit 1" TimeUnit
+```
 
-Konfiguracja Gradle w projekcie Spring Boot jest zwykle prosta i nie wymaga dodatkowych zmian po wygenerowaniu projektu za pomocą Spring Initializr. Plik build.gradle.kts zawiera wszystkie niezbędne informacje dotyczące zależności i zadań budowania, podczas gdy settings.gradle.kts określa nazwę i konfigurację projektu. Użycie Gradle w projekcie Spring Boot zapewnia deweloperom potężne narzędzie do zarządzania zależnościami, budowania aplikacji oraz automatyzacji wielu innych zadań związanych z cyklem życia oprogramowania.
+_Rysunek 1. Diagram klas, opisujący fragment domeny aplikacji_
 
-#### Warstwa domeny - model
+Z podanego gdiagramu możemy odczytać, że w aplikacji istnieje encja `Project`, która posiada wiele zadań `Task`, które z kolei posiadają wiele wpisów czasu `TimeEntry`. Każda z tych encji posiada swój status, który jest opisany przez enumerację. Każda z tych encji posiada również swoje własne metody, implementujące reguły biznesowe, które są związane z daną encją. Kolejnym krokiem, po zaprojektowaniu domeny aplikacji, jest implementacja tego projektu. W systemie organizacji pracy biura tłumaczeń, domena aplikacji została wykonana w języku Kotlin. Kotlin został wybrany ze względu na jego czytelność i przejrzystość, a też łatwość w integracji z ekosystemem JVM. Jako system budowy aplikacji został wybrany Gradle, który jest narzędziem do automatyzacji budowy aplikacji. Gradle pozwala na definiowanie zależności, konfiguracji i zadań budowy aplikacji za pomocą języka Kotlin. Gradle nie jest jedynym dostępnym narzędziem tego typu, ale został wybrany ze względu na swoją elastyczność i czytelność.
 
-Model domenowy jest kluczowym elementem w projektowaniu oprogramowania, szczególnie w metodologii Domain-Driven Design (DDD). Jest to abstrakcyjna reprezentacja aspektów biznesowych systemu, która ułatwia rozumienie i zarządzanie złożonością biznesową. Model domeny w pryzpadku systemu organizacji pracy dla biura tłumaczeń jest reprezentowany przez obiekty wartości oraz encje:
+Kolejną zasadą projektowania domeny jest zasada "Domain Driven Design", mówiąca o stworzeniu "Ubiquitous Language", czyli języka, który jest zrozumiały zarówno dla programistów, jak i dla osób, które nie są związane z programowaniem. Podejście to pozwala na zrozumienie problemu, który ma być rozwiązany, a także na zrozumienie implementacji, która ma ten problem rozwiązać.
 
-* **Obiekty wartości (value objects)** - proste obiekty, które są definiowane przez ich atrybuty i nie posiadają własnej tożsamości. Są niemutowalne, co oznacza, że ich stan nie zmienia się po utworzeniu. Obiekty wartości są wykorzystywane do reprezentowania koncepcji, takich jak kwoty pieniężne, daty, identyfikatory itp. Są one kluczowe dla wyrażenia szczegółów biznesowych i zapewnienia integralności modelu domenowego.
-* **Encje (entities)** - obiekty, które mają unikalną tożsamość i są rozpoznawalne niezależnie od swoich atrybutów. Tożsamość ta pozwala na śledzenie i interakcję z encją przez cały cykl życia aplikacji. Encje są opisane poprzez atrybuty (stan) i metody (zachowanie). Atrybuty reprezentują właściwości encji, natomiast metody definiują sposób interakcji z encją i zmiany jej stanu. Encje często zawierają obiekty wartości jako część swojej struktury, wykorzystując je do reprezentowania określonych aspektów bez potrzeby nadawania im unikalnej tożsamości.
-
-Rozpatrzmy przykład encji na podstawie klasy `net.nuclearprometheus.tpm.applicationserver.domain.model.client.Client`:
+Implementację domeny można zacząć od reprezentacji encji w kodzie aplikacji. W Kotlinie, implementacja encji `Project` może wyglądać tak:
 
 ```kotlin
-class Client(
-    id: ClientId = ClientId(),
-    name: String,
-    email: String,
-    phone: String,
-    address: String,
-    city: String,
-    state: String,
-    zip: String,
-    country: Country,
-    vat: String? = null,
-    notes: String,
-    type: ClientType,
-    active: Boolean = true
-): Entity<ClientId>(id) {
+// Definicja wyjątku, który zostanie rzucony w przypadku, gdy zmiana statusu projektu jest niemożliwa
+class ProjectStatusChangeException(message: String) : Exception(message)
 
+// Definicja identyfikatora projektu jako obiektu wartości
+class ProjectId(value: UUID = UUID.randomUUID()): Id<UUID>(value)
+
+// Definicja encji projektu
+class Project(
+    id: ProjectId = ProjectId(),
+    title: String,
+    description: String,
+    sourceLanguage: Language,
+    targetLanguages: List<Language>,
+    // Pozostałe parametry konstruktora pominięte dla czytelności...
+) : Entity<ProjectId>(id) {
+
+    // Blok inicjalizacyjny, który jest wykonywany w momencie tworzenia obiektu
+    // W tym przypadku, blok inicjalizacyjny zawiera walidacje, które muszą być spełnione
     init {
         validate {
-            assert { name.isNotBlank() } otherwise {
-                ValidationError("name", "Name cannot be blank")
+            assert { title.isNotBlank() } otherwise {
+                ValidationError("title", "Title cannot be blank")
             }
-            assert { email.isNotBlank() } otherwise {
-                ValidationError("email", "Email cannot be blank")
+            assert { description.isNotBlank() } otherwise {
+                ValidationError("description", "Description cannot be blank")
             }
-            assert { phone.isNotBlank() } otherwise {
-                ValidationError("phone", "Phone cannot be blank")
-            }
-            assert { address.isNotBlank() } otherwise {
-                ValidationError("address", "Address cannot be blank")
-            }
-            assert { city.isNotBlank() } otherwise {
-                ValidationError("city", "City cannot be blank")
-            }
-            assert { state.isNotBlank() } otherwise {
-                ValidationError("state", "State cannot be blank")
-            }
-            assert { zip.isNotBlank() } otherwise {
-                ValidationError("zip", "Zip cannot be blank")
-            }
-            assert { type.corporate && !vat.isNullOrBlank() } otherwise {
-                ValidationError("vat", "VAT cannot be blank for corporate clients")
-            }
-            assert { type.active } otherwise {
-                ValidationError("type", "Client type cannot be inactive")
-            }
+            // Pozostałe walidacje pominięte dla czytelności...
         }
     }
 
-    var name: String = name; private set
-    var email: String = email; private set
-    var phone: String = phone; private set
-    var address: String = address; private set
-    var city: String = city; private set
-    var state: String = state; private set
-    var zip: String = zip; private set
-    var country: Country = country; private set
-    var vat: String? = vat; private set
-    var notes: String = notes; private set
-    var type: ClientType = type; private set
-    var active: Boolean = active; private set
+    // Definicja pól encji projektu
+    // Pola encji definiują stan obiektu
+    // Zmiana stanu obiektu jest możliwa tylko za pomocą metod obiektu
+    var title = title; private set
+    var description = description; private set
+    var sourceLanguage = sourceLanguage; private set
+    var targetLanguages = targetLanguages; private set
+    // Pozostałe pola pominięte dla czytelności...
 
-    fun update(
-        name: String,
-        email: String,
-        phone: String,
-        address: String,
-        city: String,
-        state: String,
-        zip: String,
-        country: Country,
-        vat: String?,
-        notes: String,
-        type: ClientType
-    ) {
-        val typeChanged = { this.type.id != type.id }
-
+    // Metody encji - implementacja reguł biznesowych
+    // Metoda `moveDeadlines` pozwala na zmianę terminów projektu i waliduje, czy nowe terminy są poprawne
+    fun moveDeadlines(internalDeadline: ZonedDateTime, externalDeadline: ZonedDateTime) {
         validate {
-            assert { name.isNotBlank() } otherwise {
-                ValidationError("name", "Name cannot be blank")
+            assert { internalDeadline.isAfter(expectedStart) } otherwise {
+                ValidationError("internalDeadline", "Internal deadline must be after expected start")
             }
-            assert { email.isNotBlank() } otherwise {
-                ValidationError("email", "Email cannot be blank")
-            }
-            assert { phone.isNotBlank() } otherwise {
-                ValidationError("phone", "Phone cannot be blank")
-            }
-            assert { address.isNotBlank() } otherwise {
-                ValidationError("address", "Address cannot be blank")
-            }
-            assert { city.isNotBlank() } otherwise {
-                ValidationError("city", "City cannot be blank")
-            }
-            assert { state.isNotBlank() } otherwise {
-                ValidationError("state", "State cannot be blank")
-            }
-            assert { zip.isNotBlank() } otherwise {
-                ValidationError("zip", "Zip cannot be blank")
-            }
-            assertIf(typeChanged) { type.corporate && !vat.isNullOrBlank() } otherwise {
-                ValidationError("vat", "VAT cannot be blank for corporate clients")
-            }
-            assertIf(typeChanged) { type.active } otherwise {
-                ValidationError("type", "Client type cannot be inactive")
+            assert { externalDeadline.isAfter(internalDeadline) } otherwise {
+                ValidationError("externalDeadline", "External deadline must be after internal deadline")
             }
         }
 
-        this.name = name
-        this.email = email
-        this.phone = phone
-        this.address = address
-        this.city = city
-        this.state = state
-        this.zip = zip
-        this.country = country
-        this.vat = vat
-        this.notes = notes
-        this.type = type
+        this.internalDeadline = internalDeadline
+        this.externalDeadline = externalDeadline
     }
 
-    fun activate() {
-        active = true
+    // Metoda `finishDraft` pozwala na zakończenie etapu projektu 'Draft' i przeniesienie go do etapu 'Ready to start'
+    fun finishDraft() {
+        if (status != ProjectStatus.DRAFT) {
+            throw ProjectStatusChangeException("Project must be in draft status")
+        }
+        status = ProjectStatus.READY_TO_START
     }
 
-    fun deactivate() {
-        active = false
+     // Pozostałe metody pominięte dla czytelności...
+}
+```
+
+_Lisitng 1. Implementacja encji `Project` w języku Kotlin_
+
+Kolejnym krokiem jest implementacja serwisów, które będą operować na encjach. Serwisy w DDD są kluczowe dla implementacji logiki biznesowej. Stanowią one warstwę pośrednią między warstwą prezentacji a warstwą domeny, odpowiadając za orkiestrację i wykonanie złożonych operacji biznesowych. Często serwisy są wykorzystywane do implementacji operacji, które nie są związane z konkretną encją, ale z całym agregatem czy nawet z częścią kontekstu ograniczoną przez konkretny serwis. Do przykładu, rozważmy serwis `ProjectService`:
+
+```kotlin
+// Definicja interfejsu serwisu
+interface ProjectService {
+
+    fun moveDeadlines(id: ProjectId, internalDeadline: ZonedDateTime, externalDeadline: ZonedDateTime): Project
+    fun finishDraft(id: ProjectId): Project
+    // Pozostałe metody pominięte dla czytelności...
+}
+
+// Implementacja serwisu
+class ProjectServiceImpl(
+    // Zależności serwisu
+    private val projectRepository: ProjectRepository,
+    private val languageRepository: LanguageRepository,
+    private val accuracyRepository: AccuracyRepository,
+    private val industryRepository: IndustryRepository,
+    private val unitRepository: UnitRepository,
+    private val serviceTypeRepository: ServiceTypeRepository,
+    private val currencyRepository: CurrencyRepository,
+    private val clientRepository: ClientRepository,
+    private val userContextProvider: UserContextProvider,
+    private val logger: Logger
+) : ProjectService {
+
+    // Implementacja metody `moveDeadlines`
+    // Metoda w serwisie wykonuje operacje na encji `Project` które nie mogą być wykonane bezpośrednio na encji
+    override fun moveDeadlines(id: ProjectId, internalDeadline: ZonedDateTime, externalDeadline: ZonedDateTime): Project {
+        // Encja nie ma dostępu do kontekstu aplikacji - w tym przypadku, do zalogowanego użytkownika
+        // Serwis dostarcza kontekst aplikacji do encji
+        val currentUser = userContextProvider.getCurrentUser()
+
+        // Pobranie encji projektu z repozytorium - encja nie może pobrać samej siebie
+        val project = projectRepository.get(id) ?: throw NotFoundException("Project not found")
+
+        // Walidacja uprawnień użytkownika odbywa się w serwisie - encja nie ma dostępu do kontekstu aplikacji
+        if (!currentUser.hasRole(UserRole.ADMIN) && !project.hasTeamMemberWithRole(currentUser.id, ProjectRole.PROJECT_MANAGER)) {
+            throw ProjectAccessException("User is not allowed to move project deadlines")
+        }
+
+        // Wywołanie metody encji `moveDeadlines` - faktyczna zmiana terminów projektu
+        project.moveDeadlines(internalDeadline, externalDeadline)
+
+        // Podobnie jak w przypadku pobrania encji, zapis encji odbywa się w serwisie
+        // Encja nie ma dostępu do repozytorium - nie może zapisać siebie samej
+        return projectRepository.update(project)
+    }
+
+    // Implementacja metody `finishDraft`
+    // Implementacja metody `finishDraft`, podobnie jak w przypadku metody `moveDeadlines`, odbywa się w serwisie
+    override fun finishDraft(id: ProjectId): Project {
+        // Pobranie zalogowanego użytkownika z kontekstu aplikacji
+        val currentUser = userContextProvider.getCurrentUser()
+
+        // Pobranie encji projektu z repozytorium
+        val project = projectRepository.get(id) ?: throw NotFoundException("Project not found")
+
+        // Walidacja uprawnień użytkownika
+        if (!currentUser.hasRole(UserRole.ADMIN) && !project.hasTeamMemberWithRole(currentUser.id, ProjectRole.PROJECT_MANAGER)) {
+            throw ProjectAccessException("User is not allowed to change project status")
+        }
+
+        // Wywołanie metody encji `finishDraft` - faktyczna zmiana statusu projektu
+        project.finishDraft()
+
+        // Zapis encji projektu
+        return projectRepository.update(project)
     }
 }
 ```
 
-Klasa `Client` dziedziczy po klasie `Entity`, która jest abstrakcyjną klasą bazową dla wszystkich encji w systemie. Klasa `Entity` jest odpowiedzialna za zapewnienie, że każda encja ma unikalny identyfikator, który jest używany do rozpoznawania i różnicowania encji. Klasa `Entity` wygląda następująco:
+_Lisitng 2. Implementacja serwisu `ProjectService` w języku Kotlin_
+
+Przyglądając się do implementacji serwisu `ProjectService`, możemy zauważyć listę zalężności, które są wstrzykiwane do serwisu. Jest to implementacją podejście "Dependency Injection", które pozwala na wstrzykiwanie zależności do serwisu, zamiast tworzenia ich wewnątrz serwisu. Dzięki temu, serwis jest łatwiejszy w testowaniu, a jego implementacja jest bardziej elastyczna. Na liście zależności też widzimy kolejny ważny element domeny aplikacji - repozytoria. Repozytoria w DDD pełnią kluczową rolę w dostarczaniu encji z bazy danych. Są one odpowiedzialne za abstrakcję i enkapsulację sposobu, w jaki obiekty domenowe są przechowywane i odzyskiwane, co pozwala na oddzielenie logiki biznesowej od szczegółów przechowywania danych. Repozytoria są integralną częścią warstwy domeny, ponieważ bezpośrednio współpracują z encjami, które stanowią rdzeń modelu domenowego. Dostarczają one niezbędnych operacji do zapisywania, odzyskiwania i zarządzania życiem encji. W domenie aplikacji, definiowane są tylko interfejsy repozytoriów, a ich implementacja jest dostarczana przez warstwę infrastruktury. W Kotlinie, implementacja repozytorium `ProjectRepository` może wyglądać tak:
 
 ```kotlin
-open class Entity<TId>(val id: TId) where TId : Id<*>
-```
-
-Identyfikator encji jest reprezentowany przez klasę `Id`, która jest abstrakcyjną klasą bazową dla wszystkich identyfikatorów w systemie. Klasa `Id` jest odpowiedzialna za zapewnienie, że każdy identyfikator jest unikalny. Klasa `Id` wygląda następująco:
-
-```kotlin
-open class Id<T>(val value: T): Comparable<Id<T>> where T : Comparable<T>, T : Any {
-    override fun compareTo(other: Id<T>) = value.compareTo(other.value)
-    override fun equals(other: Any?) = other is Id<*> && value == other.value
-    override fun hashCode() = value.hashCode()
-    override fun toString() = value.toString()
-}
-```
-
-Identyfikatorem encji `Client` jest klasa `ClientId`, która wygląda następująco:
-
-```kotlin
-class ClientId(value: UUID = UUID.randomUUID()): Id<UUID>(value)
-```
-
-Klasa `Client` reprezentuje klienta w systemie z atrybutami takimi jak nazwa, email, telefon itp. Metody klasy umożliwiają aktualizację danych klienta, aktywację, czy dezaktywację. Kluczowe aspekty modelu domenowego, które są widoczne w tej klasie to:
-
-1. **Tożsamość Encji**: Encja `Client` ma unikalny identyfikator `ClientId`, który służy jako jej tożsamość. Jest to zgodne z zasadą DDD, gdzie encje są rozpoznawane i różnicowane przez ich tożsamość.
-2. **Atrybuty i Stan**: Klasa zawiera atrybuty, takie jak name, email, phone, address, które reprezentują stan encji. Stan ten może się zmieniać, ale tożsamość encji pozostaje stała.
-3. **Zachowania Encji**: Metody takie jak update, activate, deactivate reprezentują zachowania encji. Pozwalają one na zmianę stanu encji w kontrolowany sposób, co jest kluczowym elementem zarządzania stanem w DDD.
-4. **Walidacja Stanu**: W konstruktorze i metodzie update używane są asercje do walidacji stanu encji. Jest to istotne, aby upewnić się, że encja zawsze pozostaje w spójnym i ważnym stanie.
-5. **Enkapsulacja**: Stan encji jest prywatny, a zmiany mogą być wprowadzane tylko za pomocą zdefiniowanych metod. Zapewnia to, że wszystkie zmiany stanu są poprawne i zgodne z regułami biznesowymi.
-6. **Reagowanie na Zmiany**: Metoda update pozwala na zmianę wielu atrybutów encji jednocześnie, co jest przydatne w przypadkach, gdy zmiany są powiązane i muszą być wykonane razem.
-7. **Proaktywne Zarządzanie Stanem**: Metody activate i deactivate są prostymi przykładami zarządzania stanem encji, pokazując jak encja może mieć wewnętrzne logiki zmieniające jej stan.
-
-Dotrzymując reprezentowanych przez klasę `Client` zasad DDD, zostały zaimplementowane pozostałe encje w systemie, takie jak `Project`, `Task`, `TaskStatus`, `TimeEntry` i inne. Warto też wspomnieć jednak o pozostałych zasadach DDD, takich jak agregaty czy fabryki, które nie są dotrzymywane w projekcie. W przypadku agregatów, nie ma potrzeby ich stosowania, ponieważ encje rzadko są powiązane ze sobą w sposób, który wymagałby ich grupowania. W przypadku fabryk - encje są tworzone w sposób relatywnie prosty, bez potrzeby wykorzystywania zewnętrznych zasobów. Warto pamiętać, że metodologię powinne pomagać w rozwiązywaniu problemów, a nie je tworzyć, i wprowadzenie agregatów i fabryk w tym przypadku nie wniosłoby niczego wartościowego do projektu, a jedynie zwiększyło by jego złożoność. W podsumowaniu, model domeny wygląda następująco:
-
-![Model domeny](./docs/domain-model.png)
-
-#### Warstwa domeny - repozytoria
-
-Repozytoria w DDD pełnią kluczową rolę w dostarczaniu encji z bazy danych. Są one odpowiedzialne za abstrakcję i enkapsulację sposobu, w jaki obiekty domenowe są przechowywane i odzyskiwane, co pozwala na oddzielenie logiki biznesowej od szczegółów przechowywania danych. Repozytoria są integralną częścią warstwy domeny, ponieważ bezpośrednio współpracują z encjami, które stanowią rdzeń modelu domenowego. Dostarczają one niezbędnych operacji do zapisywania, odzyskiwania i zarządzania życiem encji.
-
-W projekcie dotrzymywane są zasady architektury heksagonalnej, która zakłada, że warstwa domeny nie powinna zależeć od żadnych innych warstw. W przypadku repozytoriów taka implementacja nie jest możliwa, więc zastosowano podejście, w którym interfejsy repozytoriów są częścią warstwy domeny, natomiast ich implementacje są częścią warstwy aplikacji. Interfejsy repozytoriów definiują kontrakt, który musi być spełniony przez ich implementacje. Określają one dostępne operacje, takie jak wyszukiwanie, dodawanie, usuwanie oraz aktualizacja encji, bez ujawniania szczegółów implementacji. Interfejsy repozytoriów, jako część warstwy domeny, zapewniają spójny i modularny sposób na dostęp do obiektów domenowych, co jest kluczowe dla utrzymania czystości i jasności modelu domenowego.
-
-Więksość repozytoriów w projekcie dziedziczy po interfejsie `BaseRepository`. Interfejs ten jest intefejsem generycznym, który definiuje podstawowe operacje dla wszystkich encji w systemie. Interfejs `BaseRepository` wygląda następująco:
-
-```kotlin
+// Podstawowy interfejs repozytorium - interfejs generyczny dla wszystkich encji
 interface BaseRepository<TEntity : Entity<TEntityId>, TEntityId : Id<*>> {
 
+    // Metody repozytorium, generyczne dla wszystkich encji
     fun getAll(): List<TEntity>
     fun get(id: TEntityId): TEntity?
     fun get(ids: List<TEntityId>): List<TEntity>
@@ -3701,541 +3901,509 @@ interface BaseRepository<TEntity : Entity<TEntityId>, TEntityId : Id<*>> {
     fun delete(id: TEntityId)
     fun deleteAll(ids: List<TEntityId>)
 }
-```
 
-Taka definicja pozwala na krótką i zwięzłą definicje interfejsów repozytoriów dla poszczególnych encji. Przykładem takiego interfejsu jest interfejs `ClientRepository`, który wygląda następująco:
-
-```kotlin
-interface ClientRepository : BaseRepository<Client, ClientId>
-```
-
-W przypadku repozytoriów, które wymagają bardziej złożonych operacji, można zdefiniować dodatkowe metody w interfejsie repozytorium, jak w `ProjectRepository`, które wygląda następująco:
-
-```kotlin
+// Interfejs repozytorium encji `Project`
 interface ProjectRepository : BaseRepository<Project, ProjectId> {
 
+    // Dodatkowe metody repozytorium - metody specyficzne dla encji `Project`
     fun getProjectsForUser(userId: UserId, query: Query<Project>): Page<Project>
 }
 ```
 
-Takie dodatkowe metody pomagają zdefiniować operacje specyficzne dla danej encji, które mogą być wymagane w różnych kontekstach. W miarę rozwoju projektu, interfejsy repozytoriów mogą być rozszerzane o dodatkowe metody bez konieczności przebudowywania całej architektury systemu. Te metody umożliwiają realizację bardziej złożonych operacji, które mogą wymagać integracji wielu encji lub specyficznych reguł biznesowych. Dodatkowo, przenoszą one realizację złożonych zapytań do repozytoriów, przez co serwisy mogą się skupić na realizacji logiki biznesowej. Dzięki możliwości definiowania specyficznych metod, repozytoria mogą implementować optymalizacje zapytań, co jest kluczowe w przypadkach, gdy standardowe metody CRUD nie są wystarczająco wydajne dla określonych przypadków użycia.
+_Lisitng 3. Definicja interfejsu repozytorium `ProjectRepository` w języku Kotlin_
 
-Repozytoria są niezbędne do utrzymania czystości i modułowości architektury, zapewniając, że zmiany w modelu domenowym lub w warstwie danych nie wpływają negatywnie na pozostałe części systemu. Ich elastyczność i możliwość rozszerzania są kluczowe dla skalowalności i ewolucji systemu, umożliwiając adaptację do zmieniających się wymagań biznesowych i technologicznych. Repozytoria w DDD stanowią zatem nie tylko techniczne rozwiązanie dla dostępu do danych, ale są integralną częścią architektury systemu, odgrywającą kluczową rolę w utrzymaniu jego integralności, elastyczności i skalowalności.
+Kolejny, bardzo ważny aspekt implementacji domeny aplikacji - stosowanie podejścia "Architektura Heksagonalna". Podejście to polega na podziale aplikacji na warstwy, z których każda ma swoje własne zadania i odpowiedzialności. W podejściu Heksagonalnym, domena aplikacji jest w centrum aplikacji, a warstwy zewnętrzne są odpowiedzialne za dostarczanie danych do domeny aplikacji oraz za dostarczanie danych z domeny aplikacji. W domenie aplikacji, nie ma odwołań do warstw zewnętrznych, co pozwala na odseparowanie logiki biznesowej od szczegółów implementacyjnych: bazy danych, serwisów zewnętrznych, itp.
 
-#### Warstwa domeny - zapytania i specyfikacje
-
-Specyfikacje w Domain-Driven Design (DDD) służą do definiowania złożonych reguł biznesowych w sposób deklaratywny. Wzorzec Specification pozwala na oddzielenie logiki zapytań od encji biznesowych. Specyfikacje są wykorzystywane do tworzenia elastycznych i czytelnych kryteriów zapytań, co pozwala na efektywniejsze i bardziej zorganizowane operacje na danych. Implementacja specyfikacji w warstwie domeny jest w pełni abstrakcyjna i deleguję interpretację specyfikacji do warstwy aplikacji. Pozwala to na zachowanie czystości i modularności modelu domenowego, jednocześnie zapewniając elastyczność i skalowalność w warstwie aplikacji. Podczas implementacji specyfikacji w projekcie, zostały wykorzystane zalety języka Kotlin, takie jak funkcje wyższego rzędu, funkcje rozszerzające, funkcje lokalne, funkcje infixowe, wyrażenia lambda i wiele innych, co pozwoliło na stworzenie czytelnego i łatwego w obsłudze DSL (Domain-Specific Language) do tworzenia specyfikacji.
-
-W projekcie specyfikacje są zaimplementowane w postaci abstrakcyjnej klasy `Specification` i jej pochodnych:
+Kolejną zaletą Architektury Heksagonalnej jest możliwość łatwego testowania aplikacji. Aplikacja nie posiada zależności od warstw zewnętrznych, co pozwala na łatwe zastępowanie tych warstw w testach jednostkowych. W systemie organizacji pracy biura tłumaczeń, testy są wykonane przy użyciu szkieletu testowego JUnit5 oraz biblioteki do tworzenia atrap obiektów - Mockito. Przykładowy test jednostkowy dla metody `moveDeadlines` w serwisie `ProjectService` może wyglądać tak:
 
 ```kotlin
-sealed class Specification<TEntity : Any> {
-    class AndSpecification<TEntity : Any>(val left: Specification<TEntity>, val right: Specification<TEntity>) : Specification<TEntity>() {
-        // hashCode i equals jak w ParameterizedSpecification
-    }
+class ProjectServiceImplTest {
 
-    // OrSpecification, NotSpecification, TrueSpecification, FalseSpecification analogicznie do AndSpecification
+    @Test
+    fun `moveDeadlines should throw an exception if deadline is before start date`() {
+        // Arrange - przygotowanie testu
+        // Przygotowanie danych testowych i atrap obiektów
+        val user = User(
+            id = UserId(),
+            firstName = "Test",
+            lastName = "User",
+            username = "testuser",
+            email = "testuser@testorg.com",
+            roles = listOf(UserRole.ADMIN)
+        )
 
-    abstract class ParameterizedSpecification<TEntity : Any>(val name: String) : Specification<TEntity>() {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other !is ParameterizedSpecification<*>) return false
+        val projectId = ProjectId()
+        val project = Project(
+            id = projectId,
+            title = "Test project",
+            description = "Test description",
+            sourceLanguage = mock(),
+            targetLanguages = listOf(
+                mock(),
+                mock()
+            ),
+            industry = mock {
+                on { active } doReturn true
+            },
+            // Pozostałe parametry pominięte dla czytelności...
+        )
 
-            if (name != other.name) return false
+        val projectRepository = mock<ProjectRepository> {
+            on { get(projectId) } doReturn project
+        }
+        val userContextProvider = mock<UserContextProvider> {
+            on { getCurrentUser() } doReturn user
+        }
+        // Pozostałe atrapy obiektów pominięte dla czytelności...
 
-            return true
+        // Tworzenie serwisu z wstrzykniętymi atrapami obiektów
+        val projectService = ProjectServiceImpl(
+            projectRepository = projectRepository,
+            languageRepository = languageRepository,
+            accuracyRepository = accuracyRepository,
+            industryRepository = industryRepository,
+            unitRepository = unitRepository,
+            serviceTypeRepository = serviceTypeRepository,
+            currencyRepository = currencyRepository,
+            clientRepository = clientRepository,
+            userContextProvider = userContextProvider,
+            logger = logger
+        )
+
+
+        // Act - wykonanie testu
+        // Wywołanie metody testowanej
+        val exception = assertThrows<ValidationException> {
+            projectService.moveDeadlines(projectId, ZonedDateTime.now().minusDays(20), ZonedDateTime.now().minusDays(10))
         }
 
-        override fun hashCode(): Int {
-            return name.hashCode()
-        }
+        // Assert - asercje
+        // Sprawdzenie, czy metoda testowana rzuciła wyjątek z odpowiednimi błędami
+        assertEquals(
+            listOf(ValidationError("internalDeadline", "Internal deadline must be after expected start")),
+            exception.errors
+        )
+    }
+
+    // Pozostałe testy pominięte dla czytelności...
+}
+```
+
+_Lisitng 4. Przykładowy test jednostkowy dla metody `moveDeadlines` w serwisie `ProjectService` w języku Kotlin_
+
+Połączenie podejść DDD, Dependency Injection, Architektury Heksagonalnej i testowania jednostkowego pozwala na stworzenie domeny aplikacji, która jest elastyczna, łatwa w testowaniu i utrzymaniu. Dzięki temu, aplikacja jest bardziej odporna na zmiany, a jej implementacja jest bardziej przejrzysta i czytelna.
+
+## 2. Implementacja portów wejściowych. Spring Web
+
+Po implementacji domeny aplikacji, należy zaimplementować porty wejściowe aplikacji. Porty wejściowe aplikacji służą dwóm celom: definiują interfejs, za pomocą którego inne serwisy mogą komunikować się z aplikacją, oraz przekazują żądania od innych serwisów do domeny aplikacji. W taki sposób powstaje kontrakt pomiędzy aplikacją a innymi serwisami, którymi mogą być naprzykład aplikacje klienckie, aplikacje mobilne, serwisy zewnętrzne, itp. Porty wejściowe mogą być zaimplementowane na wiele różnych sposobów - może to być REST API, GraphQL, SOAP, WebSockets, itp. Implementacja portu wejściowego jest nazywana adapterem i mieści się w warstwie infrastruktury aplikacji. W systemie organizacji pracy biura tłumaczeń, porty wejściowe aplikacji zostały zaimplementowane jako REST API, za pomocą Spring Web. Spring Web jest częścią Spring Framework, który dostarcza narzędzia do tworzenia aplikacji webowych. Spring Web przejmuje na siebie większość zadań związanych z obsługą żądań HTTP - parsowanie żądań, walidacja, serializacja odpowiedzi, itp. Głównym elementem Spring Web jest kontroler, który definiuje endpointy HTTP. W Kotlinie, implementacja kontrolera `ProjectController` może wyglądać tak:
+
+```kotlin
+// Definicja kontrolera Spring Web - kontroler REST API
+// Kontroler definiuje endpointy HTTP, które są punktami wejściowymi aplikacji
+// Ściężka `/api/v1/project` jest prefixem dla wszystkich endpointów kontrolera
+@RestController
+@RequestMapping("/api/v1/project")
+class ProjectController(
+  // Serwis ProjectApplicationService jest łącznikiem pomiędzy kontrolerem a serwisami domenowymi
+  private val service: ProjectApplicationService
+) {
+
+    private val logger = loggerFor(ProjectController::class.java)
+
+    // Definicja endpointu HTTP GET `/api/v1/project`
+    // Podstawowy endpoint, który zwraca paginowaną listę projektów zgodnie z zadanymi kryteriami
+    // Domyślna konfiguracja Spring Web pozwala na automatyczną serializację obiektów do formatu JSON
+    @GetMapping("")
+    fun getProjects(query: ListProjects): ResponseEntity<Page<Project>> {
+        logger.info("GET /api/v1/project")
+        return ResponseEntity.ok().body(service.getProjects(query))
+    }
+
+    // Definicja endpointu HTTP GET `/api/v1/project/{projectId}`
+    // Endpoint, który zwraca pojedynczy projekt na podstawie identyfikatora
+    @GetMapping("/{projectId}")
+    fun getProject(
+      // Adnotacja @PathVariable mapuje parametr z adresu URL na parametr metody
+      @PathVariable(name = "projectId") id: UUID
+    ): ResponseEntity<Project> {
+        logger.info("GET /api/v1/project/$id")
+        return ResponseEntity.ok().body(service.getProject(id))
+    }
+
+    // Definicja endpointu HTTP POST `/api/v1/project`
+    // Endpoint, który tworzy nowy projekt
+    @PostMapping("")
+    fun createProject(
+      // Adnotacja @RequestBody mapuje ciało żądania HTTP na parametr metody
+      @RequestBody request: CreateProject
+    ): ResponseEntity<Project> {
+        logger.info("POST /api/v1/project")
+        return ResponseEntity.ok().body(service.createProject(request))
+    }
+
+    // Definicja endpointu HTTP PUT `/api/v1/project/{projectId}`
+    // Endpoint, który aktualizuje istniejący projekt
+    @PutMapping("/{projectId}")
+    fun updateProject(
+        @PathVariable(name = "projectId") id: UUID, @RequestBody request: UpdateProject
+    ): ResponseEntity<Project> {
+        logger.info("PUT /api/v1/project/$id")
+        return ResponseEntity.ok().body(service.updateProject(id, request))
+    }
+
+    // Definicja endpointu HTTP PATCH `/api/v1/project/{projectId}/move-start`
+    // Endpoint, który zmienia termin rozpoczęcia projektu
+    @PatchMapping("/{projectId}/move-start")
+    fun moveStart(
+        @PathVariable(name = "projectId") id: UUID, @RequestBody request: MoveProjectStart
+    ): ResponseEntity<ProjectStartMoved> {
+        logger.info("PATCH /api/v1/project/$id/move-start")
+        return ResponseEntity.ok().body(service.moveProjectStart(id, request))
+    }
+
+    // Definicja endpointu HTTP PATCH `/api/v1/project/{projectId}/move-deadline`
+    // Endpoint, który zmienia terminy projektu
+    @PatchMapping("/{projectId}/move-deadline")
+    fun moveDeadline(
+        @PathVariable(name = "projectId") id: UUID, @RequestBody request: MoveProjectDeadline
+    ): ResponseEntity<ProjectDeadlineMoved> {
+        logger.info("PATCH /api/v1/project/$id/move-deadline")
+        return ResponseEntity.ok().body(service.moveProjectDeadline(id, request))
+    }
+
+    // @ExceptionHandler - obsługa wyjątków
+    // Metoda obsługuje wyjątek NotFoundException, który jest rzucony w przypadku, gdy zasób nie został znaleziony
+    @ExceptionHandler(NotFoundException::class)
+    fun handleNotFoundException(e: NotFoundException): ResponseEntity<Unit> {
+        logger.warn("NotFoundException: ${e.message}")
+        return ResponseEntity.notFound().build()
     }
 }
 ```
 
-Widzimy tutaj podstawowe specyfikacje reprezentujące operatory logiczne, takie jak `AndSpecification`, `OrSpecification`, `NotSpecification` i wartości logiczne `TrueSpecification` oraz `FalseSpecification`. Operatory logiczne pozwalają na kompozycję prostych zapytań w bardziej złożone. Z kolei `ParameterizedSpecification` jest klasą podstawową dla konkretnych specyfikacji, takich jak `BooleanSpecification`, `ComparableSpecification`, `CollectionSpecification` i inne:
+_Lisitng 5. Implementacja kontrolera `ProjectController` w języku Kotlin z wykorzystaniem Spring Web_
+
+Każdy ze zdefiniowanych endpointów kontrolera `ProjectController` definiuje punkt wejściowy aplikacji. Adnotacje Spring Web pozwalają skonifurować kontroler w przejrzysty sposób. Na podstawie tych adnotacji Spring zbuduje kontekst aplikacji, który będzie obsługiwał żądania HTTP. Warto dodatkowo omówić inne elementy, które są spotkane w kodzie kontrolera. Pierwszy taki element to `ProjectApplicationService`. `ProjectApplicationService` jest serwisem aplikacji, który jest łącznikiem pomiędzy kontrolerem a serwisami domenowymi. Serwisy aplikacji są odpowiedzialne za przetłumaczenie modelu użytego w definicji kontrolera na model używany w serwisach domenowych. Implementacja `ProjectApplicationService` może wyglądać tak:
 
 ```kotlin
-sealed class ComparableSpecification {
-    class Eq<TEntity : Any, TValue : Comparable<TValue>>(name: String, val value: TValue) : Specification.ParameterizedSpecification<TEntity>(name)
-    class IsNull<TEntity : Any>(name: String) : Specification.ParameterizedSpecification<TEntity>(name)
-    // Gt, Gte, Lt, Lte, AnyElement, NoneElement analogicznie do powyższych
-}
-```
-
-Taka architektura pozwala stworzyć abstrakcyjną specyfikację, interpretację której można zdelegować do warstwy aplikacji. Żeby zapewnić jeszcze większą wygodę w tworzeniu specyfikacji, został stworzony `SpecificationBuilder`:
-
-```kotlin
-abstract class SpecificationBuilder<TEntity : Any> {
-
-    protected val specificationFactories = mutableMapOf<String, SpecificationFactory<TEntity>>()
-
-    protected fun registerSpecificationFactory(name: String, specificationBuilder: SpecificationFactory<TEntity>) {
-        specificationFactories[name] = specificationBuilder
-    }
-
-    fun createSpecification(field: String, operator: Operator, value: String?): Specification<TEntity> {
-        val builder = specificationFactories[field] ?: throw IllegalArgumentException("Unknown field $field")
-        return builder.createSpecification(field, operator, value)
-    }
-
-    infix fun <TEntity : Any> Specification<TEntity>.and(other: Specification<TEntity>): Specification<TEntity> {
-        return Specification.AndSpecification(this, other)
-    }
-
-    infix fun <TEntity : Any> Specification<TEntity>.or(other: Specification<TEntity>): Specification<TEntity> {
-        return Specification.OrSpecification(this, other)
-    }
-
-    fun <TEntity : Any> not(specification: Specification<TEntity>): Specification<TEntity> {
-        return Specification.NotSpecification(specification)
-    }
-
-    fun <TValue : Comparable<TValue>> comparable(name: String, valueClass: KClass<TValue>): ComparableSpecificationBuilder<TValue> {
-        val builder = ComparableSpecificationBuilder(name, valueClass)
-        registerSpecificationFactory(name, builder)
-        return builder
-    }
-
-    inner class ComparableSpecificationBuilder<TValue : Comparable<TValue>>(val name: String, val valueClass: KClass<TValue>): SpecificationFactory<TEntity> {
-
-        override fun createSpecification(field: String, operator: Operator, value: String?): Specification<TEntity> {
-            val valueParser = ValueParserFactory.getParser(valueClass)
-            return when (operator) {
-                Operator.EQUALS -> {
-                    val parsedValue = requireNotNull(valueParser.parse(value)) { "Value must not be null for specification $field:$operator. For null values use IS_NULL operator" }
-                    eq(parsedValue)
-                }
-                Operator.GREATER_THAN -> {
-                    val parsedValue = requireNotNull(valueParser.parse(value)) { "Value must not be null for specification $field:$operator. For null values use IS_NULL operator" }
-                    gt(parsedValue)
-                }
-                // Pozostałe operatory
-                else -> throw IllegalArgumentException("Unknown operator $operator")
-            }
-        }
-
-        infix fun eq(value: TValue): Specification<TEntity> {
-            return ComparableSpecification.Eq(name, value)
-        }
-
-        infix fun gt(value: TValue): Specification<TEntity> {
-            return ComparableSpecification.Gt(name, value)
-        }
-
-        // Pozostałe operatory
-    }
-
-    // Wszystkie pozostałe specyfikacje
-}
-```
-
-Przykładem użycia SpecificationBuilder jest `ProjectSpecificationBuilder`, który wygląda następująco:
-
-```kotlin
-object ProjectSpecificationBuilder : SpecificationBuilder<Project>() {
-    val id = uniqueValue("id", UUID::class)
-    val title = string("title")
-    val sourceLanguage = uniqueValue("sourceLanguage", String::class)
-    val targetLanguages = collection("targetLanguages", String::class)
-    val accuracyId = uniqueValue("accuracyId", UUID::class)
-    val industryId = uniqueValue("industryId", UUID::class)
-    val unitId = uniqueValue("unitId", UUID::class)
-    val amount = comparable("amount", Int::class)
-    val expectedStart = comparable("expectedStart", ZonedDateTime::class)
-    val internalDeadline = comparable("internalDeadline", ZonedDateTime::class)
-    val externalDeadline = comparable("externalDeadline", ZonedDateTime::class)
-    val budget = comparable("budget", BigDecimal::class)
-    val currency = uniqueValue("currency", String::class)
-    val status = enum("status", ProjectStatus::class)
-    val clientId = uniqueValue("clientId", UUID::class)
-    
-    val finishedProject = status any listOf(ProjectStatus.CANCELLED, ProjectStatus.DELIVERED, ProjectStatus.INVOICED, ProjectStatus.PAID)
-    val overdueProject = externalDeadline lt ZonedDateTime.now() and not(finishedProject)
-}
-```
-
-Sortowanie w projekcie jest dużo prostsze i też wykorzystuje swój własny DSL, choć nie jest on tak rozbudowany jak w przypadku specyfikacji:
-
-```kotlin
-abstract class OrderByBuilder<TEntity : Any> {
-
-    fun sort(name: String): SortBuilder<TEntity> {
-        return SortBuilder(name)
-    }
-
-    class SortBuilder<TEntity : Any>(private val name: String) {
-
-        val ascending: Order<TEntity>
-            get() = Order(name, Direction.ASC)
-
-        val descending: Order<TEntity>
-            get() = Order(name, Direction.DESC)
-    }
-
-    infix fun Order<TEntity>.and(other: Order<TEntity>): Sort<TEntity> {
-        return Sort(listOf(this, other))
-    }
-
-    infix fun Sort<TEntity>.and(other: Order<TEntity>): Sort<TEntity> {
-        return Sort(this.order + other)
-    }
-}
-```
-
-Same sortowania też są znacząco prostsze niż specyfikacje, i są reprezentowane przez następujące klasy:
-
-1. **Sort** - reprezentuje sortowanie, które jest listą porządków
-    ```kotlin
-    data class Sort<TEntity : Any>(val order: List<Order<TEntity>>)
-    ```
-
-2. **Order** - reprezentuje porządek, który jest parą nazwy pola i kierunku sortowania
-    ```kotlin
-    data class Order<TEntity : Any>(val name: String, val direction: Direction)
-    ```
-
-3. **Direction** - reprezentuje kierunek sortowania, który jest typem wyliczeniowym
-    ```kotlin
-    enum class Direction {
-        ASC, DESC
-    }
-    ```
-
-Analogicznie do specyfikacji, jest to tylko abstrakcja, której zadanie jest opisać sortowanie i przekazać jego interpretację do warstwy aplikacji. Przykładem użycia OrderByBuilder jest `ProjectOrderByBuilder`, który wygląda następująco:
-
-```kotlin
-object ProjectOrderByBuilder : OrderByBuilder<Project>() {
-    val title = sort("title")
-    val expectedStart = sort("expectedStart")
-    val internalDeadline = sort("internalDeadline")
-    val externalDeadline = sort("externalDeadline")
-    val status = sort("status")
-    
-    val byDeadline = externalDeadline.ascending and internalDeadline.ascending
-}
-```
-
-Parametry paginacji z kolei można wyrazić za pomocą dwóch liczb całkowitych, które reprezentują numer strony oraz rozmiar strony. Specyfikację, sortowanie i paginację można połączyć w jeden obiekt, który jest przekazywany do repozytoriów - `Query`:
-
-```kotlin
-class Query<TEntity : Any>(
-    val specification: Specification<TEntity> = nonFiltered(),
-    val sort: Sort<TEntity> = unsorted(),
-    val page: Int? = null,
-    val size: Int? = null
-)
-```
-
-Który z kolei jest przekazywany do repozytoriów, które wykorzystują go do zapytań do bazy danych, na przykład:
-
-```kotlin
-val query = Query(
-  specification = ProjectSpecificationBuilder.finishedProject
-  orderBy = ProjectOrderByBuilder.byDeadline,
-  page = 0,
-  size = 25  
-)
-val finishedProjects = projectRepository.get(query)
-```
-
-W projekcie zapytania są rzadko definiowane bezpośrednio w kodzie, a częściej są budowane dynamicznie na podstawie parametrów przekazanych do API aplikacji. Ta elastyczność pozwala na dostosowanie zapytań do różnorodnych wymagań użytkowników i scenariuszy użycia.
-
-Podsumowując, mechanizm zapytań i specyfikacji w projekcie stanowi fundamentalny element architektury systemu, umożliwiając tworzenie wydajnych, elastycznych i czytelnych zapytań, które są niezbędne dla efektywnego zarządzania danymi w aplikacji.
-
-#### Warstwa domeny - serwisy
-
-Serwisy w DDD są kluczowe dla implementacji logiki biznesowej. Stanowią one warstwę pośrednią między warstwą prezentacji a warstwą domeny, odpowiadając za orkiestrację i wykonanie złożonych operacji biznesowych. Serwisy pozwalają na oddzielenie logiki biznesowej od encji, co sprzyja czystości modelu domenowego i ułatwia utrzymanie kodu.
-
-Implementacja serwisów zaczyna się od definicji interfejsu. Interfejsy serwisów definiują kontrakt, który musi być spełniony przez ich implementacje. Zawierają one deklaracje metod odpowiadających za realizację określonych funkcji biznesowych. Dzięki wykorzystaniu interfejsów, serwisy mogą być łatwiej testowane i utrzymywane. Pozwala to również na większą modularność systemu, umożliwiając na przykład łatwą zamianę implementacji serwisów.
-
-
-``` kotlin
-interface TeamMemberService {
-    fun giveRoleToUser(userId: UserId, role: ProjectRole, projectId: ProjectId): TeamMember
-    fun removeRoleFromUser(id: TeamMemberRoleId)
-}
-```
-
-Kolejny krok - implementacja interfejsu. Implementacje serwisów zawierają konkretną logikę biznesową, wykorzystując do tego encje i repozytoria z warstwy domeny. Przykładem implementacji serwisu jest `TeamMemberServiceImpl`, który wygląda następująco:
-
-``` kotlin
-class TeamMemberServiceImpl(
-    private val teamMemberRoleRepository: TeamMemberRoleRepository,
-    private val teamMemberRepository: TeamMemberRepository,
-    private val userRepository: UserRepository,
+// Rejestracja serwisu w kontenerze wstrzykiwania zależności dostarczanym przez Spring
+// @Transactional zmusza Spring do wywołania metod serwisu w ramach transakcji
+@Service
+@Transactional(propagation = Propagation.REQUIRED)
+class ProjectApplicationService(
+    // Wstrzyknięcie serwisu domenowego
+    private val service: ProjectService,
+    private val repository: ProjectRepository,
     private val userContextProvider: UserContextProvider,
-    private val projectRepository: ProjectRepository,
-    private val logger: Logger
-) : TeamMemberService {
+    private val specificationBuilder: SpecificationBuilder<Project>
+) {
 
-    override fun giveRoleToUser(userId: UserId, role: ProjectRole, projectId: ProjectId): TeamMember {
-        logger.info("Creating team member for user $userId with role $role for project $projectId")
+    private val logger = loggerFor(ProjectApplicationService::class.java)
 
-        val currentUser = userContextProvider.getCurrentUser()
-        val project = projectRepository.get(projectId) ?: throw NotFoundException("Project does not exist")
-        userRepository.get(userId) ?: throw NotFoundException("User does not exist")
+    // ProjectResponse jest aliasem dla Project - klasa DTO, która jest mapowana na obiekt domenowy
+    fun updateProject(id: UUID, request: UpdateProject): ProjectResponse {
+        logger.info("updateProject($id, $request)")
 
-        if (!currentUser.hasRole(UserRole.ADMIN) && !project.hasTeamMemberWithRole(currentUser.id, ProjectRole.PROJECT_MANAGER)) {
-            throw ProjectAccessException("Only admin or project manager can add team members and assign project roles")
-        }
-
-        if (project.hasTeamMemberWithRole(userId, role)) {
-            throw ProjectTeamMemberAlreadyHasRoleException("User $userId already has role $role for project $projectId")
-        }
-
-        teamMemberRoleRepository.create(
-            TeamMemberRole(
-                role = role,
-                userId = userId,
-                projectId = projectId
-            )
-        )
-
-        return teamMemberRepository.get(TeamMemberId(userId.value)) ?: throw NotFoundException("Team member not found")
+        // Wywołanie metody serwisu domenowego
+        // Obiekt `UpdateProject` jest rozkładany na poszczególne parametry metody serwisu
+        return service.update(
+            id = ProjectId(id),
+            title = request.title,
+            description = request.description,
+            sourceLanguage = LanguageCode(request.sourceLanguage),
+            targetLanguages = request.targetLanguages.map { LanguageCode(it) },
+            accuracyId = AccuracyId(request.accuracyId),
+            industryId = IndustryId(request.industryId),
+            unitId = UnitId(request.unitId),
+            serviceTypeIds = request.serviceTypeIds.map { ServiceTypeId(it) },
+            amount = request.amount,
+            budget = request.budget,
+            currencyCode = CurrencyCode(request.currencyCode),
+            clientId = ClientId(request.clientId)
+        ).toView() // Wynik operacji metody serwisu jest mapowany na obiekt DTO
     }
 
-    override fun removeRoleFromUser(id: TeamMemberRoleId) {
-        logger.info("Removing team member role $id")
-        teamMemberRoleRepository.delete(id)
-    }
+    // Pozostałe metody pominięte dla czytelności...
 }
 ```
 
-Szczególną uwagę w tym przykładzie należy zwrócić na następujące aspekty:
+_Lisitng 6. Implementacja serwisu aplikacji `ProjectApplicationService` w języku Kotlin_
 
-1. **Transakcje**: Mechanizm tranzakcji zależy od konkretnej technologii i jego realizacja jest odpowiedzialnością warstwy aplikacji. Jest to poza zakresem odpowiedzilaności odpowiedzialności serwisu, żeby zachować czystość architektury. 
-2. **Walidacja**: Przed wykonaniem operacji, serwis sprawdza, czy użytkownik ma odpowiednie uprawnienia, czy encje istnieją, czy użytkownik już nie ma przypisanej roli itp. Jest to kluczowe dla zapewnienia spójności modelu domenowego i integralności danych. Takich walidacji nie da się zaimplementować na poziomie encji, ponieważ nie posiada ona informacji o kontekście, w którym jest wykorzystywana.
-3. **Wyjątki**: Serwis rzucą wyjątki, które są zdefiniowane w warstwie domeny. Obsługa wyjątków jest zdefiniowana w warstwie aplikacji. W tym przykładzie serwis nie nadaje brakujących uprawnień użytkownikowi - jest to poza jego zakresem odpowiedzialności.
-4. **Zależności**: Serwis wykorzystuje repozytoria i inne serwisy do realizacji swoich funkcji. Zależności są wstrzykiwane przez konstruktor i nigdy nie są to konkretne implementacje, tylko interfejsy. Jest to kluczowe dla utrzymania czystości i modularności architektury systemu.
-5. **Podział odpowiedzialności**: Serwis jest odpowiedzialny za realizację tylko określonej funkcjonalności biznesowej.
-6. **Logowanie**: Serwis loguje wszystkie operacje, które wykonuje. Jest to kluczowe dla monitorowania pracy systemu i debugowania problemów.
-
-Serwisy w warstwie domeny są niezbędne dla efektywnej implementacji i orkiestracji logiki biznesowej w systemie. Zapewniają one jasne oddzielenie logiki biznesowej od encji i repozytoriów, co przyczynia się do lepszej organizacji kodu, łatwiejszego utrzymania i testowania. Właściwie zaprojektowane serwisy są kluczowe dla zachowania czystości architektury systemu i jego skalowalności.
-
-#### Warstwa aplikacji - persystencja
-
-Implementacja warstwy persystencji w architekturze heksagonalnej jest odpowiedzialnością warstwy aplikacji. Implementacja persystencji jest częścia implementacji portów wyjściowych. Do implementacji warstwy persystencji został użyty moduł frameworku Spring - Spring Data JPA. Spring Data JPA znacząco upraszcza implementację repozytoriów, dostarczając gotowych rozwiązań dla wielu typowych przypadków użycia - takich jak CRUD, paginacja, sortowanie, specyfikacje, audytowanie i wiele innych. Użycie Spring Data JPA ukrywa wiele nudnych i powtarzalnych zadań, w tym zarządzanie transakcjami i generowanie zapytań SQL. Dzięki temu implementacja warstwy persystencji została zredukowana do prostego mapowania encji domenowych na modele bazodanowe i odwrotnie, oraz implementacji repozytoriów Spring Data JPA. Przykładowym odpowiednikem encji domenowej w warstwie persystencji jest klasa `ClientDatabaseModel`, która zawiera definicję encji wraz z adnotacjami JPA:
+Serwis domenowy musi być zarejestowany w kontenerze wstrzykiwania zależności dostarczanym przez Spring. Można to zrobić w następujący sposób:
 
 ```kotlin
-@Entity(name = "Client")
-@Table(name = "client")
-open class ClientDatabaseModel(
-    @Id() open var id: UUID,
-    @Column(nullable = false, length = 255) open var name: String,
-    @Column(nullable = false, length = 255) open var email: String,
-    @Column(nullable = false, length = 64) open var phone: String,
-    @Column(nullable = false, length = 512) open var address: String,
-    @Column(nullable = false, length = 255) open var city: String,
-    @Column(nullable = false, length = 255) open var state: String,
-    @Column(nullable = false, length = 32) open var zip: String,
-    @Column(nullable = false, length = 16) open var countryCode: String,
-    @Column(nullable = true, length = 64) open var vat: String?,
-    @Column(nullable = false, length = 512) open var notes: String,
-    @Column(nullable = false) open var active: Boolean,
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) @JoinColumn(nullable = false) open var type: ClientTypeDatabaseModel
+// @Configuration - adnotacja, która oznacza klasę jako klasę konfiguracyjną
+@Configuration
+class ProjectConfig(
+    // Wstrzyknięcie zależności do konfiguracji
+    private val projectRepository: ProjectRepository,
+    private val languageRepository: LanguageRepository,
+    private val accuracyRepository: AccuracyRepository,
+    private val industryRepository: IndustryRepository,
+    private val unitRepository: UnitRepository,
+    private val serviceTypeRepository: ServiceTypeRepository,
+    private val currencyRepository: CurrencyRepository,
+    private val clientRepository: ClientRepository,
+    private val userContextProvider: UserContextProvider
+) {
+    // @Bean - oznaczenie metody jako fabryki zwrającej obiekt konkretnego typu w kontenerze wstrzykiwania zależności
+    // Taki sposób rejestracji pozwala zachować swobodę domeny aplikacji od wybranego frameworku
+    @Bean
+    fun projectService(): ProjectService =
+        ProjectServiceImpl(
+            projectRepository,
+            languageRepository,
+            accuracyRepository,
+            industryRepository,
+            unitRepository,
+            serviceTypeRepository,
+            currencyRepository,
+            clientRepository,
+            userContextProvider,
+            loggerFor(ProjectService::class.java)
+        )
+}
+```
+
+Klasy DTO, takie jak `UpdateProject` i `ProjectResponse`, definiują model używany w warstwie infrastruktury aplikacji przez adaptery portów wejściowych:
+
+```kotlin
+// Klasa `UpdateProject` definiuje model żądania dla endpointu PUT `/api/v1/project/{projectId}`
+data class UpdateProject(
+    val title: String,
+    val description: String,
+    val sourceLanguage: String,
+    val targetLanguages: List<String>,
+    val accuracyId: UUID,
+    val industryId: UUID,
+    val unitId: UUID,
+    val serviceTypeIds: List<UUID>,
+    val amount: Int,
+    val budget: BigDecimal,
+    val currencyCode: String,
+    val clientId: UUID
+)
+
+// Klasa `Project` definiuje model odpowiedzi
+data class Project(
+    val id: UUID,
+    val title: String,
+    val description: String,
+    val sourceLanguage: Language,
+    val targetLanguages: List<Language>,
+    val accuracy: Accuracy,
+    val industry: Industry,
+    val unit: Unit,
+    val serviceTypes: List<ServiceType>,
+    val amount: Int,
+    val expectedStart: ZonedDateTime,
+    val internalDeadline: ZonedDateTime,
+    val externalDeadline: ZonedDateTime,
+    val budget: BigDecimal,
+    val currency: Currency,
+    val status: ProjectStatus,
+    val client: Client
 )
 ```
 
-Adnotacje JPA pozwalają na definiowanie mapowania pól na kolumny w bazie danych, relacji między encjami, a także sposobu ładowania danych. Poprawne zdefiniowanie mapowań znacząco upraszcza implemetację warstwy persystencji, ukrywając wiele szczegółow implementacyjnych, w tym kaskadowanie operacji, ładowanie leniwe i wiele innych. Implementacja repozytoriów Spring Data JPA jest równie prosta: wystarczy zdefiniować interfejs rozszerzający jeden z interfejsów Spring Data JPA, na przykład `JpaRepository`:
+_Lisitng 7. Przykładowa definicja klas DTO w języku Kotlin_
+
+Jeśli mappery się rozrastają lub są używane w wielu miejscach w kodzie, warto zastanowić się nad wydzieleniem ich do osobnej klasy. Taki mapper można zaimplementować w postaci funkcji rozszerzającej, która będzie mapować obiekt domenowy na obiekt DTO:
 
 ```kotlin
-interface ClientJpaRepository : JpaRepository<ClientDatabaseModel, UUID>, JpaSpecificationExecutor<ClientDatabaseModel>
-```
 
-Mechanizmy Spring Data JPA automatycznie zgenerują wszystkie operacje na podstawie zdefiniowanego interfejsu na etapie uruchamiania aplikacji. W przypadku repozytoriów które wymagają bardziej złożonych operacji, można zdefiniować dodatkowe metody w interfejsie repozytorium, na przykład:
+// Definicja `object` w Kotlinie - obiekt, który jest jednocześnie klasą i instancją tej klasy
+// Jest to implementacja wzorca Singleton w języku Kotlin
+object ProjectMapper {
 
-```kotlin
-interface TeamMemberRoleJpaRepository : JpaRepository<TeamMemberRoleDatabaseModel, UUID>, JpaSpecificationExecutor<TeamMemberRoleDatabaseModel> {
-    fun findAllByProjectId(projectId: UUID): List<TeamMemberRoleDatabaseModel>
-    fun findAllByUserId(userId: UUID): List<TeamMemberRoleDatabaseModel>
-    fun deleteAllByProjectId(projectId: UUID)
-    fun deleteAllByUserId(userId: UUID)
-    fun findByUserIdAndProjectId(userId: UUID, projectId: UUID): List<TeamMemberRoleDatabaseModel>
+    // Metoda rozszerzające sąsposobem na dodanie nowej metody do istniejącej klasy
+    // Pozwala to uniknąć użycia dziedziczenia czy modyfikacji klasy
+    fun Project.toView() = ProjectResponse(
+        id = id.value,
+        title = title,
+        description = description,
+        sourceLanguage = sourceLanguage.toView(),
+        targetLanguages = targetLanguages.map { it.toView() },
+        accuracy = accuracy.toView(),
+        industry = industry.toView(),
+        unit = unit.toView(),
+        serviceTypes = serviceTypes.map { it.toView() },
+        amount = amount,
+        expectedStart = expectedStart,
+        internalDeadline = internalDeadline,
+        externalDeadline = externalDeadline,
+        budget = budget,
+        currency = currency.toView(),
+        status = ProjectStatus(
+            status = status,
+            title = status.title,
+            description = status.description
+        ),
+        client = client.toView(),
+    )
+
+    // Pozostałe mappery pominięte dla czytelności...
 }
 ```
 
-Tak samo jak w przypadku nierozszeroznych repozytoriów, Spring Data JPA automatycznie zaimplementuje wszystkie metody zdefiniowane w interfejsie na podstawie ich nazw. Jeśli tego nie wystarczy, metodę można opisać za pomocą adnotacji `@Query`, która pozwala na definiowanie zapytań SQL:
+_Lisitng 8. Implementacja mappera `ProjectMapper` w języku Kotlin_
+
+Tworzenie serwisów aplikacji, takich jak `ProjectApplicationService`, dla enkapsulacji mapowań pozwala zachować czystość kodu kontrolera. W taki sposób, kontroler może skupić się tylko obsłudze żądań HTTP. Z kolei, używanie dwóch modeli - modelu domenowego i modelu DTO - pozwala ukryć szczegóły implementacyjne modelu domenowego przed klientami aplikacji. Takie podejście zapewnia elastyczność aplikacji oraz redukuje ryzyko nadmiarowej ekspozycji danych.
+
+## 3. Implementacja portów wyjściowych. Spring Data
+
+Opierająć się na definicję portu wejściowego jako miejsca łączącego świat zewnętrzny z domeną aplikacji, można zdefniować port wyjściowy jako miejsce łączące domenę aplikacji z światem zewnętrznym. Innymi słowami, jeśli port wyściowy dostarca dane do domeny, port wyjściowy jest odpowiedzialny za dostarczanie danych z domeny do innych serwisów. Podobnie jak w przypadku portów wejściowych, porty wyjściowe są implementowane jako adaptery w warstwie infrastruktury aplikacji.
+
+Jednym z zastosowań portów wyjściowych jest komunikacja domeny z warstwą persystencji. Wastwa persystencji odpowiada za trwale przechowywanie danych aplikacji. Warstwa persystencji może być zaimplementowana na wiele różnych sposobów - może to być relacyjna baza danych, baza danych NoSQL, system plików, serwisy zewnętrzne czy nawet proste pliki testowe. Persystencja w systemie organizacji pracy biura tłumaczeń opiera się na:
+
+- **Relacyjnej bazie danych PostgreSQL** - PostgreSQL jest jednym z najbardziej zaawansowanych systemów zarządzania relacyjnymi bazami danych. Z zalet PostgreSQL można wymienić, oprócz tradycyjnych cech baz danych relacyjnych, można wymienić też jej bogate możliwości rozszerzania oraz niski koszt utrzymania. W systemie organizacji pracy biura tłumaczeń, PostgreSQL jest wykorzystywany do przechowywania danych aplikacji, takich jak projekty, klienci, tłumacze, itp.
+- **Bazie danych klucz-wartość Redis** - Redis jest szybką bazą danych klucz-wartość, która jest wykorzystywana w systemie organizacji pracy biura tłumaczeń do przechowywania danych tymczasowych (cache). W szczególności warto przypomnieć zastosowanie Redis jako cache dla danych z zewnętrznych serwisów, które mają ograniczoną przepustowość lub są płatne.
+- **Systemie plików MinIO** - MinIO jest szybkim i prostym w obsłudze systemem plików, który jest wykorzystywany w systemie organizacji pracy biura tłumaczeń do przechowywania plików, takich jak dokumenty projektowe, tłumaczenia, itp.
+
+Część warstwy infrastruktury aplikacji, która jest odpowiedzialna za komunikację z warstwą persystencji, została zaimplementowana za pomocą Spring Data. Spring Data jest częścią Spring Framework, która dostarcza narzędzia do tworzenia adapterów do różnych źródeł danych. Spring Data pozwala na definiowanie repozytoriów, które są interfejsami, a ich implementacja jest dostarczana przez Spring Framework.
+
+Podobnie jak adaptery portów wejściowych, adaptery portów wyjściowych operują na własnym, odseparowanym od domeny aplikacji modelu. Dobrym pomysłem jest zacząć od definiowania modelu adapterów:
 
 ```kotlin
-interface ReplyJpaRepository : JpaRepository<ReplyDatabaseModel, UUID>, JpaSpecificationExecutor<ReplyDatabaseModel> {
+// Definicja modelu bazy danych - encja `Project`
+// @Entity - adnotacja, która oznacza klasę jako encję bazy danych.
+// Nazwa encji jest używana jako nazwa tabeli w zapytaniach JPA
+// @Table - adnotacja, która pozwala na konfigurację tabeli w bazie danych
+@Entity(name = "Project")
+@Table(name = "project")
+open class ProjectDatabaseModel(
+    @Id() // @Id - adnotacja, która oznacza pole jako klucz główny
+    open var id: UUID,
 
-    @Query("SELECT r FROM Reply r WHERE r.threadId = :threadId")
-    fun findAllByThreadId(@Param("threadId") threadId: UUID): List<ReplyDatabaseModel>
+    @Column(nullable = false, length = 128) // Mapowanie pola na kolumnę w bazie danych
+    open var title: String,
+
+    @ElementCollection // @ElementCollection - adnotacja, która oznacza pole jako kolekcję elementów
+    @CollectionTable(name = "project_target_language") // Definicja tabeli dla kolekcji elementów
+    @Column(nullable = false, length = 16, name = "target_language") // Konfiguracja kolumny w bazie danych
+    open var targetLanguages: List<String>,
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) // Relacja wiele do jednego z opóźnionym ładowaniem i kaskadowym zapisem
+    @JoinColumn(nullable = false) // Konfiguracja mapowania kolumny z kluczem obcym
+    open var accuracy: AccuracyDatabaseModel,
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) // Relacja wiele do wielu z opóźnionym ładowaniem i kaskadowym zapisem
+    @JoinTable(
+        name = "project_service_type",
+        joinColumns = [JoinColumn(name = "project_id")],
+        inverseJoinColumns = [JoinColumn(name = "service_type_id")]
+    ) // Konfiguracja tabeli łączącej
+    open var serviceTypes: MutableList<ServiceTypeDatabaseModel>,
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING) // Mapowanie pola na enumerację
+    open var status: ProjectStatusDatabaseModel,
+
+    // Pozostałe pola są definiowane analogicznie...
+)
+
+// Definicja modelu bazy danych - enumeracja `ProjectStatus`
+enum class ProjectStatusDatabaseModel {
+    DRAFT,
+    READY_TO_START,
+    IN_PROGRESS,
+    // Pozostałe wartości analogicznie jak w modelu domenowym...
 }
 ```
+_Lisitng 9. Definicja modelu bazy danych w języku Kotlin z wykorzystaniem Spring Data_
 
-Implementacja repozytoria domenowego jest realizowana w postaci prostego adaptera, który implementuje odpowiedni interfejs repozytorium domenowego. Odpowiedzialnością tego adaptera jest głownie zmapowanie encji domenowych na modele bazodanowe i odwrotnie w celu połączenia warstwy domeny z warstwą persystencji. Przykładem implementacji repozytorium domenowego jest `ClientRepositoryImpl`:
+W kolejnym kroku zdefiniujmy odpowiedni adapter korzystając ze Spring Data:
 
 ```kotlin
+// Interfejs repozytorium Spring Data
+// Na podstawie interfejsu Spring automatycznie generuje implementację repozytorium w trakcie uruchamiania aplikacji
+interface ProjectJpaRepository : JpaRepository<ProjectDatabaseModel, UUID>, JpaSpecificationExecutor<ProjectDatabaseModel>
+
+// Adapter reposzytorium domenowego - implementacja repozytorium
 @Repository
-class ClientRepositoryImpl(
-    private val jpaRepository: ClientJpaRepository,
-    private val countryRepository: CountryRepository,
-    private val clientSpecificationBuilder: ClientSpecificationFactory
-) : ClientRepository {
+class ProjectRepositoryImpl(
+    // Wstrzyknięcie zależności do repozytorium
+    private val jpaRepository: ProjectJpaRepository,
+    private val specificationBuilder: ProjectSpecificationFactory,
+    private val userSpecificationBuilder: ProjectUserSpecificationBuilder,
+    private val languageRepository: LanguageRepository,
+    // Pozostałe zależności pominięte dla czytelności...
+) : ProjectRepository {
 
-    override fun getAll() = jpaRepository.findAll().map { it.toDomain(countryRepository) }
-    override fun get(id: ClientId): Client? = jpaRepository.findById(id.value).map { it.toDomain(countryRepository) }.orElse(null)
-    override fun get(ids: List<ClientId>) = jpaRepository.findAllById(ids.map { it.value }).map { it.toDomain(countryRepository) }
+    override fun getAll() = jpaRepository.findAll()
+        .map {
+            it.toDomain(
+                languageRepository,
+                // Pozostałe zależności pominięte dla czytelności...
+            )
+        }
 
-    override fun get(query: Query<Client>): Page<Client> {
-        val page = jpaRepository.findAll(clientSpecificationBuilder.create(query), query.toPageable())
+    override fun get(id: ProjectId): Project? = jpaRepository.findById(id.value)
+        .map {
+            it.toDomain(
+                languageRepository,
+                // Pozostałe zależności pominięte dla czytelności...
+            )
+        }
+        .orElse(null)
 
-        return Page(
-            items = page.content.map { it.toDomain(countryRepository) },
-            currentPage = page.number,
-            totalPages = page.totalPages,
-            totalItems = page.totalElements
+    // Pozostałe metody pominięte dla czytelności...
+
+    // Obiekt `Mappers` zawiera metody mapujące obiekty bazy danych na obiekty domenowe i odwrotnie
+    companion object Mappers {
+
+        fun ProjectDatabaseModel.toDomain(
+            languageRepository: LanguageRepository,
+            // Pozostałe zależności pominięte dla czytelności...
+        ) = Project(
+            id = ProjectId(id),
+            title = title,
+            description = description,
+            sourceLanguage = LanguageCode(sourceLanguage).let { languageRepository.get(it) ?: UnknownLanguage(it) },
+            targetLanguages = targetLanguages
+                .map { LanguageCode(it) }
+                .map { languageRepository.get(it) ?: UnknownLanguage(it) },
+            accuracy = accuracy.toDomain(),
+            // Pozostałe mapowania...
         )
-    }
 
-    override fun create(entity: Client) = jpaRepository.save(entity.toDatabaseModel()).toDomain(countryRepository)
-    override fun createAll(entities: List<Client>) = jpaRepository.saveAll(entities.map { it.toDatabaseModel() }).map { it.toDomain(countryRepository) }
-    override fun update(entity: Client) = jpaRepository.save(entity.toDatabaseModel()).toDomain(countryRepository)
-    override fun updateAll(entities: List<Client>) = jpaRepository.saveAll(entities.map { it.toDatabaseModel() }).map { it.toDomain(countryRepository) }
-    override fun delete(id: ClientId) = jpaRepository.deleteById(id.value)
-    override fun deleteAll(ids: List<ClientId>) = jpaRepository.deleteAllById(ids.map { it.value })
-
-    companion object Mapping {
-        fun ClientDatabaseModel.toDomain(countryRepository: CountryRepository) = Client(
-            id = ClientId(id),
-            name = name,
-            email = email,
-            phone = phone,
-            address = address,
-            city = city,
-            state = state,
-            zip = zip,
-            country = countryRepository.getByCode(countryCode) ?: UnknownCountry(CountryCode(countryCode)),
-            vat = vat,
-            notes = notes,
-            type = type.toDomain(),
-            active = active
-        )
-
-        fun Client.toDatabaseModel() = ClientDatabaseModel(
+        fun Project.toDatabaseModel() = ProjectDatabaseModel(
             id = id.value,
-            name = name,
-            email = email,
-            phone = phone,
-            address = address,
-            city = city,
-            state = state,
-            zip = zip,
-            countryCode = country.id.value,
-            vat = vat,
-            notes = notes,
-            type = type.toDatabaseModel(),
-            active = active
+            title = title,
+            description = description,
+            sourceLanguage = sourceLanguage.id.value,
+            targetLanguages = targetLanguages.map { it.id.value },
+            accuracy = accuracy.toDatabaseModel(),
+            // Pozostałe mapowania...
         )
+
+        fun ProjectStatusDatabaseModel.toDomain() = when (this) {
+            ProjectStatusDatabaseModel.DRAFT -> ProjectStatus.DRAFT
+            ProjectStatusDatabaseModel.READY_TO_START -> ProjectStatus.READY_TO_START
+            ProjectStatusDatabaseModel.ACTIVE -> ProjectStatus.ACTIVE
+            // Pozostałe mapowania...
+        }
+
+        fun ProjectStatus.toDatabaseModel() = when (this) {
+            ProjectStatus.DRAFT -> ProjectStatusDatabaseModel.DRAFT
+            ProjectStatus.READY_TO_START -> ProjectStatusDatabaseModel.READY_TO_START
+            ProjectStatus.ACTIVE -> ProjectStatusDatabaseModel.ACTIVE
+            // Pozostałe mapowania...
+        }
     }
 }
 ```
+_Lisitng 10. Implementacja adaptera repozytorium `ProjectRepository` w języku Kotlin z wykorzystaniem Spring Data_
 
-Implementacja takiego repozytorium jest bardzo przejrzysta i czytelna - jest klasycznym przykładem użycia adapterów do połączenia dwóch warstw. Finalnie, musimy upewnić się że aplikacja podczas uruchomienia da rady połączyć się z bazą danych i zweryfikować czy schemat bazy danych jest zgodny ze schematem JPA. Dla tego należy uzupełnić plik `application.yml` o następujące konfiguracje:
+Zbudowana z użyciem Spring Data implementacja adaptera jest maksymalnie prosta - w zasadzie ogranicza sie do zdefiniowania modelu i mapperów. Spring Data automatycznie generuje implementację repozytorium na podstawie podanych definicji, co zabiera całą pracę związaną z twożeniem zapytań SQL. Takie podejście pozwala uniknąć wielu rozpowszechnionych błędów i podatności związanych z tworzeniem zapytań SQL ręcznie. Domyślna konfiguracja Spring Data też automatycznie generuje schemat bazy danych na podstawie modelu, co pozwala na szybkie uruchomienie aplikacji bez konieczności ręcznego tworzenia schematu bazy danych, choć w przypadku aplikacji produkcyjnych zaleca się ręczne zarządzanie schematem bazy danych czy użycie narzędzi do migracji schematu bazy danych, takich jak Flyway czy Liquibase. Pozwoli to na kontrolę nad zmianami w schemacie bazy danych i uniknięcie nieoczekiwanych problemów związanych z migracją danych.
 
-```yaml
-spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/tpm
-    username: application
-    password: 1qaz@WSX
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        default_schema: application
-    open-in-view: false
-  liquibase:
-    change-log: db/changelog/db.changelog-master.xml
-    default-schema: application
-```
-
-Plik `application.yml` jest plikiem konfiguracyjnym aplikacji, który zawiera konfiguracje dla wszystkich modułów frameworku Spring. W tym przykładzie aplikacja została skonfigurowana pod użycie bazy danych PostgreSQL z wyłączonym mechanizmem automatycznej generacji schematu bazy danych. Takie podejście pozwala na większą kontrolę nad schematem bazy danych i zapobiega przypadkowym modyfikacjom. Silnikiem migracji w projekcie został wybrany Liquibase ze względu na to że oferuje on wysoką elastyczność i jest w pełni kompatybilny z frameworkiem Spring. Konfiguracja Liquibase jest bardzo prosta - wystarczy zdefiniować plik z migracjami i schemat bazy danych, a framework sam zajmie się resztą. Przykładowy plik migracji, który tworzy tabelę `client` wygląda następująco:
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-  <changeSet id="001-initial-schema-client" author="oleh-shatskyi">
-    <createTable tableName="client">
-      <column name="id" type="UUID">
-        <constraints primaryKey="true" nullable="false" primaryKeyName="clientPK"/>
-      </column>
-      <column name="active" type="BOOLEAN">
-        <constraints nullable="false"/>
-      </column>
-      <column name="address" type="VARCHAR(512)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="city" type="VARCHAR(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="country_code" type="VARCHAR(16)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="email" type="VARCHAR(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="name" type="VARCHAR(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="notes" type="VARCHAR(512)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="phone" type="VARCHAR(64)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="state" type="VARCHAR(255)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="vat" type="VARCHAR(64)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="zip" type="VARCHAR(32)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="type_id" type="UUID">
-        <constraints nullable="false" foreignKeyName="client_typeFK" referencedTableName="client_type" referencedColumnNames="id"/>
-      </column>
-    </createTable>
-  </changeSet>
-</databaseChangeLog>
-```
-
-Taką migrację włączamy do głownego pliku migracji `db.changelog-master.xml`, który jest odpowiedzialny za zdefiniowanie odpowiedniej kolejności migracji:
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-  <include file="initial-schema/000-initial-schema-dictionaries.xml" relativeToChangelogFile="true" />
-  <include file="initial-schema/001-initial-schema-client.xml" relativeToChangelogFile="true" />
-  <include file="initial-schema/002-initial-schema-project.xml" relativeToChangelogFile="true" />
-  <include file="initial-schema/003-initial-schema-task.xml" relativeToChangelogFile="true" />
-  <include file="initial-schema/004-initial-schema-expense.xml" relativeToChangelogFile="true" />
-  <include file="initial-schema/005-initial-schema-file.xml" relativeToChangelogFile="true" />
-  <include file="initial-schema/006-initial-schema-threads.xml" relativeToChangelogFile="true" />
-  <include file="initial-schema/007-initial-schema-default-dictionaries.sql" relativeToChangelogFile="true" />
-</databaseChangeLog>
-```
-
-Spring Data JPA automatycznie wykryje plik migracji i wykona go podczas uruchamiania aplikacji. W przypadku gdy schemat bazy danych nie będzie zgodny ze schematem JPA, aplikacja nie uruchomi się i wyświetli stosowny komunikat o błędzie. W innym przypadku, aplikacja uruchomi się i będzie gotowa do pracy.
-
-Analogicznie, zostaje zaimplementowana inna część warstwy persystencji - schowek plików. Jest on równie prosty i przejrzysty jak repozytoria domenowe i w zasadzie jest prostą obudową nad klientem MinIO:
+Z kolei, implementacja adaptera dla portu serwisu schowka plików umożliwiającego zapis i odczyt plików z systemu plików MinIO jest zaimplementowana z użyciem klienta MinIO:
 
 ```kotlin
 @Service
-class MinioStorageService(
-    private val minioClient: MinioClient
-) : FileStorageService {
+class MinioStorageService(private val minioClient: MinioClient) : FileStorageService {
 
+    // Enkapsulacja operacji ładowania pliku z systemu plików
     override fun load(location: String, name: String): InputStream {
         return minioClient.getObject(
             GetObjectArgs.builder()
@@ -4245,6 +4413,7 @@ class MinioStorageService(
         )
     }
 
+    // Enkapsulacja operacji zapisu pliku do systemu plików
     override fun store(location: String, name: String, dataStream: InputStream) {
         minioClient.putObject(
             PutObjectArgs.builder()
@@ -4255,6 +4424,7 @@ class MinioStorageService(
         )
     }
 
+    // Enkapsulacja operacji usuwania pliku z systemu plików
     override fun delete(location: String, name: String) {
         minioClient.removeObject(
             RemoveObjectArgs.builder()
@@ -4265,805 +4435,59 @@ class MinioStorageService(
     }
 }
 ```
+_Lisitng 11. Implementacja adaptera serwisu schowka plików `MinioStorageService` w języku Kotlin_
 
-Parametry połaczenia z MinIO są konfigurowane w pliku `application.yml`:
-
-```yaml
-app:
-  file-storage:
-    minio:
-      endpoint: http://localhost:9000
-      access-key: admin
-      secret-key: 1qaz@WSX
-      bucket-name: tpm
-```
-
-Dalej klient MinIO jest konfigurowany i rejestrowany w kontekście Spring w klasie `MinioClientConfig`:
+Ostatni adapter, który warto omówić, to adapter dla serwisu konwersji walut. System organizacji pracy biura tłumaczeń korzysta z serwisu zewnętrznego do konwersji walut - serwisu `exchangeratesapi.io`. Implementacja adaptera dla serwisu `exchangeratesapi.io` jest oparta o Feign, który pozwala na deklaratywne definiowanie klientów HTTP:
 
 ```kotlin
-@Configuration
-@ConfigurationProperties(prefix = "app.file-storage.minio")
-class MinioClientConfig(
-    var endpoint: String = "",
-    var accessKey: String = "",
-    var secretKey: String = "",
-) {
-
-    @Bean
-    fun minioClient(): MinioClient = MinioClient.builder()
-        .endpoint(endpoint)
-        .credentials(accessKey, secretKey)
-        .build()
-
-}
-```
-
-Podsumowując, implementacja warstwy persystencji w projekcie jest bardzo prosta i przejrzysta, nie łamie czystości architektury i jest w pełni zgodna z zasadami DDD. Użycie Spring Data JPA pozwala na uniknięcie wielu powszechnych błędów i znacząco upraszcza implementację warstwy persystencji. W połączeniu z Liquibase, implementacja warstwy persystencji jest bardzo prosta i nie wymaga dużo wysiłku, a też jest odporna na błędy i łatwa w utrzymaniu. Równie prosta jest implementacja schowka plików, która ze względu na swoją prostotę też jest przejrzysta i czytelna.
-
-#### Warstwa aplikacji - serwisy aplikacyjne
-
-Jeśli warstwa persystencji w aplikacji jest implementacją portów wyjściowych, to warstwa serwisów aplikacyjnych i kontrolerów jest implementacją portów wejściowych. Serwisy aplikacyjne są odpowiednikiem adapterów z warstwy persystencji - są odpowiedzialne za mapowanie modeli domenowych na modele widoków oraz przetłumaczenie żądań tak, żeby były zgodne z interfejsami serwisów i repozytoriów domenowych. Serwisy aplikacyjne dodatkowo odpawiadają za transakcje, możliwe cache'owanie i inne aspekty, które są związane z warstwą aplikacji. Implementacja serwisów aplikacyjnych jest bardzo prosta i przejrzysta, na przykład:
-
-```kotlin
-@Service
-@Transactional(propagation = Propagation.REQUIRED)
-class ClientApplicationService(
-    private val service: ClientService,
-    private val repository: ClientRepository,
-    private val specificationBuilder: SpecificationBuilder<Client>
-) {
-
-    private val logger = loggerFor(this::class.java)
-
-    @Cacheable("clients-cache")
-    fun getClients(query: FilteredRequest<Client>): Page<ClientResponse> {
-        logger.info("getClients($query)")
-        return repository.get(query.toQuery(specificationBuilder)).map { it.toView() }
-    }
-
-    @Cacheable("clients-cache")
-    fun getClient(id: UUID): ClientResponse {
-        logger.info("getClient($id)")
-        return repository.get(ClientId(id))?.toView() ?: throw NotFoundException("Client with id $id not found")
-    }
-
-    @CacheEvict("clients-cache", allEntries = true)
-    fun createClient(request: CreateClient): ClientResponse {
-        logger.info("createClient($request)")
-        val client = service.create(
-            request.name,
-            request.email,
-            request.phone,
-            request.address,
-            request.city,
-            request.state,
-            request.zip,
-            CountryCode(request.countryCode),
-            request.vat,
-            request.notes,
-            ClientTypeId(request.clientTypeId)
-        )
-        return client.toView()
-    }
-
-    @CacheEvict("clients-cache", allEntries = true)
-    fun updateClient(id: UUID, request: UpdateClient): ClientResponse {
-        logger.info("updateClient($id, $request)")
-        val client = service.update(
-            ClientId(id),
-            request.name,
-            request.email,
-            request.phone,
-            request.address,
-            request.city,
-            request.state,
-            request.zip,
-            CountryCode(request.countryCode),
-            request.vat,
-            request.notes,
-            ClientTypeId(request.clientTypeId)
-        )
-        return client.toView()
-    }
-
-    @CacheEvict("clients-cache", allEntries = true)
-    fun activateClient(id: UUID): ClientStatus {
-        logger.info("activateClient($id)")
-        return service.activate(ClientId(id)).toActivityStatus()
-    }
-
-    @CacheEvict("clients-cache", allEntries = true)
-    fun deactivateClient(id: UUID): ClientStatus {
-        logger.info("deactivateClient($id)")
-        return service.deactivate(ClientId(id)).toActivityStatus()
-    }
-}
-```
-
-Ważne aspekty:
-
-1. **Transakcje**: Serwisy aplikacyjne są odpowiedzialne za zarządzanie transakcjami. W tym przykładzie, cały serwis jest oznaczony adnotacją `@Transactional`, która definiuje, że wszystkie metody w serwisie będą wykonywane w ramach jednej transakcji. Jest to kluczowe dla zapewnienia spójności danych i integralności modelu domenowego. Cała odpowiedzialność za poprawną implementację transakcyjności leży po stronie Spring Data JPA.
-2. **Cache'owanie**: Serwisy aplikacyjne mogą być oznaczone adnotacją `@Cacheable`, która definiuje, że wynik metody będzie cache'owany. Jest to przydatne w przypadku, gdy wynik metody jest zawsze taki sam dla tych samych parametrów. Jest to przydatne dla metod, które są wywoływane bardzo często i zwracają te same wyniki. Prykładem może być np. lista klięntów, która jest zmieniana bardzo rzadko, a jest wyświetlana bardzo często. Cache'owanie pozwala na uniknięcie wielu zapytań do bazy danych i znacząco poprawia wydajność aplikacji. Cache'owanie w aplikacji używa systemu Redis, który jest bardzo wydajny i łatwy w konfiguracji. Należy po prostu dodać odpowiednią konfigurację do pliku `application.yml`:
-
-    ```yaml
-    spring:
-      data:
-        redis:
-          host: localhost
-          port: 6379
-          password: 1qaz@WSX
-          timeout: 60000
-    ```
-
-    Po tym trzeba odpowiednio skonfigurować cache'owanie w aplikacji, dodając konfigurację: 
-
-    ```kotlin
-    @ConfigurationProperties(prefix = "app")
-    class RedisCacheProperties(cacheConfigurations: List<CacheProperties>) {
-        val caches = cacheConfigurations
-
-        data class CacheProperties(
-            var ttl: Long = 86400,
-            var name: String = "cache",
-            var unit: String = "SECONDS"
-        )
-    }
-
-    @Configuration
-    class RedisCacheConfig(private val cacheProperties: RedisCacheProperties) {
-
-        private val logger = loggerFor(this::class.java)
-
-        @Bean
-        fun cacheConfiguration() = RedisCacheConfiguration.defaultCacheConfig()
-
-        @Bean
-        fun redisCacheManagerBuilderCustomizer() =
-            RedisCacheManagerBuilderCustomizer { builder ->
-                logger.info("Configuring Redis cache manager")
-                cacheProperties.caches.forEach { (ttl, name, unit) ->
-                    logger.info("Configuring Redis cache: $name with TTL: $ttl $unit")
-                    builder.defaultFor(name, ttl, ChronoUnit.valueOf(unit))
-                }
-            }
-
-        private val kotlinModule = KotlinModule.Builder()
-            .withReflectionCacheSize(512)
-            .configure(KotlinFeature.NullToEmptyCollection, false)
-            .configure(KotlinFeature.NullToEmptyMap, false)
-            .configure(KotlinFeature.NullIsSameAsDefault, false)
-            .configure(KotlinFeature.SingletonSupport, false)
-            .configure(KotlinFeature.StrictNullChecks, false)
-            .build()
-
-        private val javaTimeModule = JavaTimeModule()
-
-        private val typeValidator = BasicPolymorphicTypeValidator.builder()
-            .allowIfBaseType(Any::class.java)
-            .build()
-
-        private val objectMapper = ObjectMapper()
-            .registerModule(kotlinModule)
-            .registerModule(javaTimeModule)
-            .activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.EVERYTHING)
-
-        private fun duration(seconds: Long, unit: TemporalUnit) = Duration.of(seconds, unit)
-
-        private fun RedisCacheManagerBuilder.defaultFor(name: String, ttl: Long, unit: TemporalUnit) =
-            withCacheConfiguration(
-                name,
-                RedisCacheConfiguration.defaultCacheConfig()
-                    .entryTtl(duration(ttl, unit))
-                    .disableCachingNullValues()
-                    .serializeValuesWith(
-                        SerializationPair.fromSerializer(
-                            GenericJackson2JsonRedisSerializer(objectMapper)
-                        )
-                    )
-            )
-    }
-    ```
-
-    Po tym, można wygodnie dodawać i usuwać cache'y w aplikacji, dodając lub usuwając wpisy w pliku `application.yml` i dodając odpowiednią adnotację do metody serwisu jak w przykładzie powyżej. Przykładowa konfiguracja cache'owania w pliku `application.yml` wygląda następująco:
-
-    ```yaml
-    app:
-      cache-configurations:
-        - name: countries-client-cache
-          ttl: 7
-          unit: DAYS
-        - name: languages-client-cache
-          ttl: 7
-          unit: DAYS
-        - name: currencies-client-cache
-          ttl: 1
-          unit: DAYS
-        - name: client-types-cache
-          ttl: 86400
-        - name: clients-cache
-          ttl: 86400
-      ```
-
-3. **Mapowanie modeli**: Serwisy aplikacyjne są odpowiedzialne za mapowanie żadań na modele domenowe i modeli domenowych na odpowiedzi, które będą zgodne z interfejsami serwisów i repozytoriów domenowych. przykładem takiego żądania jest wspomniany w serwisie `CreateClient`:
-
-    ```kotlin
-    data class CreateClient(
-        @field:[NotBlank(message = "Name is required")] val name: String,
-        @field:[NotBlank(message = "Email is required") Email] val email: String,
-        @field:[NotBlank(message = "Phone is required")] val phone: String,
-        @field:[NotBlank(message = "Address is required")] val address: String,
-        @field:[NotBlank(message = "City is required")] val city: String,
-        @field:[NotBlank(message = "State is required")] val state: String,
-        @field:[NotBlank(message = "Zip is required")] val zip: String,
-        @field:[NotBlank(message = "Country code is required")] val countryCode: String,
-        val vat: String,
-        val notes: String,
-        val clientTypeId: UUID
-    )
-    ```
-
-    W serwisie aplikacji, ten obiekt jest rozkłdany na poszczególne parametry metody `create` serwisu domenowego. Zauważalne są dodatkowe adnotację walidacyjne, które odpowiadają za walidację żądania. Walidacja ta jest wykonywana jeszcze przed wywołaniem metody serwisu aplikacyjnego w kontrolerze.
-
-    Z kolei, przykładem mapowania modelu domenowego na odpowiedź są metody `toView` i `toActivityStatus` rozszerzające klasę `Client`:
-
-    ```kotlin 
-    object ClientMapper {
-
-        fun Client.toView() = ClientResponse(
-            id = id.value,
-            name = name,
-            email = email,
-            phone = phone,
-            address = address,
-            city = city,
-            state = state,
-            zip = zip,
-            country = country.toView(),
-            vat = vat,
-            notes = notes,
-            type = type.toView(),
-            active = active
-        )
-
-        fun Client.toActivityStatus() = ClientStatus(
-            id = id.value,
-            active = active
-        )
-    }
-    ```
-
-    Takie mapowanie jest potrzebne, bo chcemy oddzielić model domenowy od modelu odpowiedzi i uniknąć przypadkowego ujawnienia wrażliwych danych. Takie metody mapujące są bardzo czytelne, szczególnie w miejscu ich wywołania. Każda encja domenowa, która jest udostępniana przez aplikację, ma co najmniej jedną metodę mapującą na odpowiedź, która jest wykorzystywana w serwisach aplikacyjnych.
-
-Ostatnim krokiem serwis domenowy ma być zarajestrowany w kontekśie Springa, żeby mógł być wstrzykiwany w serwisy aplikacyjne. Do tego należy stworzyć klasę konfiguracyjną, która będzie odpowiedzialna za konfigurację serwisu i jego rejestrację:
-
-```kotlin
-@Configuration
-class ClientConfig(
-    private val clientRepository: ClientRepository,
-    private val clientTypeRepository: ClientTypeRepository,
-    private val countryRepository: CountryRepository
-) {
-
-    @Bean
-    fun clientService(): ClientService = ClientServiceImpl(
-        clientRepository,
-        clientTypeRepository,
-        countryRepository,
-        loggerFor(ClientService::class.java)
-    )
-
-    @Bean
-    fun clientSpecificationBuilder() = ClientSpecificationBuilder
-}
-```
-
-Taka konfiguracja zbiera i wstrykuje wszystkie zależności w serwis i zwraca go jako bean Springa. Dzięki temu, serwis będzie mógł być wstrzykiwany w serwisy aplikacyjne i kontrolery.
-
-Podsumowując, serwisy aplikacji są odpowiedzialne za oddzielenie domeny aplikacji od zewnetrznęgo świata. Są one odpowiedzialne za mapowanie modeli domenowych na modele widoków, przetłumaczenie żądań na żądania domenowe, zarządzanie transakcjami i cache'owaniem. Prostotę implementacji zapewniają możliwości frameworku Spring, który zapewnia między innym mechanizm wstrzykiwania zależności. Implementacja serwisów aplikacyjnych jest bardzo prosta i przejrzysta, a ich odpowiedzialności są dobrze zdefiniowane i jasne.
-
-#### Warstwa aplikacji - kontrolery
-
-Podobnie jak repozytoria Spring Data JPA, które ukrywają szczególy pracy z bazą danych, kontrolery Spring REST API odpowiadają za uproszczenie pracy z HTTP. Kontrolery Spring Boot definiują endpointy HTTP, metody HTTP, parametry i ciało żądania, a także zwracają odpowiedzi HTTP. Dzięki nim, można zdefiniować API aplikacji w postaci kodu i nie myśleć o szczegółach implementacyjnych, takich jak parsowanie żądań, nagłowków, parametrów, serializacja odpowiedzi i wiele innych. Kontrolery Spring Boot są bardzo proste w implementacji i nie wymagają dużo wysiłku. implementacja jak i w wielu innych miejscach polega na poprawnym zdefiniowaniu adnotacji w odpowiednich miejscach. Przykładem kontrolera jest `ClientController`:
-
-```kotlin
-@RestController
-@RequestMapping("/api/v1/client")
-class ClientController(private val service: ClientApplicationService) {
-
-    private val logger = loggerFor(this::class.java)
-
-    @GetMapping("")
-    fun getClients(query: ListClients): ResponseEntity<Page<Client>> {
-        logger.info("GET /api/v1/client")
-        return ResponseEntity.ok().body(service.getClients(query))
-    }
-
-    @GetMapping("/export", produces = ["text/csv"])
-    fun export(query: ListClients): ResponseEntity<InputStreamResource> {
-        logger.info("GET /api/v1/client/export")
-
-        val accuracies = service.getClients(query)
-
-        val output = PipedOutputStream()
-        val input = PipedInputStream(output)
-
-        thread {
-            val writer = OutputStreamWriter(output)
-            val beanToCsv = StatefulBeanToCsvBuilder<ClientResponse>(writer).build()
-            beanToCsv.write(accuracies.items)
-            writer.flush()
-            writer.close()
-            output.close()
-        }
-
-        val name = "clients-${LocalDate.now()}.csv"
-
-        val resource = InputStreamResource(input)
-
-        return ResponseEntity.ok()
-            .headers(
-                HttpHeaders().apply {
-                    add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$name")
-                    add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
-                    add(HttpHeaders.PRAGMA, "no-cache")
-                    add(HttpHeaders.EXPIRES, "0")
-                }
-            )
-            .contentType(MediaType.parseMediaType("text/csv"))
-            .body(resource)
-    }
-
-    @GetMapping("/{clientId}")
-    fun getClientById(@PathVariable(name = "clientId") id: UUID): ResponseEntity<Client> {
-        logger.info("GET /api/v1/client/$id")
-        return ResponseEntity.ok().body(service.getClient(id))
-    }
-
-    @PostMapping("")
-    fun createClient(@RequestBody @Valid request: CreateClient): ResponseEntity<Client> {
-        logger.info("POST /api/v1/client")
-        return ResponseEntity.ok().body(service.createClient(request))
-    }
-
-    @PutMapping("/{clientId}")
-    fun updateClient(@PathVariable(name = "clientId") id: UUID, @RequestBody request: UpdateClient): ResponseEntity<Client> {
-        logger.info("PUT /api/v1/client/$id")
-        return ResponseEntity.ok().body(service.updateClient(id, request))
-    }
-
-    @PatchMapping("/{clientId}/activate")
-    fun activate(@PathVariable(name = "clientId") id: UUID): ResponseEntity<ClientStatus> {
-        logger.info("PATCH /api/v1/client/$id/activate")
-        return ResponseEntity.ok().body(service.activateClient(id))
-    }
-
-    @PatchMapping("/{clientId}/deactivate")
-    fun deactivate(@PathVariable(name = "clientId") id: UUID): ResponseEntity<ClientStatus> {
-        logger.info("PATCH /api/v1/client/$id/deactivate")
-        return ResponseEntity.ok().body(service.deactivateClient(id))
-    }
-
-    @ExceptionHandler(NotFoundException::class)
-    fun handleNotFoundException(e: NotFoundException): ResponseEntity<Unit> {
-        logger.warn("NotFoundException: ${e.message}")
-        return ResponseEntity.notFound().build()
-    }
-
-    @ExceptionHandler(ValidationException::class)
-    fun handleValidationException(e: ValidationException): ResponseEntity<ValidationErrorResponse> {
-        logger.warn("ValidationException: ${e.message}")
-        return ResponseEntity.badRequest().body(ValidationErrorResponse("Validation failed", e.errors))
-    }
-
-    @ExceptionHandler(IllegalStateException::class)
-    fun handleIllegalStateException(e: IllegalStateException): ResponseEntity<ErrorResponse> {
-        logger.warn("IllegalStateException: ${e.message}")
-        return ResponseEntity.internalServerError().body(ErrorResponse(e.message ?: "Illegal state"))
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ValidationErrorResponse> {
-        logger.warn("MethodArgumentNotValidException: ${e.message}")
-        return ResponseEntity.badRequest().body(
-            ValidationErrorResponse(
-                "Validation failed",
-                e.fieldErrors.map { ValidationError(it.field, it.defaultMessage ?: "Validation failed" ) }
-            )
-        )
-    }
-}
-```
-
-Każdy kontroler jest oznaczony adnotacją `@RestController`, która definiuje, że klasa jest kontrolerem Spring REST API. Adnotacja `@RequestMapping` definiuje prefix endpointów kontrolera. W tym przykładzie, wszystkie endpointy kontrolera będą miały prefix `/api/v1/client`.
-
-Dalej są zaimplementowane metody kontrolera, które w swojej istocie są mapowaniami żądań HTTP na opdowiednie metody serwisów aplikacyjnych. Osiąga się to za pomocą adnotacji `@GetMapping`, `@PostMapping`, `@PutMapping`, `@PatchMapping` i `@DeleteMapping`, które definiują metodę HTTP, endpoint i inne szczegóły żądania. Wszystkie metody kontrolera zwracają obiekt `ResponseEntity`, który jest odpowiedzią HTTP. Wszystkie odpowiedzi są zwracane w postaci JSON i posiadają status HTTP 200.
-
-Kolejna odpowiedzialność kontrolera to obsługa błędów. Metody do obsługi błędów są oznaczone adnotacją `@ExceptionHandler`, która definiuje, że metoda jest odpowiedzialna za obsługę błędu i to jaki błąd obsługuje. W tym przykładzie, kontroler obsługuje cztery rodzaje wyjątków:
-
-1. `NotFoundException` - wyjątek, który jest rzucany w przypadku, gdy żądany zasób nie został znaleziony. W takim przypadku, kontroler zwraca odpowiedź HTTP 404.
-2. `ValidationException` - wyjątek, który jest rzucany w przypadku, gdy żądanie nie przeszło walidacji. W takim przypadku, kontroler zwraca odpowiedź HTTP 400.
-3. `IllegalStateException` - wyjątek, który jest rzucany w przypadku, gdy żądanie jest nieprawidłowe. W takim przypadku, kontroler zwraca odpowiedź HTTP 500.
-4. `MethodArgumentNotValidException` - wyjątek, który jest rzucany w przypadku, gdy żądanie nie przeszło walidacji. W takim przypadku, kontroler zwraca odpowiedź HTTP 400.
-
-Poprawne obsłużenie wyjątków zapewnia że praca z udpostępnionym API jest intuitywna i prosta. Jest to zapełnione poprzez poprawne użycie kodów odpowiedzi HTTP i odpowiednich komunikatów błędów. Dodatkowo pozytywnie to wpływa na bezpieczeństwo aplikacji - taka obsługa wyjątków zapobiega przypadkowemu ujawnieniu stacktrace'a, który może ujawniać architekturę aplikacji i wrażliwe dane.
-
-Trzecia odpowiedzialność - wstępna walidacja danych. Umieszczenie adnotacji walidacyjnych w klasach żądań i parametrach metod kontrolera powoduje, że Spring automatycznie waliduje żądanie przed wywołaniem metody kontrolera. W przypadku, gdy żądanie nie przeszło walidacji, kontroler rzuci wyjątek `MethodArgumentNotValidException`.
-
-Podsumowując, kontrolery są wygodnym sposobem zdefiniowania wejścia do aplikacji. Jak i w przypadku repozytoriów i serwisów aplikacyjnych, użycie Spring znacząco upracza implementację kontrolerów i gwarantuje uniknięcie wielu powszechnych błędów.
-
-#### Warstwa aplikacji - specyfikacje
-
-W rozdzdiale omawiającym wzorzec specyfikacji i jego implementację w warstwie domeny zwrócono uwagę na to, że interpretacja specyfikacji została odpowiedzilanością warstwy aplikacji. Zostało to zrobione w celu opdoiwedniego podziału warstw i zachowania czystości architektury. Dodatkowo, umożliwia to implementację interpretatorów specyfikacji korzystając z dowolnej technologii bez wpływu na warstwę domeny. Poprawnie zaimplementowany intepretator w dobrze dobranej technologii będzie miał minimalny wpływ na wydajność aplikacji.
-
-W aplikacji, specyfikacje są interpretowane za pomocą mechanizmu Criteria API, który jest dostarczony jako część Spring Data JPA. Criteria API często jest używany w wypadkach, gdy nie można zdfiniować zapytania JPQL - na przykład, gdy zapytanie jest budowane dynamicznie. Criteria API pozwala w łatwy sposób zinterpretować specyfikację domenową w postaci takiego dynamicznego zapytania. Interpretator specyfikacji w aplikacji jest zaimplementowany w postaci klasy `SpecificationFactory`:
-
-```kotlin
-abstract class SpecificationFactory<TEntity : Any, TDatabaseModel : Any> {
-
-    fun create(query: Query<TEntity>): SpringSpecification<TDatabaseModel> {
-        return SpringSpecification { root, criteriaQuery, criteriaBuilder ->
-            createPredicate(query.specification, root, criteriaQuery, criteriaBuilder)
-        }
-    }
-
-    private fun createPredicate(
-        specification: Specification<TEntity>,
-        root: Root<TDatabaseModel>,
-        criteriaQuery: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): Predicate {
-        return when (specification) {
-            is Specification.AndSpecification -> {
-                val left = createPredicate(specification.left, root, criteriaQuery, criteriaBuilder)
-                val right = createPredicate(specification.right, root, criteriaQuery, criteriaBuilder)
-                criteriaBuilder.and(left, right)
-            }
-            is Specification.OrSpecification -> {
-                val left = createPredicate(specification.left, root, criteriaQuery, criteriaBuilder)
-                val right = createPredicate(specification.right, root, criteriaQuery, criteriaBuilder)
-                criteriaBuilder.or(left, right)
-            }
-            is Specification.NotSpecification -> {
-                val spec = createPredicate(specification.specification, root, criteriaQuery, criteriaBuilder)
-                criteriaBuilder.not(spec)
-            }
-            is Specification.TrueSpecification -> {
-                criteriaBuilder.isTrue(criteriaBuilder.literal(true))
-            }
-            is Specification.FalseSpecification -> {
-                criteriaBuilder.isFalse(criteriaBuilder.literal(false))
-            }
-            is Specification.ParameterizedSpecification -> {
-                filterPredicates[specification.name].createPredicate(root, criteriaQuery, criteriaBuilder, specification)
-            }
-        }
-    }
-
-    abstract val filterPredicates: FilterPredicates<TEntity, TDatabaseModel>
-}
-```
-
-Konkretne encje z kolei muszą tylko zdefiniować w jaki sposób mają być interpretowane poszczególne specyfikacje. Na przykład, specyfikacja `ClientSpecificationFactory`:
-
-```kotlin
-@Component
-class ClientSpecificationFactory : SpecificationFactory<Client, ClientDatabaseModel>() {
-
-    override val filterPredicates = filterPredicates<Client, ClientDatabaseModel> {
-        uniqueValue("id") { root, _, _ -> root.get<UUID>("id") }
-        string("name") { root, _, _ -> root.get("name") }
-        string("email") { root, _, _ -> root.get("email") }
-        string("phone") { root, _, _ -> root.get("phone") }
-        string("address") { root, _, _ -> root.get("address") }
-        string("city") { root, _, _ -> root.get("city") }
-        string("state") { root, _, _ -> root.get("state") }
-        string("zip") { root, _, _ -> root.get("zip") }
-        uniqueValue("countryCode") { root, _, _ -> root.get<String>("countryCode") }
-        string("vat") { root, _, _ -> root.get("vat") }
-        boolean("active") { root, _, _ -> root.get("active") }
-        uniqueValue("clientTypeId") { root, _, _ -> root.join<ClientDatabaseModel, ClientTypeDatabaseModel>("type").get<UUID>("id") }
-    }
-}
-```
-
-Odpowiedzialnościa każdej konkretnej implementacji jest zdefiniowanie, jaki jest typ konkretnej specyfikacji oraz gdzie znajduje się jej wartość w modelu bazy danych. Typ konkretnej specyfikacji wyznacza jakie operacje są dostępne na tej wartości - na przykład, specyfikacja typu `uniqueValue` pozwala na sprawdzenie czy wartość jest równa wartości w specyfikacji (`Eq`), zawiera się czy nie zawiera w podanym zbiorze wartości (`AnyElement` i `NoneElement`) oraz czy wartość jest równa `null` (`IsNull`):
-
-```kotlin
-class UniqueValuePredicateFactory<TEntity : Any, TDatabaseModel : Any, TValue : Any>(
-    private val expressionSupplier: (Root<TDatabaseModel>, CriteriaQuery<*>, CriteriaBuilder) -> Expression<TValue>
-) : PredicateFactory<TEntity, TDatabaseModel>() {
-
-    override fun createPredicate(
-        root: Root<TDatabaseModel>,
-        query: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder,
-        specification: Specification.ParameterizedSpecification<TEntity>
-    ): Predicate {
-        val expression = expressionSupplier(root, query, criteriaBuilder)
-        return when (specification) {
-            is UniqueValueSpecification.Eq<*, *> -> criteriaBuilder.equal(expression, specification.value)
-            is UniqueValueSpecification.AnyElement<*, *> -> expression.`in`(specification.value)
-            is UniqueValueSpecification.NoneElement<*, *> -> criteriaBuilder.not(expression.`in`(specification.value))
-            is UniqueValueSpecification.IsNull -> criteriaBuilder.isNull(expression)
-            else -> throw IllegalArgumentException("Invalid specification type")
-        }
-    }
-}
-```
-
-Podobnie jak w domenie, interpretator specyfikacji dostał wygodny w użyciu DSL, który pozwala na zdefiniowanie konfiguracji interpretatora w czytelny i przejrzysty sposób.
-
-Takie podejście zapełnia spójność interpretacji specyfikacji dla każdej encji, a także pozwala na łatwe rozszeranie mechanizmu specyfikacji. Wystarczy dodać nową implementację `PredicateFactory` i odpowiednią konfigurację w DSL, podobnie jak w warstwie domeny.
-
-Sortowania i paginacja interpretowane są za pomocą mechanizmu `Sort` i `Pageable` Spring Data JPA. Implementacja sortowania i paginacji jest bardzo prosta i przejrzysta i nie wymaga szczegółowego omawiania:
-
-```kotlin
-fun <TEntity : Any> Query<TEntity>.toPageable(): Pageable =
-    PageRequest.of(
-        page ?: 0,
-        size ?: Int.MAX_VALUE,
-        Sort.by(
-            sort.order.map {
-                when (it.direction) {
-                    Direction.ASC -> Sort.Order.asc(it.name)
-                    Direction.DESC -> Sort.Order.desc(it.name)
-                }
-            }
-        )
-    )
-```
-
-Inny sposób interpretacji polega na wykonaniu filtrowań i sortowań w pamięci. Jest to używane w przypadku gdy żródło danych nie pozwala na wykonanie zapytań - często przy użyciu zewnętrznych API. Implementacja interpretatora ad-hoc jest analogiczna do interpretatora mapującego specyfikacje na zapytania SQL:
-
-```kotlin
-typealias ValueGetter<TEntity, TValue> = (TEntity) -> TValue?
-
-abstract class QueryExecutor<TEntity : Any> {
-
-    protected abstract val querySorters: SortExecutors<TEntity>
-    protected abstract val specificationExecutors: SpecificationExecutors<TEntity>
-
-    private fun sortComparator(sort: Sort<TEntity>): Comparator<TEntity> {
-        if (sort.order.isEmpty()) {
-            return Comparator { _, _ -> 0 }
-        }
-
-        return sort.order.map {
-            val (field, direction) = it
-            val sortComparator = querySorters[field]
-            if (direction == Direction.DESC) {
-                sortComparator.reversed()
-            } else {
-                sortComparator
-            }
-        }.reduce { acc, comparator -> acc.thenComparing(comparator) }
-    }
-
-    private fun filterPredicate(search: Specification<TEntity>): (TEntity) -> Boolean {
-        return { entity: TEntity ->
-            when (search) {
-                is Specification.AndSpecification -> {
-                    val left = filterPredicate(search.left)
-                    val right = filterPredicate(search.right)
-                    left(entity) && right(entity)
-                }
-                is Specification.OrSpecification -> {
-                    val left = filterPredicate(search.left)
-                    val right = filterPredicate(search.right)
-                    left(entity) || right(entity)
-                }
-                is Specification.NotSpecification -> {
-                    val spec = filterPredicate(search.specification)
-                    !spec(entity)
-                }
-                is Specification.TrueSpecification -> {
-                    true
-                }
-                is Specification.FalseSpecification -> {
-                    false
-                }
-                is Specification.ParameterizedSpecification -> {
-                    specificationExecutors[search.name].execute(entity, search)
-                }
-            }
-        }
-    }
-
-    fun execute(query: Query<TEntity>, items: List<TEntity>): Page<TEntity> {
-        return execute(query) { items }
-    }
-
-    fun execute(query: Query<TEntity>, supplier: () -> List<TEntity>): Page<TEntity> {
-        val filteredItems = supplier().asSequence()
-            .filter(filterPredicate(query.specification))
-            .sortedWith(sortComparator(query.sort))
-            .toList()
-
-        val totalItems = filteredItems.size
-        val totalPages = totalItems / (query.size ?: 1)
-        val currentPage = query.page ?: 0
-
-        return Page(
-            items = filteredItems.drop(currentPage * (query.size ?: 0)).take(query.size ?: Int.MAX_VALUE),
-            currentPage = currentPage,
-            totalPages = totalPages,
-            totalItems = totalItems.toLong()
-        )
-    }
-}
-```
-
-Konkretne specyfikacje są interpretowane w pamięci:
-
-```kotlin
-class BooleanSpecificationExecutor<TEntity : Any>(valueGetter: ValueGetter<TEntity, Boolean>) : SpecificationExecutor<TEntity, Boolean>(valueGetter) {
-    override fun execute(entity: TEntity, specification: Specification.ParameterizedSpecification<TEntity>): Boolean {
-        return when (specification) {
-            is BooleanSpecification.Eq -> {
-                valueGetter(entity) == specification.value
-            }
-            is BooleanSpecification.IsNull -> {
-                valueGetter(entity) == null
-            }
-            else -> {
-                throw IllegalArgumentException("Invalid filter expression: ${specification.name}")
-            }
-        }
-    }
-}
-```
-
-Zauwazamy różnicę - żadne zapytania nie są budowane, tylko wykonywane na dostarczonej kolekcji. Podobnie jak w przypadku interpretatora mapującego specyfikacje na zapytania SQL, interpretator ad-hoc musi wiedzieć jak interpretować specyfikacje, więc musimy zdefiniować konfigurację dla każdej encji osobno:
-
-```kotlin
-@Component
-class LanguageQueryExecutor : QueryExecutor<Language>() {
-
-    override val querySorters = sortExecutors<Language> {
-        sort("code", compareBy { it.id.value })
-        sort("name", compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
-        sort("iso6392t", compareBy(nullsLast(String.CASE_INSENSITIVE_ORDER)) { it.iso6392T })
-        sort("iso6392b", compareBy(nullsLast(String.CASE_INSENSITIVE_ORDER)) { it.iso6392B })
-        sort("iso6391", compareBy(nullsLast(String.CASE_INSENSITIVE_ORDER)) { it.iso6391 })
-    }
-
-    override val specificationExecutors = specificationExecutors<Language> {
-        uniqueValue("code") { it.id.value }
-        string("name") { it.name }
-        uniqueValue("iso6392t") { it.iso6392T }
-        uniqueValue("iso6392b") { it.iso6392B }
-        uniqueValue("iso6391") { it.iso6391 }
-        enum("type") { it.type }
-        enum("scope") { it.scope }
-    }
-}
-```
-
-W rozdziale omawiającym specyfikację w warstwie domeny wspomniano, że specyfikacje są rządko definiowane w kodzie, a częto pochodzą z zapytań do API aplikacji. System organizacji pracy dla biura tłumaczeń posiada swój język zapytań do API, który jest parsowany i przetwarzany na specyfikacje:
-
-```kotlin
-!(name:eq:"tom" | name:eq:"jerry")
-& middlename:null
-& lastname:eq:"smith"
-| (age:gt:18 & age:lt:30)
-& occupations:in:"programmer","developer"
-& countries:in:"USA","UK"
-```
-
-Takie dynamiczne podejście pozwala na łatwe tworzenie zapytań i filtrowanie danych - wystarczy odpowiednio skonfigurować interpretator specyfikacji dla encji. Takie podejście jest idealne dla systemu i zapewnia wsparcie siatek danych dla użykowników, którzy mogą tworzyć dowolne zapytania za pomocą interfejsu użytkownika.
-
-#### Warstwa aplikacji - serwisy zewnętrzne
-
-Czasem zdarzą się, że dużo prościej i wygodniej jest skorzystać z zewnętrznego rozwiązania niż implementować własne i wspierać własne. Przykładem mogą być różne systemy płatności (na przykład, Stripe), wysyłanie wiadomości SMS (Twilio, CloudTalk), różne repozytoria i bazy danych, serwisy konwersji walut, słowniki terminologiczne, narzędzia do tłumaczenia maszynowego i wiele innych. W przypadku systemu organizacji pracy dla biura tłumaczeń, wykorzystano kilka zewnętrznych API:
-
-1. [exchangerate.host](https://exchangerate.host/) - dostarcza zawsze aktualne kursy walut, posiada historyczne dane i wspiera też konwersję walut. Wsparcie dla konwersji walut jest bardzo przydatne w przypadku rozwijanego systemu, bo pozwala na łatwe przeliczanie kosztów projektów na dowolną walutę.
-2. [REST Countries](https://restcountries.com/) - dokładne informacje o krajach - stolice, strefy czasowe, języki i wiele innych. Wsparcie dla takiego API jest przydatne w przypadku systemu, który wspiera wiele języków i krajów.
-3. [SIL International Code Tables](https://iso639-3.sil.org/) - aktualne informacje o wszystkich językach na świecie dostarczane przez organizację SIL International.
-
-Połaczenie z takimi serwisami w frameworku Spring jest równie proste. Do implementacji klientów API użyto rozwiązania OpenFeign, które jest dostarczane przez Spring Cloud. OpenFeign pozwala na łatwe zdefiniowanie klienta API za pomocą interfejsu oznaczonego odpowiednimi adnotacjami:
-
-```kotlin
+// Deklaracja klienta Feign
 @FeignClient(name = "currencies", url = "http://api.exchangerate.host")
 interface CurrencyClient {
 
-    @RequestMapping(method = [RequestMethod.GET], value = ["/live?source={base}&access_key=10fa6bb9choojf8deptab150be047ea9"])
+    // Deklaracja metody klienta Feign
+    // Wyniki zapytania są zapisywane w pamieci tymczasowej (cache), żeby uniknąć nadmiernego użycia serwisu zewnętrznego
+    @RequestMapping(method = [RequestMethod.GET], value = ["/live?source={base}&access_key=test_access_key"])
     @Cacheable(value = ["currencies-client-cache"], key = "'live'")
     fun getLatest(@PathVariable(name = "source") source: String): CurrencyExchangeRatesExternalModel
 
-    @RequestMapping(method = [RequestMethod.GET], value = ["/list?access_key=10fcheepa8862cip4800b150be0matk4"])
+    @RequestMapping(method = [RequestMethod.GET], value = ["/list?access_key=test_access_key"])
     @Cacheable(value = ["currencies-client-cache"], key = "'symbols'")
     fun getSymbols(): CurrencySymbolsExternalModel
 }
 ```
+_Lisitng 12. Implementacja adaptera klienta Feign dla serwisu `exchangeratesapi.io` w języku Kotlin_
 
-Dodajemy odpowiednie cache'owanie, żeby nie przeciążać API i uniknąć przypadkowego przekroczenia limitów. Dalej wystarczy zdefiniować klasy które będą reprezentować odpowiedzi z API:
+Podobnie jak adaptery persystencji, ten operuje na własnym modelu, który jest mapowany na model domenowy. Implementacja adaptera klienta Feign jest maksymalnie prosta - ogranicza się do deklaracji klienta Feign i mapowania wyników zapytań na model domenowy.
 
-```kotlin
-@JsonIgnoreProperties(ignoreUnknown = true)
-class CurrencyExchangeRatesExternalModel(val source: String, val quotes: Map<String, BigDecimal>)
+Podsumowując, porty wyjściowe są odpowiedzialne za komunikację domeny aplikacji z warstwą persystencji oraz zewnętrznymi serwisami. Głownym celem jest implementacja adapterów w sposób, oddzielający domenę aplikacji od szczegółów implementacyjnych warstwy persystencji i zewnętrznych serwisów. Dzięki temu, domena aplikacji jest bardziej elastyczna i łatwiejsza w utrzymaniu. Warto też dodać, że wyjściowe porty nie ograniczają się tylko do komunikacji z warstwą persystencji i zewnętrznymi serwisami - mogą to też być inne serwisy w ramach tej samej aplikacji, systemy mailowe, wysyłanie powiadomień SMS, wstawianie danych do kolejek czy nawet publikacja wpisów na Twitterze.
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class CurrencySymbolsExternalModel(val success: Boolean, val currencies: Map<String, String>)
-```
+## 4. Zabezpieczenia. Spring Security
 
-I na tym koniec - klient API jest gotowy do użycia. O ile taki klient nie jest jeszcze gotowy do użycia w domenie aplikacji, to musimy dodatkowo dopisać adapter, który będzie mapował odpowiedzi z API na encje domenowe:
+Kolejny ważny element infrastruktury aplikacji to zabezpieczenia - aplikacja musi być zabezpieczona przed nieuprawnionym dostępem. Bezpieczeństwo aplikacji zawiera wiele czynników - zabezpieczenie danych (szyfrowanie danych, zabezpieczenie przed wyciekiem danych), zabezpieczenie przed atakami (SQL Injection, Cross-Site Scripting, Cross-Site Request Forgery, itp.), zabezpieczenie przed nieuprawnionym dostępem (autoryzacja, autentykacja), itp. Spring i inne wybrane technologie są od razu zabezpieczone przed wieloma atakami, ale zabezpieczenia aplikacji to nie tylko zabezpieczenia techniczne - to też zabezpieczenia organizacyjne, takie jak polityka bezpieczeństwa, zarządzanie dostępem, zarządzanie tożsamością, itp. Z tego wynika potrzeba w zaimplementowaniu przejrzystego i elastycznego systemu uprawnień, który pozwoli na zarządzanie dostępem do zasobów aplikacji.
 
-```kotlin
-@Repository
-class CurrencyClientAdapter(
-    private val client: CurrencyClient,
-    private val currencyQueryExecutor: CurrencyQueryExecutor
-) : CurrencyRepository {
+Często oragnizacje używają więcej niż jednego systemu - użytkownicy mogą potrzebować korzystać np. z wewnątrzfirmowych komunikatorów, wewnętrznego Wiki, systemów zarządzania projektami, itp. Zarządzanie wieloma systemami to zarządzanie wieloma tożsamościami, co jest bardzo uciążliwe dla użytkowników. Dla tego, wiele organizacji korzysta z systemów zarządzania tożsamościami (IAM), które pozwalają stworzenie jednej tożsamości, która jest używana w wielu systemach. Takie podejście jest nazwane Single Sign-On (SSO). Centralne zarządzanie tożsamościami pozwala na łatwe zarządzanie dostępem do zasobów aplikacji, a także na łatwe zarządzanie użytkownikami, ich uprawnieniami, itp.
 
-    override fun getAll() = client.getSymbols()
-        .currencies
-        .map { Currency(CurrencyCode(it.key), it.value) }
+Jako przykład systemu zarządzania tożsamościami, który jest wykorzystywany w systemie organizacji pracy biura tłumaczeń, można wymienić Keycloak. Keycloak to bardzo popularne rozwiązanie open-source, które oferuje wiele funkcji związanych z zarządzaniem tożsamościami, takich jak autentykacja, autoryzacja, zarządzanie sesjami, zarządzanie dostępem, itp. Keycloak oferuje implementację SSO na podstawie protokołu OpenID Connect (OIDC) oraz protokołu SAML, a też integracje z LDAP, Active Directory i wieloma innymi systemami. Keycloak oferuje też wiele funkcji związanych z zarządzaniem dostępem, takich jak zarządzanie rolami, grupami, politykami dostępu, itp.
 
-    override fun get(query: Query<Currency>) = currencyQueryExecutor.execute(query) { getAll() }
+Zabezpieczenie serwera aplikacji zaczyna się od konfiguracji klienta OIDC po stronie Keycloak. Klient OIDC serwera aplikacji musi posidać *konfidencyjny* typ dostępu. To oznacza, że klient OIDC będzie używał tajnego klucza do autentykacji żądań do serwera autoryzacji. Konfidencyjny typ dostępu jest zalecany dla aplikacji, które działają po stronie serwera, a nie po stronie przeglądarki. Warto też zwrócić uwagę na konfigurację "Redirect URIs" - to adresy URL, które są używane do przekierowania użytkownika po autentykacji oraz "Web Origins" dla poprawnego zabezpieczenia przed atakami CSRF i CORS. Pozostałe konfiguracje klienta OIDC, takie jak konfiguracja tokenów, polityk dostępu, itp., zależą od wymagań aplikacji.
 
-    override fun get(code: CurrencyCode) = client.getSymbols()
-        .currencies
-        .filterKeys { it == code.value.uppercase() }
-        .map { Currency(CurrencyCode(it.key), it.value) }
-        .firstOrNull()
+W przypadku serwera aplikacji, klient został skonfigurowany ze wsparciem granulacji dostępu. Granulacja dostępu pozwala na kontrolę dostępu do zasobów aplikacji na podstawie polityk dostępu. Polityki dostępu są definiowane w postaci reguł, które określają, kto, co, kiedy i jak może zrobić. Granulacja dostępu w Keycloak polega na:
 
-    override fun getExchangeRates(code: CurrencyCode, amount: BigDecimal) = client.getLatest(code.value).toDomain(amount)
-}
-```
+1. Definicji zakresów autoryzacji (ang. *scopes*) - zakres autoryzacji definiuje akcję, która jest wykonywana na zasobie aplikacji. Przykładowe zakresy autoryzacji to `read`, `write`, `delete`, `manage`, itp.
+2. Definicji zasobów (ang. *resources*) - zasób to obiekt aplikacji, który jest chroniony przez polityki dostępu. Przykładowe zasoby to `project`, `client`, `translator`, itp. Zasoby należy powiązać z zakresami autoryzacji.
+3. Definicja polityk dostępu (ang. *policies*) - polityka dostępu określa jak użytkownik może uzyskać dostęp do zasobu. Polityka dostępu może być oparta o role, o klienta, o grupę, o atrybuty użytkownika, itp.
+4. Definicja reguł dostępu (ang. *permission*) - reguła dostępu to połączenie polityki dostępu z zasobem i zakresem autoryzacji. Reguła dostępu określa, kto, co, kiedy i jak może zrobić. 
 
-Takie podejście jest proste, nie łamie zasad czystej architektury i pozwala na łatwe dodanie nowych klientów API. Wszystkie szczegóły, znowy, zostały rozwiązane przez Spring i Spring Cloud, więc nie ma potrzeby implementowania żadnych dodatkowych mechanizmów.
+Po skonfigurowaniu klienta OIDC po stronie Keycloak, należy skonfigurować serwer aplikacji i do użycia Keycloak. Taka integracja może w prosty sposób być zaimplementowana za pomocą Spring Security. Na początek, należy dodać odpowiednie wpisy w pliku `application.yml`:
 
-#### Warstwa aplikacji - uwierzytelnianie i autoryzacja
-
-Każda aplikacja powinna posiadać efektywny mechanizm kontroli dostępu. Architektura systemu organizacji pracy dla biura tłumaczy opiera się w tej kwestji na centralny serwis uwierzytelniania i autoryzacji - Keycloak. Podobnie jak w przypadku interfejsu użytkownika, trzeba zintegrować serwer aplikacji z Keycloak. W tym celu, należy dodać skonfigurować nowego klienta OIDC w Keycloak tak, żeby w wyniku dostać taką konfigurację:
-
-![Keycloak client configuration - general settings](./docs/keycloak-client-api-config-general.png)
-*Keycloak client configuration - general settings*
-
-![Keycloak client configuration - access settings](./docs/keycloak-client-api-config-access.png)
-*Keycloak client configuration - access settings*
-
-![Keycloak client configuration - capability config](./docs/keycloak-client-api-config-capability.png)
-*Keycloak client configuration - capability config*
-
-![Keycloak client configuration - login settings](./docs/keycloak-client-api-config-login.png)
-*Keycloak client configuration - login settings*
-
-![Keycloak client configuration - logout settings](./docs/keycloak-client-api-config-logout.png)
-*Keycloak client configuration - logout settings*
-
-W kolejnym kroku musimy odpowiednio skonfigurować autoryzację dla stworzonego klienta. Pierwszym krokiem jest definicja zakresów autoryzacji (ang. *authorization scopes*). Zakres autoryzacji opisuje jakie akcje może wykonać użytkownik w ramach aplikacji.
-
-W tym celu, należy przejść do zakładki `Authorization`, a następnie do `Scopes` i dodać nowy zakres klikając przycisk `Create authorization scope`. Powinien pojawić się taki formularz, który należy wypełnić nadając nazwę zakresu i ewentulanie opis. Nazwa zakresu powinna być unikalna w skali całego serwera Keycloak, więc najlepiej wybrać sobie konsystentną konwencję nazewnictwa:
-
-![Keycloak new authorization scope configuration](./docs/keycloak-authorization-scope-config.png)
-*Keycloak - new authorization scope configuration*
-
-Kolejnym krokiem jest zdefiniowanie zasobów (ang. *resources*), które będą chronione, i połaćżyć je z odpowiednimi zakresami autoryzacji. Żeby zdefiniować nowy zasób, należy przejść do zakładki `Authorization`, a następnie do `Resources` i dodać nowy zasób klikając przycisk `Create resource`. Powinien pojawić się taki formularz, który należy wypełnić jak na poniższym obrazku:
-
-![Keycloak new resource configuration](./docs/keycloak-resource-config.png)
-*Keycloak - new resource configuration*
-
-Dalej definiujemy polityki dostępu (ang. *access policies*), które określają co jest potrzebne do uzyskania dostępu. Keycloak pozwala na definicję wielu różnych typów polityk dostępu. O ile cały system autoryzacji w systemie jest oparty o role, to wszysktie polityki dostępu też będą opierać się o to, czy użytkownik posiada daną rolę. Żeby zdefiniować nową politykę dostępu, należy przejść do zakładki `Authorization`, a następnie do `Policies` i dodać nową politykę klikając przycisk `Create policy` i wybrać z listy typów typ `Role`. W formularzu definiujemy nową politykę:
-
-![Keycloak new policy configuration](./docs/keycloak-policy-config.png)
-*Keycloak - new policy configuration*
-
-Ostatni krok to użycie połączenie zdefiniowanych polityk dostępu i zakresów autoryzacji. To umożliwi połączenie zasobów z politykami dostępu. W tym celu należy stworzyć nowe uprawnienie (ang. *permission*). Żeby to zrobić, należy przejść do zakładki `Authorization`, a następnie do `Permissions` i dodać nowe uprawnienie typu `Scope-based` klikając przycisk `Create permission`. W formularzu definiujemy nowe uprawnienie:
-
-![Keycloak new permission configuration](./docs/keycloak-permission-config.png)
-*Keycloak - new permission configuration*
-
-Stosując opisanego algorytmu, należy zdefiniować uprawnienia dla wszystkich zasobów. Jest to wyjątkowo czasochłonne, ale w wyniku dostajemy bardzo elastyczny system autoryzacji.
-
-Drugą częscią tej podróży jest konfiguracja Spring Security w aplikacji. Trzeba dodać odpowiednie wpisy w pliku `application.yml`, które będą definiować połączenie z Keycloak:
-
-```yaml
+```properties
 spring:
   security:
     oauth2:
       client:
         registration:
+          # Rejestracja klienta OIDC
+          # Aplikacja może być zarejestrowana w wielu serwerach autoryzacji
           keycloak:
             provider: keycloak
             client-id: tpm-backend
@@ -5071,6 +4495,8 @@ spring:
             authorization-grant-type: authorization_code
             scope: openid,profile,email
         provider:
+          # Konfiguracja dostawcy autoryzacji
+          # W tym przypadku jest to serwer Keycloak, który jest uruchomiony lokalnie
           keycloak:
             issuer-uri: http://localhost:8081/realms/tpm
             user-info-uri: http://localhost:8081/realms/tpm/protocol/openid-connect/userinfo
@@ -5083,10 +4509,12 @@ spring:
           issuer-uri: http://localhost:8081/realms/tpm
           jwk-set-uri: http://localhost:8081/realms/tpm/protocol/openid-connect/certs
 ```
+_Lisitng 13. Konfiguracja Spring Security w pliku `application.yml`_
 
-Kolejny krok - konfiguracja łąńcuchów filtrów, CORS i CSRF dodając odpowiednie beany do konfiguracji Spring Security:
+Wsparcie granularnego dostępu Keycloak w Spring Security można zaimplementować, używając `ServletPolicyEnforcerFilter`, który definiuje połączenie połączenie do serwera autoryzacji oraz mapuje ścieżki aplikacji i metody HTTP na odpowiednie zakresy autoryzacji:
 
 ```kotlin
+// Konfiguracja zabezpieczeń aplikacji
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration(
@@ -5095,31 +4523,7 @@ class SecurityConfiguration(
     @Value("\${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}") private val jwkSetUri: String
 ) {
 
-    @Bean
-    @Order(1)
-    fun actuatorFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.securityMatchers { it.requestMatchers("/actuator", "/actuator/**") }
-            .authorizeHttpRequests { it.anyRequest().permitAll() }
-            .cors { it.configurationSource { corsConfiguration() } }
-            .csrf { it.disable() }
-
-        return http.build()
-    }
-
-    @Bean
-    @Order(2)
-    fun swaggerFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.securityMatchers { it.requestMatchers("/swagger-ui", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**") }
-            .authorizeHttpRequests { it.anyRequest().authenticated() }
-            .oauth2Client {  }
-            .oauth2Login {  }
-            .logout { it.logoutSuccessUrl("/") }
-            .cors { it.configurationSource { corsConfiguration() } }
-            .csrf { it.disable() }
-
-        return http.build()
-    }
-
+    // Konfiguracja łańcucha filtrów zabezpieczeń
     @Bean
     @Order(3)
     fun apiFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -5133,35 +4537,24 @@ class SecurityConfiguration(
         return http.build()
     }
 
-    @Bean
-    @Order(4)
-    fun defaultFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.authorizeHttpRequests { it.anyRequest().permitAll() }
-            .cors { it.configurationSource { corsConfiguration() } }
-            .csrf { it.disable() }
+    // Konfiguracja pozostałych filtrów zabezpieczeń pominięta dla czytelności...
 
-        return http.build()
-    }
-
+    // Konfiguracja CORS
     private fun corsConfiguration() =
         CorsConfiguration().apply {
             allowedOrigins = listOf(
                 "http://localhost",
                 "http://localhost:5173",
-                "http://localhost:8080",
-                "http://localhost:8081",
-                "http://localhost:8082",
-                "http://26.44.49.6",
-                "http://26.44.49.6:5173",
-                "http://26.44.49.6:8080",
-                "http://26.44.49.6:8081",
-                "http://26.44.49.6:8082"
+                // Pozostałe adresy URL pominięte dla czytelności...
             )
             allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             allowCredentials = true
         }
 
+    // Konfiguracja filtru `ServletPolicyEnforcerFilter` z użyciem `PolicyEnforcerConfig`
+    // `PolicyEnforcerConfig` definiuje konfigurację połączenia do serwera autoryzacji
+    // oraz mapowanie ścieżek aplikacji na zakresy autoryzacji
     private fun createPolicyEnforcerFilter() =
         ServletPolicyEnforcerFilter {
             policyEnforcerConfig {
@@ -5175,74 +4568,25 @@ class SecurityConfiguration(
             }
         }
 
-    @Bean
+    @Bean // Konfiguracja dekodera JWT
     fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build()
-}
-```
 
-Powyższa konfiguracja definiuje cztery łańcuchy filtrów:
-
-1. Pierwszy łańcuch filtrów jest odpowiedzialny za zabezpieczenie endpointów Spring Actuator. W tym przypadku, wszystkie endpointy są dostępne dla wszystkich użytkowników.
-2. Drugi łańcuch filtrów jest odpowiedzialny za zabezpieczenie endpointów Swagger UI. W tym przypadku, wszystkie endpointy są dostępne dla zalogowanych użytkowników.
-3. Trzeci łańcuch filtrów jest odpowiedzialny za zabezpieczenie endpointów API. W tym przypadku, wszystkie endpointy są dostępne dla zalogowanych użytkowników, ale muszą posiadać odpowiednie uprawnienia. W tym celu, filtr `ServletPolicyEnforcerFilter` sprawdza czy użytkownik posiada odpowiednie uprawnienia.
-4. Czwarty łańcuch filtrów jest odpowiedzialny za zabezpieczenie wszystkich pozostałych endpointów. W tym przypadku, wszystkie endpointy są dostępne dla wszystkich użytkowników.
-
-`ServletPolicyEnforcerFilter` jest odpowiedzialny za sprawdzenie czy użytkownik posiada odpowiednie uprawnienia i jest kluczowy w integracji pomiędzy serwerem aplikacji a serwerem autoryzacji. W konfiguracji należy podać konfigurację połączenia z Keycloak, a także zdefiniować mapowania ścieżek i metod na odpowiednie zasoby i zakresy autoryzacji, rejestrując beany implementujące interfejs `PolicyEnforcerPathsProvider`:
-
-```kotlin
-interface PolicyEnforcerPathsProvider {
-    val paths: List<PolicyEnforcerPath>
-}
-
-@Configuration
-class AccuracyConfig(private val accuracyRepository: AccuracyRepository) {
-
-    // rejestracja innych beanów
-
+    // Przykładowa implementacja `PolicyEnforcerPathsProvider`
+    // `PolicyEnforcerPathsProvider` definiuje mapowanie ścieżek aplikacji na zakresy autoryzacji
+    // Mapowania zostaną użyte przez `ServletPolicyEnforcerFilter` do zabezpieczenia aplikacji
     @Bean
-    fun accuracyPolicyEnforcerPathsProvider() = object : PolicyEnforcerPathsProvider {
+    fun projectExpensePolicyEnforcerPathsProvider() = object : PolicyEnforcerPathsProvider {
         override val paths = mutableListOf(
             pathConfig {
-                path = "/api/v1/accuracy"
+                path = "/api/v1/project/{projectId}/expense"
                 methods = mutableListOf(
                     methodConfig {
                         method = "GET"
-                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:query")
+                        scopes = mutableListOf("urn:tpm-backend:resource:expense:query")
                     },
                     methodConfig {
                         method = "POST"
-                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:create")
-                    }
-                )
-            },
-            pathConfig {
-                path = "/api/v1/accuracy/export"
-                methods = mutableListOf(
-                    methodConfig {
-                        method = "GET"
-                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:export")
-                    }
-                )
-            },
-            pathConfig {
-                path = "/api/v1/accuracy/{accuracyId}"
-                methods = mutableListOf(
-                    methodConfig {
-                        method = "GET"
-                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:read")
-                    },
-                    methodConfig {
-                        method = "PUT"
-                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:update")
-                    }
-                )
-            },
-            pathConfig {
-                path = "/api/v1/accuracy/{accuracyId}/*"
-                methods = mutableListOf(
-                    methodConfig {
-                        method = "PATCH"
-                        scopes = mutableListOf("urn:tpm-backend:resource:accuracy:update")
+                        scopes = mutableListOf("urn:tpm-backend:resource:expense:create")
                     }
                 )
             }
@@ -5250,281 +4594,47 @@ class AccuracyConfig(private val accuracyRepository: AccuracyRepository) {
     }
 }
 ```
+_Lisitng 14. Konfiguracja zabezpieczeń aplikacji w Spring Security_
 
-Zaimplementowany system autoryzacji dostarcza idealny dla potrzeb aplikacji balans pomiędzy elastycznością i skomplikowaniem. Definiowanie nowych zasobów i zakresów autoryzacji jest przejrzyste i proste, chociaż czasem może być czasochłonne. W zamian, dostajemy bardzo elastyczny system autoryzacji, który pozwala na łatwe dodawanie nowych uprawnień i zasobów, oraz pozwala na łatwe zarządzanie uprawnieniami użytkowników bez potrzeby ingerencji w kod aplikacji.
+Mapowanie na tylko i wyłącznie zakresy autoryzacji pozwala na elastyczne zarządzanie dostępem do zasobów aplikacji. Skutkuje to przeniesieniem logiki autoryzacji z aplikacji do serwera autoryzacji. Konfiguracja dostępu po stronie serwera autoryzacji pozwala nadawać i odbierać dostęp do zasobów aplikacji bez konieczności zmiany kodu aplikacji. Dzięki temu, aplikacja jest bardziej elastyczna i łatwiejsza w utrzymaniu.
 
-#### Implementacja logowania i monitorowania
+## 5. Deployment. Budowanie kontenerów z aplikacją
 
-Kolejnym ważnym aspektem implementacji takiej aplikacji jest jej monitorowanie. Podstawą monitorowalności aplikacji jest odpowiedni system logowania i czyste, poprawnie oznaczone logi. Spring używa dla tego celu biblioteki Logback, która cieszy się wysoką popularnością i zapewnia wszystkie potrzebne funkcjonalności. Plikiem konfiguracji dla Logback jest plik `logback.xml`, należy dodać go do katalogu `resources`:
+Ostatni krok - dostarczenie aplikacji do użytkowników. Kod sam w sobie nie jest aplikacją - musi zostać przetłumaczony na coś, co może być uruchomione. W przypadku aplikacji JVM, kod jest tłumaczony na bytecode, który jest uruchamiany na maszynie wirtualnej JVM. Proces przetłumaczenia jest nazywany budowaniem aplikacji. W przypadku narzędzia Gradle, budowanie aplikacji jest wykonywane za pomocą polecenia `gradle build`. Wynikiem budowania aplikacji jest plik JAR, który zawiera wszystkie zależności aplikacji oraz pliki zasobów aplikacji. Plik JAR jest gotowy do uruchomienia na maszynie wirtualnej JVM w specjalnie skofigurowanym dla aplikacji środowisku.
 
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread]-[%X{correlationId}]-[%X{scopeId}] %-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-  </appender>
+W przypadku serwera aplikacji postanowiono pójść jeszcze kork dalej i przygotować aplikację do uruchomienia w kontenerze. Kontenery to jednostki oprogramowania, które zawierają wszystko, co jest potrzebne do uruchomienia aplikacji - kod aplikacji, zależności aplikacji, konfigurację aplikacji, itp. Taki kontener jest faktycznie bardzo podobny do maszyny wirtualnej, ale jest lżejszy i szybszy w uruchamianiu. Kontenery zapewniają powtarzalność środowiska aplikacji, co pozwala na uniknięcie problemów związanych z różnicami w środowisku aplikacji. Kontenery są też bardzo elastyczne - mogą być uruchamiane na wielu platformach, takich jak serwery, chmury, stacje robocze, itp.
 
-  <springProfile name="local">
-    <root level="INFO">
-      <appender-ref ref="STDOUT" />
-    </root>
-  </springProfile>
-
-  <springProfile name="qa">
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-      <destination>logstash:5000</destination>
-      <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-        <providers>
-          <arguments />
-          <callerData />
-          <contextName />
-          <loggerName />
-          <logLevel />
-          <logLevelValue />
-          <logstashMarkers />
-          <mdc />
-          <keyValuePairs />
-          <message />
-          <rawMessage />
-          <rootStackTraceElement />
-          <stackHash />
-          <stackTrace />
-          <tags />
-          <throwableClassName />
-          <throwableMessage />
-          <throwableRootCauseClassName />
-          <throwableRootCauseMessage />
-          <pattern>
-            <pattern>
-              {
-              "correlationId": "%X{correlationId}",
-              "scopeId": "%X{scopeId}",
-              "applicationLabel": "tpm-application-server"
-              }
-            </pattern>
-          </pattern>
-        </providers>
-      </encoder>
-    </appender>
-
-    <root level="INFO">
-      <appender-ref ref="STDOUT" />
-      <appender-ref ref="LOGSTASH" />
-    </root>
-  </springProfile>
-</configuration>
-```
-
-Konfiguracja loggera jest zależna od profilu uruchomienia aplikacji. W przypadku profilu `local`, logi są wypisywane na standardowe wyjście - profil ten jest używany w czasie lokalnego uruchomienia aplikacji. Profil `qa` jest używany w czasie uruchomienia aplikacji w środowisku QA. W tym przypaku logi też są wypisywane do standardowego wyjścia, ale są też wysyłane do Logstash, który jest odpowiedzialny za ich agregację i przetwarzanie, a następnie wysyłanie do centralnego schowka logów - instancji Elasticsearch. W ten sposób, wszystkie logi z wszystkich instancji aplikacji są dostępne w jednym miejscu, co bardzo ułatwia ich analizę. Zabezpieczenie szybkiego i wygodnego dostępu do logów jest bardzo ważne w przypadku aplikacji produkcyjnych, gdzie czasami trzeba szybko zidentyfikować problem i zareagować.
-
-Aplikacja dodatkowo udostępnia aktuator, który pozwala na monitorowanie stanu aplikacji. Aktuator to bardzo przydatne narzędzie, które pozwala na monitorowanie stanu aplikacji i szybkie reagowanie na problemy jeszcze przed tym, zanim zauważy je użytkownik. Aktuator jest dostępny pod adresem `/actuator`, a w nim dostępne są różne endpointy, które pozwalają na monitorowanie stanu aplikacji. Na przykład, endpoint `/actuator/health` zwraca informacje o stanie aplikacji:
-
-```json
-{
-  "status": "UP",
-  "components": {
-    "db": {
-      "status": "UP",
-      "details": {
-        "database": "PostgreSQL",
-        "validationQuery": "isValid()"
-      }
-    },
-    "diskSpace": {
-      "status": "UP",
-      "details": {
-        "total": 499963174912,
-        "free": 499963174912,
-        "threshold": 10485760
-      }
-    },
-    "ping": {
-      "status": "UP"
-    }
-  }
-}
-```
-
-Za aktuator odpowiada biblioteka Spring Boot Actuator, która dostarcza gotowe endpointy monitorujące stan aplikacji. Spring Boot aktuator jest konfigurowany dodaniem wpisów do pliku `application.yml`:
-
-```yaml
-management:
-  endpoints:
-    enabled-by-default: false
-  endpoint:
-    health:
-      enabled: on
-    metrics:
-      enabled: on
-```
-
-Podsumowując, aplikacja dostarcza wszystkie potrzebne mechanizmy monitorowania i logowania, które są niezbędne w przypadku aplikacji produkcyjnych. Pozwoli to na szybkie reagowanie na problemy i ich rozwiązywanie.
-
-#### Testowanie
-
-Nie mniej ważnym niż implementacja jest zapewnienie jakości w projekcie. Wyłapanie i naprawa błędów w systemie odbywa się na wszystkich etapach jego tworzenia i nie jest obowiązkiem wyłącznie testerów. Wszyscy członkowie zespołu powinni być odpowiedzialni za jakość kodu i systemu. Na poziomie kodu, jakość zapewniają automatyczne testy, tworzone przez programistów. Takie testy pozwalają programistom testować zmiany i naprawiać ewentualne błędy jeszcze na etapie tworzenia nowych funkcjonalnosci. W systemie organizacji pracy dla biura tłumaczeń, automatyczne testy są wykonane przy użyciu bibliotek JUnit 5, AssertJ i Mockito.
-
-Zadanie jednego testu jest proste - sprawdzić czy dany scenariusz działa poprawnie. Do przykładu, test dla metody `create` z serwisu `ClientService`, sprawdzający poprawne utworzenie nowego klienta wyglądałby tak:
-
-```kotlin
-class ClientServiceImplTest {
-
-    @Test
-    fun `create() should create a new client`() {
-        // Arrange
-        val clientTypeId = ClientTypeId()
-        val clientType = ClientType(
-            clientTypeId,
-            name = "Test Type",
-            description = "Test Description",
-            corporate = true,
-            active = true
-        )
-        val clientTypeRepository = mock<ClientTypeRepository> {
-            on { get(clientTypeId) } doReturn clientType
-        }
-
-        val country = Country(
-            cca3 = CountryCode(value = "USA"),
-            cca2 = "US",
-            ccn3 = "840",
-            name = Country.Name("United States", "United States", mapOf()),
-            topLevelDomains = listOf(),
-            currencies = mapOf(),
-            internationalDirectDialing = Country.InternationalDirectDialing("", listOf()),
-            capital = listOf(),
-            altSpellings = listOf(),
-            languages = listOf(),
-            translations = mapOf(),
-            flag = "🇺🇸",
-            postalCode = Country.PostalCodeInfo("", "")
-        )
-        val countryRepository = mock<CountryRepository> {
-            on { getByCode("USA") } doReturn country
-        }
-
-        val clientId = ClientId()
-        val client = Client(
-            id = clientId,
-            name = "Test Name",
-            email = "test@test.com",
-            phone = "1234567890",
-            address = "Test Address",
-            city = "Test City",
-            state = "Test State",
-            zip = "12345",
-            country = country,
-            vat = "123456789",
-            notes = "Test Notes",
-            type = clientType
-        )
-        val clientRepository = mock<ClientRepository> {
-            on { create(any()) } doReturn client
-        }
-
-        val logger = mock<Logger> {
-            on { trace(any()) } doAnswer { println(it.arguments[0]) }
-            on { debug(any()) } doAnswer { println(it.arguments[0]) }
-            on { info(any()) } doAnswer { println(it.arguments[0]) }
-            on { warn(any()) } doAnswer { println(it.arguments[0]) }
-            on { error(any()) } doAnswer { println(it.arguments[0]) }
-        }
-
-        val clientService = ClientServiceImpl(clientRepository, clientTypeRepository, countryRepository, logger)
-
-        // Act
-        val createdClient = clientService.create(
-            name = "Test Name",
-            email = "test@test.com",
-            phone = "1234567890",
-            address = "Test Address",
-            city = "Test City",
-            state = "Test State",
-            zip = "12345",
-            countryCode = CountryCode("USA"),
-            vat = "123456789",
-            notes = "Test Notes",
-            clientTypeId = clientTypeId
-        )
-
-        // Assert
-        assertEquals(client, createdClient)
-    }
-
-    // Pozostałe testy
-}
-```
-
-Same w sobie takie testy są bardzo przejrzyste i proste w implementacji, ale przy sporej liczbie scenariuszy potrafią być bardzo czasochłonne. Co prawda, plusy takiego podejścia są znacznie większe niż minusy i warto zainwestować czas w ich implementację. Mimo zwolnienia programisty od potrzeby manualnego przetestowania wszystkich zmian we wszystkich miejsach w systemie, są też formą dokumentacji kodu - test opisuje jak dana funkcjonalność powinna działać.
-
-Aktywne zastosowanie podejścia DDD, wstrzykiwania zależności i architektury heksagonalnej maksymalnie ułatwia testowanie kodu. Wszystkie zależności są wstrzykiwane, więc w testach można je łatwo podmienić na makiety z określonym zachowaniem i testować tylko warstwę domeny. Implementacja warstwy infrastruktury prawię w ogóle nie wymaga testowania, bo jest to kod, który jest dostarczany przez zewnętrzne biblioteki i jakość tych rozwiązań jest zapewniana przez ich twórców.
-
-#### Wdrożenie aplikacji
-
-Ostatni krok - dostarczenie aplikacji do użytkowników. Podobie jak reszta części systemu, serwer aplikacji musi być opublikowany w postaci obrazu Docker, a potem uruchomiony w kontenerze. `Dockerfile` - plik, który zawiera instrukcje budowania obrazu Docker - wygląda tak:
+Popularnym sposobem budowania kontenerów jest użycie narzędzia Docker. Docker pozwala na definiowanie kontenerów za pomocą plików `Dockerfile`. `Dockerfile` zawiera instrukcje, które są używane do zbudowania kontenera. Przykładowy `Dockerfile` dla aplikacji Spring Boot może wyglądać tak:
 
 ```dockerfile
+# Argumenty budowania kontenera - profil aplikacji
 ARG SPRING_PROFILES_ACTIVE
 
+# Etap 1 - Budowanie aplikacji
+# Używamy obrazu `gradle:jdk17-alpine` jako bazowy obraz
+# Obraz `gradle:jdk17-alpine` zawiera wszystko, co jest potrzebne do budowania aplikacji
 FROM gradle:jdk17-alpine as builder
 USER root
 WORKDIR /builder
 ADD . /builder
+# Budowanie aplikacji za pomocą narzędzia Gradle
 RUN gradle build --stacktrace
 
+# Etap 2 - Uruchomienie aplikacji
+# Używamy obrazu `openjdk:17-alpine` jako bazowy obraz
+# Obraz `openjdk:17-alpine` zawiera środowisko uruchomieniowe JVM
 FROM openjdk:17-alpine
 ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
 WORKDIR /app
+# Wystawienie portu 8080
 EXPOSE 8080
+# Kopiowanie pliku JAR z etapu 1 do kontenera
 COPY --from=builder /builder/build/libs/tpm-api-*.jar ./app.jar
 ENTRYPOINT java -jar app.jar
 ```
+_Lisitng 15. Przykładowy `Dockerfile` dla aplikacji Spring Boot_
 
-Podobnie jak w przypadku interfejsu użytkownika, budowanie obrazu jest podzielone na dwa etapy. W pierwszym etapie, aplikacja jest budowana i testowana. W tym celu użyto obrazu `gradle:jdk17-alpine`, który zawiera wszystkie potrzebne narzędzia do budowania aplikacji. W drugim etapie, aplikacja jest uruchamiana w kontenerze opartym o obraz `openjdk:17-alpine`, który zawiera tylko Javę i jest bardzo lekki. Publikacja obrazu jest prosta - wystarczy wywołać komendę `docker build`:
-
-```bash
-docker build -t tpm-apii:1.0.0-BETA . --no-cache
-```
-
-Zbudowany obraz aplikacji dostępny jest w lokalnym repozytorium obrazów Docker. Następnie, do pliku `docker-compose.yml` w projekcie `tpm-infrastructure` należy dodać konfigurację aplikacji:
-
-```yaml
-services:
-  api:
-    container_name: api
-    build:
-      context: ./api
-      dockerfile: ./api.Dockerfile
-      args:
-        SPRING_PROFILES_ACTIVE: qa
-    ports:
-      - "8080:8080"
-    networks:
-      - tpm-network
-    depends_on:
-      - db
-      - cache
-      - logstash
-```
-
-Oraz utworzyć plik `api.Dockerfile`, który będzie zawierał jedną linię, która będzie odpowiedzialna za uruchomienie kontenera z aplikacją i przekazanie do niego zmiennej środowiskowej `SPRING_PROFILES_ACTIVE`, która będzie zawierała nazwę profilu uruchomienia aplikacji:
-
-```dockerfile
-FROM tpm-api:1.0.0-BETA
-
-ARG SPRING_PROFILES_ACTIVE
-ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
-```
-
-Po dodaniu konfiguracji aplikacji do pliku `docker-compose.yml`, należy uruchomić aplikację za pomocą polecenia:
-
-```bash
-docker-compose up -d
-```
-
-Po uruchomieniu, aplikacja będzie dostępna pod adresem `http://localhost:8080`.
+Taki plik `Dockerfile` może być użyty do zbudowania obrazu kontenera za pomocą polecenia `docker build`. Zbudowany obraz może zostać opublikowany w publicznym lub prywatnym repozytorium obrazów, takim jak Docker Hub, GitHub Container Registry czy prywatnej instancji Artifactory. Opublikowany obraz nie jest ograniczony do uruchomienia wyłącznie na Dockerze, a może też być na przykład uruchomiony na platformie Kubernetes, która jest jedną z najbardziej popularnych platform do uruchamiania kontenerów i posiada wiele zaawansowanych funkcji, takich jak automatyczne skalowanie, zarządzanie dostępem, zarządzanie konfiguracją, itp.
 
 
 ## Prezentacja

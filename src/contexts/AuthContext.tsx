@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useContext } from "react";
 import Keycloak, { KeycloakConfig, KeycloakInitOptions } from "keycloak-js";
 import { createContext, useState, useEffect } from "react";
@@ -87,21 +87,27 @@ const AuthContextProvider = (props: AuthContextProviderProps) => {
       return config;
     };
   
-    const handleResponseError = async (error: any) => {
+    const handleResponseError = async (error: AxiosError) => {
       if (error.response?.status === 401) {
-        try {
-          const result = await keycloak.updateToken(5);
-          if (result) {
-            return axios({ ...error.config });
-          } else {
-            throw new Error("Unauthorized");
+        keycloak.updateToken(5).then(refreshed => {
+          if (!refreshed) {
+            return Promise.reject(error);
           }
-        } catch (error) {
-          keycloak.logout();
-          throw error;
-        }
+
+          const config = error.config;
+
+          if (!config) {
+            return Promise.reject(error);
+          }
+
+          console.log("Token refreshed");
+          return axios.request(config);
+        }).catch(() => {
+          return Promise.reject(error);
+        });
+      } else {
+        return Promise.reject(error);
       }
-      throw error;
     };
   
     const initializeKeycloak = async () => {

@@ -273,27 +273,33 @@ const Details = () => {
 
             <Paper elevation={2} sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                <Button variant="text"
-                  color={threadLiked() ? 'success' : 'inherit'}
-                  startIcon={<ThumbUpIcon />}
-                  onClick={() => threadLiked() ? handleUnlike() : handleLike()}
-                >
-                  {thread.likes.length} {thread.likes.length === 1 ? 'Like' : 'Likes'}
-                </Button>
-                <Button variant="text"
-                  color={threadDisliked() ? 'error' : 'inherit'}
-                  startIcon={<ThumbDownIcon />}
-                  onClick={() => threadDisliked() ? handleUndislike() : handleDislike()}
-                >
-                  {thread.dislikes.length} {thread.dislikes.length === 1 ? 'Dislike' : 'Dislikes'}
-                </Button>
-                <Button variant="text"
-                  color={replyEditorExpanded ? 'primary' : 'inherit'}
-                  startIcon={replyEditorExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  onClick={handleExpandReplyEditorClick}
-                >
-                  Reply
-                </Button>
+                {
+                  thread.status.status === 'ACTIVE' && (
+                    <>
+                      <Button variant="text"
+                        color={threadLiked() ? 'success' : 'inherit'}
+                        startIcon={<ThumbUpIcon />}
+                        onClick={() => threadLiked() ? handleUnlike() : handleLike()}
+                      >
+                        {thread.likes.length} {thread.likes.length === 1 ? 'Like' : 'Likes'}
+                      </Button>
+                      <Button variant="text"
+                        color={threadDisliked() ? 'error' : 'inherit'}
+                        startIcon={<ThumbDownIcon />}
+                        onClick={() => threadDisliked() ? handleUndislike() : handleDislike()}
+                      >
+                        {thread.dislikes.length} {thread.dislikes.length === 1 ? 'Dislike' : 'Dislikes'}
+                      </Button>
+                      <Button variant="text"
+                        color={replyEditorExpanded ? 'primary' : 'inherit'}
+                        startIcon={replyEditorExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        onClick={handleExpandReplyEditorClick}
+                      >
+                        Reply
+                      </Button>
+                    </>
+                  )
+                }
                 <Button variant="text"
                   startIcon={<EditIcon />}
                   component={Link}

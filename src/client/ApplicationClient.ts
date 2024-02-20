@@ -6,7 +6,7 @@ import { Search } from "./types/common/Search";
 import { CreateProject, ProjectDeadlineMoved, ProjectMoveDeadline, ProjectMoveStart, ProjectNewStatus, Project, ProjectStartMoved, ProjectStatus, UpdateProject } from "./types/project/Project";
 import { CreateTeamMember, ProjectRole, TeamMember } from "./types/project/TeamMember";
 import { CreateTask } from "./types/project/Task";
-import { Assign, Assigned, ChangePriority, PriorityChanged, Task, TaskDeadlineMoved, TaskMoveDeadline, TaskMoveStart, TaskNewStatus, TaskStartMoved, TaskStatus, UpdateTask } from "./types/task/Task";
+import { Assign, Assigned, ChangePriority, CreateTimeEntry, PriorityChanged, Task, TaskDeadlineMoved, TaskMoveDeadline, TaskMoveStart, TaskNewStatus, TaskStartMoved, TaskStatus, UpdateTask } from "./types/task/Task";
 import { Expense } from "./types/expense/Expense";
 import { CreateExpense } from "./types/project/Expense";
 import { CreateReply, Reply, ReplyDislike, ReplyDislikeRemoved, ReplyLike, ReplyLikeRemoved, Thread, ThreadDislike, ThreadDislikeRemoved, ThreadLike, ThreadLikeRemoved, ThreadNewStatus, UpdateReply, UpdateThread } from "./types/thread/Thread";
@@ -24,6 +24,7 @@ import { CreateUnit, Measurement, Unit, UnitStatus, UpdateUnit } from "./types/d
 import { User } from "./types/user/User";
 import { File } from "./types/file/File";
 import { CreateServiceType, ServiceType, ServiceTypeStatus, UpdateServiceType } from "./types/dictionaries/ServiceType";
+import { TimeEntry } from "./types/task/TimeEntry";
 
 function toObservable<T>(promise: Promise<AxiosResponse<T>>): Observable<T> {
   return new Observable((observer) => {
@@ -432,11 +433,35 @@ export const applicationClient = {
           changePriority: (body: ChangePriority): Observable<PriorityChanged> => patchResource(`task/${id}/change-priority`, body),
           assignTeamMember: (body: Assign): Observable<Assigned> => patchResource(`task/${id}/assign-team-member`, body),
           unassignTeamMember: () => patchResource(`task/${id}/unassign-team-member`),
+          timeEntries: () => {
+            return {
+              all: (search?: Partial<Search>): Observable<Page<TimeEntry>> => getResource(`task/${id}/time-entry`, search),
+              export: (search?: Partial<Search>): Observable<TimeEntry> => getResource(`task/${id}/time-entry/export`, search, { responseType: "blob" }),
+              create: (body: CreateTimeEntry) => postResource(`task/${id}/time-entry`, body),
+              createSubmited: (body: CreateTimeEntry) => postResource(`task/${id}/time-entry/submited`, body)
+            };
+          }
         };
       },
       refdata: () => {
         return {
           statuses: (): Observable<TaskStatus[]> => getResource(`task/refdata/status`),
+        };
+      }
+    };
+  },
+  timeEntries() {
+    return {
+      all: (search?: Partial<Search>): Observable<Page<TimeEntry>> => getResource(`time-entry`, search),
+      export: (search?: Partial<Search>): Observable<unknown> => getResource(`time-entry/export`, search, { responseType: "blob" }),
+      withId: (id: string) => {
+        return {
+          get: (): Observable<TimeEntry> => getResource(`time-entry/${id}`),
+          update: (body: CreateTimeEntry): Observable<TimeEntry> => putResource(`time-entry/${id}`, body),
+          delete: (): Observable<unknown> => deleteResource(`time-entry/${id}`),
+          submit: (): Observable<TimeEntry> => patchResource(`time-entry/${id}/submit`),
+          approve: (): Observable<TimeEntry> => patchResource(`time-entry/${id}/approve`),
+          reject: (): Observable<TimeEntry> => patchResource(`time-entry/${id}/reject`),
         };
       }
     };

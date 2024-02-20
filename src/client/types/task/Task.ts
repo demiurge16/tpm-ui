@@ -144,3 +144,13 @@ export interface TaskNewStatus {
   id: string;
   status: TaskStatus;
 }
+
+export interface CreateTimeEntry {
+  userId: string;
+  date: Date;
+  timeSpent: number;
+  timeUnit: TimeUnitSymbol;
+  description: string;
+}
+
+export type TimeUnitSymbol = 'MINUTES' | 'HOURS' | 'DAYS';

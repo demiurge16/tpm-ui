@@ -82,7 +82,6 @@ const Create = () => {
     </Paper>
   ) : (
     <Box>
-      {/* <Typography variant="h4">Create Project</Typography> */}
       <Typography variant="h4">{t('projects.create.title')}</Typography>
       <Box pb={2} />
       <Form onSubmit={handleSubmit}
