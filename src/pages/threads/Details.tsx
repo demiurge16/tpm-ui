@@ -15,7 +15,7 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import { HtmlPanel } from "../../components/editor/HtmlPanel";
-import { formatDate } from "../../utils/dateFormatters";
+import { formatDateTime } from "../../utils/dateFormatters";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { applicationClient } from "../../client/ApplicationClient";
 
@@ -261,7 +261,7 @@ const Details = () => {
                 <Button variant="text" component={Link} to={`/users/${thread.author.id}`}>
                   {thread.author.firstName} {thread.author.lastName}
                 </Button>
-                at {formatDate(thread.createdAt)}
+                at {formatDateTime(thread.createdAt)}
               </Box>
             </Typography>
             <Box pb={2} />

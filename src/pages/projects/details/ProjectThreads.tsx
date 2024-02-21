@@ -5,7 +5,7 @@ import { useProjectContext } from "./context/ProjectContext";
 import { Thread } from "../../../client/types/thread/Thread";
 import { Link } from "react-router-dom";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
-import { formatDate } from "../../../utils/dateFormatters";
+import { formatDateTime } from "../../../utils/dateFormatters";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 
@@ -64,7 +64,7 @@ export const ProjectThreads = () => {
                         />
                       }
                       title={note.author.firstName + ' ' + note.author.lastName}
-                      subheader={formatDate(note.createdAt)}
+                      subheader={formatDateTime(note.createdAt)}
                       action={note.tags.map((tag) => <Chip key={tag.id} label={tag.name} sx={{ mr: 1 }} />)}
                     />
                     <CardContent>

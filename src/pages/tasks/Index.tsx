@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { Grid } from "../../components/grid/Grid";
 import { Tasks } from "./Tasks";
 import { useBreadcrumbsContext } from "../../contexts/BreadcrumbsContext";
-import { formatDate } from "../../utils/dateFormatters";
+import { formatDateTime } from "../../utils/dateFormatters";
 import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
@@ -102,7 +102,7 @@ const Index = () => {
             resizable: true,
             cellRenderer: (params: any) => {
               const task = params.data as Task;
-              return `${formatDate(task.expectedStart)} - ${formatDate(task.deadline)}`;
+              return `${formatDateTime(task.expectedStart)} - ${formatDateTime(task.deadline)}`;
             }
           },
           {

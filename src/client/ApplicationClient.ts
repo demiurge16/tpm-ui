@@ -24,7 +24,7 @@ import { CreateUnit, Measurement, Unit, UnitStatus, UpdateUnit } from "./types/d
 import { User } from "./types/user/User";
 import { File } from "./types/file/File";
 import { CreateServiceType, ServiceType, ServiceTypeStatus, UpdateServiceType } from "./types/dictionaries/ServiceType";
-import { TimeEntry } from "./types/task/TimeEntry";
+import { TimeEntry, TimeEntryStatus, TimeUnit } from "./types/task/TimeEntry";
 
 function toObservable<T>(promise: Promise<AxiosResponse<T>>): Observable<T> {
   return new Observable((observer) => {
@@ -462,6 +462,12 @@ export const applicationClient = {
           submit: (): Observable<TimeEntry> => patchResource(`time-entry/${id}/submit`),
           approve: (): Observable<TimeEntry> => patchResource(`time-entry/${id}/approve`),
           reject: (): Observable<TimeEntry> => patchResource(`time-entry/${id}/reject`),
+        };
+      },
+      refdata: () => {
+        return {
+          statuses: (): Observable<TimeEntryStatus[]> => getResource(`time-entry/refdata/status`),
+          timeUnits: (): Observable<TimeUnit[]> => getResource(`time-entry/refdata/time-unit`),
         };
       }
     };

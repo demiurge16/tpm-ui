@@ -6,7 +6,7 @@ import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, 
 import { Threads } from "./Threads";
 import { Link } from "react-router-dom";
 import { HtmlPanel } from "../../components/editor/HtmlPanel";
-import { formatDate } from "../../utils/dateFormatters";
+import { formatDateTime } from "../../utils/dateFormatters";
 import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 
@@ -57,7 +57,7 @@ const Index = () => {
                       />
                     }
                     title={note.author.firstName + ' ' + note.author.lastName}
-                    subheader={formatDate(note.createdAt) + ' in project ' + note.project.title}
+                    subheader={formatDateTime(note.createdAt) + ' in project ' + note.project.title}
                     action={note.tags.map((tag) => <Chip key={tag.id} label={tag.name} sx={{ mr: 1 }} />)}
                   />
                   <CardContent>

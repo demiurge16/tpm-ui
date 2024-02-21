@@ -8,7 +8,7 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { Grid } from "../../components/grid/Grid";
 import { Link } from "react-router-dom";
 import { forkJoin, of } from "rxjs";
-import { formatDate } from "../../utils/dateFormatters";
+import { formatDateTime } from "../../utils/dateFormatters";
 import { applicationClient } from "../../client/ApplicationClient";
 import { LoadingScreen } from "../utils/LoadingScreen";
 import { GridConfig } from "../../components/grid/GridConfig";
@@ -115,7 +115,7 @@ const Index = () => {
               suppressSizeToFit: true,
               cellRenderer: (params: any) => {
                 const project = params.data as Project;
-                return `${formatDate(project.expectedStart)} -> ${formatDate(project.internalDeadline)} -> ${formatDate(project.externalDeadline)}`;
+                return `${formatDateTime(project.expectedStart)} -> ${formatDateTime(project.internalDeadline)} -> ${formatDateTime(project.externalDeadline)}`;
               }
             },
             {

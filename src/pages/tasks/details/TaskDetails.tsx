@@ -4,7 +4,7 @@ import { useSnackbarContext } from "../../../contexts/SnackbarContext";
 import { useTaskContext } from "./TaskContext";
 import { Box, Button, Link, Paper, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { formatDate } from "../../../utils/dateFormatters";
+import { formatDateTime } from "../../../utils/dateFormatters";
 import { MoveStartDialog } from "./TaskMoveStartDialog";
 import { MoveDeadlineDialog } from "./TaskMoveDeadlineDialog";
 import { ChangeAssigneeDialog } from "./TaskChangeAssigneeDialog";
@@ -54,10 +54,7 @@ export const TaskDetails = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>{task.title}</Typography>
-      <Typography variant="body1" gutterBottom>{task.description}</Typography>
-
+    <>
       <Paper elevation={2} sx={{ p: 2, mt: 2 }}>
         <Typography variant="h5" gutterBottom>Description</Typography>
         <Typography variant="body1">
@@ -81,6 +78,9 @@ export const TaskDetails = () => {
         <Typography variant="body1" gutterBottom>
           Budget: {`${task.budget} ${task.currency.name}`}
         </Typography>
+        <Typography variant="body1" gutterBottom>
+          Priority: {`${task.priority.name} ${task.priority.emoji} (${task.priority.description})`}
+        </Typography>
       </Paper>
       <Box pb={2} />
 
@@ -89,10 +89,10 @@ export const TaskDetails = () => {
           Time frame
         </Typography>
         <Typography variant="body1">
-          Expected start: {formatDate(task.expectedStart)}
+          Expected start: {formatDateTime(task.expectedStart)}
         </Typography>
         <Typography variant="body1">
-          Deadline: {formatDate(task.deadline)}
+          Deadline: {formatDateTime(task.deadline)}
         </Typography>
       </Paper>
       <Box pb={2} />
@@ -221,6 +221,6 @@ export const TaskDetails = () => {
               })
           }
       </Paper>
-    </Box>
+    </>
   );
 };

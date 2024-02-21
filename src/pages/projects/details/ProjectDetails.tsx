@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useProjectContext } from "./context/ProjectContext";
-import { formatDate } from "../../../utils/dateFormatters";
+import { formatDateTime } from "../../../utils/dateFormatters";
 import { createStatusTransitionHandler } from "./handlers/ProjectStatusTransitionHandlers";
 import { applicationClient } from "../../../client/ApplicationClient";
 import { useSnackbarContext } from "../../../contexts/SnackbarContext";
@@ -64,13 +64,13 @@ export const ProjectDetails = () => {
       <Paper elevation={2} sx={{ p: 2 }}>
         <Typography variant="h5" gutterBottom>Time frame</Typography>
         <Typography variant="body1">
-          Expected start: {formatDate(project.expectedStart)}
+          Expected start: {formatDateTime(project.expectedStart)}
         </Typography>
         <Typography variant="body1">
-          Internal deadline: {formatDate(project.internalDeadline)}
+          Internal deadline: {formatDateTime(project.internalDeadline)}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          External deadline: {formatDate(project.externalDeadline)}
+          External deadline: {formatDateTime(project.externalDeadline)}
         </Typography>
       </Paper>
       <Box pb={2} />

@@ -66,13 +66,13 @@ export const ChangePriorityDialog = (
       <Form onSubmit={handleSubmit}
         keepDirtyOnReinitialize
         initialValues={{
-          priority: task.priority
+          priorityId: task.priority.id
         }}
         render={({ handleSubmit, submitting, pristine }) => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogTitle id="change-priority-dialog-title">Change priority</DialogTitle>
             <DialogContent>
-              <SelectField name="priority" label="Priority" required
+              <SelectField name="priorityId" label="Priority" required
                 options={priorities.map((priority) => ({
                   key: priority.id,
                   value: priority.name

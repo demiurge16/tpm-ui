@@ -7,15 +7,16 @@ export interface SelectFieldProps {
   multiple?: boolean;
   required?: boolean;
   defaultValue?: [];
+  disabled?: boolean;
   options: { key: string, value: string }[];
 }
 
 export const SelectField = (props: SelectFieldProps) => {
-  const { name, label, multiple, required, options } = props;
+  const { name, label, multiple, required, disabled, options } = props;
   const labelId = `${name}-label`;
 
   return (
-    <Field name={name}>
+    <Field name={name} disabled={disabled}>
       {({ input, meta }) => (
         <FormControl variant="outlined" fullWidth margin="normal" error={meta.error && meta.touched}>
           <InputLabel id={labelId}>{label}</InputLabel>

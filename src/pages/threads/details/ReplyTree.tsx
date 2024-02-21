@@ -11,7 +11,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from "../../../contexts/AuthContext";
 import { HtmlPanel } from "../../../components/editor/HtmlPanel";
-import { formatDate } from "../../../utils/dateFormatters";
+import { formatDateTime } from "../../../utils/dateFormatters";
 import { applicationClient } from "../../../client/ApplicationClient";
 
 interface ReplyTreeProps {
@@ -241,7 +241,7 @@ export const ReplyTree: FC<ReplyTreeProps> = ({ threadId, replies }) => {
           <CardHeader
             avatar={<Avatar>{reply.author.firstName[0]}</Avatar>}
             title={`${reply.author.firstName} ${reply.author.lastName}`}
-            subheader={formatDate(reply.createdAt)}
+            subheader={formatDateTime(reply.createdAt)}
             sx={{ pb: 0 }}
           />
         </AccordionSummary>

@@ -1,4 +1,4 @@
-export const formatDate = (date: Date) => {
+export const formatDateTime = (date: Date) => {
   return new Date(date).toLocaleDateString('en-GB', {
     year: 'numeric',
     month: 'long',
@@ -6,5 +6,13 @@ export const formatDate = (date: Date) => {
     hour: 'numeric',
     minute: 'numeric',
     hour12: false
+  });
+}
+
+export const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 }

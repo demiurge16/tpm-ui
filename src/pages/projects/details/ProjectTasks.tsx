@@ -8,7 +8,7 @@ import { Box, Button, Paper, Typography } from '@mui/material';
 import { Grid } from '../../../components/grid/Grid';
 import EditIcon from '@mui/icons-material/Edit';
 import { forkJoin } from 'rxjs';
-import { formatDate } from '../../../utils/dateFormatters';
+import { formatDateTime } from '../../../utils/dateFormatters';
 import { Link } from 'react-router-dom';
 import { GridConfig } from '../../../components/grid/GridConfig';
 import { LoadingScreen } from '../../utils/LoadingScreen';
@@ -90,7 +90,7 @@ export const ProjectTasks = () => {
                 resizable: true,
                 cellRenderer: (params: any) => {
                   const task = params.data as Task;
-                  return `${formatDate(task.expectedStart)} - ${formatDate(task.deadline)}`;
+                  return `${formatDateTime(task.expectedStart)} - ${formatDateTime(task.deadline)}`;
                 }
               },
               {

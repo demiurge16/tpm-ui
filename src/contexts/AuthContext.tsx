@@ -45,8 +45,8 @@ export const AuthContext = createContext<AuthContextValues>({
   lastName: "",
   email: "",
   roles: [],
-  hasRole: (role: Role) => false,
-  hasAnyRole: (roles: Role[]) => false
+  hasRole: () => false,
+  hasAnyRole: () => false
 });
 
 interface AuthContextProviderProps {
