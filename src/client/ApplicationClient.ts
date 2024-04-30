@@ -63,11 +63,7 @@ function getResource<TResponse>(
     : undefined;
 
   return toObservable(
-    axios.get(`${environment.apiUrl}/${path}`, {
-      params: params,
-      responseType: config?.responseType,
-      headers: config?.headers,
-    })
+    axios.get(`${environment.apiUrl}/${path}`, { params: params, ...config })
   );
 }
 

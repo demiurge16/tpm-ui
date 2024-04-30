@@ -50,13 +50,7 @@ export const ProjectExpenses = () => {
                   lockVisible: true,
                   cellRenderer: (params: any) => {
                     const expense = params.data as Expense;
-                    return (
-                      <Box>
-                        <Button variant="text" component={Link} to={`${expense.id}`}>
-                          {expense.id}
-                        </Button>
-                      </Box>
-                    );
+                    return expense.id;
                   }
                 },
                 { 
@@ -102,7 +96,7 @@ export const ProjectExpenses = () => {
                         <Button
                           variant="text"
                           component={Link}
-                          to={`${expense.id}/edit`}
+                          to={`/expenses/${expense.id}/edit`}
                           startIcon={<EditIcon />}
                         >
                           Edit

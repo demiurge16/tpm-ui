@@ -13,6 +13,7 @@ import { LoadingScreen } from '../../utils/LoadingScreen';
 import { Form } from 'react-final-form';
 import { FilePickerField } from '../../../components/form-controls/FilePickerField';
 import { applicationClient } from '../../../client/ApplicationClient';
+import { DeleteForever, Download } from '@mui/icons-material';
 
 export const ProjectFiles = () => {
   const gridRef = useRef<GridHandle>(null);
@@ -110,8 +111,19 @@ export const ProjectFiles = () => {
 
                   return (
                     <Box>
-                      <Button variant="text" onClick={handleDownload}>
+                      <Button variant="text" startIcon={<Download />} onClick={handleDownload}>
                         Download
+                      </Button>
+                      <Button variant="text" color="secondary" startIcon={<DeleteForever/>} onClick={() => {
+                        applicationClient.files().withId(file.id).delete().subscribe({
+                          next: () => {
+                            gridRef.current?.refresh();
+                            showSuccess('File deleted successfully', '');
+                          },
+                          error: (error) => showError(error.message, error.response.data.message)
+                        });
+                      }}>
+                        Delete
                       </Button>
                     </Box>
                   );
